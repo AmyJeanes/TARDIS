@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "Controla si se renderizan los portales. Apaga esto si tienen alto impacto en tus cuadros por segundo",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "Luz Proyectada de Puerta Exterior",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "Controla si debería brillar luz a través de las puertas exteriores al abrirlas",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Sonidos y Música",
     "Settings.Sections.SoundsAndMusic.Music": "Música",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "Activado",

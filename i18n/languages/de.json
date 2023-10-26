@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "Ob Portale gerendert werden oder nicht, deaktivieren Sie dies, wenn sie die Framerate erheblich beeinträchtigen",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "Projizierte Tür-Außenleuchte",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "Sollte Licht durch die Türen scheinen, wenn sie geöffnet sind?",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Klänge und Musik",
     "Settings.Sections.SoundsAndMusic.Music": "Musik",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "Aktiviert",

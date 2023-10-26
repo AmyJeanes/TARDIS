@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "Controla se os portais serão renderizados, desligue isso se eles afetarem a taxa de quadros significativamente",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "Luz Externa Projetada pela Porta",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "Luz deve ser projetada para fora quando as portas estiverem abertas?",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Sons e Música",
     "Settings.Sections.SoundsAndMusic.Music": "Música",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "Ativado",

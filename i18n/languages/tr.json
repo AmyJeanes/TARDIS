@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "Portalların oluşturulup oluşturulmayacağı, kare hızını önemli ölçüde etkiliyorsa bunu kapatın",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "Öngörülen Kapı Dış Aydınlatma",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "Açıkken kapılardan ışık parlamalı mı?",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Sesler ve Müzik",
     "Settings.Sections.SoundsAndMusic.Music": "Müzik",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "Etkinleştirilmiş",

@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "Si les portails seront rendus ou non, désactivez cette option s'ils ont un impact significatif sur la fréquence d'images",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "Lumière de porte extérieure projetée",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "La lumière doit-elle briller à travers les portes quand elles sont ouvertes ?",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Sons et Musique",
     "Settings.Sections.SoundsAndMusic.Music": "Musique",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "Activé",

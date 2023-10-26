@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Äänet & musiikki",
     "Settings.Sections.SoundsAndMusic.Music": "Musiikki",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "",
