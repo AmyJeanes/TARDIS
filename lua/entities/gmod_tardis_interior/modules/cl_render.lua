@@ -41,15 +41,11 @@ local function predraw_o(self, part)
         return table.IsEmpty(lt1) or (not lt1.color) or (not lt1.pos)
     end
 
-    local function ltcmp(lt1, lt2, only_pos)
+    local function ltcmp(lt1, lt2)
         if lt1 == lt2 then return true end
         if ltempty(lt1) and ltempty(lt2) then return true end
         if ltempty(lt1) or ltempty(lt2) then return false end
-
-        local color_ok = (lt1.color == lt2.color)
-        local pos_ok = (lt1.pos == lt2.pos)
-
-        return (only_pos or color_ok) and pos_ok
+        return (lt1.color == lt2.color) and (lt1.pos == lt2.pos)
     end
 
     local function GetLightRenderTable(lt)
@@ -66,16 +62,18 @@ local function predraw_o(self, part)
 
         if not lt.selected or not lt.current then
             lt.current = sel
-            lt.prevsel = lt.selected
+            lt.prev = lt.selected
             lt.selected = sel
             lt.select_time = CurTime()
+            lt.should_move = false
             return sel
         end
 
         if not ltcmp(lt.selected, sel) then
-            lt.prevsel = lt.current
+            lt.prev = lt.current
             lt.selected = sel
             lt.select_time = CurTime()
+            lt.should_move = (lt.prev.pos ~= lt.selected.pos)
         end
 
         if ltcmp(sel, lt.current) then
@@ -84,13 +82,11 @@ local function predraw_o(self, part)
 
         local dt = (CurTime() - lt.select_time) / 2
 
-        if ltcmp(sel, lt.current, true) then
-            -- same positions but different colors
+        if not lt.should_move then
+            -- same positions but different colors, light transition
 
-            local k1 = math.Clamp(dt,0,1)
-            local k2 = 1 - k1
-
-            local newc = lt.prevsel.color * k2 + sel.color * k1
+            local approach = math.Clamp(dt,0,1)
+            local newc = lt.prev.color * (1 - approach) + sel.color * approach
 
             lt.current = {
                 type = sel.type,
@@ -99,39 +95,30 @@ local function predraw_o(self, part)
                 color = newc,
             }
 
-            if newc == Vector(0,0,0) then
-                return {}
-            end
-
+            if newc == Vector(0,0,0) then return {} end
             return lt.current
         end
 
-        if dt < 0.5 then
-            local k1 = math.Clamp(2 * dt,0,1)
-            local k2 = 1 - k1
-
-            local newc = lt.prevsel.color * k2
+        -- fading out
+        if dt < 0.5 or sel.empty then
+            local approach = math.Clamp(2 * dt,0,1)
+            if sel.empty then approach = math.Clamp(dt,0,1) end
+            local newc = lt.prev.color * (1 - approach)
 
             lt.current = {
                 type = sel.type,
                 quadraticFalloff = sel.quadraticFalloff,
                 color = newc,
-                pos = lt.prevsel.pos
+                pos = lt.prev.pos
             }
+
+            if newc == Vector(0,0,0) then return {} end
             return lt.current
         end
 
-        if sel.empty then
-            lt.current = sel
-            return {}
-        end
-
-        -- dt > 0.5
-
-        local k1 = math.Clamp((dt - 0.5) * 2,0,1)
-        local k2 = 1 - k1
-
-        local newc = sel.color * k1
+        -- dt >= 0.5, fading in
+        local approach = math.Clamp((dt - 0.5) * 2,0,1)
+        local newc = sel.color * approach
 
         lt.current = {
             type = sel.type,
@@ -139,8 +126,9 @@ local function predraw_o(self, part)
             color = newc,
             pos = sel.pos
         }
-        return lt.current
 
+        if newc == Vector(0,0,0) then return {} end
+        return lt.current
     end
 
     local function GetLOBrightness(br)
@@ -166,10 +154,10 @@ local function predraw_o(self, part)
         end
 
         local dt = (CurTime() - d.change_time) / 2
-        local k1 = math.Clamp(dt,0,1)
-        local k2 = 1 - k1
+        local approach = math.Clamp(dt,0,1)
+        local k2 = 1 - approach
 
-        d.now = d.old * k2 + d.aim * k1
+        d.now = d.old * k2 + d.aim * approach
 
         return d.now
     end
