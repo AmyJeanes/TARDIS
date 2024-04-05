@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "Визуализация порталов. Отключение может заметно увеличить производительность",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "Свет из дверей экстерьера",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "Должен ли свет проникать через двери, когда они открыты?",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Звуки и Музыка",
     "Settings.Sections.SoundsAndMusic.Music": "Музыка",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "Включена",

@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "P'un a fydd pyrth yn rendro ai peidio, trowch hwn i ffwrdd os ydynt yn effeithio'n sylweddol ar y ffrâm",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "Golau Allanol Drws Rhagamcanol",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "A ddylai golau ddisgleirio drwy'r drysau pan fyddant ar agor?",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "Sain a Cherddoriaeth",
     "Settings.Sections.SoundsAndMusic.Music": "Cerddoriaeth",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "Galluogwyd",

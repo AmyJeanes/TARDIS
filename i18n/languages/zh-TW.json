@@ -569,6 +569,8 @@
     "Settings.Sections.Performance.Portals.Description": "不管傳送門是否會顯示，如果對幀率有顯著影響，關閉此項",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight": "門外光源投影",
     "Settings.Sections.Performance.ProjectedDoorExteriorLight.Description": "當門打開時，光線是否從門裏照射出來",
+    "Settings.Sections.Performance.SmoothLightTransitions": "",
+    "Settings.Sections.Performance.SmoothLightTransitions.Description": "",
     "Settings.Sections.SoundsAndMusic": "音效與音樂",
     "Settings.Sections.SoundsAndMusic.Music": "音樂",
     "Settings.Sections.SoundsAndMusic.Music.Enabled": "啟用",

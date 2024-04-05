@@ -87,6 +87,18 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
+    id="smooth-light-transitions",
+    type="bool",
+    value=true,
+
+    class="local",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="SmoothLightTransitions",
+})
+
+TARDIS:AddSetting({
     id="breakdown-effects",
     type="bool",
     value=true,
