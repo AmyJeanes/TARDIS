@@ -15,6 +15,7 @@ T.Phrases = {
     ["Binds.Sections.Destination.Forward"] = "Eteenpäin",
     ["Binds.Sections.Destination.Left"] = "Vasen",
     ["Binds.Sections.Destination.Right"] = "Oikea",
+    ["Binds.Sections.Destination.ShowCurrent"] = "Näytä nykyinen määränpää",
     ["Binds.Sections.Flight.Backward"] = "Taaksepäin",
     ["Binds.Sections.Flight.Boost.Description"] = "Pidä tätä näppäintä painettuna lennon aikana lisätäksesi nopeutta",
     ["Binds.Sections.Flight.Down"] = "Alas",
