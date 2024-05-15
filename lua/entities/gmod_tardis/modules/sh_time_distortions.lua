@@ -20,25 +20,30 @@ end
 
 local function DistortionsInside(ent)
     if not IsValid(ent) or not IsValid(ent.interior) then return end
-    local int_radius = ent.metadata.Interior.ExitDistance
-    return TimeDistortionsPresent(ent.interior:GetPos(), false, int_radius)
+    local size = ent.interior.metadata.Interior.Size
+    if size.Min and size.Max then
+        local min = ent.interior:LocalToWorld(size.Min)
+        local max = ent.interior:LocalToWorld(size.Max)
+        for i,v in ipairs(ents.FindInBox(min, max)) do
+            if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
+                return true
+            end
+        end
+        return false
+    end
+    local center,radius = ent.interior:GetSphere()
+    return TimeDistortionsPresent(ent.interior:LocalToWorld(center), false, radius)
 end
 
 local function DistortionsOutside(ent)
     return TimeDistortionsPresent(ent:GetPos(), true)
 end
 
-local function IsPlayerInside(ent, ply)
-    local dist = ply:GetPos():Distance(ent:GetPos())
-    return (dist <= ent.metadata.Interior.ExitDistance)
-end
-
-
 if SERVER then
     ENT:AddHook("PlayerEnter", "time_distortions_inside", function(self, ply, notp)
         if DistortionsInside(self) then
             self:Timer("time_dist_inside_warning", 0, function() -- fix for the hook working when player exits
-                if IsPlayerInside(self.interior, ply) then
+                if ply:GetTardisData("interior") == self.interior then
                     TARDIS:ErrorMessage(ply, "TimeDistortionGenerator.Distortions")
                 end
             end)
@@ -65,9 +70,8 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("HandleNoDemat", "time_distortions", function(self, pos, ang, callback, force)
-        if not force and DistortionsInside(self) and not DistortionsOutside(self) then
-            self:ForceDemat(pos, ang, callback)
+    ENT:AddHook("ShouldForceDemat", "time_distortions", function(self, pos, ang)
+        if DistortionsInside(self) and not DistortionsOutside(self) then
             return true
         end
     end)

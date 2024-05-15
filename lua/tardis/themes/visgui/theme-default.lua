@@ -15,10 +15,9 @@ local theme = {
         subfolder = "backgrounds",
         default = "console.png",
         virtualconsole = "console.png",
-        coordinates = "console.png",
+        coordinates = "default.png",
         music = "console.png",
-        main = "default.png",
-        companions = "console.png",
+        main = "console.png",
     },
     text_icons_off = {
         subfolder = "off",

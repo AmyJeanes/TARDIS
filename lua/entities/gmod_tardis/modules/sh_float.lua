@@ -5,7 +5,7 @@ TARDIS:AddKeyBind("float-toggle",{
     name="ToggleFloat",
     section="ThirdPerson",
     func=function(self,down,ply)
-        if ply==self.pilot and down then
+        if ply==self.pilot and down and not self:GetTracking() then
             TARDIS:Control("float", ply)
         end
     end,

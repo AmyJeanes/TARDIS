@@ -9,13 +9,15 @@
         "*.git*",
         "*.fgd",
         "*.psd",
+        "*.ps1",
+        "*.sh",
         "CODEOWNERS",
         "LICENSE",
         ".vscode/*",
         ".github/*",
         "i18n/*",
         "assets/*",
-        "generate-languages.ps1",
-        "crowdin.yml"
+        "crowdin.yml",
+        "version.json"
     ]
 }

@@ -1,0 +1,77 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/bulbs"
+	"$surfaceprop" "Metal"
+
+	"$color2" "[0.8 0.8 0.7]"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$color2_on "[1 1 1]"
+	$color2_off "[0.1 0.1 0.1]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+		TARDIS_DefaultInt_FloorLightsColor {
+			resultVar	$color2_on
+		}
+
+
+		TARDIS_State {
+			resultTextureVar $basetexture
+			resultFrameVar $frame
+
+			textures {
+				idle "models/molda/toyota_int/bulbs"
+				handbrake "models/molda/toyota_int/bulbs"
+				interrupt "models/molda/toyota_int/bulbs"
+				demat_fail "models/molda/toyota_int/bulbs_off"
+				mat_fail "models/molda/toyota_int/bulbs_warning"
+				off "models/molda/toyota_int/bulbs_off"
+				travel "models/molda/toyota_int/bulbs_travel"
+				demat "models/molda/toyota_int/bulbs_travel"
+				mat "models/molda/toyota_int/bulbs"
+
+				idle_warning "models/molda/toyota_int/bulbs_warning"
+				handbrake_warning "models/molda/toyota_int/bulbs_warning"
+				interrupt_warning "models/molda/toyota_int/bulbs_warning"
+				demat_fail_warning "models/molda/toyota_int/bulbs_travel_warning"
+				mat_fail_warning "models/molda/toyota_int/bulbs_warning"
+				off_warning "models/molda/toyota_int/bulbs_off"
+				travel_warning "models/molda/toyota_int/bulbs_travel_warning"
+				demat_warning "models/molda/toyota_int/bulbs_travel_warning"
+				mat_warning "models/molda/toyota_int/bulbs_warning"
+			}
+			frameRates {
+				idle 0
+				handbrake 0
+				interrupt 0
+				demat_fail 0
+				mat_fail 18
+				off 0
+				travel 10
+				demat 10
+				mat 10
+
+				idle_warning 10
+				handbrake_warning 0
+				interrupt_warning 10
+				demat_fail_warning 20
+				mat_fail_warning 30
+				off_warning 0
+				travel_warning 10
+				demat_warning 10
+				mat_warning 10
+			}
+		}
+
+	}
+
+}
+

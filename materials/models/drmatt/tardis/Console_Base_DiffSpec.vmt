@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/drmatt/tardis/Console_Base_DiffSpec"
-	"$translucent" 1
-	"$nodecal" "1"
-}

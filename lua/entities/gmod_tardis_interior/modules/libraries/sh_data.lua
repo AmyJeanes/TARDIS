@@ -7,11 +7,11 @@ if SERVER then
 end
 
 function ENT:SetData(k,v,network)
-    return self.exterior:SetData(k, v, network)
+    return IsValid(self.exterior) and self.exterior:SetData(k, v, network)
 end
 
 function ENT:GetData(k,default)
-    return self.exterior:GetData(k, default)
+    return IsValid(self.exterior) and self.exterior:GetData(k, default) or default
 end
 
 function ENT:ClearData()

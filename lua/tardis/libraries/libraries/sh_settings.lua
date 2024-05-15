@@ -22,9 +22,15 @@ function TARDIS:AddSetting(data)
         CreateConVar(convar.name, tostring(convar_default_value), convar.flags, convar.desc, data.min, data.max)
 
         cvars.AddChangeCallback(convar.name, function(cvname, oldvalue, newvalue)
+            if CLIENT and not LocalPlayer():IsAdmin() then return end
             if data.type == "integer" or data.type == "number" then
                 local value = tonumber(newvalue)
-                local set_value = TARDIS:SetSetting(data.id, value)
+
+                local current_setting = TARDIS:GetSetting(data.id)
+                if current_setting == value then return end
+
+                local set_value = TARDIS:SetSetting(data.id, value, true)
+
                 if set_value ~= value then
                     if data.type == "integer" then
                         GetConVar(convar.name):SetInt(set_value)
@@ -52,7 +58,7 @@ end
 --------------------------------------------------------------------------------
 -- Accessing
 
-function TARDIS:SetSetting(id, value)
+function TARDIS:SetSetting(id, value, ignore_convar)
     local data = self.SettingsData[id]
     if not data then error("Requested setting " .. id .. " does not exist") end
 
@@ -62,7 +68,7 @@ function TARDIS:SetSetting(id, value)
 
     if value ~= nil and (data.type == "number" or data.type == "integer") then
         if data.min and data.max then
-            value = math.max(data.min, math.min(data.max, value))
+            value = math.Clamp(value, data.min, data.max)
         end
         if data.round_func then
             value = data.round_func(value)
@@ -77,7 +83,7 @@ function TARDIS:SetSetting(id, value)
         if data.class == "global" then
             self.GlobalSettings[id]=value
 
-            if data.convar then
+            if data.convar and not ignore_convar then
                 local convar = GetConVar(data.convar.name)
                 if data.type == "integer" then
                     convar:SetInt(value)
@@ -115,9 +121,12 @@ function TARDIS:SetSetting(id, value)
     return value
 end
 
-function TARDIS:GetSetting(id, src)
+function TARDIS:GetSetting(id, src, no_default)
     local ply
-    if IsEntity(src) then
+    if IsValid(src) and not src:IsPlayer() and not src.TardisExterior then
+        src = src.exterior
+    end
+    if IsValid(src) and IsEntity(src) then
         ply = (src:IsPlayer() and src) or src:GetCreator()
     end
 
@@ -128,6 +137,9 @@ function TARDIS:GetSetting(id, src)
     local function select_return_val(table_value)
         if table_value ~= nil then
             return table_value
+        end
+        if no_default then
+            return nil
         end
         return data.value
     end
@@ -149,14 +161,17 @@ function TARDIS:GetSetting(id, src)
             return select_return_val(self.NetworkedSettings[id])
         end
 
-        if IsValid(ply) then
-            if self.ClientSettings[ply:UserID()] then
-                return select_return_val(self.ClientSettings[ply:UserID()][id])
-            end
+        local user_id = (IsValid(ply) and ply:UserID()) or src.CreatorID
+
+        if not user_id then
+            print("[TARDIS] WARNING: Networked setting " .. id .. " was requested for invalid source " .. tostring(src))
+        end
+
+        if not user_id or not self.ClientSettings[user_id] then
             return select_return_val(nil)
         end
 
-        error("Networked setting " .. id .. " was requested for invalid player " .. tostring(ply))
+        return select_return_val(self.ClientSettings[user_id][id])
     end
 
     error("Requested setting " .. id .. " either doesn't exist or has no defined class")
@@ -169,6 +184,34 @@ end
 local LOCAL_SETTINGS_FILE = "tardis_settings_cl.txt"
 local NETWORKED_SETTINGS_FILE = "tardis_settings_cl_nw.txt"
 local GLOBAL_SETTINGS_FILE = "tardis_settings_sv.txt"
+
+--[[ TODO: Add back in before release
+TARDIS:AddMigration("settings-move", "2023.8.0", function(self)
+    if SERVER then
+        if file.Exists("tardis_settings_sv.txt", "DATA") then
+            if file.Exists(GLOBAL_SETTINGS_FILE, "DATA") then
+                file.Delete(GLOBAL_SETTINGS_FILE)
+            end
+            file.Rename("tardis_settings_sv.txt", GLOBAL_SETTINGS_FILE)
+        end
+    else
+        if file.Exists("tardis_settings_cl.txt", "DATA") then
+            if file.Exists(LOCAL_SETTINGS_FILE, "DATA") then
+                file.Delete(LOCAL_SETTINGS_FILE)
+            end
+            file.Rename("tardis_settings_cl.txt", LOCAL_SETTINGS_FILE)
+        end
+        if file.Exists("tardis_settings_cl_nw.txt", "DATA") then
+            if file.Exists(NETWORKED_SETTINGS_FILE, "DATA") then
+                file.Delete(NETWORKED_SETTINGS_FILE)
+            end
+            file.Rename("tardis_settings_cl_nw.txt", NETWORKED_SETTINGS_FILE)
+        end
+    end
+
+    self:LoadSettings()
+end)
+]]
 
 function TARDIS:SaveSettings()
 

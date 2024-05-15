@@ -6,17 +6,26 @@ if SERVER then
     end)
 
     ENT:AddHook("Initialize", "chameleon", function(self)
+        local init_ext = self:GetData("chameleon_current_exterior")
+        if init_ext ~= nil then
+            self:SetData("chameleon_initial_exterior", init_ext, true)
+        end
         self:SetData("chameleon_current_exterior", false, true)
     end)
 
     ENT:AddHook("PostInitialize", "chameleon", function(self)
         local id = self.metadata.ID
-        local ply = self:GetCreator()
 
-        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", ply)
+        local init_ext = self:GetData("chameleon_initial_exterior")
+        if init_ext then
+            self:ChangeExterior(init_ext, false)
+            return
+        end
+
+        local default_ext = TARDIS:GetCustomSetting(id, "exterior_default", self)
         if not default_ext then return end
 
-        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", ply)
+        local ext_enabled = TARDIS:GetCustomSetting(id, "exterior_enabled", self)
         if not ext_enabled then return end
 
         self:ChangeExterior(default_ext, false)
@@ -125,7 +134,9 @@ function ENT:ChangeExteriorMetadata(id)
     end
 
     self.metadata.Exterior = ext_md
-    self.interior.metadata.Exterior = ext_md
+    if IsValid(self.interior) then
+        self.interior.metadata.Exterior = ext_md
+    end
 
     return ext_md
 end
@@ -169,10 +180,6 @@ function ENT:ChangeExterior(id, animate, ply, retry)
     end
     self:SetData("chameleon_selected_exterior", nil, true)
     self:SetData("chameleon_exterior_last_selector", nil, true)
-
-    if not IsValid(self.interior) then
-        return
-    end
 
     local ext_md = self:ChangeExteriorMetadata(id)
 
@@ -220,70 +227,70 @@ function ENT:ChangeExterior(id, animate, ply, retry)
             end
         end
 
-        local extportal = self.interior.portals.exterior
-        local portal_md = ext_md.Portal
+        if IsValid(self.interior) and IsValid(self.interior.portals.exterior) then
+            local extportal = self.interior.portals.exterior
+            local portal_md = ext_md.Portal
 
-        if not IsValid(extportal) then return end
-
-        extportal:SetParent(nil)
-        extportal:SetPos(self:LocalToWorld(portal_md.pos))
-        extportal:SetAngles(self:LocalToWorldAngles(portal_md.ang))
-        extportal:SetWidth(portal_md.width)
-        extportal:SetHeight(portal_md.height)
-        extportal:SetThickness(portal_md.thickness or 0)
-        extportal:SetInverted(portal_md.inverted)
-        extportal:SetParent(self)
+            extportal:SetParent(nil)
+            extportal:SetPos(self:LocalToWorld(portal_md.pos))
+            extportal:SetAngles(self:LocalToWorldAngles(portal_md.ang))
+            extportal:SetWidth(portal_md.width)
+            extportal:SetHeight(portal_md.height)
+            extportal:SetThickness(portal_md.thickness or 0)
+            extportal:SetInverted(portal_md.inverted)
+            extportal:SetParent(self)
 
 
-        -- aligning interior portal
-        local intportal = self.interior.portals.interior
-        local fallback = self.interior.Fallback.pos
+            -- aligning interior portal
+            local intportal = self.interior.portals.interior
+            local fallback = self.interior.Fallback.pos
 
-        local floor_z
+            local floor_z
 
-        if self.metadata.Interior.FloorLevel then
-            floor_z = self.metadata.Interior.FloorLevel
-        else
-            local floor = util.QuickTrace(self.interior:LocalToWorld(fallback) + Vector(0, 0, 30), Vector(0, 0, -0.1) * 99999999).HitPos
-            floor = self.interior:WorldToLocal(floor)
-            floor_z = floor.z
+            if self.metadata.Interior.FloorLevel then
+                floor_z = self.metadata.Interior.FloorLevel
+            else
+                local floor = util.QuickTrace(self.interior:LocalToWorld(fallback) + Vector(0, 0, 30), Vector(0, 0, -0.1) * 99999999).HitPos
+                floor = self.interior:WorldToLocal(floor)
+                floor_z = floor.z
+            end
+
+            local prev_int_z_offset = self:GetData("chameleon_intportal_z_offset", 0)
+
+            local intp_offset = intportal:GetExitPosOffset()
+            local intp_offset_real_z = intp_offset.z - prev_int_z_offset
+
+            local intp_midtofloor = self.interior:WorldToLocal(intportal:GetPos()).z - floor_z
+
+            local new_int_z_offset
+
+            if id == false then
+                new_int_z_offset = 0
+            else
+                new_int_z_offset = 0.5 * extportal:GetHeight() - intp_midtofloor
+            end
+
+            intportal:SetExitPosOffset(Vector(intp_offset.x, intp_offset.y, intp_offset_real_z + new_int_z_offset))
+            self:SetData("chameleon_intportal_z_offset", new_int_z_offset)
+
+
+            -- aligning exterior portal
+
+            local prev_ext_z_offset = self:GetData("chameleon_extportal_z_offset", 0)
+
+            local extp_offset = extportal:GetExitPosOffset()
+            local extp_offset_real_z = extp_offset.z - prev_ext_z_offset
+
+            local new_ext_z_offset
+            if id == false then
+                new_ext_z_offset = 0
+            else
+                new_ext_z_offset = intp_midtofloor - 0.5 * extportal:GetHeight()
+            end
+
+            extportal:SetExitPosOffset(Vector(extp_offset.x, extp_offset.y, extp_offset_real_z + new_ext_z_offset))
+            self:SetData("chameleon_extportal_z_offset", new_ext_z_offset)
         end
-
-        local prev_int_z_offset = self:GetData("chameleon_intportal_z_offset", 0)
-
-        local intp_offset = intportal:GetExitPosOffset()
-        local intp_offset_real_z = intp_offset.z - prev_int_z_offset
-
-        local intp_midtofloor = self.interior:WorldToLocal(intportal:GetPos()).z - floor_z
-
-        local new_int_z_offset
-
-        if id == false then
-            new_int_z_offset = 0
-        else
-            new_int_z_offset = 0.5 * extportal:GetHeight() - intp_midtofloor
-        end
-
-        intportal:SetExitPosOffset(Vector(intp_offset.x, intp_offset.y, intp_offset_real_z + new_int_z_offset))
-        self:SetData("chameleon_intportal_z_offset", new_int_z_offset)
-
-
-        -- aligning exterior portal
-
-        local prev_ext_z_offset = self:GetData("chameleon_extportal_z_offset", 0)
-
-        local extp_offset = extportal:GetExitPosOffset()
-        local extp_offset_real_z = extp_offset.z - prev_ext_z_offset
-
-        local new_ext_z_offset
-        if id == false then
-            new_ext_z_offset = 0
-        else
-            new_ext_z_offset = intp_midtofloor - 0.5 * extportal:GetHeight()
-        end
-
-        extportal:SetExitPosOffset(Vector(extp_offset.x, extp_offset.y, extp_offset_real_z + new_ext_z_offset))
-        self:SetData("chameleon_extportal_z_offset", new_ext_z_offset)
 
         -- exterior parts replacement
         for k,v in pairs(self:GetParts()) do
@@ -323,7 +330,16 @@ ENT:AddHook("PowerToggled", "chameleon", function(self,on)
     self:RetryChameleon(true)
 end)
 
+ENT:AddHook("MigrateData", "chameleon", function(self,parent,data)
+    self:SetData("chameleon_selected_exterior", self:GetData("chameleon_current_exterior"), true)
+end)
+
 ENT:AddHook("MatStart", "chameleon", function(self)
+    local planned_ext = self:GetData("chameleon_planned_exterior")
+    if planned_ext then
+        self:SetData("chameleon_selected_exterior", planned_ext)
+        self:SetData("chameleon_planned_exterior", nil)
+    end
     self:RetryChameleon(false)
 end)
 

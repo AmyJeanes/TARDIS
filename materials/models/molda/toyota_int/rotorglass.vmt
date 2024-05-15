@@ -1,0 +1,24 @@
+"vertexlitgeneric"
+{
+	//"$additive" 1
+	"$basetexture" "models/molda/toyota_int/rotorglass"
+
+	"$surfaceprop" "glass"
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[ 0.1 0.5 0.5 ]"
+	"$envmapfresnel" "0.75"
+	"$translucent" "1"
+	"$nocull" "1"
+	"$color2" "[ 0.2 0.2 0.2 ]"
+
+	"$phong"     "1"
+	"$phongexponent"  "63"
+	"$phongboost"   "2"
+	"$phongfresnelranges"   "[1 8 4]"
+	"$phongtint"	"[ .5 .5 .5 ]"
+	"$halflambert" "1"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "12"
+	"$rimlightboost" "0.8"
+}

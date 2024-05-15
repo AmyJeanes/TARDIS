@@ -1,32 +1,23 @@
 -- Failed and forced teleport functions
 
 if SERVER then
+    function ENT:FailDemat()
+        self:SetData("failing-demat", true, true)
+        self:CallCommonHook("DematFailed")
 
-    function ENT:HandleNoDemat(pos, ang, callback, force)
-        local fail = self:CallHook("ShouldFailDemat", force)
-        local possible = self:CallHook("CanDemat", force, true)
+        self:SendMessage("failed-demat")
 
-        if self:CallHook("HandleNoDemat", pos, ang, callback, force) == true then
-            return -- when the behaviour is overriden, the hook will return true
-        end
-
-        if fail == true and possible ~= false then
-            self:SetData("failing-demat", true, true)
-            self:SendMessage("failed-demat")
-            self:Timer("failed-demat-stop", 4, function()
-                self:SetData("failing-demat", false, true)
-            end)
-        end
-        if callback then callback(false) end
+        local time = self.metadata.Timings.DematFail
+        self:Timer("failed-demat-stop", time, function()
+            self:SetData("failing-demat", false, true)
+        end)
     end
 
     function ENT:HandleNoMat(pos, ang, callback)
         local fail = self:CallHook("ShouldFailMat", pos, ang)
         local possible = self:CallHook("CanMat", pos, ang, true)
 
-        if self:CallHook("HandleNoMat", pos, ang, callback) == true then
-            return -- when the behaviour is overriden, the hook will return true
-        end
+        self:CallHook("HandleNoMat", pos, ang, callback)
 
         if fail ~= true or possible == false then
             if callback then callback(false) end
@@ -52,7 +43,8 @@ if SERVER then
 
         self:SetData("failing-mat", true, true)
         self:SendMessage("failed-mat")
-        self:Timer("failed-mat-stop", 4, function()
+        local time = self.metadata.Timings.MatFail
+        self:Timer("failed-mat-stop", time, function()
             self:SetData("failing-mat", false, true)
         end)
         if callback then callback(false) end
@@ -83,17 +75,19 @@ if SERVER then
     end
 
     function ENT:AutoDemat(pos, ang, callback)
-        if self:CallHook("CanDemat", false) ~= false then
+        if self:CallHook("CanDemat", false, true) ~= false then
             self:Demat(pos, ang, callback)
-        elseif self:CallHook("CanDemat", true) ~= false then
+        elseif self:CallHook("CanDemat", true, true) ~= false then
             self:ForceDemat(pos, ang, callback)
         else
             if callback then callback(false) end
         end
     end
 
-    ENT:AddHook("CanDemat", "failed", function(self, force, ignore_fail_demat)
-        if ignore_fail_demat ~= true and self:CallHook("ShouldFailDemat", force) == true then
+    ENT:AddHook("CanDemat", "failed", function(self, force, check_failed)
+        if not check_failed then return end
+
+        if self:CallHook("ShouldFailDemat", force) == true then
             return false
         end
     end)
@@ -118,7 +112,7 @@ if SERVER then
         self:SetData("failing-demat", false, true)
 
         if self:CallHook("ShouldFailDemat", false) == true then
-            if not self:GetData("health-warning", false) then
+            if not self:IsLowHealth() then
                 self:ForceDemat(pos, ang, callback)
             else
                 self:SendMessage("engine-release-explode")
@@ -149,6 +143,7 @@ if SERVER then
 
 else -- CLIENT
     ENT:OnMessage("failed-demat", function(self, data, ply)
+        self:CallCommonHook("DematFailed")
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
@@ -216,8 +211,10 @@ ENT:AddHook("Think","breakdown-effects", function(self)
         end
 
         if self:GetData("interior-lights-blinking", false) and timediff > 4 then
-            local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
-            self:ChangeHealth(newhealth)
+            if SERVER then
+                local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
+                self:ChangeHealth(newhealth)
+            end
             if showeffects then self:InteriorExplosion() end
             self:SetData("interior-lights-blinking", false, true)
         end

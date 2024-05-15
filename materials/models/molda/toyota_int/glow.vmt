@@ -1,0 +1,23 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/glow"
+	"$surfaceprop" "Glass"
+
+	"$additive" "1"
+	"$translucent" "1"
+
+	"$nodecal" "1"
+	"$nocull" "1"
+
+	$color2_on "[6 6 1]"
+	$color2_off "[0 0 0]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
+}

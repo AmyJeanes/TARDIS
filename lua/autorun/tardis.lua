@@ -33,7 +33,12 @@ function TARDIS:LoadFolder(folder,addonly,noprefix)
         end
     end
 end
+
+file.CreateDir("tardis") 
+
 TARDIS:LoadFolder("libraries/libraries/libraries")
 TARDIS:LoadFolder("libraries/libraries")
 TARDIS:LoadFolder("libraries")
 TARDIS:LoadFolder()
+
+TARDIS:RunMigrations()

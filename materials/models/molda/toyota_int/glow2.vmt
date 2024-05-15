@@ -1,0 +1,40 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/glow2"
+	"$surfaceprop" "Glass"
+
+	"$additive" "1"
+	"$translucent" "1"
+
+	"$nodecal" "1"
+	"$nocull" "1"
+
+    $sine 0
+    Proxies
+    {
+
+        Sine
+        {
+            sineperiod          10
+            sinemin             0.2
+            sinemax             0.5
+            resultVar           $sine
+        }
+        Equals
+        {
+            srcVar1             $sine
+            resultVar           "$color2[1]"
+        }
+        Equals
+        {
+            srcVar1             $sine
+            resultVar           "$color2[2]"
+        }
+        Equals
+        {
+            srcVar1             $sine
+            resultVar           "$color2[0]"
+        }
+
+    }
+}

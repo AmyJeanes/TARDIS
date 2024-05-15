@@ -1,0 +1,18 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/vtalanov98/toyota_ext/exterior_2017"
+	$bumpmap  "models/vtalanov98/toyota_ext/e_box_bumpmap"
+	$envmaptint "[.0125 .0125 .0125]"
+	$diffuseexp 1
+	$halflambert 1
+	$nocull 0
+	$phong 1
+	$phongalbedotint 1
+	$phongalbedoboost 255
+	$phongexponenttexture "models/vtalanov98/toyota_ext/tardis_e_r"
+	$phongboost .2
+	$phongfresnelranges "[.175 .175 .175]"
+	$rimlight               1
+	$rimlightexponent       11
+	$rimlightboost          .5
+}

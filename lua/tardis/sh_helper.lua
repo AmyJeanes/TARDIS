@@ -43,10 +43,40 @@ function TARDIS:IsBehind( object_pos, plane_pos, plane_forward )
     return false
 end
 
+local pp_trace = {
+    ["AllSolid"] = false,
+    ["Contents"] = bit.bor(CONTENTS_HITBOX,CONTENTS_SOLID),
+    ["DispFlags"] = 0,
+    ["Entity"] = NULL,
+    ["Fraction"] = 1,
+    ["FractionLeftSolid"] = 0,
+    ["Hit"] = true,
+    ["HitBox"] = 0,
+    ["HitBoxBone"] = 0,
+    ["HitGroup"] = 0,
+    ["HitNoDraw"] = false,
+    ["HitNonWorld"] = true,
+    ["HitNormal"] = Vector(),
+    ["HitPos"] = Vector(),
+    ["HitSky"] = false,
+    ["HitTexture"] = "**studio**",
+    ["HitWorld"] = false,
+    ["MatType"] = MAT_WOOD,
+    ["Normal"] = Vector(),
+    ["PhysicsBone"] = 0,
+    ["StartPos"] = Vector(),
+    ["StartSolid"] = false,
+    ["SurfaceFlags"] = SURF_HITBOX,
+    ["SurfaceProps"] = 0
+}
+
 -- Prop Protection
 function TARDIS:CheckPP(ply, ent)
-    return hook.Call("PhysgunPickup", GAMEMODE, ply, ent)
+    pp_trace.Entity = ent
+    return hook.Call("CanTool", GAMEMODE, ply, pp_trace, "")
 end
+
+TARDIS.color_white_vector = Vector(1,1,1)
 
 --[[
 local meta=FindMetaTable("Player")

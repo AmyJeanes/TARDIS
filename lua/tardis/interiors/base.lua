@@ -8,6 +8,7 @@ T.ID = "base"
 T.Interior = {
     Model = "models/drmatt/tardis/interior.mdl",
     ExitDistance = 600,
+    Size = {},
     Portal = {
         pos = Vector(-1,-353.5,136),
         ang = Angle(0,90,0),
@@ -35,6 +36,7 @@ T.Interior = {
         SequenceFail = "drmatt/tardis/seq_bad.wav",
         Cloister = "drmatt/tardis/cloisterbell_loop.wav",
         Lock = "drmatt/tardis/lock_int.wav",
+        Unlock = "p00gie/tardis/base/door_unlock.wav",
     },
     Tips = {},
     CustomTips = {},
@@ -46,7 +48,8 @@ T.Interior = {
     },
     LightOverride = {
         basebrightness = 0.3, --Base interior brightness when power is on.
-        nopowerbrightness = 0.05 --Interior brightness with no power. Should always be darker than basebrightness.
+        nopowerbrightness = 0.05, --Interior brightness with no power. Should always be darker than basebrightness.
+        transitionspeed = 1, --Speed of the light transition.
     },
     ScreenDistance = 500,
     ScreensEnabled = true
@@ -84,13 +87,15 @@ T.Exterior = {
         --horizfov = 90, --vertical and horizontal field of view of the light. Will default to portal height and width.
         farz = 750, --FarZ property of the light. Determines how far the light projects.]]
         offset = Vector(-21,0,51.1), --Offset from box origin
-        texture = "effects/flashlight/square" --Texture the projected light will use. You can get these from the Lamp tool.
+        texture = "effects/flashlight/square", --Texture the projected light will use. You can get these from the Lamp tool.
+        baselightmix = 0, --How much the base light affects the projected light. 0 = none, 1 = full.
     },
     Sounds = {
         Teleport = {
             demat = "p00gie/tardis/base/demat.wav",
             demat_damaged = "drmatt/tardis/demat_damaged.wav",
             demat_fast = "p00gie/tardis/base/demat.wav",
+            demat_hads = "p00gie/tardis/base/demat_hads.wav",
             demat_fail = "drmatt/tardis/demat_fail.wav",
             mat = "p00gie/tardis/base/mat.wav",
             mat_damaged = "jeredek/tardis/mat_damaged.wav",
@@ -103,8 +108,9 @@ T.Exterior = {
         },
         RepairFinish = "p00gie/tardis/base/repairfinish.wav",
         Lock = "drmatt/tardis/lock.wav",
+        Unlock = "p00gie/tardis/base/door_unlock_ext.wav",
         Spawn = "p00gie/tardis/base/repairfinish.wav",
-        Delete = "p00gie/tardis/tardis_delete.wav",
+        Delete = "p00gie/tardis/base/tardis_delete.wav",
         Door = {
             enabled = true,
             open = "drmatt/tardis/door_open.wav",
@@ -113,6 +119,17 @@ T.Exterior = {
         },
         FlightLoop = "drmatt/tardis/flight_loop.wav",
         FlightLoopDamaged = "drmatt/tardis/flight_loop_damaged.wav",
+        FlightLoopBroken = "p00gie/tardis/flight_loop_broken.wav",
+        FlightLand = "p00gie/tardis/base/tardis_landing.wav",
+        FlightFall = "p00gie/tardis/fall.wav",
+        BrokenFlightTurn = {
+            "p00gie/tardis/flight_turn_1.wav",
+            "p00gie/tardis/flight_turn_2.wav",
+            "p00gie/tardis/flight_turn_3.wav",
+        },
+        BrokenFlightExplosion = "p00gie/tardis/flight_turn_explosion.wav",
+        BrokenFlightEnable = "p00gie/tardis/flight_broken_start.wav",
+        BrokenFlightDisable = "p00gie/tardis/flight_broken_stop.wav",
         Cloak = "drmatt/tardis/phase_enable.wav",
         CloakOff = "drmatt/tardis/phase_disable.wav",
         Hum = nil,
@@ -133,7 +150,10 @@ T.Exterior = {
         SequenceSpeed = 0.77,
         SequenceSpeedWarning = 0.6,
         SequenceSpeedFast = 0.935,
+        SequenceSpeedHads = 1.8,
         SequenceSpeedWarnFast = 0.97,
+        PrematDelayFast = 1.9,
+        PrematDelay = 8.5,
         DematSequence = {
             200,
             100,
@@ -149,8 +169,18 @@ T.Exterior = {
             200,
             150,
             255
-        }
+        },
+        HadsDematSequence = {
+            100,
+            200,
+            0
+        },
     }
+}
+T.Timings = {
+    DematInterrupt = 1,
+    DematFail = 4,
+    MatFail = 8,
 }
 
 TARDIS:AddInterior(T)

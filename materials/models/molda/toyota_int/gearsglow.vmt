@@ -1,0 +1,30 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/gearsglow"
+	"$surfaceprop" "Metal"
+
+	"$selfillum" 1
+	"$selfillummask" "/models/molda/toyota_int/gearsglow"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$selfillum_on "[1 1 1]"
+	$selfillum_off "[0.1 0.1 0.1]"
+	$color2_on "[1 1 1]"
+	$color2_off "[0.15 0.15 0.15]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$selfillum_on"
+			offVar "$selfillum_off"
+			resultVar "$selfillumtint"
+		}
+		TARDIS_Power2 {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
+}

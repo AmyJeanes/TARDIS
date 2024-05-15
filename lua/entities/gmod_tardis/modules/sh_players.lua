@@ -81,3 +81,9 @@ else
         TARDIS:RemoveHUDScreen() -- force close hud screen if exit tardis
     end)
 end
+
+ENT:AddHook("Initialize", "creatorID", function(self)
+    self.CreatorID = self:GetCreator():UserID()
+    self.CreatorNick = self:GetCreator():Nick()
+    self.CreatorSteamID = self:GetCreator():SteamID64()
+end)

@@ -1,0 +1,32 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/cem/toyota_contr/screen"
+	"$bumpmap" "models/cem/toyota_contr/glass_normal"
+	"$selfillum" 1
+	"$selfillummask" "models/cem/toyota_contr/white"
+	"$nodecal" "1"
+
+	$phong 1
+	$phongexponent			20
+	$phongboost			0.15
+	$phongfresnelranges	"[1 1 1]"
+
+	$selfillum_on "[1 1 1]"
+	$selfillum_off "[0 0 0]"
+	$color2_on "[1 1 1]"
+	$color2_off "[0 0 0]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$selfillum_on"
+			offVar "$selfillum_off"
+			resultVar "$selfillumtint"
+		}
+		TARDIS_Power2 {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
+}

@@ -69,6 +69,18 @@ TARDIS:AddSetting({
     name="DoorCloseOnLock",
 })
 
+TARDIS:AddSetting({
+    id="show_release_notes",
+    type="bool",
+    value=true,
+
+    class="local",
+
+    option = true,
+    section = SETTING_SECTION,
+    name = "ShowReleaseNotes",
+})
+
 --------------------------------------------------------------------------------
 -- Teleport
 

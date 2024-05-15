@@ -94,6 +94,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                                 v:RefreshVal()
                             end
                         end
+                        RunConsoleCommand("spawnmenu_reload")
                     end,
                     TARDIS:GetPhrase("Common.Cancel"), nil
                 ):SetSkin("TARDIS")
@@ -129,6 +130,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                     TARDIS:GetPhrase("Common.OK"), function()
                         TARDIS:ResetSectionSettings(nil)
                         TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", "Settings.Sections.Other")
+                        RunConsoleCommand("spawnmenu_reload")
                     end,
                     TARDIS:GetPhrase("Common.Cancel"), nil
                 ):SetSkin("TARDIS")

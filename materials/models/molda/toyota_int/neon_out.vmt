@@ -1,0 +1,38 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/neon"
+	"$surfaceprop" "Metal"
+
+	"$additive" "1"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	"$bumpmap" "models/molda/toyota_int/glassN"
+	"$envmap" "models/cem/toyota_smith/environment"
+	"$envmaptint" "[0.05 1 0.75]"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "12"
+	"$rimlightboost" "0.8"
+
+	$rotor_mult "1"
+	$rotor_color "[1 1 1]"
+	$color2_on "[0.5 0.5 0.5]"
+	$color2_off "[0 0.1 0.3]"
+	Proxies {
+		TARDIS_DefaultInt_EnvColor {
+			resultVar	$rotor_color
+		}
+		Multiply {
+			srcVar1 $rotor_color
+			srcVar2 $rotor_mult
+			resultVar $envmaptint
+		}
+		TARDIS_Power {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
+}

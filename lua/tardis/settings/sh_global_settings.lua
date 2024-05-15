@@ -20,11 +20,11 @@ TARDIS:AddSetting({
 })
 
 TARDIS:AddSetting({
-    id="health-max",
+    id="health_max",
     type="integer",
-    value=1000,
+    value=3000,
     min=1,
-    max=10000,
+    max=30000,
     round_func = function(x)
         if x < 50 then return x end
         if x < 500 then return (x - x % 10) end
@@ -42,6 +42,37 @@ TARDIS:AddSetting({
     option = true,
     section=SETTING_SECTION,
     name="MaxHealth",
+})
+
+if SERVER then
+    TARDIS:AddMigration("health-changed", "2023.8.0", function(self)
+        local oldHealthMax = self.GlobalSettings["health-max"]
+        if oldHealthMax then
+            self:SetSetting("health_max", oldHealthMax * 3)
+        end
+    end)
+end
+
+TARDIS:AddSetting({
+    id="health_to_shields_ratio",
+    type="number",
+    value=0.2,
+    min=0.05,
+    max=0.95,
+    round_func = function(x)
+        return x - ((x * 100) % 5) * 0.01
+    end,
+
+    class="global",
+    convar = {
+        name = "tardis2_health_to_shields_ratio",
+        flags = CONVAR_FLAGS,
+        desc = "TARDIS - the ratio of max health to max shields",
+    },
+
+    option = true,
+    section=SETTING_SECTION,
+    name="HealthToShieldsRatio",
 })
 
 TARDIS:AddSetting({
@@ -154,7 +185,7 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id="admin_security_bypass",
     type="bool",
-    value=true,
+    value=false,
 
     class="global",
     convar = {

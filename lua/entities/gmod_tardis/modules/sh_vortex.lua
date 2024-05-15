@@ -1,5 +1,18 @@
 -- Vortex
 
+TARDIS:AddKeyBind("vortex-toggle",{
+    name="ToggleVortex",
+    section="ThirdPerson",
+    func=function(self,down,ply)
+        if ply==self.pilot and down then
+            TARDIS:Control("vortex_flight", ply)
+        end
+    end,
+    key=KEY_LBRACKET,
+    serveronly=true,
+    exterior=true
+})
+
 function ENT:IsVortexEnabled(pilot)
     local hookResult = self:CallHook("VortexEnabled", pilot)
     if hookResult ~= nil then return hookResult end
@@ -10,6 +23,12 @@ end
 
 ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
     if self:GetFastRemat() then
+        return false
+    end
+end)
+
+ENT:AddHook("CanTrack","vortex",function(self,state)
+    if self:GetData("vortex") then
         return false
     end
 end)

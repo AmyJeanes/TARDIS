@@ -9,7 +9,7 @@ function ENT:GetAlpha()
         return 0
     elseif self:GetData("teleport") then
         return alpha
-    elseif self:GetData("teleport-trace") then
+    elseif self:GetData("teleport-trace") or self:GetData("tracking-trace") then
         return 20/255
     end
     return 1

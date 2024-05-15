@@ -1,19 +1,19 @@
 -- Spacebuild
 
-ENT:AddHook("Initialize", "spacebuild", function(self)
+ENT:AddHook("PostInitialize", "spacebuild", function(self)
     if not (CAF and CAF.GetAddon("Spacebuild")) then
         return
     end
 
+    local center, radius = self:GetSphere()
     self.spacebuild_env = ents.Create("base_cube_environment")
     self.spacebuild_env:SetModel("models/props_lab/huladoll.mdl")
-    self.spacebuild_env:SetPos(self:GetPos())
+    self.spacebuild_env:SetPos(self:LocalToWorld(center))
     self.spacebuild_env:SetAngles(self:GetAngles())
     self.spacebuild_env:SetRenderMode(RENDERMODE_NONE)
     self.spacebuild_env:Spawn()
     self.spacebuild_env:Activate()
 
-    local radius = self.metadata.Interior.ExitDistance
     self.spacebuild_env:CreateEnvironment(self, radius)
 
     -- override functions on the cube environment to the simpler base ones

@@ -40,4 +40,4 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack()
-end 
+end

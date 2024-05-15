@@ -1,0 +1,29 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/cem/toyota_contr/details"
+	"$bumpmap" "models/cem/toyota_contr/metal_normal"
+	"$normalmapalphaenvmapmask" "1"
+	"$surfaceprop" "Metal"
+	"$nodecal" "1"
+	"$envmap" "models/cem/toyota_contr/metal_env"
+	"$envmaptint" "[0.35 0.35 0.35]"
+	"$color2" "[0.65 0.65 0.65]"
+
+	$phong 					1
+	$phongexponent 			75
+	$phongboost 			5
+//	$phongtint 				"[ .35 .35 .35 ]"
+	$phongfresnelranges 	"[0.05 0.5 1]"
+
+	$envmaptint_on "[0.35 0.35 0.35]"
+	$envmaptint_off "[0.05 0.05 0.05]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+	}
+}

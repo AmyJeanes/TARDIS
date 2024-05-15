@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/pipes"
+	"$surfaceprop" "Metal"
+
+	"$selfillum" 1
+	"$selfillummask" "/models/molda/toyota_int/pipes"
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}

@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/ceilingmesh"
+
+	"$color2" "[0.9 0.9 0.9]"
+
+	"$surfaceprop" "Metal"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}

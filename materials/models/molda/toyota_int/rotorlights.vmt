@@ -1,0 +1,33 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/rotorlights"
+
+	"$color2" "[0.9 0.7 0.5]"
+
+	"$surfaceprop" "Metal"
+
+	"$selfillum" "1"
+	"$selfillummask" "models/molda/toyota_int/white"
+	"$selfillumtint" "[3 3 3]"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$selfillum_on "[3 3 3]"
+	$selfillum_off "[0 0 0]"
+	$color2_on "[0.9 0.7 0.5]"
+	$color2_off "[0.3 0.3 0.3]"
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$selfillum_on"
+			offVar "$selfillum_off"
+			resultVar "$selfillumtint"
+		}
+		TARDIS_Power2 {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
+}

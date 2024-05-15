@@ -20,19 +20,26 @@ function TARDIS:GetControls()
     return controls
 end
 
-function TARDIS:GetControl(id)
+function TARDIS:GetControl(id, ent)
+
+    if ent and ent.metadata.CustomControls and ent.metadata.CustomControls[id] then
+        return ent.metadata.CustomControls[id]
+    end
+
     if controls[id] then
         return controls[id]
     end
 end
 
 function TARDIS:Control(control_id, ply, part)
-    if CLIENT then ply=LocalPlayer() end
+    if CLIENT then ply = LocalPlayer() end
     if not ply:IsPlayer() then return end
-    local control=controls[control_id]
-    local ext=ply:GetTardisData("exterior")
+
+    local ext = ply:GetTardisData("exterior")
+    local control = TARDIS:GetControl(control_id, ext)
+
     if control and IsValid(ext) then
-        local int=ply:GetTardisData("interior")
+        local int = ply:GetTardisData("interior")
         if ext:CallCommonHook("CanUseTardisControl", control, ply, part) == false then
             return
         end

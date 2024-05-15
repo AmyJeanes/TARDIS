@@ -1,6 +1,6 @@
 -- Rendering override
 
-local function predraw_o(self)
+local function predraw_o(self, part)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
     local lo = self.metadata.Interior.LightOverride
     if not lo then return end
@@ -8,8 +8,21 @@ local function predraw_o(self)
     local power = self:GetPower()
 
     render.SuppressEngineLighting(true)
-    local br = power and lo.basebrightness or lo.nopowerbrightness
-    render.ResetModelLighting(br, br, br)
+
+    local colvec = self:GetBaseLightColorVector()
+
+    local parts_table = power and lo.parts or lo.parts_nopower
+
+    if part and parts_table and parts_table[part.ID] then
+        local part_br = parts_table[part.ID]
+        if istable(part_br) then
+            render.ResetModelLighting(part_br[1], part_br[2], part_br[3])
+        else
+            render.ResetModelLighting(part_br, part_br, part_br)
+        end
+    else
+        render.ResetModelLighting(colvec[1], colvec[2], colvec[3])
+    end
 
     --render.SetLightingMode(1)
     local light = self.light_data.main
@@ -18,7 +31,7 @@ local function predraw_o(self)
     --because for some reason SOMEONE OUT THERE didn't define a light.
 
     local lights = self.light_data.extra
-    local warning = self:GetData("health-warning", false)
+    local warning = self:GetData("warning", false)
 
     local tab={}
 

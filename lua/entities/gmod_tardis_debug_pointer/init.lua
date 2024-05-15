@@ -11,7 +11,7 @@ function ENT:Initialize()
     self:SetModel(self.model or "models/brundoob/precision.mdl" )
     self:SetModelScale(self.scale or 1)
 
-    self:PhysicsInit( MOVETYPE_VPHYSICS )
+    self:PhysicsInit( SOLID_VPHYSICS )
     self:SetMoveType( MOVETYPE_NONE )
     self:SetSolid( SOLID_VPHYSICS )
     self:SetCollisionGroup( COLLISION_GROUP_WORLD )
@@ -24,6 +24,11 @@ function ENT:Initialize()
         phys:EnableMotion(false)
         phys:Wake()
     end
+
+    local ply = self:GetCreator()
+    if IsValid(ply) and not IsValid(ply.last_used_tardis_debug_pointer) then
+        ply.last_used_tardis_debug_pointer = self
+    end
 end
 
 function ENT:Use( activator, caller )
@@ -35,6 +40,7 @@ function ENT:Use( activator, caller )
         activator:ChatPrint(" \nCurrent pointer position:")
         activator:ChatPrint(text)
     end
+    activator.last_used_tardis_debug_pointer = self
     return
 end
 

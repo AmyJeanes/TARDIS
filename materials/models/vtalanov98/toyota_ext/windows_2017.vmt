@@ -1,0 +1,12 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/vtalanov98/toyota_ext/windows_2017"
+	"$bumpmap" "models/vtalanov98/toyota_ext/windowsn"
+	"$envmap" "models/vtalanov98/toyota_ext/environment"
+	"$envmaptint" "[0.01 0.01 0.01]"
+	"$nodecal" "0"
+	"$normalmap" "models/vtalanov98/toyota_ext/windowsn"
+	"$selfillum" "0"
+	"$selfillummask" "models/vtalanov98/toyota_ext/white"
+	"$surfaceprop" "Glass"
+}

@@ -1,7 +1,8 @@
 TARDIS:AddControl({
     id = "hads",
     ext_func=function(self,ply)
-        TARDIS:StatusMessage(ply, "Controls.HADS.Status", self:ToggleHADS())
+        self:ToggleHADS()
+        TARDIS:StatusMessage(ply, "Controls.HADS.Status", self:GetHADS())
     end,
     serveronly=true,
     power_independent = false,

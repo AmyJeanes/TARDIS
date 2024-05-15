@@ -8,7 +8,7 @@ TARDIS:AddControl({
         end
     end,
     serveronly=true,
-    power_independent = false,
+    power_independent = true,
     screen_button = {
         virt_console = true,
         mmenu = false,

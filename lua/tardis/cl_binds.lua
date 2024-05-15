@@ -1,6 +1,6 @@
 -- Binds
 
-function TARDIS:ChangeKeyBind(id,data)
+function TARDIS:ChangeKeyBind(id,data,callback)
     local frame = vgui.Create("DFrame")
     frame:SetSkin(TARDIS:GetPhrase("Common.TARDIS"))
     frame:SetTitle(TARDIS:GetPhrase("Common.Interface"))
@@ -10,6 +10,12 @@ function TARDIS:ChangeKeyBind(id,data)
     frame:SetDrawOnTop(true)
     frame:Center()
     frame:MakePopup()
+    frame.saved = false
+    frame.OnClose = function()
+        if callback then
+            callback(frame.saved)
+        end
+    end
 
     local section = "Binds.Sections."..(data.section or "Other")
     local name = section .. "." .. (data.name or id)
@@ -51,7 +57,11 @@ function TARDIS:ChangeKeyBind(id,data)
     button:SetText(TARDIS:GetPhrase("Common.Save"))
     button:SetSize(frame:GetWide()*0.2, 40)
     button:SetPos(10,frame:GetTall()-button:GetTall()-10)
-    button.DoClick = function() TARDIS:SetKeyBind(id,keybutton.key) frame:Close() end
+    button.DoClick = function()
+        TARDIS:SetKeyBind(id,keybutton.key)
+        frame.saved = true
+        frame:Close()
+    end
 
     local reset = vgui.Create("DButton",frame)
     reset:SetText(TARDIS:GetPhrase("Common.Reset"))
@@ -62,11 +72,22 @@ end
 
 function TARDIS:CreateBindOptionInterface(id, data)
     local button = vgui.Create("DButton")
-    local section = data.section or "Other"
-    button:SetText(TARDIS:GetPhrase("Binds.Sections."..section.."."..data.name or id))
-    button.DoClick = function()
-        TARDIS:ChangeKeyBind(id,data)
+    button.DoClick = function(self)
+        TARDIS:ChangeKeyBind(id,data, function(saved)
+            if saved then
+                if IsValid(self) then
+                    self:UpdateText()
+                end
+            end
+        end)
     end
+    button.UpdateText = function(self)
+        local section = data.section or "Other"
+        local name = TARDIS:GetPhrase("Binds.Sections."..section.."."..data.name or id)
+        local bind = TARDIS:GetKeyName(TARDIS:GetBindKey(id))
+        self:SetText(name.." ("..bind..")")
+    end
+    button:UpdateText()
     button:SetTooltip(data.desc)
     return button
 end

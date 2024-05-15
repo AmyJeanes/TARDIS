@@ -21,13 +21,14 @@ end)
 
 ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
     if name == "Demat" and TARDIS:CheckPP(e2.player, self) then
-        local success = self:CallHook("CanDemat")==false
+        local success = self:CallHook("CanDemat")~=false
+        if not success then return 0 end
         if not pos or not ang then
             self:Demat()
         else
             self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
         end
-        return success and 0 or 1
+        return 1
     elseif name == "SetDestination" and TARDIS:CheckPP(e2.player, self) then
         local pos2 = Vector(pos[1], pos[2], pos[3])
         local ang2 = Angle(ang[1], ang[2], ang[3])
@@ -39,19 +40,22 @@ ENT:AddHook("HandleE2", "teleport", function(self, name, e2, ...)
     if TARDIS:CheckPP(e2.player, self) then
         local args = {...}
         if name == "Mat" then
-            local success = (self:GetData("vortex",false) and self:CallHook("CanMat"))==false
+            local success = self:GetData("vortex",false) and (self:CallHook("CanMat")~=false)
+            if not success then return 0 end
             self:Mat()
-            return success and 0 or 1
+            return 1
         elseif name == "Longflight" then
             return self:ToggleFastRemat() and 1 or 0
         elseif name == "FastReturn" then
-            local success = self:CallHook("CanDemat")==false
+            local success = self:CallHook("CanDemat")~=false
+            if not success then return 0 end
             self:FastReturn()
-            return success and 0 or 1
+            return 1
         elseif name == "FastDemat" then
-            local success = self:CallHook("CanDemat")==false
-            self:Demat()
-            return success and 0 or 1
+            local success = self:CallHook("CanDemat")~=false
+            if not success then return 0 end
+            self:FastDemat()
+            return 1
         elseif name == "SetLongflight" then
             local on = args[1]
             local fastremat = self:GetFastRemat()

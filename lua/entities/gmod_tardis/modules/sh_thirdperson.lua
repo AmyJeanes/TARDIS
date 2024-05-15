@@ -37,7 +37,7 @@ function ENT:GetThirdPersonTrace(ply,ang)
     local trace=util.QuickTrace(pos,ang:Forward()*9999999999,{self,TARDIS:GetPart(self,"door")})
     local angle=trace.HitNormal:Angle()
     angle:RotateAroundAxis(angle:Right(),-90)
-    return trace.HitPos,angle
+    return trace.HitPos,angle,trace.Entity
 end
 
 if SERVER then
@@ -61,6 +61,10 @@ if SERVER then
             self:CallHook("ThirdPerson", ply, enabled)
         end
     end)
+
+    ENT:AddHook("ThirdPerson", "client", function(self, ply, enabled)
+        self:SendMessage("third_person_hook", {ply, enabled})
+    end)
 else
     ENT:AddHook("Outside-StartCommand", "thirdperson", function(self, ply, cmd)
         if LocalPlayer():GetTardisData("thirdperson") and cmd:GetMouseWheel()~=0 then
@@ -71,6 +75,10 @@ else
         if LocalPlayer():GetTardisData("thirdperson") then
             return self:GetThirdPersonPos(ply, ang)
         end
+    end)
+
+    ENT:OnMessage("third_person_hook", function(self, data, ply)
+        self:CallHook("ThirdPerson", data[1], data[2])
     end)
 
     ENT:OnMessage("thirdperson-careful-hint", function(self, data, ply)

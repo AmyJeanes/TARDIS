@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/drmatt/tardis/TardisCurveWall"
-	"$nodecal" "1"
-	"$alphatest" 1
-}

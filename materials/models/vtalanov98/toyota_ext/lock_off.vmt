@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/vtalanov98/toyota_ext/lock"
+	"$nodecal" "1"
+	"$surfaceprop" "Wood_Solid"
+}

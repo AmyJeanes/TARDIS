@@ -29,6 +29,11 @@ function ENT:InitializeTips(style_name)
         for setting,value in pairs(interior_tip) do
             tip[setting]=value
         end
+
+        if TARDIS.debug_tips_show_all then
+            tip.text = " "
+        end
+
         if not tip.text then
             if tip.part then
                 local part = TARDIS:GetRegisteredPart(tip.part)
@@ -42,7 +47,7 @@ function ENT:InitializeTips(style_name)
                     end
 
                     if part.Control then
-                        local control = TARDIS:GetControl(part.Control)
+                        local control = TARDIS:GetControl(part.Control, self)
                         if control and control.tip_text then
                             tip.text = control.tip_text
                         else
@@ -57,7 +62,7 @@ function ENT:InitializeTips(style_name)
                 end
             end
             if tip.control then
-                local control = TARDIS:GetControl(tip.control)
+                local control = TARDIS:GetControl(tip.control, self)
                 if control and control.tip_text then
                     tip.text = control.tip_text
                 else
@@ -179,15 +184,17 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
         end
 
         local part = tip.part and interior:GetPart(tip.part)
-        local partok = IsValid(part)
-        local shoulddraw = TARDIS:GetSetting("tips_show_all") or tip:GetHighlight() or (partok and part:BeingLookedAtByLocalPlayer())
-        local pos = interior:LocalToWorld(tip.pos or Vector(0,0,0))
+        local untraceable = part and IsValid(part) and part.scale
+        local shoulddraw = tip:GetHighlight() or TARDIS:GetSetting("tips_show_all") or untraceable
+        local lookedat = part and IsValid(part) and part:BeingLookedAtByLocalPlayer()
+
+        local pos = interior:LocalToWorld(tip.pos or (IsValid(part) and part.pos) or Vector(0,0,0))
         local dist = pos:Distance(player_pos)
 
-        if dist <= view_range_max and partok and shoulddraw then
+        if (shoulddraw and dist <= view_range_max) or lookedat then
             surface.SetFont(tip.font)
             local alpha = tip.colors.current.background.a
-            if dist > view_range_min then
+            if not lookedat and dist > view_range_min then
                 local normalised = 1 - ((dist - view_range_min) / (view_range_max - view_range_min))
                 alpha = (tip.colors.current.background.a) * normalised
             end

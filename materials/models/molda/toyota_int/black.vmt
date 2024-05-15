@@ -1,0 +1,10 @@
+"UnlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/black"
+
+	"$surfaceprop" "Metal"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}

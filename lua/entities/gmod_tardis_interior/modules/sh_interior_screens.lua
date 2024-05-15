@@ -6,13 +6,13 @@ ENT:AddHook("Initialize", "screens-toggle", function(self)
 end)
 
 ENT:AddHook("CanToggleScreens", "power", function(self)
-    if not self.exterior:GetData("power-state") then
+    if not self:GetData("power-state") then
         return false
     end
 end)
 
 ENT:AddHook("CanEnableScreens", "power", function(self)
-    if not self.exterior:GetData("power-state") then
+    if not self:GetData("power-state") then
         return false
     end
 end)

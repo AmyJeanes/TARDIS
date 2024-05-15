@@ -2,6 +2,7 @@
 
 if SERVER then
     ENT:AddHook("DematStart", "attached", function(self)
+        if self:GetData("redecorate") then return end
         local constrained = constraint.GetAllConstrainedEntities(self)
         local attached
         if constrained then

@@ -8,6 +8,12 @@
             "type": "shell",
             "command": "pwsh -File \"${workspaceFolder}/generate-languages.ps1\"",
             "problemMatcher": []
+        },
+        {
+            "label": "Generate Version",
+            "type": "shell",
+            "command": "pwsh -File \"${workspaceFolder}/generate-version.ps1\"",
+            "problemMatcher": []
         }
     ]
 }

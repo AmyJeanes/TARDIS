@@ -8,20 +8,25 @@ ENT:AddHook("ShouldAllowThickPortal", "teleport", function(self, portal)
     end
 end)
 
+function ENT:DrawViewCrosshair(pos,ang)
+    local fw=ang:Forward()
+    local bk=fw*-1
+    local ri=ang:Right()
+    local le=ri*-1
+
+    local size=10
+    local col=Color(255,0,0)
+    render.DrawLine(pos,pos+(fw*size),col)
+    render.DrawLine(pos,pos+(bk*size),col)
+    render.DrawLine(pos,pos+(ri*size),col)
+    render.DrawLine(pos,pos+(le*size),col)
+end
+
 hook.Add("PostDrawTranslucentRenderables", "tardis-trace", function()
     local ext=TARDIS:GetExteriorEnt()
-    if IsValid(ext) and ext:GetData("teleport-trace") then
-        local pos,ang=ext:GetThirdPersonTrace(LocalPlayer(),LocalPlayer():EyeAngles())
-        local fw=ang:Forward()
-        local bk=fw*-1
-        local ri=ang:Right()
-        local le=ri*-1
+    if not IsValid(ext) then return end
+    if not ext:GetData("teleport-trace") then return end
 
-        local size=10
-        local col=Color(255,0,0)
-        render.DrawLine(pos,pos+(fw*size),col)
-        render.DrawLine(pos,pos+(bk*size),col)
-        render.DrawLine(pos,pos+(ri*size),col)
-        render.DrawLine(pos,pos+(le*size),col)
-    end
+    local pos, ang = ext:GetThirdPersonTrace(LocalPlayer(),LocalPlayer():EyeAngles())
+    ext:DrawViewCrosshair(pos,ang)
 end)

@@ -1,0 +1,19 @@
+VertexLitGeneric
+{
+	$basetexture "models/vtalanov98/toyota_ext/stjohn"
+	$bumpmap  "models/tardisman/toyota_ext/bump_random2"
+	$envmap "env_cubemap"
+	$envmaptint "[.02 .02 .02]"
+	$diffuseexp 1
+	$halflambert 1
+	$nocull 0
+	$phong 1
+	$phongalbedotint 1
+	$phongalbedoboost 255
+	$phongexponenttexture "models/tardisman/toyota_ext/tardis_f_r4"
+	$phongboost .2
+	$phongfresnelranges "[.25 .25 .25]"
+	$rimlight               1
+	$rimlightexponent       11
+	$rimlightboost          .5
+}

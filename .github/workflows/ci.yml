@@ -30,10 +30,11 @@ jobs:
 
       - name: Create gma file
         run: |
-          docker run --rm \
-            --mount type=bind,source="$(pwd)",target=/addon \
-            mattjeanes/gmad \
-            create -folder /addon -out "/addon/addon.gma"
+          wget -O /tmp/fastgmad.zip "https://github.com/WilliamVenner/fastgmad/releases/download/v0.2.0/fastgmad_linux.zip"
+          unzip /tmp/fastgmad.zip -d /tmp/fastgmad
+          chmod +x /tmp/fastgmad/fastgmad
+          mkdir -p /tmp/addon
+          /tmp/fastgmad/fastgmad create -folder . -out /tmp/addon/addon.gma
 
       - name: Set workshop addon id
         if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
@@ -56,7 +57,7 @@ jobs:
           docker run --rm \
             -e STEAM_USER="${{ vars.STEAM_USERNAME }}" \
             -e STEAM_PASSWORD="${{ secrets.STEAM_PASSWORD }}" \
-            --mount type=bind,source="$(pwd)",target=/home/gmodws/upload \
+            --mount type=bind,source="/tmp/addon",target=/home/gmodws/upload \
             aperturedevelopment/gmodws:latest \
             upload ${{ env.WORKSHOP_ID }} addon.gma \
             "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"

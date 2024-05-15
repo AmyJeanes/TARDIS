@@ -1,0 +1,9 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/vtalanov98/toyota_ext/exteriorlamp"
+	"$envmap" "models/vtalanov98/toyota_ext/environment"
+	"$envmaptint" "[0.3 0.3 0.3]"
+	"$nodecal" "1"
+	"$halflambert" "1"
+	"$surfaceprop" "Glass"
+}

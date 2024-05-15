@@ -78,6 +78,8 @@ else
     ENT:AddHook("Initialize", "outside", function(self)
         self.thpprop=ents.CreateClientProp("models/props_junk/PopCan01a.mdl")
         self.thpprop:SetNoDraw(true)
+        self.thpprop:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+        self.thpprop:SetMoveType(MOVETYPE_NONE)
     end)
 
     ENT:AddHook("OnRemove", "outside", function(self)

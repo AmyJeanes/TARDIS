@@ -24,9 +24,9 @@ if SERVER then
     end
 else
     function PART:PreDraw()
-        if self.exterior:GetData("vortexalpha",0)>0 then
+        if self:GetData("vortexalpha",0)>0 then
             self:SetRenderOrigin(self.exterior:LocalToWorld(self.pos))
-            self:SetRenderAngles(self.exterior:GetData("lockedang"))
+            self:SetRenderAngles(self:GetData("lockedang"))
         end
     end
 end

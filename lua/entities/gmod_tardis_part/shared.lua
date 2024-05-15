@@ -19,7 +19,7 @@ function ENT:Initialize() end
 
 function ENT:SetupDataTables()
     self:NetworkVar("Bool",0,"On")
-    self:SetOn(false)
+    self:SetOn(self.EnabledOnStart or false)
 end
 
 hook.Add("PhysgunPickup", "tardis-part", function(ply,ent)
@@ -39,9 +39,31 @@ hook.Add("CanDrive", "tardis-part", function(ply,ent)
 end)
 
 function ENT:SetData(k,v,network)
-    return self.exterior and self.exterior:SetData(k, v, network)
+    return IsValid(self.exterior) and self.exterior:SetData(k, v, network)
 end
 
 function ENT:GetData(k,default)
-    return self.exterior and self.exterior:GetData(k, default)
+    return IsValid(self.exterior) and self.exterior:GetData(k, default) or default
+end
+
+hook.Add("BodygroupChanged", "tardis_parts", function(ent,bodygroup,value)
+    if ent.TardisPart then
+        if ent.OnBodygroupChanged then
+            ent.OnBodygroupChanged(ent, bodygroup, value)
+        end
+        if IsValid(ent.parent) then
+            ent.parent:CallHook("PartBodygroupChanged", ent, bodygroup, value)
+        end
+    end
+end)
+
+function ENT:SetInvisible(invisible)
+    return self.parent:SetPartInvisible(self.ID, invisible)
+end
+
+function ENT:IsInvisible()
+    local inv_parts = self:GetData("invisible_int_parts")
+
+    if not inv_parts then return false end
+    return inv_parts[self.ID]
 end

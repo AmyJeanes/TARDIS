@@ -1,8 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture" "models/vtalanov98/hellbentext/exterior2"
-	"$envmap" "models/vtalanov98/hellbentext/environment"
-	"$envmaptint" "[0.4 0.4 0.4]"
-	"$nodecal" "1"
-	"$surfaceprop" "Glass"
-}

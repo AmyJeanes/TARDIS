@@ -1,0 +1,82 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/bulbs"
+	"$surfaceprop" "Glass"
+
+	//"$color2" "[0.85 0.65 0.5]"
+
+	"$selfillum" "1"
+	"$selfillummask" "/models/molda/toyota_int/bulbs"
+	"$selfillumtint" "[4 4 4]"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$selfillum_on "[4 4 4]"
+	$selfillum_off "[0 0 0]"
+	$color2_on "[0.85 0.65 0.5]"
+	$color2_off "[0.3 0.3 0.3]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$selfillum_on"
+			offVar "$selfillum_off"
+			resultVar "$selfillumtint"
+		}
+		TARDIS_Power2 {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+
+		TARDIS_State {
+			resultTextureVar $basetexture
+			resultFrameVar $frame
+
+			textures {
+				idle "models/molda/toyota_int/bulbs"
+				handbrake "models/molda/toyota_int/bulbs"
+				interrupt "models/molda/toyota_int/bulbs"
+				demat_fail "models/molda/toyota_int/bulbs"
+				mat_fail "models/molda/toyota_int/toplights"
+				travel "models/molda/toyota_int/toplights"
+				demat "models/molda/toyota_int/toplights"
+				mat "models/molda/toyota_int/bulbs"
+				off "models/molda/toyota_int/toplights_off"
+
+				idle_warning "models/molda/toyota_int/bulbs_half"
+				handbrake_warning "models/molda/toyota_int/bulbs_half"
+				interrupt_warning "models/molda/toyota_int/bulbs_half"
+				demat_fail_warning "models/molda/toyota_int/bulbs_half"
+				mat_fail_warning "models/molda/toyota_int/toplights"
+				travel_warning "models/molda/toyota_int/toplights"
+				demat_warning "models/molda/toyota_int/toplights"
+				mat_warning "models/molda/toyota_int/bulbs"
+				off_warning "models/molda/toyota_int/bulbs_off"
+			}
+			frameRates {
+				idle 0
+				handbrake 0
+				interrupt 0
+				demat_fail 0
+				mat_fail 10
+				travel 10
+				demat 10
+				mat 0
+				off 0
+
+				idle_warning 0
+				handbrake_warning 0
+				interrupt_warning 0
+				demat_fail_warning 0
+				mat_fail_warning 10
+				travel_warning 10
+				demat_warning 10
+				mat_warning 0
+				off_warning 0
+			}
+		}
+	}
+}
+

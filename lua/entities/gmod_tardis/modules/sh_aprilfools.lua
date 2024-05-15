@@ -53,12 +53,13 @@ ENT:AddHook("Think", "april_fools", function(self,delta)
     end
 end)
 
-local mat = Material("models/drmatt/tardis/black")
+local mat = Material("models/drmatt/tardis/exterior/black")
 hook.Add("PostDrawOpaqueRenderables", "tardis-aprilfools", function()
     if not TARDIS:IsAprilFools() or wp.drawing then return end
     local ext=TARDIS:GetExteriorEnt()
     if IsValid(ext) and IsValid(ext.interior) and (ext:GetData("teleport",false) or ext:GetData("vortex",false)) and (not ext.interior.scannerrender) and (not LocalPlayer():GetTardisData("outside")) then
         render.SetMaterial(mat)
-        render.DrawSphere(ext.interior:GetPos(), -ext.metadata.Interior.ExitDistance * 1.5, 50, 50)
+        local center,radius=ext.interior:GetSphere()
+        render.DrawSphere(ext.interior:LocalToWorld(center), -radius * 1.5, 50, 50)
     end
 end)

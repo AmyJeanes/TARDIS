@@ -1,7 +1,7 @@
 -- Power Exterior
 
 TARDIS:AddKeyBind("power",{
-    name="Power",
+    name="TogglePower",
     section="ThirdPerson",
     func=function(self,down,ply)
         if down and ply == self.pilot then
@@ -14,6 +14,9 @@ TARDIS:AddKeyBind("power",{
 })
 
 ENT:AddHook("Initialize","power-init", function(self)
+    if SERVER and self:GetData("power-state") == false then
+        self:SetData("power_disabled_first", true)
+    end
     self:SetData("power-state",true,true)
 end)
 
@@ -33,14 +36,20 @@ if SERVER then
         return self:SetPower(not self:GetPower())
     end
     function ENT:SetPower(on)
-        if (self:CallCommonHook("CanTogglePower") == false) then return false end
+        if (self:CallCommonHook("CanTogglePower", on) == false) then return false end
         self:SetData("power-state",on,true)
         self:CallCommonHook("PowerToggled", on)
         self:SendMessage("power_toggled", {on})
         return true
     end
 
-    ENT:AddHook("CanTogglePower", "vortex", function(self)
+    ENT:AddHook("PostInitialize","power-init", function(self)
+        if self:GetData("power_disabled_first") then
+            self:SetPower(false)
+        end
+    end)
+
+    ENT:AddHook("CanTogglePower", "vortex", function(self, on)
         if self:GetData("teleport") or self:GetData("vortex") then
             return false
         end
@@ -48,6 +57,16 @@ if SERVER then
 
     ENT:AddHook("CanTriggerHads","power",function(self)
         if not self:GetPower() then return false end
+    end)
+
+    ENT:AddHook("CanToggleShields", "power", function(self, on)
+        if on and not self:GetPower() then return false end
+    end)
+
+    ENT:AddHook("CanChangeExterior","power",function(self)
+        if not self:GetPower() then
+            return false,true,"Chameleon.FailReasons.NoPower",true
+        end
     end)
 
     ENT:AddHook("HandleE2", "power", function(self, name, e2, ...)
@@ -71,6 +90,13 @@ if SERVER then
             return 0
         end
     end)
+
+    ENT:AddHook("ShouldRegenShields", "power", function(self)
+        if not self:GetPower() then
+            return false
+        end
+    end)
+
 else
     ENT:AddHook("ShouldNotDrawProjectedLight", "power", function(self)
         if not self:GetPower() then return true end

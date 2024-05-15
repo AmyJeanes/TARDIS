@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/vtalanov98/toyota_ext/policeboxsign"
+	"$surfaceprop" "Glass"
+	"$selfillum" 1
+	"$selfillummask" "models/vtalanov98/toyota_ext/white"
+	"$nodecal" "1"
+}

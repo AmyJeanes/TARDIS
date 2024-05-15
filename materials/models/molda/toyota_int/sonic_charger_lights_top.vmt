@@ -1,0 +1,41 @@
+"VertexLitGeneric"
+{
+	$basetexture "models/molda/toyota_int/white"
+	$color2 "[1 0.8 0]"
+
+	$selfillum 1
+	$selfillummask "models/molda/toyota_int/white"
+	$selfillumtint "[0 0 0]"
+
+	$selfillum_on_default "[1 1 1]"
+	$selfillum_on "[1 1 1]"
+	$selfillum_off "[0 0 0]"
+	$selfillumtint_set "[0 0 0]"
+
+	$sine 1
+
+	"Proxies"
+	{
+		TARDIS_DefaultInt_SonicCharger {
+			onVar "$selfillum_on"
+			offVar "$selfillum_off"
+			resultVar "$selfillumtint_set"
+		}
+		Multiply {
+			srcVar1 $selfillumtint_set
+			srcVar2 $sine
+			resultVar $selfillumtint
+		}
+		Sine {
+			sineperiod          1
+			sinemin             0.6
+			sinemax             1.3
+			resultVar           $sine
+		}
+		TARDIS_Power {
+			onVar "$selfillum_on_default"
+			offVar "$selfillum_off"
+			resultVar "$selfillum_on"
+		}
+	}
+}

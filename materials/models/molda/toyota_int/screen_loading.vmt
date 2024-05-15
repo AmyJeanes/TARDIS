@@ -1,0 +1,26 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/screen_loading"
+	"$bumpmap" "models/cem/toyota_contr/glass_normal"
+	"$surfaceprop" "Glass"
+	"$selfillum" 1
+	"$selfillummask" "models/molda/toyota_int/white"
+
+	"$nodecal" "1"
+
+	$color2_on "[1 1 1]"
+	$color2_off "[0 0 0]"
+	"Proxies"
+	{
+		"AnimatedTexture" {
+			"animatedTextureVar" "$basetexture"
+			"animatedTextureFrameNumVar" "$frame"
+			"animatedTextureFrameRate" "10"
+		}
+		TARDIS_Power {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
+}

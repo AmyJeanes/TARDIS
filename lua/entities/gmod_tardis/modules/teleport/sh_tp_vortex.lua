@@ -22,8 +22,8 @@ function ENT:ToggleFastRemat()
     return self:SetFastRemat(on)
 end
 
-function ENT:SetFastRemat(on)
-    if self:CallHook("CanToggleFastRemat") == false then
+function ENT:SetFastRemat(on, force)
+    if self:CallHook("CanToggleFastRemat", force) == false then
         return false
     end
 
@@ -32,14 +32,14 @@ function ENT:SetFastRemat(on)
     return true
 end
 
-ENT:AddHook("CanToggleFastRemat", "vortex", function(self)
-    if self:GetData("vortex") or self:GetData("teleport") then
+ENT:AddHook("CanToggleFastRemat", "vortex", function(self, force)
+    if not force and (self:GetData("vortex") or self:GetData("teleport")) then
         return false
     end
 end)
 
 ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
-    if self:GetData("vortex") then return true end
+    if self:GetData("vortex") or self:GetData("demat") then return true end
 end)
 
 ENT:AddHook("ShouldTakeDamage", "vortex", function(self)

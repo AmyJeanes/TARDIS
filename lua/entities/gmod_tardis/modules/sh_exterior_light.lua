@@ -57,7 +57,7 @@ else
 
         if shouldon and (not shouldoff) then
             local col = light.color
-            if self:GetData("health-warning") and light.warncolor ~= nil then
+            if self:GetData("warning") and light.warncolor ~= nil then
                 col = light.warncolor
             end
             if TARDIS:GetSetting("extlight-override-color", self) then
@@ -71,15 +71,6 @@ else
 
                 if self:GetData("vortex",false) then
                     fallback=true
-                end
-
-                if not fallback then
-                    for k,v in pairs(wp.portals) do -- not ideal but does the job
-                        if wp.shouldrender(v) then
-                            fallback=true
-                            break
-                        end
-                    end
                 end
 
                 if fallback then
@@ -106,7 +97,7 @@ else
 
         if shouldon and (not shouldoff) then
             local col = light.color
-            if self:GetData("health-warning") and light.warncolor ~= nil then
+            if self:GetData("warning") and light.warncolor ~= nil then
                 col = light.warncolor
             end
             if TARDIS:GetSetting("extlight-override-color", self) then

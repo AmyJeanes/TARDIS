@@ -1,0 +1,48 @@
+name: Generate Files
+
+on:
+  pull_request_target:
+    branches:
+    - dev
+    paths:
+    - i18n/languages/*.json
+    - version.json
+  push:
+    branches:
+    - dev
+    paths:
+    - i18n/languages/*.json
+    - version.json
+
+  workflow_dispatch:
+
+jobs:
+  generate_files:
+    name: Generate Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+        if: github.event_name == 'pull_request'
+
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.TOKEN }}
+        if: github.event_name != 'pull_request'
+
+      - name: Generate Languages
+        run: ./generate-languages.ps1
+        shell: pwsh
+
+      - name: Generate Version
+        run: ./generate-version.ps1
+        shell: pwsh
+
+      - name: Git Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Update Generated Files"

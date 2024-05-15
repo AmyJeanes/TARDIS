@@ -27,7 +27,6 @@ TARDIS:AddControl({
     end,
     serveronly=true,
     power_independent = false,
-    bypass_console_toggle = true,
     screen_button = {
         virt_console = true,
         mmenu = false,

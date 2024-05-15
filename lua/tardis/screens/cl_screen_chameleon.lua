@@ -32,7 +32,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
     local listW = (frW - 4 * gap) / 3
     local listT = frT - 2 * gap
-    local bW = 0.5 * (listW - 3 * gap2)
+    local bW = (listW - 4 * gap2) / 3
     local bT = frT * 0.1
     local imW = listW - 2 * gap2
     local imT = listT - 3 * gap2 - bT
@@ -84,9 +84,15 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     apply:SetText(TARDIS:GetPhrase("Screens.Chameleon.Apply"))
     apply:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
+    local plan = vgui.Create("DButton", panel)
+    plan:SetSize(bW, bT)
+    plan:SetPos(2 * gap2 + bW, listT - gap2 - bT)
+    plan:SetText(TARDIS:GetPhrase("Screens.Chameleon.Plan"))
+    plan:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+
     local reset = vgui.Create("DButton", panel)
     reset:SetSize(bW, bT)
-    reset:SetPos(2 * gap2 + bW, listT - gap2 - bT)
+    reset:SetPos(3 * gap2 + 2 * bW, listT - gap2 - bT)
     reset:SetText(TARDIS:GetPhrase("Screens.Chameleon.Reset"))
     reset:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
@@ -165,6 +171,13 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     function apply:DoClick()
         if change_id ~= nil then
             ext:ChangeExterior(change_id, true, LocalPlayer())
+        end
+    end
+
+    function plan:DoClick()
+        if change_id ~= nil then
+            ext:SetData("chameleon_planned_exterior", change_id, true)
+            TARDIS:Message(LocalPlayer(), "Chameleon.ExteriorPlanned")
         end
     end
 

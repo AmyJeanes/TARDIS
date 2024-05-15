@@ -294,7 +294,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
 
         if teleport and not mat then -- premat
-            local delay = (fast and 1.9 or 8.5)
+            local delay = (fast and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
             local time_passed = CurTime() - ext:GetData("premat_start_time")
 
             dst_progress:SetFraction(0.55 + 0.15 * time_passed / delay)

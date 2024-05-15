@@ -70,7 +70,7 @@ function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
     end
     local theme = self.gui_themes[theme_id]
     if theme == nil then
-        error("Attempt to access non-existing theme"..theme_id)
+        error("Attempt to access non-existing theme: "..theme_id)
         return nil
     end
     if theme[section] == nil then
@@ -83,7 +83,7 @@ function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
     if theme[section][element] ~= nil then
         local folder = TARDIS:GetGUIThemeFolder(theme_id)
         if folder == nil then
-            error("Trying to open non-existing folder "..folder)
+            error("Trying to open non-existing folder: "..folder)
         end
         if theme[section].subfolder ~= nil then
             folder = folder..theme[section].subfolder.."/"

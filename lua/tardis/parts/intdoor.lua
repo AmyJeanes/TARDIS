@@ -5,7 +5,7 @@ PART.Model = "models/drmatt/tardis/exterior/door.mdl"
 PART.AutoSetup = true
 PART.AutoPosition = true
 PART.ClientThinkOverride = true
-PART.Collision = false
+PART.Collision = true
 PART.NoStrictUse = true
 PART.ShouldTakeDamage = true
 PART.BypassIsomorphic = true
@@ -14,14 +14,14 @@ PART.BypassIsomorphic = true
 if SERVER then
     function PART:Use(a)
 
-        if self.exterior:GetData("locked") then
+        if self:GetData("locked") then
             if IsValid(a) and a:IsPlayer() then
                 if self.exterior:CallHook("LockedUse",a)==nil then
                     TARDIS:Message(a, "Parts.Door.Locked")
                 end
             end
         else
-            if a:KeyDown(IN_WALK) then
+            if a:KeyDown(IN_WALK) or self:GetData("legacy_door_type") then
                 self.exterior:PlayerExit(a)
             end
         end
@@ -34,7 +34,7 @@ else
     end
 
     function PART:Think()
-        self.IntDoorTarget=self.exterior.IntDoorOverride or (self.exterior:GetData("doorstatereal",false) and 1 or 0)
+        self.IntDoorTarget=self.exterior.IntDoorOverride or (self:GetData("doorstatereal",false) and 1 or 0)
         local animtime = self.exterior.metadata.Interior.IntDoorAnimationTime
             or self.exterior.metadata.Exterior.DoorAnimationTime
 

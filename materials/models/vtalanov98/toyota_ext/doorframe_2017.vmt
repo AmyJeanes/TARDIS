@@ -1,0 +1,9 @@
+"VertexlitGeneric"
+{
+	"$basealphaenvmapmask" "1"
+	"$basetexture" "models/vtalanov98/toyota_ext/exterior_2017"
+	"$envmap" "models/vtalanov98/toyota_ext/environment"
+	"$envmaptint" "[0.3 0.3 0.3]"
+	"$nodecal" "1"
+	"$surfaceprop" "Wood_Solid"
+}

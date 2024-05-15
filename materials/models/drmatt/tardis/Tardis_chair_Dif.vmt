@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/drmatt/tardis/Tardis_chair_Dif"
-	"$bumpmap" "models/drmatt/tardis/Tardis_chair_NM"
-	"$nodecal" "1"
-}

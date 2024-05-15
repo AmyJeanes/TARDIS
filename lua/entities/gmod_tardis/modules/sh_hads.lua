@@ -28,7 +28,7 @@ if SERVER then
                 self:ToggleDoor()
             end
             self:SetData("hads-attempt", true)
-            if self:CallHook("CanDemat", true) == false then
+            if self:CallHook("CanDemat", true, true) == false then
                 if not self:GetData("hads-failed-time") or CurTime() > self:GetData("hads-failed-time") + 10 then
                     self:SetData("hads-failed-time", CurTime())
                     TARDIS:ErrorMessage(self:GetCreator(), "HADS.DematError")
@@ -40,7 +40,8 @@ if SERVER then
             self:SetData("hads-attempt", nil)
             TARDIS:Message(self:GetCreator(), "HADS.Triggered")
             TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
-            self:SetData("hads-triggered", true)
+            self:SetData("hads-triggered", true, true)
+            self:SetData("hads-demat", true, true)
             self:SetFastRemat(false)
             self:SetRandomDestination(true)
             self:AutoDemat()
@@ -89,16 +90,14 @@ if SERVER then
         self:SetData("hads-auto-remat", nil, true)
     end)
 
+    ENT:AddHook("ShouldStopSmoke", "hads", function(self)
+        if self:GetData("hads-triggered") then return true end
+    end)
+
     ENT:AddHook("InterruptTeleport", "hads-data", function(self)
         self:SetData("hads-triggered",false,true)
         self:SetData("hads-need-remat", nil, true)
         self:SetData("hads-auto-remat", nil, true)
-    end)
-
-    hook.Add("OnPhysgunPickup", "tardis-hads", function(ply,ent)
-        if ent:GetClass()=="gmod_tardis" and ent:TriggerHADS() then
-            ent:ForcePlayerDrop()
-        end
     end)
 
     ENT:AddHook("ShouldUpdateArtron", "hads", function(self)
@@ -132,3 +131,9 @@ if SERVER then
         end
     end)
 end
+
+ENT:AddHook("StopDemat","hads-demat",function(self)
+    if self:GetData("hads-demat",false) then
+        self:SetData("hads-demat", false, false) -- not networked
+    end
+end)

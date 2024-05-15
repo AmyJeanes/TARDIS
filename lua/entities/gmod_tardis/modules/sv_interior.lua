@@ -35,3 +35,9 @@ ENT:AddHook("ShouldSpawnInterior", "interior", function(self)
         return false
     end
 end)
+
+ENT:AddHook("OnRemove", "interior", function(self)
+    if IsValid(self.interior) then
+        self.interior.exterior_deleted = true
+    end
+end)

@@ -56,6 +56,12 @@ if SERVER then
             self:SetData("teleport-interrupted", true, true)
             self:SetData("teleport-interrupt-time", CurTime(), true)
             self:SetData("teleport-interrupt-effects", true, true)
+        else
+            local time = self.metadata.Timings.DematInterrupt
+            self:SetData("demat-interrupted", true, true)
+            self:Timer("interrupt_demat", time, function()
+                self:SetData("demat-interrupted", nil, true)
+            end)
         end
     end
 
@@ -75,8 +81,8 @@ if SERVER then
         self:CancelTimer("matdelay")
     end)
 
-    ENT:AddHook("CanTogglePower", "tp_interrupt", function(self)
-        if self:GetData("teleport-interrupted", false) then
+    ENT:AddHook("CanTogglePower", "tp_interrupt", function(self, on)
+        if on and self:GetData("teleport-interrupted", false) then
             return false
         end
     end)

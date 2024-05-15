@@ -1,0 +1,61 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/lights"
+	"$surfaceprop" "Metal"
+
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[1 1 1]"
+
+	"$selfillum" 1
+	"$selfillummask" "/models/molda/toyota_int/lights"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$selfillum_default "[1 1 1]"
+	$selfillum_on "[1 1 1]"
+	$selfillum_off "[0 0 0]"
+	$selfillum_disabled "[0.2 0.2 0.2]"
+
+	$envmaptint_default "[1 1 1]"
+	$envmaptint_on "[1 1 1]"
+	$envmaptint_off "[0 0 0]"
+
+	$color2_default "[1 1 1]"
+	$color2_on "[1 1 1]"
+	$color2_off "[0.3 0.3 0.3]"
+	$color2_disabled "[0.5 0.5 0.5]"
+
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$selfillum_on"
+			offVar "$selfillum_off"
+			resultVar "$selfillumtint"
+		}
+		TARDIS_Power2 {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+		TARDIS_Power3 {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+		TARDIS_DefaultInt_ThrottleLights {
+			onVar "$selfillum_default"
+			offVar "$selfillum_disabled"
+			resultVar "$selfillum_on"
+
+			onVar2 "$envmaptint_default"
+			offVar2 "$envmaptint_off"
+			resultVar2 "$envmaptint_on"
+
+			onVar3 "$color2_default"
+			offVar3 "$color2_disabled"
+			resultVar3 "$color2_on"
+		}
+	}
+
+}

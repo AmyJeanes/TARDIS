@@ -1,7 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/drmatt/tardis/TardisFloor"
-	"$bumpmap" "models/drmatt/tardis/TardisFloor_NM"
-	"$normalmapalphaenvmapmask" "0.5"
-	"$nodecal" "1"
-}

@@ -1,20 +1,31 @@
 TARDIS.Locations = TARDIS.Locations or {}
 
-local filename = "tardis2_locations.txt"
+local LOCATIONS_FILE = "tardis2_locations.txt"
+
+--[[ TODO: Add back in before release
+TARDIS:AddMigration("locations-move", "2023.8.0", function(self)
+    if file.Exists("tardis2_locations.txt", "DATA") then
+        if file.Exists(LOCATIONS_FILE, "DATA") then
+            file.Delete(LOCATIONS_FILE)
+        end
+        file.Rename("tardis2_locations.txt", LOCATIONS_FILE)
+
+        self:LoadLocations()
+    elseif file.Exists("tardis_locations.txt", "DATA") and not file.Exists(LOCATIONS_FILE, "DATA") then
+        TARDIS.Locations = TARDIS.von.deserialize(file.Read("tardis_locations.txt", "DATA"))
+        TARDIS:SaveLocations()
+    end
+end)
+]]
 
 function TARDIS:LoadLocations()
-    if file.Exists(filename,"DATA") then
-        TARDIS.Locations = TARDIS.von.deserialize(file.Read(filename,"DATA"))
-    elseif file.Exists("tardis_locations.txt", "DATA") then
-        TARDIS.Locations = TARDIS.von.deserialize(file.Read("tardis_locations.txt", "DATA"))
-        if not file.Exists(filename,"DATA") then
-            TARDIS:SaveLocations()
-        end
+    if file.Exists(LOCATIONS_FILE, "DATA") then
+        TARDIS.Locations = TARDIS.von.deserialize(file.Read(LOCATIONS_FILE,"DATA"))
     end
 end
 
 function TARDIS:SaveLocations()
-    file.Write(filename, TARDIS.von.serialize(TARDIS.Locations))
+    file.Write(LOCATIONS_FILE, TARDIS.von.serialize(TARDIS.Locations))
 end
 
 function TARDIS:AddLocation(pos,ang,name,map)

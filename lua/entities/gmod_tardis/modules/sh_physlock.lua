@@ -36,6 +36,7 @@ function ENT:SetPhyslock(on)
         return false
     end
     if on and self:CallHook("CanTurnOnPhyslock") == false then
+        self:CallHook("FailedPhyslockEnable")
         return false
     end
 
@@ -60,18 +61,6 @@ function ENT:TogglePhyslock()
     local on = not self:GetPhyslock()
     return self:SetPhyslock(on)
 end
-
-hook.Add("PlayerUnfrozeObject", "tardis-physlock", function(ply,ent,phys)
-    if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then
-        phys:EnableMotion(false)
-    end
-end)
-
-hook.Add("PhysgunDrop", "tardis-physlock", function(ply,ent)
-    if ent:GetClass()=="gmod_tardis" and ent:GetPhyslock()==true then
-        ent:GetPhysicsObject():EnableMotion(false)
-    end
-end)
 
 ENT:AddHook("MatStart", "physlock", function(self)
     if not self:GetPhyslock() then
@@ -118,9 +107,19 @@ ENT:AddHook("HandleE2", "physlock", function(self, name, e2, ...)
     end
 end)
 
-
-ENT:AddHook("MigrateData", "music", function(self, parent, parent_data)
+ENT:AddHook("MigrateData", "physlock", function(self, parent, parent_data)
     self:SetPhyslock(parent_data["physlock"])
 end)
 
+ENT:AddHook("OnHealthChange", "physlock", function(self)
+    if self:IsBroken() and self:GetPhyslock() then
+        self:SetPhyslock(false)
+    end
+end)
 
+ENT:AddHook("FailedPhyslockEnable", "physlock", function(self)
+    if self:IsBroken() then
+        local vel = self:GetPhysicsObject():GetVelocity():Length()
+        self:Explode(math.max((vel - 2500) / 5, 0))
+    end
+end)

@@ -18,7 +18,7 @@ if SERVER then
         elseif update_type == "size" then
             portal:SetWidth(net.ReadFloat())
             portal:SetHeight(net.ReadFloat())
-		elseif update_type == "exit_offset" then
+        elseif update_type == "exit_offset" then
             portal:SetExitPosOffset(net.ReadVector())
             portal:SetExitAngOffset(net.ReadAngle())
         elseif update_type == "3d" then
@@ -181,7 +181,7 @@ else
             net.SendToServer()
         end
 
-		local function UpdatePortalExitOffset()
+        local function UpdatePortalExitOffset()
             net.Start("TARDIS-Debug-Portals-Update")
                 net.WriteEntity(p)
                 net.WriteString("exit_offset")

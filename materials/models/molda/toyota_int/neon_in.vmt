@@ -1,0 +1,42 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/neon"
+	"$surfaceprop" "Metal"
+
+	$selfillum 1
+	"$selfillummask" "/models/molda/toyota_int/neon"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$rotor_mult "2.5"
+	$rotor_mult_nopower "0.8"
+	$rotor_color "[1 1 1]"
+	$rotor "[1 1 1]"
+	$rotor_nopower "[0 0.7 1]"
+	Proxies {
+		TARDIS_DefaultInt_RotorInColor {
+			resultVar	$rotor_color
+		}
+		Multiply {
+			srcVar1 $rotor_color
+			srcVar2 $rotor_mult
+			resultVar $rotor
+		}
+		TARDIS_Power {
+			onVar "$rotor"
+			offVar "$rotor_nopower"
+			resultVar "$color2"
+		}
+		TARDIS_Power2 {
+			onVar "$rotor"
+			offVar "$rotor_nopower"
+			resultVar "$selfillumtint"
+		}
+		TARDIS_Power3 {
+			onVar "$rotor"
+			offVar "$rotor_nopower"
+			resultVar "$envmaptint"
+		}
+	}
+}

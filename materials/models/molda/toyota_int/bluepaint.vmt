@@ -1,0 +1,28 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/bluepaint"
+
+	"$color2" "[0.9 0.9 0.8]"
+
+	"$surfaceprop" "Metal"
+
+	"$envmap" "models/molda/toyota_int/environment"
+
+	"$envmaptint" "[0 0.4 0.8]"
+	"$envmapmask" "models/molda/toyota_int/smudge2N"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$envmaptint_on "[0 0.4 0.8]"
+	$envmaptint_off "[0 0.1 0.2]"
+
+	"Proxies"
+	{
+		TARDIS_Power2 {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+	}
+}

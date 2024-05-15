@@ -4,26 +4,61 @@ if SERVER then
     util.AddNetworkString("TARDIS-SetupPart")
 end
 
-function TARDIS.DrawOverride(self,override)
-    if self.NoDraw then return end
+
+function TARDIS.ShouldDrawInteriorPart(self)
     local int=self.interior
     local ext=self.exterior
-    
-    if IsValid(ext) then
 
-        if (self.InteriorPart and IsValid(int)
-            and ((int:CallHook("ShouldDraw")~=false)
-                or (ext:DoorOpen()
-                        and (self.ClientDrawOverride and LocalPlayer():GetPos():Distance(ext:GetPos()) < TARDIS:GetSetting("portals-closedist"))
-                        or (self.DrawThroughPortal and (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int)))
-                    )
-                )
-            ) or (self.ExteriorPart
-                and (ext:CallHook("ShouldDraw")~=false)
-                or self.ShouldDrawOverride
-            )
+    if not IsValid(int) then
+        return false
+    end
+
+    if int:CallHook("ShouldDraw") ~= false then
+        return true
+    end
+
+    if ext:DoorOpen() and self.ClientDrawOverride then
+        local dist_to_portal = LocalPlayer():GetPos():Distance(ext:GetPos())
+        local close_dist = TARDIS:GetSetting("portals-closedist")
+        if dist_to_portal < close_dist then
+            return true
+        end
+    end
+
+    if self.DrawThroughPortal then
+        return (int.scannerrender or (IsValid(wp.drawingent) and wp.drawingent:GetParent()==int))
+    end
+
+    return false
+end
+
+function TARDIS.ShouldDrawExteriorPart(self)
+    local ext=self.exterior
+
+    if ext:CallHook("ShouldDraw") ~= false then
+        return true
+    end
+
+    if self.ShouldDrawOverride then
+        return true
+    end
+
+    return false
+end
+
+function TARDIS.DrawOverride(self,override)
+    if self.NoDraw then return end
+    if self:IsInvisible() then return end
+
+    local int=self.interior
+    local ext=self.exterior
+
+    if IsValid(ext) then
+        if (self.InteriorPart and TARDIS.ShouldDrawInteriorPart(self))
+            or (self.ExteriorPart and TARDIS.ShouldDrawExteriorPart(self))
         then
-           
+            if not IsValid(self.parent) then return end
+
             if self.parent:CallHook("ShouldDrawPart", self) == false then return end
             if self.parent:CallHook("PreDrawPart",self) == false then return end
             if self.PreDraw then self:PreDraw() end
@@ -40,16 +75,167 @@ function TARDIS.DrawOverride(self,override)
     end
 end
 
+function TARDIS.DoPartAnimation(self, can_move, a, target, should_reset)
+    local pose_pos = a.pos
+    local speed = a.speed
+
+    if a.condition_func then
+        can_move = can_move and a.condition_func(self, a, target, should_reset)
+    end
+
+    if can_move then
+        if a.speed_override_func then
+            speed = a.speed_override_func(self, a, target, should_reset)
+        end
+
+        pose_pos = math.Approach(pose_pos, target, FrameTime() * speed)
+
+        if pose_pos == target and should_reset then
+            pose_pos = (a.max == pose_pos and a.min) or a.max
+        end
+    end
+
+    self:SetPoseParameter(a.pose_param, pose_pos)
+    self:InvalidateBoneCache()
+    a.pos = pose_pos
+end
+
+function TARDIS.InitAnimation(self, anim)
+    -- `anim` is either the part or extra animation table
+
+    local a = {}
+
+    a.type = anim.Type or "toggle"
+    -- toggle / perpetual_use / travel / idle / custom
+
+    a.max = anim.MaxPos or 1
+    a.min = anim.MinPos or 0
+    a.pos = anim.StartPos or (self.EnabledOnStart and self.posemax) or a.min
+    a.speed = anim.Speed or 1.5
+    a.pose_param = anim.PoseParameter or "switch"
+    a.stop_anywhere = anim.StopAnywhere -- applies to perpetual_use
+    a.constant_dir = anim.NoDirectionChange -- applies to perpetual_use and toggle
+    a.no_power = not anim.NoPowerFreeze -- applies to travel and idle
+    a.should_return = anim.ReturnAfterStop -- applies to travel and idle
+    a.speed_override_func = anim.SpeedOverrideFunc
+    a.condition_func = anim.ConditionFunc
+    a.custom_func = anim.CustomAnimationFunc
+
+    if a.pos ~= 0 then
+        self:SetPoseParameter(a.pose_param, a.pos)
+        self:InvalidateBoneCache()
+    end
+
+    return a
+end
+
+function TARDIS.ProcessAnimation(self, a)
+
+    if a.type == "travel" then
+        local power_ok = self.exterior:GetPower() or a.no_power
+        local returning = a.should_return and a.pos ~= a.min
+        local move = power_ok and (self.exterior:IsTravelling() or returning)
+
+        TARDIS.DoPartAnimation(self, move, a, a.max, move)
+
+    elseif a.type == "idle" then
+        local returning = a.should_return and a.pos ~= a.min
+        local move = self.exterior:GetPower() or a.no_power
+        TARDIS.DoPartAnimation(self, move or returning, a, a.max, true)
+
+    elseif a.type == "perpetual_use" or a.type == "toggle" then
+
+        local target = (a.constant_dir or self:GetOn()) and a.max or a.min
+
+        if a.type == "perpetual_use" then
+            local ply = LocalPlayer()
+            local looked_at = self:BeingLookedAtByLocalPlayer()
+
+            local function is_sonic_pressed()
+                if not looked_at then
+                    return false
+                end
+                if ply:GetActiveWeapon() ~= ply:GetWeapon("swep_sonicsd") then
+                    return false
+                end
+                return ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
+            end
+
+            local moving = looked_at and ply:KeyDown(IN_USE)
+
+            if is_sonic_pressed() then
+                self.sonic_activation_start = self.sonic_activation_start or CurTime()
+                if CurTime() - self.sonic_activation_start > 0.5 then
+                    moving = true
+                end
+            elseif self.sonic_activation_start then
+                self.sonic_activation_start = nil
+            end
+
+            local move = (not a.stop_anywhere) or moving
+
+            if moving then
+                self.last_moved = CurTime()
+            end
+
+            local moved_recently = CurTime() - (self.last_moved or 0) < 0.1
+
+            if moving and self.SoundLoop and not self.use_sound then
+                self.use_sound = CreateSound(self, self.SoundLoop)
+                self.use_sound:SetSoundLevel(90)
+                self.use_sound:ChangeVolume(self.SoundLoopVolume or 0.75)
+                self.use_sound:Play()
+            elseif self.use_sound and not moved_recently then
+                self.use_sound:Stop()
+                self.use_sound = nil
+
+                if self.SoundStop then
+                    self:EmitSound(self.SoundStop)
+                end
+            end
+
+            TARDIS.DoPartAnimation(self, move, a, target, moving)
+        else
+            TARDIS.DoPartAnimation(self, true, a, target, false)
+        end
+
+    elseif a.type == "custom" then
+        a.custom_func(self, a)
+    end
+end
+
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
     ["Initialize"]={function(self)
-        if self.Animate then
-            self.posepos=0
+        if CLIENT then
+            if self.Animate then
+                self.AnimateOptions = self.AnimateOptions or {}
+
+                -- supporting old format
+                if self.AnimateSpeed then
+                    self.AnimateOptions.Speed = self.AnimateSpeed
+                end
+
+                self.animation = TARDIS.InitAnimation(self, self.AnimateOptions)
+
+                if self.ExtraAnimations then
+                    self.extra_animations = {}
+                    for k,v in pairs(self.ExtraAnimations) do
+                        self.extra_animations[k] = TARDIS.InitAnimation(self, v)
+                    end
+                end
+            end
+            net.Start("TARDIS-SetupPart")
+                net.WriteEntity(self)
+            net.SendToServer()
+        else
+            if not IsValid(self.exterior) then
+                self:Remove()
+                return
+            end
+            self.o.Initialize(self)
         end
-        net.Start("TARDIS-SetupPart")
-            net.WriteEntity(self)
-        net.SendToServer()
-    end, CLIENT},
+    end, CLIENT or SERVER},
     ["Think"]={function(self)
         local int=self.interior
         local ext=self.exterior
@@ -68,16 +254,27 @@ local overrides={
 
             if think_ok or self.ExteriorPart or is_visible_through_door() then
                 if self.Animate then
-                    local target=self:GetOn() and 1 or 0
-                    self.posepos=math.Approach(self.posepos,target,FrameTime()*(self.AnimateSpeed or 1.5))
-                    self:SetPoseParameter("switch",self.posepos)
-                    self:InvalidateBoneCache()
+                    TARDIS.ProcessAnimation(self, self.animation)
+
+                    if self.extra_animations then
+                        for k,v in pairs(self.extra_animations) do
+                            TARDIS.ProcessAnimation(self, v)
+                        end
+                    end
                 end
                 return self.o.Think(self)
             end
         end
     end, CLIENT},
     ["Use"]={function(self,a,...)
+        if SERVER and TARDIS.debug_tips and self.InteriorPart then
+            return TARDIS.DebugTipsFunction(self, a, ...)
+        end
+
+        if SERVER then
+            self.parent:SendMessage("part_use", {self, a, ...})
+        end
+
         local call=false
         local res
         if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
@@ -89,7 +286,9 @@ local overrides={
         end
 
         if self.PowerOffUse == false and not self.interior:GetPower() then
-            TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
+            if SERVER then
+                TARDIS:ErrorMessage(a, "Common.PowerDisabledControl")
+            end
         else
             if allowed~=false then
                 if self.HasUseBasic then
@@ -108,12 +307,24 @@ local overrides={
                 if self.PowerOffSound ~= false or self.interior:GetPower() then
                     local part_sound = nil
 
-                    if self.SoundOff and on then
-                        part_sound = self.SoundOff
-                    elseif self.SoundOn and (not on) then
-                        part_sound = self.SoundOn
-                    elseif self.Sound then
-                        part_sound = self.Sound
+                    if not self.exterior:GetPower() then
+                        if self.SoundOffNoPower and on then
+                            part_sound = self.SoundOffNoPower
+                        elseif self.SoundOnNoPower and (not on) then
+                            part_sound = self.SoundOnNoPower
+                        elseif self.SoundNoPower then
+                            part_sound = self.SoundNoPower
+                        end
+                    end
+
+                    if part_sound == nil then
+                        if self.SoundOff and on then
+                            part_sound = self.SoundOff
+                        elseif self.SoundOn and (not on) then
+                            part_sound = self.SoundOn
+                        elseif self.Sound then
+                            part_sound = self.Sound
+                        end
                     end
 
                     if part_sound and self.SoundPos then
@@ -132,6 +343,12 @@ local overrides={
         end
         return res
     end, SERVER or CLIENT},
+    ["OnRemove"]={function(self,a,...)
+        if self.use_sound then
+            self.use_sound:Stop()
+            self.use_sound = nil
+        end
+    end, CLIENT},
 }
 
 function SetupOverrides(e)
@@ -163,6 +380,7 @@ end
 
 local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
+
 function TARDIS:AddPart(e)
     local source = debug.getinfo(2).short_src
 
@@ -173,6 +391,11 @@ function TARDIS:AddPart(e)
     if parts[e.ID] and parts[e.ID].source ~= source then
         error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
     end
+
+    if not e.Name then
+        e.Name = e.ID -- most creators just copy the ID anyway
+    end
+
     e=table.Copy(e)
     e.HasUseBasic = e.UseBasic ~= nil
     e.HasUse = e.Use ~= nil
@@ -182,7 +405,7 @@ function TARDIS:AddPart(e)
     if postinit then
         SetupOverrides(e)
     else
-        table.insert(overridequeue,e)
+        overridequeue[e.ID] = e
     end
     parts[e.ID] = { class = class, source = source }
 end
@@ -320,6 +543,9 @@ if SERVER then
             end
 
             SetupPartMetadataControl(e)
+            if e.EnabledOnStart then
+                e:SetOn(true)
+            end
 
             if e.enabled==false then
                 e:Remove()
@@ -365,6 +591,9 @@ else
             end
 
             SetupPartMetadataControl(e)
+            if e.EnabledOnStart then
+                e:SetOn(true)
+            end
 
             if not parent.parts then parent.parts={} end
             parent.parts[name]=e

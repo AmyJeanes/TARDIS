@@ -1,0 +1,6 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/vtalanov98/toyota_ext/white"
+	"$nodecal" "1"
+	"$surfaceprop" "Glass"
+}

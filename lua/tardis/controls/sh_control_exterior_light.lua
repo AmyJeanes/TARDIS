@@ -2,7 +2,7 @@ TARDIS:AddControl({
     id = "exterior_light",
     ext_func=function(self,ply)
         local y, n
-        if TARDIS:GetSetting("extlight-alwayson", self:GetCreator()) then
+        if TARDIS:GetSetting("extlight-alwayson", self) then
             y = "Common.Disabled.Lower"
             n = "Common.Enabled.Lower"
         else

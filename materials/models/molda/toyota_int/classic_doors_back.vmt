@@ -1,0 +1,30 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/metal"
+	"$surfaceprop" "Metal"
+
+	"$color2" "[0.5 0.5 0.5]"
+
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[0 0.175 0.225]"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	"$detail"				"detail/metal_detail_01"
+	"$detailscale"			"4"
+	"$detailblendfactor"	"0.6"
+	"$detailblendmode"		"0"
+
+	$envmaptint_on "[0 0.175 0.225]"
+	$envmaptint_off "[0 0.1 0.1]"
+
+	"Proxies"
+	{
+		TARDIS_Power2 {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+	}
+}
