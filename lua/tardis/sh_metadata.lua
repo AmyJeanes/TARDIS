@@ -11,8 +11,6 @@ function TARDIS:LoadInteriors()
     TARDIS.MetadataVersions = {}
     TARDIS.MetadataCustomVersions = {}
 
-    TARDIS.IntModules = {}
-
     TARDIS.ExteriorsMetadata = {}
     TARDIS.ExteriorsMetadataRaw = {}
     TARDIS.ExteriorCategories = {}
@@ -24,7 +22,6 @@ function TARDIS:LoadInteriors()
 
     TARDIS.InteriorsLoading = true
     TARDIS:LoadFolder("metadata")
-    TARDIS:LoadFolder("interiors/modules", nil, true)
     TARDIS:LoadFolder("interiors/templates", nil, true)
     TARDIS:LoadFolder("interiors", nil, true)
     TARDIS:LoadFolder("interiors/exteriors", nil, true)
