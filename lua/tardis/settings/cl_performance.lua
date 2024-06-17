@@ -1,18 +1,6 @@
 local SETTING_SECTION = "Performance"
 
 TARDIS:AddSetting({
-    id="lightoverride-enabled",
-    type="bool",
-    value=true,
-
-    class="local",
-
-    option=true,
-    section=SETTING_SECTION,
-    name="LightingOverride",
-})
-
-TARDIS:AddSetting({
     id="extra-lights",
     type="bool",
     value=true,

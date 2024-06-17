@@ -32,14 +32,3 @@ TARDIS:AddSetting({
 
     option = false,
 })
-
--- "Don't Show Again" button (cl_prompts.lua)
-TARDIS:AddSetting({
-    id="light_override_prompt_noshow",
-    type="bool",
-    value=false,
-
-    class="local",
-
-    option = false,
-})

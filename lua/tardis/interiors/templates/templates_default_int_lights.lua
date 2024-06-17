@@ -11,10 +11,6 @@ T.Interior.Light = {
 	pos = Vector(0,0,-30),
 	brightness = 8,
 
-	NoLO = {
-		brightness = 5,
-		warn_brightness = 3,
-	},
 	NoExtra = {
 		pos = Vector(0,0,187.4),
 		brightness = 1,
