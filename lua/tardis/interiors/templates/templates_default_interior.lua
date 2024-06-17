@@ -26,6 +26,7 @@ TARDIS:AddInteriorTemplate("default_lamps", {
                 pos = Vector(0, 0, 790),
                 ang = Angle(90, 90, 180),
                 shadows = false,
+                enabled = true,
                 states = {
                     ["normal"] = { brightness = 4, },
                     ["moving"] = { brightness = 2, },
