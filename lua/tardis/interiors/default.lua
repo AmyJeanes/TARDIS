@@ -16,7 +16,6 @@ T.Versions = {
 }
 
 T.Interior = {
-
     Model = "models/molda/toyota_int/interior.mdl",
 
     Size = {
@@ -42,15 +41,6 @@ T.Interior = {
         ang=Angle(0,0,0)
     },
 
-    LightOverride = TARDIS.IntModules["default_lightoverride"],
-
-    Light = TARDIS.IntModules["default_light_main"],
-
-    Lights={
-        console_white = TARDIS.IntModules["default_light_console_white"],
-        console_bottom = TARDIS.IntModules["default_light_console_bottom"],
-    },
-
     Sounds = {
         Teleport = {
             demat = "p00gie/tardis/default/demat_int.ogg",
@@ -63,7 +53,7 @@ T.Interior = {
         FlightLoop = "p00gie/tardis/default/flight_loop.wav",
     },
 
-    IdleSound={
+    IdleSound = {
         {
             path="p00gie/tardis/default/hum.wav",
             volume=0.3
@@ -76,21 +66,8 @@ T.Interior = {
         { pos = Vector(40, 147, 105), ang = Angle(0,170,0), },
         { pos = Vector(150, 26, 105), ang = Angle(0,100,0), },
     },
-
-    Scanners = TARDIS.IntModules["default_scanners"],
-    Screens = TARDIS.IntModules["default_screens"],
-
-    Parts = TARDIS.IntModules["default_parts"],
-    Controls = TARDIS.IntModules["default_controls"],
-    PartTips = TARDIS.IntModules["default_part_tips"],
-    CustomTips = TARDIS.IntModules["default_custom_tips"],
-
-    TipSettings = {
-        view_range_min = 40,
-        view_range_max = 75,
-    },
-
 }
+
 
 T.Exterior = {
     Sounds = {
@@ -99,20 +76,15 @@ T.Exterior = {
     },
 }
 
+
 T.Timings = {
     DematAbortState = 3,
     TakeOffState = 3,
     ParkingState = 3.2,
 }
 
-T.CustomHooks = {
-    screen_disable = TARDIS.IntModules["default_hook_screen_disable"],
-}
 
 T.CustomControls = {
-    toggle_screen_1 = TARDIS.IntModules["default_control_toggle_screen_1"],
-    toggle_screen_2 = TARDIS.IntModules["default_control_toggle_screen_2"],
-
     toggle_doorframe_light = {
         int_func=function(self,ply,part)
             local doorframe = self:GetPart("default_doorframe")
@@ -123,6 +95,7 @@ T.CustomControls = {
         tip_text = nil, -- let this one be an easter-egg-ish feature for now
     },
 }
+
 
 T.CustomSettings = {
     color = {
@@ -159,7 +132,11 @@ T.CustomSettings = {
     },
 }
 
+
 T.Templates = {
+    default_lighting = { override = true, },
+    default_parts = { override = true, },
+    default_screens = { override = true, },
     default_exterior = { override = true, },
     default_lamps = {
         override = true,
@@ -209,10 +186,13 @@ T.Templates = {
         end,
     },
 }
+
 T.TemplatesMergeOrder = {
+    "default_small_version",
     "default_lamps",
-    "default_more_lamps",
+    "default_small_version_lamp_fix",
 }
+
 
 TARDIS:AddInterior(T)
 

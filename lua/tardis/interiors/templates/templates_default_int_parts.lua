@@ -1,4 +1,8 @@
-TARDIS.IntModules["default_parts"] = {
+local T = {}
+T.Interior = {}
+
+
+T.Interior.Parts = {
 	door = {
 		model="models/vtalanov98/toyota_ext/doors_interior.mdl",
 		posoffset=Vector(4.42,0,-52.33),
@@ -160,7 +164,8 @@ TARDIS.IntModules["default_parts"] = {
 	default_sonic_dispenser_hitbox = { ang = Angle(0,90,0), },
 }
 
-TARDIS.IntModules["default_controls"] = {
+
+T.Interior.Controls = {
 	default_throttle  = "teleport_double",
 	default_handbrake  = "handbrake",
 	default_side_lever1 = "engine_release",
@@ -201,7 +206,8 @@ TARDIS.IntModules["default_controls"] = {
 	default_sonic_dispenser_hitbox = "sonic_dispenser",
 }
 
-TARDIS.IntModules["default_part_tips"] = {
+
+T.Interior.PartTips = {
 	default_throttle = {pos = Vector(44.891, 14.683, 132.679), right = false, down = true, },
 	default_handbrake = {pos = Vector(46.248, -16.804, 131.436), right = true, down = true, },
 	default_side_lever1 = {pos = Vector(103.41, 121.655, 130.044), right = true, down = false, },
@@ -295,7 +301,8 @@ TARDIS.IntModules["default_part_tips"] = {
 	default_colored_lever_5 = { pos = Vector(31.09, 6.44, 135.21), right = true, down = true, },
 }
 
-TARDIS.IntModules["default_custom_tips"] = {
+
+T.Interior.CustomTips = {
 	{pos = Vector(83.96, 122.99, 125.78), right = true, down = true, part = "default_side_speakers", },
 	{pos = Vector(130.65, 71.77, 125.87), right = true, down = true, part = "default_side_speakers", },
 	{pos = Vector(-38.64, -144.1, 125.97), right = true, down = true, part = "default_side_speakers", },
@@ -305,3 +312,54 @@ TARDIS.IntModules["default_custom_tips"] = {
 
 	{pos = Vector(334.946, -34.611, 40.627), text = "Never Gonna Give You Up!\nNever Gonna Let You Down!"}
 }
+
+
+T.Interior.TipSettings = {
+	view_range_min = 40,
+	view_range_max = 75,
+},
+
+
+TARDIS:AddInteriorTemplate("default_parts", T)
+
+
+
+
+local T = {
+    Interior = {
+        Size = {
+            Min = Vector(-555.742, -461.072, 0),
+            Max = Vector(388.574, 371.054, 381.653),
+        },
+        ExitBox = {
+            Min = Vector(-659.914, -564.271, -50),
+            Max = Vector(484.983, 514.944, 385.095),
+        },
+
+        Parts = {
+            default_rotor = {
+                model = "models/molda/toyota_int/rotor_small.mdl",
+            },
+            default_intdoors = false,
+            default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
+            default_corridor_doors_static = { pos = Vector(-475.5, 213, 160.8) },
+            default_corridors = {
+                model = "models/molda/toyota_int/corridor_version3.mdl"
+            },
+        },
+    },
+}
+
+TARDIS:AddInteriorTemplate("default_small_version", T)
+
+
+
+
+TARDIS:AddInteriorTemplate("default_small_version_lamp_fix", {
+    Interior = {
+        Size = {
+            Max = Vector(484.983, 514.944, 800)
+        },
+    },
+})
+
