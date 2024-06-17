@@ -16,16 +16,26 @@ local function get_color_setting_k(ply)
     return 0
 end
 
-local function change_light_color(lt, col)
+local function change_light_color(lt, rt, col)
     if lt and lt.brightness and col then
         lt.color = col
-        lt.color_vec = Vector(col.r/255, col.g/255, col.b/255) * lt.brightness
-        lt.render_table.color = lt.color_vec
+
+        local color_vec = Vector(col.r/255, col.g/255, col.b/255)
+        rt.color = color_vec * lt.brightness
     end
 end
 
 local function set_interior_color(int, k)
     if not int.light_data then return end
+
+    local state = int.exterior:GetState()
+
+    local lmn = int.light_data.main.tardis_states[state]
+    local lcb = int.light_data.extra.console_bottom.tardis_states[state]
+    local lcw = int.light_data.extra.console_white.tardis_states[state]
+    local lmn_rt = int.light_data.main.render_tables[state]
+    local lcb_rt = int.light_data.extra.console_bottom.render_tables[state]
+    local lcw_rt = int.light_data.extra.console_white.render_tables[state]
 
     local p = 1 - k
 
@@ -34,8 +44,8 @@ local function set_interior_color(int, k)
 
     int:SetData("default_int_env_color", col)
 
-    change_light_color(int.light_data.main, col)
-    change_light_color(int.light_data.extra.console_bottom, col)
+    change_light_color(lmn, lmn_rt, col)
+    change_light_color(lcb, lcb_rt, col)
 
     -- Color(80, 120, 255) ... Color (80, 255, 120)
     local rotor_col = Color(80, 120 + 125 * k, 120 + 125 * p)
@@ -43,7 +53,7 @@ local function set_interior_color(int, k)
 
     -- Color(240,240,255) ... Color(255,255,200)
     local console_col = Color(240 + 15 * k, 240 + 15 * k, 200 + 55 * p)
-    change_light_color(int.light_data.extra.console_white, console_col)
+    change_light_color(lcw, lcw_rt, console_col)
 
     -- Color(255,255,255) ... Color(255,255,220)
     local floor_lights_col = Color(255, 255, 220 + 20 * p)

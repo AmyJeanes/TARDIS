@@ -1,250 +1,338 @@
--- Lights
-
-local function ParseLightTable(lt, interior, default_falloff)
-    if SERVER then return end
-
-    if not lt then return end
-
-    lt.falloff = lt.falloff or default_falloff
-    -- default falloff values were taken from cl_render.lua::predraw_o
-
-    if lt.warncolor then
-        lt.warn_color = lt.warncolor
-        lt.warncolor = nil
-    end
-
-    lt.warn_color = lt.warn_color or lt.color
-    lt.warn_pos = lt.warn_pos or lt.pos
-    lt.warn_brightness = lt.warn_brightness or lt.brightness
-    lt.warn_falloff = lt.warn_falloff or lt.falloff
-
-    if lt.nopower then
-        lt.off_color = lt.off_color or lt.color
-        lt.off_pos = lt.off_pos or lt.pos
-        lt.off_brightness = lt.off_brightness or lt.brightness
-        lt.off_falloff = lt.off_falloff or lt.falloff
-
-        -- defaulting `off + warn` to `off` unless specified otherwise
-        lt.off_warn_color = lt.off_warn_color or lt.off_color
-        lt.off_warn_pos = lt.off_warn_pos or lt.off_pos
-        lt.off_warn_brightness = lt.off_warn_brightness or lt.off_brightness
-        lt.off_warn_falloff = lt.off_warn_falloff or lt.off_falloff
-    end
-
-    -- optimize calculations in `cl_render.lua::predraw_o`
-    lt.color_vec = lt.color:ToVector() * lt.brightness
-    lt.pos_global = interior:LocalToWorld(lt.pos)
-
-    lt.warn_color_vec = lt.warn_color:ToVector() * lt.warn_brightness
-    lt.warn_pos_global = interior:LocalToWorld(lt.warn_pos)
-
-    if lt.nopower then
-        lt.off_pos_global = interior:LocalToWorld(lt.off_pos)
-        lt.off_color_vec = lt.off_color:ToVector() * lt.off_brightness
-
-        lt.off_warn_pos_global = interior:LocalToWorld(lt.off_warn_pos)
-        lt.off_warn_color_vec = lt.off_warn_color:ToVector() * lt.off_warn_brightness
-    end
-
-    lt.render_table = {
-        type = MATERIAL_LIGHT_POINT,
-        color = lt.color_vec,
-        pos = lt.pos_global,
-        quadraticFalloff = lt.falloff,
-    }
-    lt.warn_render_table = {
-        type = MATERIAL_LIGHT_POINT,
-        color = lt.warn_color_vec,
-        pos = lt.warn_pos_global,
-        quadraticFalloff = lt.warn_falloff,
-    }
-
-    if lt.nopower then
-        lt.off_render_table = {
-            type = MATERIAL_LIGHT_POINT,
-            color = lt.off_color_vec,
-            pos = lt.off_pos_global,
-            quadraticFalloff = lt.off_falloff,
-        }
-        lt.off_warn_render_table = {
-            type = MATERIAL_LIGHT_POINT,
-            color = lt.off_warn_color_vec,
-            pos = lt.off_warn_pos_global,
-            quadraticFalloff = lt.off_warn_falloff,
-        }
-    else
-        lt.off_render_table = {}
-        lt.off_warn_render_table = {}
-    end
-end
-
-if CLIENT then
-    local function MergeLightTable(tbl, base)
-        local new_table = TARDIS:CopyTable(base)
-        if not tbl then return new_table end
-
-        new_table.NoLO = nil
-        new_table.NoExtra = nil
-        new_table.NoExtraNoLO = nil
-
-        table.Merge(new_table, tbl)
-        return new_table
-    end
-
-    function ENT:LoadLights()
-        local noLO = not TARDIS:GetSetting("lightoverride-enabled")
-        local noExtra = not TARDIS:GetSetting("extra-lights")
-
-        local int_metadata = self.metadata.Interior
-        local light = int_metadata.Light
-        local lights = int_metadata.Lights
-
-        local light_alt
-
-        if noLO and noExtra then
-            light_alt = light.NoExtraNoLO or light.NoLO
-        elseif noLO then
-            light_alt = light.NoLO
-        elseif noExtra then
-            light_alt = light.NoExtra
-        end
-
-        self.light_data = {
-            main = MergeLightTable(light_alt, light),
-            extra = {},
-        }
-        ParseLightTable(self.light_data.main, self, 20)
-
-        if not lights then return end
-        for k,v in pairs(lights) do
-            if v and istable(v) then
-                local v_alt
-                if noLO then
-                    v_alt = v.NoLO
-                end
-                self.light_data.extra[k] = MergeLightTable(v_alt, v)
-                ParseLightTable(self.light_data.extra[k], self, 10)
-            end
-        end
-    end
-
-    ENT:AddHook("Initialize", "lights", function(self)
-        self:LoadLights()
-    end)
-
-    ENT:AddHook("SettingChanged", "lights", function(self, id, val)
-        if id ~= "lightoverride-enabled" and id ~= "extra-lights" then return end
-        self:LoadLights()
-    end)
-
-    function ENT:DrawLight(id,light)
-        if self:CallHook("ShouldDrawLight",id,light)==false then return end
-
-        local dlight = DynamicLight(id, true)
-        if not dlight then return end
-
-        local warning = self:GetData("warning", false)
-        local power = self:GetPower()
-
-        if not power and warning then
-            dlight.Pos = light.off_warn_pos_global
-            dlight.r = light.off_warn_color.r
-            dlight.g = light.off_warn_color.g
-            dlight.b = light.off_warn_color.b
-            dlight.Brightness = light.off_warn_brightness
-        elseif not power then
-            dlight.Pos = light.off_pos_global
-            dlight.r = light.off_color.r
-            dlight.g = light.off_color.g
-            dlight.b = light.off_color.b
-            dlight.Brightness = light.off_brightness
-        elseif warning then
-            dlight.Pos = light.warn_pos_global
-            dlight.r = light.warn_color.r
-            dlight.g = light.warn_color.g
-            dlight.b = light.warn_color.b
-            dlight.Brightness = light.warn_brightness
-        else -- power & no warning
-            dlight.Pos = light.pos_global
-            dlight.r = light.color.r
-            dlight.g = light.color.g
-            dlight.b = light.color.b
-            dlight.Brightness = light.brightness
-        end
-
-        dlight.Decay = 5120
-        dlight.Size = 1024
-        dlight.DieTime = CurTime() + 1
-    end
-
-    ENT:AddHook("Think", "lights", function(self)
-        if TARDIS:GetSetting("lightoverride-enabled") then return end
-        local light = self.light_data.main
-        local lights = self.light_data.extra
-        local index=self:EntIndex()
-        if light then
-            self:DrawLight(index,light)
-        end
-        if lights and TARDIS:GetSetting("extra-lights") then
-            local i=0
-            for _,light in pairs(lights) do
-                i=i+1
-                self:DrawLight((index*1000)+i,light)
-            end
-        end
-    end)
-
-    ENT:AddHook("ShouldDrawLight", "interior_light_enabled", function(self,id,light)
-        if light and light.enabled == false then return false end
-        -- allow disabling lights with light states
-    end)
-end
-
-
-
+-- Lights && light states
 
 -- Light states
-
-local function ChangeSingleLightState(light_table, state)
-    local new_state = light_table.states and light_table.states[state]
-    if not new_state then return end
-    table.Merge(light_table, new_state)
-end
 
 function ENT:ApplyLightState(state)
     self:SetData("light_state", state)
     self:CallHook("LightStateChanged", state)
 
     if SERVER then
-        self:SendMessage("light_state", {state} )
+        self:CallClientHook("ApplyLightState", state)
     else
-        local ldata = self.light_data
-        ChangeSingleLightState(ldata.main, state)
-        ParseLightTable(ldata.main, self, 20)
+        self:SetData("light_state", state)
+        self:UpdateLights()
+    end
+end
 
-        for k,v in pairs(ldata.extra) do
-            ChangeSingleLightState(v, state)
-            ParseLightTable(v, self, 10)
+
+if SERVER then return end
+
+
+ENT:AddHook("ApplyLightState",  "client_func", function(self, state)
+    self:ApplyLightState(state)
+end)
+
+
+
+
+local LIGHT_TARDIS_STATES = {
+    -- { state_id, base_id, is_affected_by_power }
+    -- order is important
+    {"idle_warning", "idle", false, },
+
+    {"off", "idle", true, },
+    {"off_warning", "off", true, },
+    {"dead", "off_warning", true, },
+
+    {"travel", "idle", false, },
+    {"takeoff", "travel", false, },
+    {"travel_warning", "idle_warning", false, },
+    {"takeoff_warning", "travel_warning", false, },
+
+    {"handbrake", "idle", false, },
+    {"demat_abort", "handbrake", false, },
+    {"handbrake_warning", "idle_warning", false, },
+    {"demat_abort_warning", "handbrake_warning", false, },
+    {"parking", "idle", false, },
+    {"parking_warning", "idle_warning", false, },
+
+    {"demat_fail", "idle_warning", false, },
+    {"mat_fail", "travel_warning", false, },
+    {"demat_fail_warning", "travel_warning", false, },
+    {"mat_fail_warning", "travel_warning", false, },
+}
+local LIGHT_PARAMS_LIST = { "color", "pos", "brightness", "falloff", "enabled", }
+
+local function ConvertOldLightStates(lt)
+    if lt.warncolor then
+        lt.warn_color = lt.warncolor
+        lt.warncolor = nil
+    end
+
+    if lt.warn_color or lt.warn_pos or lt.warn_brightness or lt.warn_falloff then
+        lt.tardis_states["idle_warning"] = {
+            color = lt.warn_color,
+            pos = lt.warn_pos,
+            brightness = lt.warn_brightness,
+            falloff = lt.warn_falloff,
+        }
+    end
+
+    if lt.off_color or lt.off_pos or lt.off_brightness or lt.off_falloff then
+        lt.tardis_states["off"] = {
+            color = lt.off_color,
+            pos = lt.off_pos,
+            brightness = lt.off_brightness,
+            falloff = lt.off_falloff,
+        }
+    end
+
+    if lt.off_warn_color or lt.off_warn_pos or lt.off_warn_brightness or lt.off_warn_falloff then
+        lt.tardis_states["off_warning"] = {
+            color = lt.off_warn_color,
+            pos = lt.off_warn_pos,
+            brightness = lt.off_warn_brightness,
+            falloff = lt.off_warn_falloff,
+        }
+    end
+end
+
+
+local function ParseLightTable(lt, interior, default_falloff)
+    if SERVER then return end
+    if not lt then return end
+
+    -- compatibility with old way of specifying lights
+    if not lt.tardis_states then
+        lt.tardis_states = {}
+        ConvertOldLightStates(lt)
+    end
+
+
+    local ts = lt.tardis_states
+
+
+    -- Generating the "idle" state (from light defaults)
+
+    if not ts["idle"] then
+        ts["idle"] = {}
+        for i,param in ipairs(LIGHT_PARAMS_LIST) do
+            if lt[param] then
+                ts["idle"][param] = lt[param]
+                lt[param] = nil
+            end
+        end
+    end
+
+    -- default falloff values were taken from cl_render.lua::predraw_o
+    ts["idle"].falloff = ts["idle"].falloff or default_falloff
+
+
+    -- Processing other states
+    local function MergeInheritedLightState(state_id, base_id)
+        local new_table = TARDIS:CopyTable(ts[base_id])
+        if not ts[state_id] then
+            ts[state_id] = new_table
+            return
+        end
+        table.Merge(new_table, ts[state_id])
+        ts[state_id] = new_table
+    end
+
+    for i,entry in pairs(LIGHT_TARDIS_STATES) do -- the order is important
+        local state_id, base_id = entry[1], entry[2]
+        local nopower_affected = entry[3]
+
+        if not isstring(ts[state_id]) then
+            MergeInheritedLightState(state_id, base_id)
+            if nopower_affected and not lt.nopower then
+                ts[state_id].enabled = false
+            end
+        end
+    end
+
+
+    -- processing inheritance
+
+    local function CopyDefaultedLightState(state_id)
+        if istable(ts[state_id]) then return end
+        if not ts[state_id] then return end
+
+        local defaulted_state_id = ts[state_id]
+
+        if defaulted_state_id == state_id then
+            error("Invalid light states: state " .. state_id .. " defauls to itself")
+        end
+
+        if not ts[defaulted_state_id] then
+            error("Invalid light states: state " .. state_id ..
+                  " defauls to a non-existant state " .. defaulted_state_id)
+        end
+
+        if isstring(ts[defaulted_state_id]) then
+            CopyDefaultedLightState(defaulted_state_id)
+            return
+        end
+
+        if istable(ts[defaulted_state_id]) then
+            ts[state_id] = TARDIS:CopyTable(ts[defaulted_state_id])
+            return
+        end
+
+        error("Invalid light states: state " .. state_id .. " has incorrect syntax")
+    end
+
+    for i,entry in pairs(LIGHT_TARDIS_STATES) do
+        local state_id = entry[1]
+
+        if isstring(ts[state_id]) then
+            CopyDefaultedLightState(state_id)
+        end
+    end
+
+
+    -- creating render tables
+    lt.render_tables = {}
+    for state_id,state in pairs(ts) do
+        if state.enabled == false then
+            lt.render_tables[state_id] = {}
+        else
+            lt.render_tables[state_id] = {
+                type = MATERIAL_LIGHT_POINT,
+                color = state.color:ToVector() * state.brightness,
+                pos = interior:LocalToWorld(state.pos),
+                quadraticFalloff = state.falloff,
+            }
+        end
+    end
+
+    if lt.states then
+        for state_id,state in pairs(lt.states) do
+            state.states = nil -- ensuring no recursive calls or stack overflow
+            ParseLightTable(state, self, default_falloff)
         end
     end
 end
 
-if CLIENT then
-    ENT:OnMessage("light_state", function(self, data, ply)
-        self:ApplyLightState(data[1])
-    end)
+
+
+
+
+-- Light setups
+
+function ENT:GetCurrentLightData()
+    local NoExtra = not TARDIS:GetSetting("extra-lights")
+    local NoLamps = not TARDIS:GetSetting("lamps-enabled")
+
+    local setup = "Default"
+
+    if NoExtra and NoLamps then
+        setup = "NoLampsNoExtra"
+    elseif NoExtra then
+        setup = "NoExtra"
+    elseif NoLamps then
+        setup = "NoLamps"
+    end
+
+    local ld = self.light_data_setups[setup]
+
+    local state = self:GetData("light_state")
+    if state and ld.states and ld.states[state] then
+        ld = self.light_data.states[state]
+    end
+
+    return ld
 end
 
+function ENT:UpdateLights()
+    self.light_data = self:GetCurrentLightData()
+end
 
-if CLIENT then
-    ENT:AddHook("SlowThink", "lights", function(self)
-        local pos = self:GetPos()
-        if self.lights_lastpos == pos then return end
-        if self.lights_lastpos ~= nil then
-            self:LoadLights()
-            self:LoadLamps()
-            self:CreateLamps()
+local function MergeLightTable(tbl, base)
+    local new_table = TARDIS:CopyTable(base)
+    if not tbl then return new_table end
+
+    new_table.NoExtra = nil
+    new_table.NoLamps = nil
+    new_table.NoLampsNoExtra = nil
+
+    table.Merge(new_table, tbl)
+    return new_table
+end
+
+function ENT:CreateLightSetup(setup_name, light, extra_lights, default_setup_name)
+    local current_light = light[setup_name] or light[default_setup_name]
+    local setup = {
+        main = MergeLightTable(current_light, light),
+        extra = {},
+    }
+
+    if extra_lights and istable(extra_lights) then
+        for id,li in pairs(extra_lights) do
+            if li and istable(li) then
+                local current_light = li[setup_name] or li[default_setup_name]
+                setup.extra[id] = MergeLightTable(current_light, li)
+            end
         end
-        self.lights_lastpos = pos
-    end)
+    end
+
+    self.light_data_setups[setup_name] = setup
 end
+
+local function PrepareLightStates(lt)
+    if not lt or not lt.states then return end
+
+    for state_id,state in pairs(lt.states) do
+        lt.states[state_id] = MergeLightTable(lt, state)
+    end
+end
+
+
+
+
+function ENT:LoadLights()
+    local int_metadata = self.metadata.Interior
+    local light = int_metadata.Light
+    local lights = int_metadata.Lights
+    self.light_data_setups = {}
+
+    self:CreateLightSetup("Default",        int_metadata.Light, int_metadata.Lights)
+    self:CreateLightSetup("NoLamps",        int_metadata.Light, int_metadata.Lights)
+    self:CreateLightSetup("NoExtra",        int_metadata.Light)
+    self:CreateLightSetup("NoLampsNoExtra", int_metadata.Light, nil, "NoExtra")
+
+    for setup_id,setup in pairs(self.light_data_setups) do
+        PrepareLightStates(setup.main)
+        ParseLightTable(setup.main, self, 20)
+
+        if not table.IsEmpty(setup.extra) then
+            for el_id,el in pairs(setup.extra) do
+                PrepareLightStates(el)
+                ParseLightTable(el, self, 10)
+            end
+        end
+    end
+
+    self:UpdateLights()
+end
+
+
+
+-- Hooks to make it work
+
+ENT:AddHook("Initialize", "lights", function(self)
+    self:LoadLights()
+end)
+
+ENT:AddHook("SettingChanged", "lights", function(self, id, val)
+    if id == "extra-lights" or id == "lamps-enabled" then
+        self:UpdateLights()
+    end
+end)
+
+ENT:AddHook("SlowThink", "lights", function(self)
+    local pos = self:GetPos()
+    if self.lights_lastpos == pos then return end
+    if self.lights_lastpos ~= nil then
+        self:LoadLights()
+        self:LoadLamps()
+        self:CreateLamps()
+    end
+    self.lights_lastpos = pos
+end)
+
+
+ENT:AddHook("ShouldDrawLight", "interior_light_enabled", function(self,id,light)
+    if light and light.enabled == false then return false end
+    -- allow disabling lights with light states
+end)
