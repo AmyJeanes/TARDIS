@@ -8,7 +8,7 @@ local function get_color_setting_k(ply)
         return 1
     end
     if st == "turquoise" then
-        return 0.5
+        return 0.6
     end
     if st == "random" then
         return math.Rand(0,1)
