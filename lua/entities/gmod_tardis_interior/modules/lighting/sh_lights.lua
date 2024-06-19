@@ -1,5 +1,9 @@
 -- Lights && light states
 
+local DEFAULT_MAIN_FALLOFF = 20
+local DEFAULT_EXTRA_FALLOFF = 10
+
+
 -- Light states
 
 function ENT:ApplyLightState(state)
@@ -88,7 +92,7 @@ local function ConvertOldLightStates(lt)
 end
 
 
-local function ParseLightTable(lt, interior, default_falloff)
+function ENT:ParseLightTable(lt, default_falloff)
     if SERVER then return end
     if not lt then return end
 
@@ -190,18 +194,12 @@ local function ParseLightTable(lt, interior, default_falloff)
             lt.render_tables[state_id] = {
                 type = MATERIAL_LIGHT_POINT,
                 color = state.color:ToVector() * state.brightness,
-                pos = interior:LocalToWorld(state.pos),
+                pos = self:LocalToWorld(state.pos),
                 quadraticFalloff = state.falloff,
             }
         end
     end
 
-    if lt.states then
-        for state_id,state in pairs(lt.states) do
-            state.states = nil -- ensuring no recursive calls or stack overflow
-            ParseLightTable(state, self, default_falloff)
-        end
-    end
 end
 
 
@@ -228,13 +226,16 @@ function ENT:GetCurrentLightData()
 
     local state = self:GetData("light_state")
     if state and ld.states and ld.states[state] then
-        ld = self.light_data.states[state]
+        ld = ld.states[state]
     end
 
     return ld
 end
 
 function ENT:UpdateLights()
+    if not self.lights_loaded then
+        return self:LoadLights()
+    end
     self.light_data = self:GetCurrentLightData()
 end
 
@@ -269,18 +270,53 @@ function ENT:CreateLightSetup(setup_name, light, extra_lights, default_setup_nam
     self.light_data_setups[setup_name] = setup
 end
 
-local function PrepareLightStates(lt)
+function ENT:PrepareLightStates(setup, lt, lt_id)
     if not lt or not lt.states then return end
 
     for state_id,state in pairs(lt.states) do
-        lt.states[state_id] = MergeLightTable(lt, state)
+        setup.states = setup.states or {}
+        setup.states[state_id] = setup.states[state_id] or {}
+
+        local this_state = setup.states[state_id]
+
+        if lt_id then
+            this_state.extra = this_state.extra or {}
+            this_state.extra[lt_id] = MergeLightTable(state, lt)
+            this_state.extra[lt_id].states = nil
+        else
+            this_state.main = this_state.main or {}
+            this_state.main = MergeLightTable(state, lt)
+            this_state.main.states = nil
+        end
+    end
+end
+
+function ENT:ParseLightStatesForLight(setup, lt_id)
+    local all_states = setup.states
+    if not all_states or table.IsEmpty(all_states) then return end
+
+    if lt_id then
+        for state_id, state in pairs(all_states) do
+            if state.extra and state.extra[lt_id] then
+                self:ParseLightTable(state.extra[lt_id], DEFAULT_EXTRA_FALLOFF)
+            end
+        end
+    else
+        for state_id, state in pairs(all_states) do
+            if state.main then
+                self:ParseLightTable(state.main, DEFAULT_MAIN_FALLOFF)
+            end
+        end
     end
 end
 
 
 
+function ENT:LoadLights(reload)
+    if self.lights_loaded and not reload then
+        return self:UpdateLights()
+    end
 
-function ENT:LoadLights()
     local int_metadata = self.metadata.Interior
     local light = int_metadata.Light
     local lights = int_metadata.Lights
@@ -292,19 +328,24 @@ function ENT:LoadLights()
     self:CreateLightSetup("NoLampsNoExtra", int_metadata.Light, nil, "NoExtra")
 
     for setup_id,setup in pairs(self.light_data_setups) do
-        PrepareLightStates(setup.main)
-        ParseLightTable(setup.main, self, 20)
+        self:PrepareLightStates(setup, setup.main)
+        self:ParseLightTable(setup.main, DEFAULT_MAIN_FALLOFF)
+        self:ParseLightStatesForLight(setup)
 
         if not table.IsEmpty(setup.extra) then
             for el_id,el in pairs(setup.extra) do
-                PrepareLightStates(el)
-                ParseLightTable(el, self, 10)
+                self:PrepareLightStates(setup, el, el_id)
+                self:ParseLightTable(el, DEFAULT_EXTRA_FALLOFF)
+                self:ParseLightStatesForLight(setup, el_id)
             end
         end
+
     end
 
+    self.lights_loaded = true
     self:UpdateLights()
 end
+
 
 
 
@@ -324,7 +365,7 @@ ENT:AddHook("SlowThink", "lights", function(self)
     local pos = self:GetPos()
     if self.lights_lastpos == pos then return end
     if self.lights_lastpos ~= nil then
-        self:LoadLights()
+        self:LoadLights(true)
         self:LoadLamps()
         self:CreateLamps()
     end
