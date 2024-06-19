@@ -652,6 +652,7 @@ T.Phrases = {
     ["TipStyles.Default"] = "默认（取决内饰）",
     ["TipStyles.WhiteOnBlue"] = "蓝底白字",
     ["TipStyles.WhiteOnGrey"] = "白底蓝字",
+    ["Update.NeverShow"] = "从不显示更新",
     ["Update.ShowReleaseNotes"] = "您想了解更多吗？",
     ["Update.Updated"] = "TARDIS 已更新至 %s 版本",
     ["Vortex.ModelMissing"] = "警告：旋涡模型无效，已禁用旋涡，您可能遗漏了依赖",
