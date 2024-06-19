@@ -11,7 +11,11 @@ function ENT:SetData(k,v,network)
 end
 
 function ENT:GetData(k,default)
-    return IsValid(self.exterior) and self.exterior:GetData(k, default) or default
+    if IsValid(self.exterior) then
+        return self.exterior:GetData(k, default)
+    else
+        return default
+    end
 end
 
 function ENT:ClearData()
