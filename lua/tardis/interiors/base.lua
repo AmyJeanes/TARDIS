@@ -184,6 +184,7 @@ T.Timings = {
     TakeOffState = 0,
     ParkingState = 0,
 }
+T.SyncExteriorBodygroupToDoors = true
 
 TARDIS:AddInterior(T)
 

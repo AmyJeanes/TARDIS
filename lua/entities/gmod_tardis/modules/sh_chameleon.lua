@@ -389,3 +389,7 @@ ENT:AddHook("ShouldDrawPart", "chameleon_door", function(self, part)
         return false
     end
 end)
+
+function ENT:IsChameleonActive()
+    return self:GetData("chameleon_active", false)
+end
