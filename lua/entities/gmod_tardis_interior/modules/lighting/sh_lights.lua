@@ -219,6 +219,7 @@ function ENT:ApplyLightState(state)
         self:SendMessage("light_state", {state} )
     else
         local ldata = self.light_data
+        if not ldata then return end
         ChangeSingleLightState(ldata.main, state)
         ParseLightTable(ldata.main, self, 20)
 

@@ -227,13 +227,32 @@ if SERVER then
     end)
 
     ENT:AddHook("BodygroupChanged","doors",function(self,bodygroup,value)
+        if not self.metadata.SyncExteriorBodygroupToDoors then return end
+        if self:IsChameleonActive() then return end
+
         local door=TARDIS:GetPart(self,"door")
         local intdoor=TARDIS:GetPart(self.interior,"door")
-        if IsValid(door) then
+
+        if IsValid(door) and door:GetBodygroup(bodygroup) ~= value then
             door:SetBodygroup(bodygroup,value)
         end
-        if IsValid(intdoor) then
+
+        if IsValid(intdoor)  and door:GetBodygroup(bodygroup) ~= value then
             intdoor:SetBodygroup(bodygroup,value)
+        end
+    end)
+
+    ENT:AddHook("PartBodygroupChanged", "doors", function(self, part, bodygroup, value)
+        if not self.metadata.SyncDoorBodygroups then return end
+        if self:IsChameleonActive() then return end
+
+        if not IsValid(part) or part ~= self:GetPart("door") then return end
+        if not IsValid(self.interior) then return end
+        local door_int = self.interior:GetPart("door")
+        if not IsValid(door_int) then return end
+
+        if door_int:GetBodygroup(bodygroup) ~= value then
+            door_int:SetBodygroup(bodygroup, value)
         end
     end)
 
@@ -297,6 +316,50 @@ else
                     intpart:EmitSound(intsnd)
                 end
             end
+        end
+    end)
+end
+
+
+--
+-- Classic doors support
+--
+if CLIENT then
+
+    ENT:AddHook("ShouldDraw", "classic_doors_exterior", function(self)
+        if IsValid(self.interior) and self.metadata.EnableClassicDoors
+            and wp.drawing and wp.drawingent == self.interior.portals.interior
+        then
+            return false
+        end
+
+    end)
+
+    ENT:AddHook("ShouldDrawPart", "classic_doors_exterior_door", function(self, part)
+        if IsValid(self.interior) and self.metadata.EnableClassicDoors == true and part ~= nil
+            and wp.drawing and wp.drawingent == self.interior.portals.interior
+            and part == TARDIS:GetPart(self, "door")
+        then
+            return false
+        end
+    end)
+
+    ENT:AddHook("PlayerEnter", "classic_doors_intdoor_sound", function(self,ply,notp)
+        if not IsValid(self.interior) then return end
+        if self.metadata.EnableClassicDoors ~= true then return end
+        if self.metadata.NoSoundOnEnter == true then return end
+
+        local intdoor = TARDIS:GetPart(self.interior, "intdoor")
+        if not IsValid(intdoor) then return end
+
+        local door_sounds = self.metadata.Interior.Sounds.Door
+        if not door_sounds then return end
+
+        local door_sound = self:GetData("doorstatereal") and door_sounds.open or door_sounds.close
+        if not door_sound then return end
+
+        if intdoor.IntDoorPos ~= nil and intdoor.IntDoorPos ~= 0 and intdoor.IntDoorPos ~= 1 then
+            sound.Play(door_sound, self.interior:LocalToWorld( self.metadata.Interior.Fallback.pos ))
         end
     end)
 end
