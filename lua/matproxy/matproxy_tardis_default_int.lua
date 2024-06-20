@@ -8,7 +8,7 @@ matproxy.Add({
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
-        local col = ent:GetData("default_int_env_color") or Color(0,200,255)
+        local col = ent:GetData("default_int_env_color", Color(0,200,255))
         local power = ent.exterior and ent.exterior:GetPower()
 
         if self.lastcol ~= col or self.lastpower ~= power then
@@ -35,7 +35,7 @@ matproxy.Add({
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
-        local col = ent:GetData("default_int_floor_lights_color") or Color(230,230,210)
+        local col = ent:GetData("default_int_floor_lights_color", Color(230,230,210))
 
         if self.lastcol ~= col then
             self.lastcol = col
@@ -56,7 +56,7 @@ matproxy.Add({
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
-        local col = ent:GetData("default_int_rotor_color") or Color(255,255,255)
+        local col = ent:GetData("default_int_rotor_color", Color(255,255,255))
 
         if self.lastcol ~= col then
             self.lastcol = col
