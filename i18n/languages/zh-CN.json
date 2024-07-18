@@ -440,7 +440,7 @@
     "Settings.Sections.Exterior": "外部",
     "Settings.Sections.Exterior.Light": "外部光源",
     "Settings.Sections.Exterior.Light.AlwaysOn": "默认开启外部光源",
-    "Settings.Sections.Exterior.Light.AlwaysOn.Description": "外光是否总是被照亮，除非被控制禁用？",
+    "Settings.Sections.Exterior.Light.AlwaysOn.Description": "除非被全局关闭，外部灯光是否应始终为亮。",
     "Settings.Sections.Exterior.Light.ColorOverride": "颜色覆盖",
     "Settings.Sections.Exterior.Light.ColorOverride.Description": "外部光源的颜色覆盖",
     "Settings.Sections.Exterior.Light.DynamicLightSize": "动态光距",
