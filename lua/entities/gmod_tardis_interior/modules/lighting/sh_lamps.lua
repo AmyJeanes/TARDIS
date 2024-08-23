@@ -27,6 +27,7 @@ if CLIENT then
         lmp.brightness = lmp.brightness or 3.0
         lmp.distance = lmp.distance or 1024
         lmp.shadows = lmp.shadows or false
+        lmp.shadowfilter = lmp.shadowfilter or 1
 
         lmp.warn = MergeLampTable(lmp.warn, lmp, false)
         lmp.off = MergeLampTable(lmp.off, lmp, false)
@@ -90,6 +91,7 @@ if CLIENT then
         pl:SetBrightness(lmp.brightness)
         pl:SetFarZ(lmp.distance)
         pl:SetEnableShadows(lmp.shadows)
+        pl:SetShadowFilter(lmp.shadowfilter)
         pl:Update()
         return pl
     end
