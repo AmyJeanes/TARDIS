@@ -3,11 +3,22 @@ CreateConVar("tardis2_aprilfools_2023", 1, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "0
 function TARDIS:IsAprilFools()
     local aprilFools = cvars.Number("tardis2_aprilfools_2023")
 
-    if CLIENT and aprilFools ~= self.aprilFoolsLast then
+    if aprilFools ~= self.aprilFoolsLast then
         self.aprilFoolsLast = aprilFools
-        RunConsoleCommand("spawnmenu_reload")
+        self.aprilFoolsCache = nil
+        if CLIENT then
+            RunConsoleCommand("spawnmenu_reload")
+        end
     end
 
+    if self.aprilFoolsCache ~= nil then
+        return self.aprilFoolsCache
+    end
+
+    self.aprilFoolsCache = self:IsAprilFoolsInternal(aprilFools)
+end
+
+function TARDIS:IsAprilFoolsInternal(aprilFools)
     if aprilFools == 1 and os.date("%d/%m") == "01/04" then
         return true
     elseif aprilFools == 2 then
