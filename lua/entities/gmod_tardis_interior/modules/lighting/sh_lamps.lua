@@ -92,6 +92,7 @@ if CLIENT then
         pl:SetFarZ(lmp.distance)
         pl:SetEnableShadows(lmp.shadows)
         pl:SetShadowFilter(lmp.shadowfilter)
+        pl:SetNoCull(true)
         pl:Update()
         return pl
     end
