@@ -125,7 +125,7 @@ if SERVER then
 
     ENT:AddHook("Think", "rotorwash", function(self)
         local shouldon=self:CallHook("ShouldTurnOnRotorwash")
-        local shouldoff=self:CallHook("ShouldTurnOffRotorwash")
+        local shouldoff=(not TARDIS:GetSetting("extrotorwash-enabled", self)) or self:CallHook("ShouldTurnOffRotorwash")
 
         if shouldon and (not shouldoff) then
             if not self.rotorwash then

@@ -141,3 +141,19 @@ TARDIS:AddSetting({
     subsection="ProjectedLight",
     name="ColorOverride",
 })
+
+--------------------------------------------------------------------------------
+-- Effects
+
+TARDIS:AddSetting({
+    id="extrotorwash-enabled",
+    type="bool",
+    value=true,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Effects",
+    name="RotorwashEnabled",
+})
