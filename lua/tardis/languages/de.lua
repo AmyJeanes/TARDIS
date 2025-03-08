@@ -466,6 +466,7 @@ T.Phrases = {
     ["Settings.Sections.Exterior.ProjectedLight.EnableColorOverride.Description"] = "Ob die Übersteuerung der projizierten Lichtfarbe aktiviert ist",
     ["Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride"] = "Aktivieren der Abstandsüberbrückung",
     ["Settings.Sections.Exterior.ProjectedLight.EnableDistanceOverride.Description"] = "Ob die Übersteuerung der projizierten Lichtentfernung aktiviert ist",
+    ["Settings.Sections.Exterior.Rendering"] = "Rendering",
     ["Settings.Sections.Exterior.Rendering.EnhancedFadingEnabled"] = "Erweitertes Ausblenden (experimentell)",
     ["Settings.Sections.Exterior.Rendering.EnhancedFadingEnabled.Description"] = "WARNUNG: Experimentelle Funktion, dies kann zu Rendering-Problemen führen, wenn man durch das Äußere auf andere Objekte/Props schaut\n\nBehebt Rendering-Probleme (Backface Culling), wenn das Äußere ein- oder ausgeblendet wird",
     ["Settings.Sections.Global"] = "Verwaltungsoptionen",
