@@ -131,9 +131,3 @@ if SERVER then
         end
     end)
 end
-
-ENT:AddHook("StopDemat","hads-demat",function(self)
-    if self:GetData("hads-demat",false) then
-        self:SetData("hads-demat", false, false) -- not networked
-    end
-end)

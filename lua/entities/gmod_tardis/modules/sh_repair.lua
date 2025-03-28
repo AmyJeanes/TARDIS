@@ -88,6 +88,7 @@ if SERVER then
         TARDIS:Message(self:GetCreator(), "Health.RepairFinished")
         self:StopSmoke()
         self:FlashLight(1.5)
+        self:RemoveAllDecals()
     end
 
     ENT:AddHook("CanLock", "repair", function(self)

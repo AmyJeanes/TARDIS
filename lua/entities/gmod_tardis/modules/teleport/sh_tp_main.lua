@@ -200,6 +200,7 @@ if SERVER then
         self:SetData("force-demat", false, true)
         self:SetData("step",1)
         self:SetData("step-delay",nil)
+        self:SetData("hads-demat",false)
         self:SetData("vortex",true)
         self:SetData("teleport",false)
         self:SetSolid(SOLID_NONE)
@@ -389,6 +390,7 @@ else
         self:SetData("demat",false)
         self:SetData("step",1)
         self:SetData("step-delay",nil)
+        self:SetData("hads-demat",false)
         self:SetData("vortex",true)
         self:SetData("vortex_enter_time",CurTime())
         self:SetData("teleport",false)
@@ -416,7 +418,7 @@ function ENT:SetStepDelay()
     local demat=self:GetData("demat")
     local fast=self:GetFastRemat()
     local mat=self:GetData("mat")
-    local hads=self:GetData("hads-triggered")
+    local hads=self:GetData("hads-demat")
     if not (demat or mat) then return end
 
     local teleport_md = self.metadata.Exterior.Teleport
@@ -447,7 +449,7 @@ end
 function ENT:GetTargetAlpha()
     local demat = self:GetData("demat")
     local mat = self:GetData("mat")
-    local hads = self:GetData("hads-triggered")
+    local hads = self:GetData("hads-demat")
     local step = self:GetData("step",1)
 
     if demat and hads then
