@@ -97,6 +97,7 @@ if SERVER then
         if force then
             self:SetData("force-demat", true, true)
             self:SetData("force-demat-time", CurTime(), true)
+            self:SetFlight(true) -- Ensure flight mode is active during force demat
             self:Explode(30)
             self.interior:Explode(20)
         end
