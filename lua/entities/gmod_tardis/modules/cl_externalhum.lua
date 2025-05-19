@@ -52,10 +52,15 @@ local function UpdateInteriorHumLeakage(self)
         interior_hum_sounds = self.metadata.Interior.IdleSound
     end
     
-    -- Calculate approximate volume to match interior sound at doorway
+    -- Calculate volume to match interior sound at doorway
     -- For a standard 5 meter (75 units) distance from door
     local door_sound_level = 75 -- Default sound level (about 5 meters)
     local volume_multiplier = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
+    
+    -- Calculate a volume multiplier to match interior volume at door
+    -- This makes the transition between inside/outside more seamless
+    -- Typically sounds at a similar distance inside are slightly louder than outside because of enclosed space
+    local interior_to_exterior_ratio = 0.85 -- Exterior sounds around 85% volume of interior sounds at similar distance
     
     if #interior_hum_sounds > 0 then
         -- Play all idle sounds simultaneously, just like interior does
@@ -75,11 +80,14 @@ local function UpdateInteriorHumLeakage(self)
                         -- Limit sound range to about 5 meters
                         self.LeakedInteriorHums[k]:SetSoundLevel(door_sound_level)
                         
-                        -- Apply the volume setting
-                        self.LeakedInteriorHums[k]:ChangeVolume((interior_hum_sound.volume or 1) * volume_multiplier, 0)
+                        -- Apply volume settings with interior-to-exterior ratio for matching perceived volume
+                        -- at doorway threshold, considering user's volume preference
+                        local final_volume = (interior_hum_sound.volume or 1) * volume_multiplier * interior_to_exterior_ratio
+                        self.LeakedInteriorHums[k]:ChangeVolume(final_volume, 0)
                     else
                         -- Update volume in case setting has changed
-                        self.LeakedInteriorHums[k]:ChangeVolume((interior_hum_sound.volume or 1) * volume_multiplier, 0)
+                        local final_volume = (interior_hum_sound.volume or 1) * volume_multiplier * interior_to_exterior_ratio
+                        self.LeakedInteriorHums[k]:ChangeVolume(final_volume, 0)
                     end
                 end
             end
