@@ -144,6 +144,38 @@ if CLIENT then
         subsection="Sounds",
         name="Idle",
     })
+    
+    TARDIS:AddSetting({
+        id="interior_hum_leakage",
+        type="bool",
+        value=true,
+
+        class="local",
+
+        option=true,
+        section=SETTING_SECTION,
+        subsection="Sounds",
+        name="InteriorHumLeakage",
+    })
+    
+    TARDIS:AddSetting({
+        id="interior_hum_leakage_volume",
+        type="number",
+        value=50,
+        min=0,
+        max=100,
+        round_func = function(x)
+            if x > 50 then return (x - x % 10) end
+            return (x - x % 5)
+        end,
+
+        class="local",
+
+        option=true,
+        section=SETTING_SECTION,
+        subsection="Sounds",
+        name="InteriorHumLeakageVolume",
+    })
 end
 
 TARDIS:AddSetting({
