@@ -2,9 +2,48 @@
 -- 1. ExternalHum: The humming sound from the exterior shell when powered (using external_hum setting)
 -- 2. LeakedInteriorHums: Interior hum sounds leaking through when doors are open (using interior_hum_leakage setting)
 
+-- Calculate the ratio of interior to exterior sound volume for a seamless transition
+local function CalculateInteriorToExteriorRatio(self)
+    -- Only proceed if we have an interior with fallback data
+    if not self.interior or not self.metadata.Interior.Fallback or not self.metadata.Interior.Fallback.pos then
+        return 0.85 -- Default fallback value if we can't calculate
+    end
+    
+    -- Get the distance from interior origin (where the sound is played) to the interior fallback position (door)
+    local fallback_pos = self.metadata.Interior.Fallback.pos
+    local distance_to_fallback = fallback_pos:Length() -- Distance from origin (0,0,0) to fallback
+    
+    -- Sound in Source engine attenuates based on distance
+    -- We need to calculate a ratio that makes the exterior sound match what would be heard at the fallback position
+    -- Standard sound level of 75 is approximately 5 meters (265 units)
+    local sound_reference_distance = 265
+    
+    -- Calculate how much the interior sound attenuates at the fallback position
+    -- Sound attenuates inversely with distance, so farther = quieter
+    local ratio
+    
+    if distance_to_fallback <= 1 then
+        -- If almost at origin, maintain 85% for safety
+        ratio = 0.85
+    else
+        -- Calculate ratio based on distance and an adjustment factor
+        -- The closer the fallback is to origin (smaller distance_to_fallback), the higher the ratio should be
+        -- since the interior sound would be louder at fallback position
+        ratio = sound_reference_distance / (distance_to_fallback * 3)
+        
+        -- Clamp to reasonable values (0.3 to 1.0)
+        ratio = math.Clamp(ratio, 0.3, 1.0)
+    end
+    
+    return ratio
+end
+
 ENT:AddHook("Initialize", "externalhum", function(self)
     -- Initialize the table for leaked interior hum sounds
     self.LeakedInteriorHums = {}
+    
+    -- Initialize with a default ratio
+    self.InteriorToExteriorRatio = 0.85
 end)
 
 ENT:AddHook("OnRemove", "externalhum", function(self)
@@ -18,6 +57,16 @@ ENT:AddHook("OnRemove", "externalhum", function(self)
             self.LeakedInteriorHums[k] = nil
         end
     end
+end)
+
+ENT:AddHook("InteriorSpawned", "externalhum", function(self, interior)
+    -- Calculate the interior-to-exterior ratio once the interior is available
+    -- This only needs to be done once since the interior doesn't change during use
+    timer.Simple(0.5, function() 
+        if IsValid(self) and IsValid(interior) then
+            self.InteriorToExteriorRatio = CalculateInteriorToExteriorRatio(self)
+        end
+    end)
 end)
 
 ENT:AddHook("ExteriorChanged", "externalhum", function(self)
@@ -60,10 +109,9 @@ local function UpdateInteriorHumLeakage(self)
     local door_sound_level = 75 -- Default sound level (about 5 meters)
     local volume_multiplier = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
     
-    -- Calculate a volume multiplier to match interior volume at door
-    -- This makes the transition between inside/outside more seamless
-    -- Typically sounds at a similar distance inside are slightly louder than outside because of enclosed space
-    local interior_to_exterior_ratio = 0.85 -- Exterior sounds around 85% volume of interior sounds at similar distance
+    -- Use the dynamically calculated ratio to match the interior sound volume
+    -- This makes transitions between inside/outside seamless when walking through the door
+    local interior_to_exterior_ratio = self.InteriorToExteriorRatio or 0.85
     
     if #interior_hum_sounds > 0 then
         -- Play all idle sounds simultaneously, just like interior does
