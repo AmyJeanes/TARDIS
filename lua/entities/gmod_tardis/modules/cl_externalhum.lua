@@ -59,14 +59,12 @@ ENT:AddHook("OnRemove", "externalhum", function(self)
     end
 end)
 
-ENT:AddHook("InteriorSpawned", "externalhum", function(self, interior)
-    -- Calculate the interior-to-exterior ratio once the interior is available
+ENT:AddHook("PostInitialize", "externalhum", function(self)
+    -- Calculate the interior-to-exterior ratio if interior is available
     -- This only needs to be done once since the interior doesn't change during use
-    timer.Simple(0.5, function() 
-        if IsValid(self) and IsValid(interior) then
-            self.InteriorToExteriorRatio = CalculateInteriorToExteriorRatio(self)
-        end
-    end)
+    if self.interior and IsValid(self.interior) then
+        self.InteriorToExteriorRatio = CalculateInteriorToExteriorRatio(self)
+    end
 end)
 
 ENT:AddHook("ExteriorChanged", "externalhum", function(self)
@@ -105,8 +103,8 @@ local function UpdateInteriorHumLeakage(self)
     end
     
     -- Calculate volume to match interior sound at doorway
-    -- For a standard 5 meter (75 units) distance from door
-    local door_sound_level = 75 -- Default sound level (about 5 meters)
+    -- For a standard 5 meter distance but with stronger falloff
+    local door_sound_level = 100 -- Higher value for faster falloff, still centered ~5 meters
     local volume_multiplier = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
     
     -- Use the dynamically calculated ratio to match the interior sound volume
