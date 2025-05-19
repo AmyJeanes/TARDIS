@@ -8,7 +8,8 @@ When making changes to language strings:
 
 1. **Never edit the Lua language files directly** in `lua/tardis/languages/*.lua` - these are auto-generated.
 2. Always make changes to the JSON source files in `i18n/languages/*.json`.
-3. After updating the source files, run the script to generate the Lua files:
+3. When adding new strings, make sure to provide proper translations for all language files - never use placeholders.
+4. After updating the source files, run the script to generate the Lua files:
    ```
    pwsh -File ./generate-languages.ps1
    ```
@@ -44,3 +45,4 @@ When contributing:
 - Settings that affect client-side behavior should be added to the appropriate sections in `lua/tardis/settings/`.
 - Use `TARDIS:GetSetting("setting_name")` to access setting values.
 - The TARDIS metadata contains important information about the TARDIS model and sounds.
+- When handling sounds that can have multiple sources (like idle sounds), play all of them simultaneously rather than choosing one randomly.
