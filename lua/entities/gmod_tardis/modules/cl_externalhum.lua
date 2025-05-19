@@ -52,7 +52,14 @@ local function UpdateInteriorHumLeakage(self)
                 self.LeakedInteriorHum = CreateSound(self, interior_hum_sound.path)
                 self.LeakedInteriorHum:Play()
                 
+                -- Limit sound range to about 5 meters (75 is approximately 5 meters in Source units)
+                self.LeakedInteriorHum:SetSoundLevel(75)
+                
                 -- Apply the volume setting (percentage of original volume)
+                local volume_multiplier = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
+                self.LeakedInteriorHum:ChangeVolume((interior_hum_sound.volume or 1) * volume_multiplier, 0)
+            else
+                -- Update volume in case setting has changed
                 local volume_multiplier = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
                 self.LeakedInteriorHum:ChangeVolume((interior_hum_sound.volume or 1) * volume_multiplier, 0)
             end
@@ -66,6 +73,14 @@ end
 -- Update the interior hum leak whenever doors are toggled
 ENT:AddHook("ToggleDoorReal", "externalhum", function(self, open)
     UpdateInteriorHumLeakage(self)
+end)
+
+-- Update the interior hum leak when settings change
+ENT:AddHook("SettingChanged", "externalhum", function(self, id, value)
+    -- If relevant settings change, update the sound
+    if id == "interior_hum_leakage" or id == "interior_hum_leakage_volume" or id == "sound" then
+        UpdateInteriorHumLeakage(self)
+    end
 end)
 
 ENT:AddHook("Think", "externalhum", function(self)
