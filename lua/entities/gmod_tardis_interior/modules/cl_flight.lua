@@ -47,7 +47,7 @@ local function ShouldPlayFlightSounds(self)
 end
 
 ENT:AddHook("Think", "flight", function(self)
-    if self:GetData("flight") and ShouldPlayFlightSounds(self) then
+    if (self:GetData("flight") or (self.exterior and self.exterior:GetData("force-demat"))) and ShouldPlayFlightSounds(self) then
         if self.flightsound and self.flightsound:IsPlaying() then
             local p=math.Clamp(self.exterior:GetVelocity():Length()/250,0,15)
             self.flightsound:ChangePitch(95+p,0.1)

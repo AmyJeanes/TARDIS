@@ -41,6 +41,7 @@ TARDIS:AddInteriorTemplate("default_lamps", {
         lamps_toggle = {
             exthooks = {
                 ["DematStart"] = true,
+                ["ForceDematStart"] = true,
                 ["StopMat"] = true,
                 ["FlightToggled"] = true,
             },
