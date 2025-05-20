@@ -1,6 +1,6 @@
 # TARDIS Copilot Instructions
 
-Welcome to the TARDIS repository! This document contains important information for working with this codebase.
+This document provides instructions to Copilot for how to work with the TARDIS codebase.
 
 ## Language Files
 
@@ -16,33 +16,13 @@ When making changes to language strings:
 
 ## Command Limitations
 
-- The `lua` and `luac` commands are not available in this environment.
+- The `lua` and `luac` commands are not available.
 - Use `pwsh` for running PowerShell scripts.
-
-## Testing
-
-- Test your changes in-game to ensure they work as expected.
-- Make sure to test edge cases, like when a TARDIS has no idle sounds configured.
-
-## Source Engine Units
-
-- 1 unit ≈ 0.75 inches or ~1.9 cm
-- 1 meter ≈ 53 units
-- Sound level values correspond roughly to distance in Source engine units:
-  - 75 is approximately 5 meters
-  - Lower values extend the range, higher values reduce it
 
 ## Contributing
 
 When contributing:
 1. Keep changes minimal and focused on the task at hand.
-2. Test thoroughly before submitting.
-3. Maintain the code style of the project.
-4. Document your changes appropriately.
-
-## Common Patterns
-
-- Settings that affect client-side behavior should be added to the appropriate sections in `lua/tardis/settings/`.
-- Use `TARDIS:GetSetting("setting_name")` to access setting values.
-- The TARDIS metadata contains important information about the TARDIS model and sounds.
-- When handling sounds that can have multiple sources (like idle sounds), play all of them simultaneously rather than choosing one randomly.
+2. Maintain the code style of the project.
+3. Document only particularly complex / non-obvious code.
+4. Use Lua syntax only, no "Garry Lua" e.g. "//" comments or the "continue" keyword.
