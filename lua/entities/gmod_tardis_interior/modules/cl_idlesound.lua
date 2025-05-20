@@ -15,6 +15,19 @@ ENT:AddHook("OnRemove", "idlesound", function(self)
     end
 end)
 
+ENT:AddHook("PlayerEnter", "idlesound", function(self)
+    local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+    local vol_setting = TARDIS:GetSetting("interior_hum_leakage") and (TARDIS:GetSetting("interior_hum_leakage_volume") / 100) or 0
+    for k, snd in pairs(sounds) do
+        local vol = snd.volume or 1
+        local final_vol = vol * vol_setting
+        if self.idlesounds[k] then
+            self.idlesounds[k]:ChangeVolume(final_vol, 0)
+            self.idlesounds[k]:ChangeVolume(vol, 0.3)
+        end
+    end
+end)
+
 ENT:AddHook("Think", "idlesound", function(self)
     local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
     if sounds and self.idlesounds then
