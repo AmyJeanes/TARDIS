@@ -69,21 +69,8 @@ local function UpdateInteriorHumLeakage(self)
         return
     end
 
-    local sounds = {}
-    if     self.metadata.Interior.Sounds
-       and self.metadata.Interior.Sounds.Idle
-    then
-        sounds = self.metadata.Interior.Sounds.Idle
-    elseif self.metadata.Interior.IdleSound then
-        sounds = self.metadata.Interior.IdleSound
-    end
-
-    local vol_setting = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
-    local ratio = self.InteriorToExteriorRatio or 1.0
-
-    -- Use the exterior portal entity as the sound emitter if available
-    local ext_portal = self.portals and self.portals.exterior
-    local emitter = (IsValid(ext_portal) and ext_portal) or self
+    local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+    if not sounds then return end
 
     if #sounds > 0
        and TARDIS:GetSetting("interior_hum_leakage")
@@ -92,20 +79,23 @@ local function UpdateInteriorHumLeakage(self)
        and not self:GetData("vortex")
        and self:DoorOpen(true)
     then
-        for k, snd in pairs(sounds) do
-            if not snd.path then continue end
-            local final_vol = (snd.volume or 1) * vol_setting * ratio
+        local vol_setting = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
+        local ratio = self.InteriorToExteriorRatio or 1.0
 
+        -- Use the exterior portal entity as the sound emitter if available
+        local ext_portal = self.portals and self.portals.exterior
+        local emitter = (IsValid(ext_portal) and ext_portal) or self
+
+        for k, snd in pairs(sounds) do
             if not self.LeakedInteriorHums[k] then
+                local final_vol = (snd.volume or 1) * vol_setting * ratio
                 local chan = CreateSound(emitter, snd.path)
                 chan:Play()
                 chan:ChangeVolume(final_vol, 0)
                 self.LeakedInteriorHums[k] = chan
-            else
-                self.LeakedInteriorHums[k]:ChangeVolume(final_vol, 0)
             end
         end
-        
+
         for k, v in pairs(self.LeakedInteriorHums) do
             if not sounds[k] then
                 v:Stop()
@@ -117,6 +107,41 @@ local function UpdateInteriorHumLeakage(self)
         self.LeakedInteriorHums = {}
     end
 end
+
+-- Fade out the interior hums to the configured volume when the player exits
+ENT:AddHook("PlayerExit", "externalhum", function(self)
+    if not TARDIS:GetSetting("interior_hum_leakage") then return end
+    local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+    if not sounds then return end
+    local ratio = CalculateInteriorToExteriorRatio(self)
+    local vol_setting = TARDIS:GetSetting("interior_hum_leakage_volume") / 100
+    for k, snd in pairs(sounds) do
+        local vol = snd.volume or 1
+        local vol_with_ratio = vol * ratio
+        local final_vol = vol_with_ratio * vol_setting
+        if self.LeakedInteriorHums[k] then
+            self.LeakedInteriorHums[k]:ChangeVolume(vol_with_ratio, 0)
+            self.LeakedInteriorHums[k]:ChangeVolume(final_vol, 0.3)
+        end
+    end
+end)
+
+ ENT:AddHook("SettingChanged", "shields", function(self, id, val)
+    if id ~= "interior_hum_leakage_volume" then return end
+
+    local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+    if not sounds then return end
+
+    local vol_setting = val / 100
+    local ratio = self.InteriorToExteriorRatio or 1.0
+
+    for k, snd in pairs(sounds) do
+        if self.LeakedInteriorHums[k] then
+            local final_vol = (snd.volume or 1) * vol_setting * ratio
+            self.LeakedInteriorHums[k]:ChangeVolume(final_vol, 0)
+        end
+    end
+end)
 
 -- This Think hook handles two separate audio features:
 -- 1. ExternalHum: The humming sound from the exterior shell when powered (using external_hum setting)

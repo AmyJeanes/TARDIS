@@ -165,7 +165,6 @@ if CLIENT then
         min=0,
         max=100,
         round_func = function(x)
-            if x > 50 then return (x - x % 10) end
             return (x - x % 5)
         end,
 
