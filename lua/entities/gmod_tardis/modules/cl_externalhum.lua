@@ -73,7 +73,7 @@ ENT:AddHook("PlayerExit", "externalhum", function(self)
     end
 end)
 
- ENT:AddHook("SettingChanged", "shields", function(self, id, val)
+ ENT:AddHook("SettingChanged", "externalhum", function(self, id, val)
     if id ~= "interior_hum_leakage_volume" then return end
 
     local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
