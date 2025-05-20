@@ -90,14 +90,16 @@ end)
 ENT:AddHook("Think", "externalhum", function(self)
     -- Part 1: Handle exterior hum sound
     local hum_sound = self.metadata.Exterior.Sounds.Hum
+    local hum_sound_path
     if hum_sound then
+        hum_sound_path = hum_sound.path
         if TARDIS:GetSetting("external_hum")
             and TARDIS:GetSetting("sound")
             and self:GetData("power-state")
             and not self:GetData("vortex")
         then
             if not self.ExternalHum then
-                self.ExternalHum = CreateSound(self, hum_sound.path)
+                self.ExternalHum = CreateSound(self, hum_sound_path)
                 self.ExternalHum:Play()
                 self.ExternalHum:ChangeVolume(hum_sound.volume or 1,0)
             end
@@ -125,7 +127,7 @@ ENT:AddHook("Think", "externalhum", function(self)
         local emitter = (IsValid(ext_portal) and ext_portal) or self
 
         for k, snd in pairs(sounds) do
-            if not self.LeakedInteriorHums[k] then
+            if snd.path ~= hum_sound_path and not self.LeakedInteriorHums[k] then
                 local final_vol = (snd.volume or 1) * vol_setting * ratio
                 local chan = CreateSound(emitter, snd.path)
                 chan:Play()
