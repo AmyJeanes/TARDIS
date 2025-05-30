@@ -574,7 +574,7 @@
     "Settings.Sections.Performance.GUIAnimations.Description": "Zda by měly mít prvky UI animace",
     "Settings.Sections.Performance.Lamps": "Interiérové lampy",
     "Settings.Sections.Performance.Lamps.Description": "Povolit další interiérové lampy",
-    "Settings.Sections.Performance.LightingOverride": "Lighting Override",
+    "Settings.Sections.Performance.LightingOverride": "Přepsání osvětlení",
     "Settings.Sections.Performance.LightingOverride.Description": "Lepší osvětlení interiéru nezávislé na atmosféře mapy.\nMůže způsobit pokles výkonu na slabších systémech.",
     "Settings.Sections.Performance.Portals": "Portály povoleny",
     "Settings.Sections.Performance.Portals.Description": "Zda budou portály renderovány nebo ne, vypněte to, pokud výrazně ovlivňují snímkovou frekvenci",
