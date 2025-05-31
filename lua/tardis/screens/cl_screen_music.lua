@@ -124,6 +124,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
 
     list_songs:SetSize(listW, listT)
     list_songs:SetPos(2 * gap + listW, gap)
+    list_songs:SetSortable(false)
     list_songs:AddColumn(TARDIS:GetPhrase("Screens.Music.Songs"))
     list_songs:SetMultiSelect(false)
 
