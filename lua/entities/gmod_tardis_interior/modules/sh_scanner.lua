@@ -129,7 +129,7 @@ ENT:AddHook("Initialize", "scanner", function(self)
             scanner.width = v.width
             scanner.height = v.height
             scanner.fov = v.fov
-            table.insert(self.scanners, scanner)
+            self.scanners[k] = scanner
         end
     end
 end)
