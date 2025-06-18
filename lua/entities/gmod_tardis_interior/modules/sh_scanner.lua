@@ -1,14 +1,55 @@
 -- Scanner
 
+local function UpdateScannerState(self)
+    local state = false
+    for k,v in pairs(self.scanners) do
+        if self:GetData("scanners_on_"..k, false) then
+            state = true
+            break
+        end
+    end
+    local oldstate = self:GetData("scanners_on", false)
+    self:SetData("scanners_on", state, true)
+    if state ~= oldstate then
+        self:CallHook("ScannersToggled", state)
+        self:CallHook("PostScannersToggled", state)
+    end
+end
+
 function ENT:GetScannersOn()
     return self:GetData("scanners_on", false)
 end
 
+function ENT:GetScannerOn(id)
+    return self:GetData("scanners_on_"..id, false)
+end
+
 if SERVER then
     function ENT:SetScannersOn(on)
-        self:SetData("scanners_on", on, true)
-        self:CallHook("ScannersToggled", on)
-        self:CallHook("PostScannersToggled", on)
+        if not on and self:CallHook("CanTurnOffScanners")==false then
+            return false
+        end
+        if on and self:CallHook("CanTurnOnScanners")==false then
+            return false
+        end
+        for k,v in pairs(self.scanners) do
+            self:SetData("scanners_on_"..k, on, true)
+            self:CallHook("ScannerToggled", k, on)
+        end
+        UpdateScannerState(self)
+        return true
+    end
+
+    function ENT:SetScannerOn(id, on)
+        if not on and (self:CallHook("CanTurnOffScanners")==false or self:CallHook("CanTurnOffScanner", id)==false) then
+            return false
+        end
+        if on and (self:CallHook("CanTurnOnScanners")==false or self:CallHook("CanTurnOnScanner", id)==false) then
+            return false
+        end
+        self:SetData("scanners_on_"..id, on, true)
+        self:CallHook("ScannerToggled", id, on)
+        UpdateScannerState(self)
         return true
     end
 
@@ -16,11 +57,29 @@ if SERVER then
         return self:SetScannersOn(not self:GetScannersOn())
     end
 
-    ENT:AddHook("ScannersToggled", "scanner", function(self, on)
-        for k,v in ipairs(self.scanners) do
-            if v.submatid then
-                v.ent:SetSubMaterial(v.submatid, on and "!"..v.uid or "")
-            end
+    function ENT:ToggleScanner(id)
+        return self:SetScannerOn(id, not self:GetScannerOn(id))
+    end
+
+    ENT:AddHook("ScannerToggled", "scanner", function(self, id, on)
+        local scanner = self.scanners[id]
+        if scanner and scanner.submatid then
+            scanner.ent:SetSubMaterial(scanner.submatid, on and "!"..scanner.uid or "")
+        end
+    end)
+
+    ENT:AddHook("PowerToggled", "scanner", function(self, on)
+        if on and self:GetData("power-lastscanners",false)==true then
+            self:SetScannersOn(true)
+        else
+            self:SetData("power-lastscanners",self:GetScannersOn())
+            self:SetScannersOn(false)
+        end
+    end)
+
+    ENT:AddHook("CanTurnOnScanners", "scanner", function(self)
+        if not self:GetPower() then
+            return false
         end
     end)
 end
@@ -78,9 +137,16 @@ end)
 if SERVER then return end
 
 ENT:AddHook("ShouldDrawScanners", "scanner", function(self)
-    if not (self:GetScannersOn() and self:GetPower() and (not LocalPlayer():GetTardisData("outside"))) then
+    if LocalPlayer():GetTardisData("outside") then
         return false
     end
+end)
+
+ENT:AddHook("ShouldDrawScanner", "scanner", function(self, id)
+    if not self:GetScannerOn(id) then
+        return false
+    end
+    return true
 end)
 
 ENT:AddHook("ShouldDraw", "scanner", function(self)

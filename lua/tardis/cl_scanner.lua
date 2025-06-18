@@ -15,7 +15,10 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
             local enabled = int:CallHook("ShouldDrawScanners")~=false
             if enabled then
                 for k,v in pairs(int.scanners) do
-                    table.insert(scanners, {rt=v.rt, ang=v.ang, fov=v.fov, width=v.width, height=v.height})
+                    local enabled = int:CallHook("ShouldDrawScanner", k)~=false
+                    if enabled then
+                        table.insert(scanners, {rt=v.rt, ang=v.ang, fov=v.fov, width=v.width, height=v.height})
+                    end
                 end
             end
         end
