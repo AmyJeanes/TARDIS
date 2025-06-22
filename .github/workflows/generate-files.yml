@@ -43,6 +43,6 @@ jobs:
         shell: pwsh
 
       - name: Git Auto Commit
-        uses: stefanzweifel/git-auto-commit-action@3cc016cfc892e0844046da36fc68da4e525e081f # v6
+        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
         with:
           commit_message: "Update Generated Files"
