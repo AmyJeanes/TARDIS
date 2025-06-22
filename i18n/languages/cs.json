@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Měla by TARDIS automaticky zavřít dveře před dematerializací/materializací?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Cíl - Dematerializace při nastavení",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "Měla by TARDIS dematerializovat okamžitě po nastavení cíle?",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "Nekonečné upozornění pro teleport",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "Pokud je povoleno, TARDIS vás bude neustále varovat před neúspěšnou dematerializací/materializací, dokud problém nevyřešíte",
     "Settings.Sections.Misc.Teleport.ShowVortex": "Zobrazit vír",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "Zda je vír zobrazen během letu ve víru",
     "Settings.Sections.Misc.Tips": "Tipy",

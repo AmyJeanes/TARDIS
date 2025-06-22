@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Suljetaanko ovet automaattisesti ennen dematerialisointia/materialisointia?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Määränpää – dematerialisoi asetettaessa",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "Pitäisikö TARDISin dematerialisoitua heti, kun määränpää asetetaan?",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "Loputon teleporttivaroitus",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "Jos asetus on käytössä, TARDIS jatkaa varoittamista epäonnistuneista demat/mat-yrityksistä, kunnes korjaat ongelman",
     "Settings.Sections.Misc.Teleport.ShowVortex": "Näytä aikapyörre",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "Näytetäänkö pyörre aikapyörrelennon aikana",
     "Settings.Sections.Misc.Tips": "Vinkit",

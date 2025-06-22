@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "A ddylai TARDIS gau drysau yn awtomatig cyn demat?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Cyrchfan - Disylweddoli ar Set",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "A ddylai'r TARDIS ddad-wneud yn syth ar ôl gosod cyrchfan?",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "Rhybudd Teleport Anfeidrol",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "Os caiff ei alluogi, bydd y TARDIS yn parhau i rybuddio am fethiant demat/mat nes ichi ddatrys y broblem",
     "Settings.Sections.Misc.Teleport.ShowVortex": "Dangos Vortex",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "A yw'r fortecs yn cael ei ddangos yn ystod hedfan fortecs",
     "Settings.Sections.Misc.Tips": "Cynghorion",

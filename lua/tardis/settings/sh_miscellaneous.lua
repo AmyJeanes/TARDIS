@@ -123,6 +123,17 @@ TARDIS:AddSetting({
     name="ShowVortex",
 })
 
+TARDIS:AddSetting({
+    id="teleport_warning_infinite",
+    type="bool",
+    value=false,
+    class="networked",
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Teleport",
+    name="InfiniteWarning",
+})
+
 --------------------------------------------------------------------------------
 -- Flight
 

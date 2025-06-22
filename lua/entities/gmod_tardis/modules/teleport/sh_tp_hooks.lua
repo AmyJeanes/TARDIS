@@ -86,6 +86,12 @@ if SERVER then
             return true
         end
     end)
+
+    ENT:AddHook("PreOnRemove", "teleport", function(self)
+        if self:GetData("demat-startpos") then
+            self:SetPos(self:GetData("demat-startpos"))
+        end
+    end)
 else
     ENT:AddHook("ShouldTurnOnLight","teleport",function(self)
         if self:GetData("teleport") then
@@ -100,7 +106,7 @@ else
     end)
 
     ENT:AddHook("ShouldTurnOffFlightSound", "teleport", function(self)
-        if self:GetData("teleport") or (self:GetData("vortex") and (TARDIS:GetExteriorEnt() ~= self or self:GetFastRemat())) then
+        if self:GetData("demat") or self:GetData("mat") or (self:GetData("vortex") and (TARDIS:GetExteriorEnt() ~= self or self:GetFastRemat())) then
             return true
         end
     end)

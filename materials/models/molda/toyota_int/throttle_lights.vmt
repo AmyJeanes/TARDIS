@@ -43,6 +43,19 @@
 			offVar "$color2_off"
 			resultVar "$color2"
 		}
+		TARDIS_DefaultInt_ThrottleLights {
+			onVar "$selfillum_default"
+			offVar "$selfillum_disabled"
+			resultVar "$selfillum_on"
+
+			onVar2 "$envmaptint_default"
+			offVar2 "$envmaptint_off"
+			resultVar2 "$envmaptint_on"
+
+			onVar3 "$color2_default"
+			offVar3 "$color2_disabled"
+			resultVar3 "$color2_on"
+		}
 	}
 
 }

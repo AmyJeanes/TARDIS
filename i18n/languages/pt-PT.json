@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "As portas da TARDIS devem fechar automaticamente antes de desmaterializar?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Destino - Desmaterializar quando definido",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "A TARDIS deve desmaterializar imediatamente após o destino ter sido definido?",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "Aviso de Teletransporte Infinito",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "Se ativado, a TARDIS continuará a avisá-lo sobre falhas de demat/mat até resolver o problema",
     "Settings.Sections.Misc.Teleport.ShowVortex": "Mostrar Vórtex",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "Controla se o vórtex é visível durante o voo de vórtex",
     "Settings.Sections.Misc.Tips": "Etiquetas",

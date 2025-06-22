@@ -73,6 +73,9 @@ function ENT:CallHook(name,...)
             end
         end
     end
+    if SERVER then
+        TARDIS:CallControlMove(self, name, ...)
+    end
 end
 
 function ENT:LoadFolder(folder,addonly,noprefix)

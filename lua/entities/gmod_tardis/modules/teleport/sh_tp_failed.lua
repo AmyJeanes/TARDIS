@@ -4,15 +4,20 @@ if SERVER then
     function ENT:FailDemat()
         self:SetData("failing-demat", true, true)
         self:CallCommonHook("DematFailed")
-
         self:SendMessage("failed-demat")
+        local infinite = TARDIS:GetSetting("teleport_warning_infinite", self)
+        if not infinite then
+            local time = self.metadata.Timings.DematFail
+            self:Timer("failed-demat-stop", time, function()
+                self:FailDematStop()
+            end)
+        end
+    end
 
-        local time = self.metadata.Timings.DematFail
-        self:Timer("failed-demat-stop", time, function()
-            self:SetData("failing-demat", false, true)
-            self:CallCommonHook("DematFailStopped")
-            self:CallClientCommonHook("DematFailStopped")
-        end)
+    function ENT:FailDematStop()
+        self:SetData("failing-demat", false, true)
+        self:CallCommonHook("DematFailStopped")
+        self:CallClientCommonHook("DematFailStopped")
     end
 
     function ENT:HandleNoMat(pos, ang, callback)
@@ -46,13 +51,20 @@ if SERVER then
         self:SetData("failing-mat", true, true)
         self:CallCommonHook("MatFailed")
         self:SendMessage("failed-mat")
-        local time = self.metadata.Timings.MatFail
-        self:Timer("failed-mat-stop", time, function()
-            self:SetData("failing-mat", false, true)
-            self:CallCommonHook("MatFailStopped")
-            self:CallClientCommonHook("MatFailStopped")
-        end)
+        local infinite = TARDIS:GetSetting("teleport_warning_infinite", self)
+        if not infinite then
+            local time = self.metadata.Timings.MatFail
+            self:Timer("failed-mat-stop", time, function()
+                self:FailMatStop()
+            end)
+        end
         if callback then callback(false) end
+    end
+
+    function ENT:FailMatStop()
+        self:SetData("failing-mat", false, true)
+        self:CallCommonHook("MatFailStopped")
+        self:CallClientCommonHook("MatFailStopped")
     end
 
     ENT:AddHook("StopMat", "failed-mat-destination-restore", function(self)
@@ -144,6 +156,14 @@ if SERVER then
                 self:Mat(nil)
             end
         end
+    end)
+
+    ENT:AddHook("DematStart", "failing-demat", function(self, pos, ang, callback, force)
+        self:SetData("failing-demat", false, true)
+    end)
+
+    ENT:AddHook("PreMatStart", "failing-mat", function(self, pos, ang, callback, ignore_fail_mat)
+        self:SetData("failing-mat", false, true)
     end)
 
 else -- CLIENT

@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "TARDIS demattan önce kapıları otomatik olarak kapatmalı mı?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Hedef - Sette Demat",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "Hedef belirlendikten hemen sonra TARDIS kaydileşmeli mi?",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "Sonsuz Işınlanma Uyarısı",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "Etkinleştirildiğinde TARDIS, sorunu çözene kadar başarısız demat/mat konusunda sizi uyarmaya devam eder",
     "Settings.Sections.Misc.Teleport.ShowVortex": "Girdabı Göster",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "Girdap uçuşu sırasında girdabın gösterilip gösterilmeyeceği",
     "Settings.Sections.Misc.Tips": "İpuçları",

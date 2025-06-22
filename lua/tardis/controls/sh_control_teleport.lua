@@ -37,4 +37,8 @@ TARDIS:AddControl({
         order = 6,
     },
     tip_text = "Controls.Teleport.Tip",
+    moves = {
+        ["DematStart"] = true,
+        ["PreMatStart"] = true,
+    }
 })

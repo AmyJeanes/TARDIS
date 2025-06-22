@@ -200,7 +200,7 @@ T.Interior = {
         default_gears2 = {},
         default_gears3 = {},
 
-        default_handbrake = {},
+        default_handbrake = { pos = Vector(0,0,-0.1) },
         default_keyboard = {},
         default_telepathic = {},
         default_throttle = {},
@@ -335,14 +335,13 @@ T.Interior = {
         default_handbrake  = "handbrake",
         default_side_lever1 = "engine_release",
         default_side_speakers = "music",
-        default_telepathic  = "destination",
-        default_console_scanner = "thirdperson_careful",
-        default_balls  = "thirdperson",
+        default_telepathic  = "thirdperson",
+        default_console_scanner = "destination",
         default_keyboard  = "coordinates",
         default_crank4 = "repair",
         default_crank2  = "power",
         default_crank3  = "redecorate",
-        default_side_lever2 = "physlock",
+        default_side_lever2 = "engine_release",
         default_crank = "random_coords",
         default_buttons = "isomorphic",
         default_fiddle1  = "door",
@@ -468,6 +467,7 @@ T.Interior = {
         default_colored_lever_3 = { pos = Vector(31.37, -0.02, 134.47), right = true, down = true, },
         default_colored_lever_4 = { pos = Vector(31.12, 3.29, 135.1), right = true, down = true, },
         default_colored_lever_5 = { pos = Vector(31.09, 6.44, 135.21), right = true, down = true, },
+        default_console_scanner = { pos =  Vector(-16.476, 35.491, 133.121), right = false, down = false, },
     },
 
     CustomTips = {
@@ -475,9 +475,6 @@ T.Interior = {
         {pos = Vector(130.65, 71.77, 125.87), right = true, down = true, part = "default_side_speakers", },
         {pos = Vector(-38.64, -144.1, 125.97), right = true, down = true, part = "default_side_speakers", },
         {pos = Vector(-101.11, -110.17, 126.19), right = true, down = true, part = "default_side_speakers", },
-        {pos = Vector(-35.68, 28.74, 131.96), right = true, down = false, part = "default_balls", },
-        {pos = Vector(-6.69, 45.46, 131.72), right = false, down = false, part = "default_balls", },
-
         {pos = Vector(334.946, -34.611, 40.627), text = "Never Gonna Give You Up!\nNever Gonna Let You Down!"}
     },
 }

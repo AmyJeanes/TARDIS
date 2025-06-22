@@ -57,33 +57,6 @@ PART.AnimateOptions = {
     Speed = 1.2,
 }
 
-if CLIENT then
-
-    function trace_height(int, ply)
-        local trace = {
-            start = ply:EyePos(),
-            endpos = ply:EyePos() + (ply:GetAimVector() * 4096),
-            filter = { ply, },
-        }
-        local trace_res = util.TraceLine(trace)
-        if trace_res.Hit then
-            return int:WorldToLocal(trace_res.HitPos).z
-        end
-    end
-
-    function PART:Use(ply)
-        if not self:GetOn() then return end
-
-        if LocalPlayer():KeyDown(IN_WALK) then
-            -- giving the player some control over the height
-            local h = trace_height(self.interior, ply) - 132
-            self.animation.max = math.Clamp(0.4 + h * 0.16, 0.4, 1)
-        else
-            self.animation.max = math.Rand(0.5, 1)
-        end
-    end
-end
-
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -110,9 +83,7 @@ PART.SoundNoPower = "p00gie/tardis/default/keyboard.ogg"
 
 if SERVER then
     function PART:Use(ply)
-        self.interior:Timer("default_keyboard", 1, function()
-            TARDIS:Control(self.Control, ply, self)
-        end)
+        TARDIS:Control(self.Control, ply, self)
     end
 end
 
@@ -137,17 +108,10 @@ function PART:Use(ply)
     end
 
     if SERVER then
-        ply:ScreenFade(SCREENFADE.OUT, Color(255,255,255,30), 1.2, 0)
+        TARDIS:Control(self.Control, ply, self)
+    else
+        self:SetData("default_telepathic_activation", nil)
     end
-
-    self.interior:Timer("default_telepathic", 1, function()
-        if SERVER then
-            TARDIS:Control(self.Control, ply, self)
-            ply:ScreenFade(SCREENFADE.IN, Color(255,255,255,30), 0.5, 0)
-        else
-            self:SetData("default_telepathic_activation", nil)
-        end
-    end)
 end
 
 TARDIS:AddPart(PART)
@@ -255,8 +219,7 @@ PART.SoundStop = "p00gie/tardis/default/crank_beep.ogg"
 
 PART.AnimateOptions = {
     Type = "perpetual_use",
-    Speed = 1.2,
-    StopAnywhere = true,
+    Speed = 1.2
 }
 
 TARDIS:AddPart(PART)
@@ -272,7 +235,6 @@ PART.Sound = "p00gie/tardis/default/crank.ogg"
 PART.AnimateOptions = {
     Type = "perpetual_use",
     Speed = 1,
-    StopAnywhere = false,
 }
 
 TARDIS:AddPart(PART)

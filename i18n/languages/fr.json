@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Le TARDIS devrait-il refermer ses portes automatiquement avant la dématérialisation/matérialisation  ?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Destination - Décollage quand définie",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "Le TARDIS devrait-il se dématérialiser immédiatement lorsque la destination est définie ?",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "Avertissement de téléportation infinie",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "Si cette option est activée, le TARDIS continuera de vous avertir des échecs de demat/mat jusqu’à ce que vous ayez résolu le problème",
     "Settings.Sections.Misc.Teleport.ShowVortex": "Afficher le Vortex",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "Si le vortex est affiché pendant les vols dans le vortex",
     "Settings.Sections.Misc.Tips": "Astuces",

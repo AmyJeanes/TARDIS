@@ -606,7 +606,17 @@ else
                     local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/200
                     self.flightsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
                 end
-                self.flightsound:ChangeVolume(0.75)
+
+                local vol = 0.75
+                if self:GetData("premat-start") then
+                    local tp_metadata = self.metadata.Exterior.Teleport
+                    local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
+                    local timeleft = math.Clamp(timerdelay - (CurTime() - self:GetData("premat-start")), 0, timerdelay)
+                    local norm = timeleft / timerdelay
+                    local volscale = norm ^ 2
+                    vol = vol * volscale
+                end
+                self.flightsound:ChangeVolume(vol)
 
                 if IsFlightSoundWrong(self) then
                     self.flightsound:Stop()

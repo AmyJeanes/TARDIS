@@ -4,7 +4,6 @@ if SERVER then
     util.AddNetworkString("TARDIS-SetupPart")
 end
 
-
 function TARDIS.ShouldDrawInteriorPart(self)
     local int=self.interior
     local ext=self.exterior
@@ -302,38 +301,7 @@ local overrides={
             end
 
             if SERVER and (animate~=false) and (res~=false) then
-                local on = self:GetOn()
-
-                if self.PowerOffSound ~= false or self.interior:GetPower() then
-                    local part_sound = nil
-
-                    if not self.exterior:GetPower() then
-                        if self.SoundOffNoPower and on then
-                            part_sound = self.SoundOffNoPower
-                        elseif self.SoundOnNoPower and (not on) then
-                            part_sound = self.SoundOnNoPower
-                        elseif self.SoundNoPower then
-                            part_sound = self.SoundNoPower
-                        end
-                    end
-
-                    if part_sound == nil then
-                        if self.SoundOff and on then
-                            part_sound = self.SoundOff
-                        elseif self.SoundOn and (not on) then
-                            part_sound = self.SoundOn
-                        elseif self.Sound then
-                            part_sound = self.Sound
-                        end
-                    end
-
-                    if part_sound and self.SoundPos then
-                        sound.Play(part_sound, self:LocalToWorld(self.SoundPos))
-                    elseif part_sound then
-                        self:EmitSound(part_sound)
-                    end
-                end
-                self:SetOn(not on)
+                TARDIS:TogglePart(self)
                 if self.ExteriorPart then
                     self.exterior:CallHook("PartUsed",self,a)
                 elseif self.interior then
@@ -480,7 +448,7 @@ local function AutoSetup(self,e,id)
     end
 end
 
-local function SetupPartMetadataControl(e)
+local function SetupPartControl(e)
     if (e.parent == e.interior) then
         controls_metadata = e.parent.metadata.Interior.Controls
     else
@@ -490,6 +458,10 @@ local function SetupPartMetadataControl(e)
         if controls_metadata[e.ID] ~= nil then
             e.Control = controls_metadata[e.ID]
         end
+    end
+    if e.Control then
+        e.parent.controlparts[e.Control] = e.parent.controlparts[e.Control] or {}
+        e.parent.controlparts[e.Control][e.ID] = e
     end
 end
 
@@ -529,6 +501,7 @@ if SERVER then
                 end
             end
         end
+        ent.controlparts = {}
         for k,v in pairs(tempparts) do
             local e=ents.Create(v)
             Doors:SetupOwner(e,ent:GetCreator())
@@ -542,7 +515,7 @@ if SERVER then
                 table.Merge(e,data)
             end
 
-            SetupPartMetadataControl(e)
+            SetupPartControl(e)
             if e.EnabledOnStart then
                 e:SetOn(true)
             end
@@ -573,6 +546,40 @@ if SERVER then
             net.Send(ply)
         end
     end)
+
+    function TARDIS:TogglePart(part)
+        local on = part:GetOn()
+        if part.PowerOffSound ~= false or part.interior:GetPower() then
+            local part_sound = nil
+
+            if not part.exterior:GetPower() then
+                if part.SoundOffNoPower and on then
+                    part_sound = part.SoundOffNoPower
+                elseif part.SoundOnNoPower and (not on) then
+                    part_sound = part.SoundOnNoPower
+                elseif part.SoundNoPower then
+                    part_sound = part.SoundNoPower
+                end
+            end
+
+            if part_sound == nil then
+                if part.SoundOff and on then
+                    part_sound = part.SoundOff
+                elseif part.SoundOn and (not on) then
+                    part_sound = part.SoundOn
+                elseif part.Sound then
+                    part_sound = part.Sound
+                end
+            end
+
+            if part_sound and part.SoundPos then
+                sound.Play(part_sound, part:LocalToWorld(part.SoundPos))
+            elseif part_sound then
+                part:EmitSound(part_sound)
+            end
+        end
+        part:SetOn(not on)
+    end
 else
     function TARDIS:SetupPart(e,name,ext,int,parent)
         if IsValid(e) and IsValid(parent) then
@@ -590,7 +597,8 @@ else
                 e.RenderGroup = RENDERGROUP_BOTH
             end
 
-            SetupPartMetadataControl(e)
+            if not parent.controlparts then parent.controlparts = {} end
+            SetupPartControl(e)
             if e.EnabledOnStart then
                 e:SetOn(true)
             end

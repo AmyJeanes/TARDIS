@@ -112,8 +112,10 @@ if SERVER then
         self:SetStepDelay()
         self:SetData("teleport",true)
         self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+        self:SetData("demat-startpos",self:GetPos())
+        self:SetData("demat-startang",self:GetAngles())
 
-        self:CallHook("DematStart")
+        self:CallCommonHook("DematStart")
         if force then self:CallHook("ForceDematStart") end
         self:UpdateShadow()
 
@@ -165,7 +167,8 @@ if SERVER then
 
             self:SendMessage("premat", { self:GetDestinationPos(true) } )
             self:SetData("teleport",true)
-            self:CallHook("PreMatStart")
+            self:SetData("premat-start", CurTime(), true)
+            self:CallCommonHook("PreMatStart")
 
             local tp_metadata = self.metadata.Exterior.Teleport
             local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
@@ -173,6 +176,7 @@ if SERVER then
                 if not IsValid(self) then return end
                 self:SendMessage("mat")
                 self:SetData("mat",true)
+                self:SetData("premat-start", nil, true)
                 self:SetData("step",1)
                 self:SetStepDelay()
                 self:SetData("vortex",false)
@@ -184,6 +188,8 @@ if SERVER then
                 self:SetSolid(SOLID_VPHYSICS)
                 self:CallHook("MatStart")
                 self:ChangePosition(pos, ang, true)
+                self:SetData("demat-startpos",nil)
+                self:SetData("demat-startang",nil)
                 self:SetDestination(nil, nil)
             end)
             if callback then callback(true) end
@@ -338,7 +344,7 @@ else
                 end
             end
         end
-        self:CallHook("DematStart")
+        self:CallCommonHook("DematStart")
     end)
 
     ENT:OnMessage("premat", function(self, data, ply)
@@ -375,7 +381,7 @@ else
                 end
             end
         end
-        self:CallHook("PreMatStart")
+        self:CallCommonHook("PreMatStart")
     end)
 
     ENT:OnMessage("mat", function(self, data, ply)

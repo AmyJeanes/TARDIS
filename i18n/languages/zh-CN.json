@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "TARDIS 是否在起飞/着陆时自动关门",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "目的地设定既起飞",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "TARDIS 是否在设定目的地后立即起飞",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "无限传送警告",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "启用后，TARDIS 会持续提醒你 demat/mat 失败，直到你解决问题为止",
     "Settings.Sections.Misc.Teleport.ShowVortex": "显示时间漩涡",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "漩涡飞行时是否显示漩涡",
     "Settings.Sections.Misc.Tips": "提示",

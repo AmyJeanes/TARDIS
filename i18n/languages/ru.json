@@ -551,6 +551,8 @@
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Должны ли двери автоматически закрываться при дематериализации?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Дематериализация после выбора назначения",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet.Description": "Стоит ли ТАРДИС дематериализовываться сразу после выбора точки назначения?",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning": "Предупреждение о бесконечной телепортации",
+    "Settings.Sections.Misc.Teleport.InfiniteWarning.Description": "Если включено, TARDIS будет продолжать предупреждать вас о неудачных попытках demat/mat, пока вы не устраните проблему",
     "Settings.Sections.Misc.Teleport.ShowVortex": "Показывать воронку времени",
     "Settings.Sections.Misc.Teleport.ShowVortex.Description": "Показывается ли воронка времени",
     "Settings.Sections.Misc.Tips": "Подсказки",
