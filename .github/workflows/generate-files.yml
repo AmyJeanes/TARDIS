@@ -37,6 +37,8 @@ jobs:
       - name: Generate Languages
         run: ./generate-languages.ps1
         shell: pwsh
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Generate Version
         run: ./generate-version.ps1
