@@ -17,9 +17,9 @@ function Get-AITranslation {
         [string]$Phrase
     )
 
-    $openAIKey = $env:OPENAI_API_KEY
+    $openAIKey = $env:TARDIS_OPENAI_API_KEY
     if (-not $openAIKey) {
-        Write-Host "Skipping AI translation for $LanguageCode as OPENAI_API_KEY is not set."
+        Write-Host "Skipping AI translation for $LanguageCode as TARDIS_OPENAI_API_KEY is not set."
         return [string]::Empty
     }
 
