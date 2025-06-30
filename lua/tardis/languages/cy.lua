@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "Wrthi'n llwytho cerddoriaeth...",
     ["Music.Playing"] = "Yn chwarae: %s",
     ["Music.Stopped"] = "Cerddoriaeth wedi stopio",
+    ["Music.YouTubeNotSupported"] = "GWALL: Nid yw YouTube yn cael ei gefnogi, defnyddiwch ddolen uniongyrchol i ffeil gerddoriaeth",
     ["Parts.DefaultAtomAccelerator.Text"] = "Cyflymydd Atom",
     ["Parts.DefaultDematCircuit.Text"] = "Cylchdaith Dematerialisation",
     ["Parts.DefaultDirectionalPointer.Text"] = "Pwyntydd Cyfeiriadol",

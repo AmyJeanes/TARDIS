@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "Müzik yükleniyor...",
     ["Music.Playing"] = "Oynanıyor: %s",
     ["Music.Stopped"] = "Müzik durduruldu",
+    ["Music.YouTubeNotSupported"] = "HATA: YouTube desteklenmemektedir, doğrudan bir müzik dosyası bağlantısı kullanın",
     ["Parts.DefaultAtomAccelerator.Text"] = "Atom Hızlandırıcı",
     ["Parts.DefaultDematCircuit.Text"] = "Kaydileştirme Devresi",
     ["Parts.DefaultDirectionalPointer.Text"] = "Yön İşaretçisi",

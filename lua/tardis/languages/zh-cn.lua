@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "读取音乐中",
     ["Music.Playing"] = "正在播放：%s",
     ["Music.Stopped"] = "停止播放",
+    ["Music.YouTubeNotSupported"] = "错误：不支持 YouTube，请使用音乐文件的直接链接。",
     ["Parts.DefaultAtomAccelerator.Text"] = "原子加速器",
     ["Parts.DefaultDematCircuit.Text"] = "去物质化电路",
     ["Parts.DefaultDirectionalPointer.Text"] = "定向指针",

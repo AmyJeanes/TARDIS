@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "Lade Musik...",
     ["Music.Playing"] = "Spiele: %s",
     ["Music.Stopped"] = "Musik gestoppt",
+    ["Music.YouTubeNotSupported"] = "FEHLER: YouTube wird nicht unterstützt, verwenden Sie einen direkten Link zu einer Musikdatei.",
     ["Parts.DefaultAtomAccelerator.Text"] = "Atombeschleuniger",
     ["Parts.DefaultDematCircuit.Text"] = "Entmaterialisierungskreislauf",
     ["Parts.DefaultDirectionalPointer.Text"] = "Richtungszeiger",

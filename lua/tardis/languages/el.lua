@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "Φόρτωση μουσικής...",
     ["Music.Playing"] = "Τώρα παίζει: %s",
     ["Music.Stopped"] = "Η μουσική σταμάτησε",
+    ["Music.YouTubeNotSupported"] = "ERROR: YouTube no es compatible, usa un enlace directo a un archivo de música",
     ["Parts.DefaultAtomAccelerator.Text"] = "Επιταχυντής ατόμου",
     ["Parts.DefaultDematCircuit.Text"] = "Κύκλωμα αποϋλοποίησης",
     ["Parts.DefaultDirectionalPointer.Text"] = "Κατευθυντικός δείκτης",

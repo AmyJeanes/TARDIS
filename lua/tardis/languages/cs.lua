@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "Načítám hudbu...",
     ["Music.Playing"] = "Přehrává se: %s",
     ["Music.Stopped"] = "Hudba zastavena",
+    ["Music.YouTubeNotSupported"] = "CHYBA: YouTube není podporován, použijte přímý odkaz na hudební soubor",
     ["Parts.DefaultAtomAccelerator.Text"] = "Atomový akcelerátor",
     ["Parts.DefaultDematCircuit.Text"] = "Dematerializační obvod",
     ["Parts.DefaultDirectionalPointer.Text"] = "Směrový ukazatel",

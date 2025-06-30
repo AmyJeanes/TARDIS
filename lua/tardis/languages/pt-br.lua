@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "Carregando música...",
     ["Music.Playing"] = "Tocando: %s",
     ["Music.Stopped"] = "Música interrompida",
+    ["Music.YouTubeNotSupported"] = "ERRO: O YouTube não é suportado, utilize um link direto para um arquivo de música",
     ["Parts.DefaultAtomAccelerator.Text"] = "Acelerador Atômico",
     ["Parts.DefaultDematCircuit.Text"] = "Circuito de Desmaterialização",
     ["Parts.DefaultDirectionalPointer.Text"] = "Ponteiro Direcional",

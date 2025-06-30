@@ -357,6 +357,7 @@ T.Phrases = {
     ["Music.Loading"] = "Ladataan musiikkia...",
     ["Music.Playing"] = "Soitetaan: %s",
     ["Music.Stopped"] = "Musiikki pysähtyi",
+    ["Music.YouTubeNotSupported"] = "VIRHE: YouTubea ei tueta. Käytä suoraa linkkiä musiikkitiedostoon.",
     ["Parts.DefaultAtomAccelerator.Text"] = "Atomikiihdytin",
     ["Parts.DefaultDematCircuit.Text"] = "Dematerialisointipiiri",
     ["Parts.DefaultDirectionalPointer.Text"] = "Suunnanosoitin",
