@@ -50,36 +50,10 @@ function ENT:StopMusic(network)
     end
 end
 
-local patterns={
-    "youtu.be/([_A-Za-z0-9-]+)",
-    "youtube.com/watch%?v=([_A-Za-z0-9-]+)",
-}
-local api="https://youtubedl.mattjeanes.com/"
 function ENT:ResolveMusicURL(url)
     if url:find("youtu.be") or url:find("youtube.com") then
-        local id=string.match(url,patterns[1]) or string.match(url,patterns[2])
-        if id then
-            http.Fetch(api.."get?id="..id,
-                function(body,len,headers,code)
-                    local tbl=util.JSONToTable(body)
-                    if tbl then
-                        if tbl.success then
-                            TARDIS:Message(LocalPlayer(), "Music.Playing", tbl.title)
-                            self:PlayMusic(api.."play?id="..id,true)
-                        else
-                            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailed", tbl.err and tbl.err or "Common.UnknownError")
-                        end
-                    else
-                        TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedResponse")
-                    end
-                end,
-                function(err)
-                    TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedResolve", err)
-                end
-            )
-        else
-            TARDIS:ErrorMessage(LocalPlayer(), "Music.LoadFailedMissingId")
-        end
+        TARDIS:ErrorMessage(LocalPlayer(), "Music.YouTubeNotSupported")
+        return nil
     else
         return url
     end
