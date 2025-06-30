@@ -10,6 +10,8 @@ $originLanguage = Get-Content -Raw (Join-Path $sourceLanguageFolder "en.json") |
 function Get-AITranslation {
     param (
         [Parameter(Mandatory = $true)]
+        [string]$LanguageName,
+        [Parameter(Mandatory = $true)]
         [string]$LanguageCode,
         [Parameter(Mandatory = $true)]
         [string]$Phrase
@@ -23,8 +25,9 @@ function Get-AITranslation {
 
     Write-Host "Retrieving AI translation for ${LanguageCode}: $Phrase"
 
-    $prompt = "Translate the following phrase to $LanguageCode language: `"$Phrase`". " +
+    $prompt = "Translate the following phrase to $LanguageName ($LanguageCode) language: `"$Phrase`". " +
     "Ensure the translation is accurate and idiomatic. " +
+    "If you cannot translate it, return an empty string. " +
     "Do not include any additional text or explanations."
 
     $body = @{
@@ -44,12 +47,20 @@ function Get-AITranslation {
         -Headers @{ "Authorization" = "Bearer $openAIKey"; "Content-Type" = "application/json" } `
         -Method Post -Body $body
 
+    $result = $response.output.content.text
+
+    if (-not $result) {
+        Write-Warning "AI translation for $LanguageCode returned an empty result"
+        return [string]::Empty
+    }
+
     return $response.output.content.text
 }
 
 Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $code = $_.BaseName
     $language = Get-Content -Raw $_.FullName | ConvertFrom-Json -AsHashtable
+    $name = $language.Name
 
     if (-not $language) {
         $language = @{}
@@ -80,7 +91,7 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
             $phrase = $language.Phrases[$key]
         }
         else {
-            $phrase = Get-AITranslation -LanguageCode $code -Phrase $originLanguage.Phrases[$key]
+            $phrase = Get-AITranslation -LanguageName $name -LanguageCode $code -Phrase $originLanguage.Phrases[$key]
             $language.Phrases[$key] = $phrase
         }
         $sortedPhrases[$key] = $phrase
