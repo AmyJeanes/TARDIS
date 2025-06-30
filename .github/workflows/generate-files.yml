@@ -7,12 +7,16 @@ on:
     paths:
     - i18n/languages/*.json
     - version.json
+    - generate-languages.ps1
+    - .github/workflows/generate-files.yml
   push:
     branches:
     - dev
     paths:
     - i18n/languages/*.json
     - version.json
+    - generate-languages.ps1
+    - .github/workflows/generate-files.yml
 
   workflow_dispatch:
 
