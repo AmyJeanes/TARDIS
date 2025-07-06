@@ -1,0 +1,8 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/bookcover"
+	"$surfaceprop" "Metal"
+	"$nodecal" "1"
+	"$nocull" "0"
+
+}

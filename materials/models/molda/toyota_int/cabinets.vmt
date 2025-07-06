@@ -5,7 +5,7 @@
 	"$color2" "[3 3 3]"
 
 	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0.7 0.5 0]"
+	"$envmaptint" "[0.3 0.3 0.3]"
 	"$envmapmask" "models/molda/toyota_int/smudgeN"
 
 	"$surfaceprop" "Metal"

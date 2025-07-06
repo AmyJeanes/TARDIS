@@ -196,20 +196,23 @@ local function set_interior_color_capaldi(int, k)
 
     local p = 1 - k
 
-    -- Color(255,50,0) ... Color(255,80,0)
-    local col = Color(255, 50 + 30 * k, 0)
+    -- Color(255,153,0) ... Color(255,75,0)
+    local env_col = Color(255, 50 + 15 * k, 0)
 
-    int:SetData("default_int_env_color", col)
+    int:SetData("default_int_env_color", env_col)
 
-    change_light_color(int.light_data.main, col)
-    change_light_color(int.light_data.extra.console_bottom, col)
+    -- Color(255,50,0) ... Color(255,75,0)
+    local main_col = Color(255, 50 + 15 * k, 0)
 
-    -- Color(150,50,0) ... Color(150,80,0)
-    local rotor_col = Color(150, 50 + 30 * k, 0)
+    change_light_color(int.light_data.main, main_col)
+    change_light_color(int.light_data.extra.console_bottom, main_col)
+
+    -- Color(150,50,0) ... Color(150,65,0)
+    local rotor_col = Color(150, 50 + 15 * k, 0)
     int:SetData("default_int_rotor_color", rotor_col)
 
-    -- Color(240,240,255) ... Color(255,255,200)
-    local console_col = Color(240 + 15 * k, 240 + 15 * k, 200 + 55 * p)
+    -- Color(255,50,0) ... Color(255,75,0)
+    local console_col = Color(255, 50 + 15 * k, 0)
     change_light_color(int.light_data.extra.console_white, console_col)
 
     -- Color(255,255,200) ... Color(255,255,220)
@@ -334,7 +337,7 @@ TARDIS:AddInteriorTemplate("default_capaldi", {
                 ["Initialize"] = true,
             },
             func = function(ext,int,id)
-                if CLIENT then return end
+                if CLIENT or not IsValid(int) then return end
                 local console = int:GetPart("default_console")
                 if IsValid(console) then
                     console:SetBodygroup(2, 1) -- Phone port
@@ -352,7 +355,16 @@ TARDIS:AddInteriorTemplate("default_capaldi", {
                 end
                 local rotor = int:GetPart("default_rotor")
                 if IsValid(rotor) then
+                    rotor:SetBodygroup(1, 3) -- Base
                     rotor:SetBodygroup(2, 3) -- Neon
+                end
+                local phone = int:GetPart("default_phone")
+                if IsValid(phone) then
+                    phone:SetBodygroup(0, 1) -- Phone
+                end
+                local walls = int:GetPart("default_walls")
+                if IsValid(walls) then
+                    walls:SetBodygroup(1, 1) -- Walls
                 end
             end,
         },

@@ -1,0 +1,30 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/floornew2"
+	"$surfaceprop" "Metal"
+
+	"$envmap" "models/molda/toyota_int/environment"
+//	"$envmaptint" "[0.4 0.4 0.4]"
+	"$envmaptint" "[0.2 0.9 1]"
+	"$envmapmask" "models/molda/toyota_int/smudgeN"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+
+	$envmaptint_mult "0.6"
+	$envmaptint_mult_on "0.6"
+	$envmaptint_mult_off "0"
+	$envmaptint_color "[1.5 0.9 0.6]"
+	Proxies {
+		TARDIS_Power {
+			onVar "$envmaptint_mult_on"
+			offVar "$envmaptint_mult_off"
+			resultVar $envmaptint_mult
+		}
+		Multiply {
+			srcVar1 $envmaptint_color
+			srcVar2 $envmaptint_mult
+			resultVar $envmaptint
+		}
+	}
+}

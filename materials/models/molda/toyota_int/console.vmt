@@ -2,7 +2,7 @@
 {
 	"$basetexture" "models/molda/toyota_int/console"
 
-	"$color2" "[2.5 2.5 2.5]"
+	"$color2" "[2.5 2.5 2]"
 
 	"$surfaceprop" "Metal"
 

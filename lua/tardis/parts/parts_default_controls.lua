@@ -405,7 +405,7 @@ end
 
 local PART = {}
 PART.ID = "default_phone"
-PART.Model = "models/cem/toyota_contr/phone.mdl"
+PART.Model = "models/molda/toyota_int/phone.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.Animate = true
@@ -609,7 +609,7 @@ TARDIS:AddPart(PART)
 
 local PART = {}
 PART.ID = "default_console_scanner"
-PART.Model = "models/cem/toyota_contr/console_scanner.mdl"
+PART.Model = "models/molda/toyota_int/consolescanner.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)

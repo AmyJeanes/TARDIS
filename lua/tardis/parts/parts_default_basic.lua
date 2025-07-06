@@ -37,13 +37,6 @@ PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
 local PART={}
-PART.ID = "default_roof"
-PART.Model = "models/molda/toyota_int/roof.mdl"
-PART.AutoSetup = true
-PART.ShouldTakeDamage = true
-TARDIS:AddPart(PART)
-
-local PART={}
 PART.ID = "default_rings"
 PART.Model = "models/molda/toyota_int/rings.mdl"
 PART.AutoSetup = true
@@ -221,10 +214,6 @@ PART.ClientThinkOverride = true
 PART.ShouldTakeDamage = true
 PART.Animate = true
 
-function PART:Initialize()
-    self:SetBodygroup(3,1)
-end
-
 PART.AnimateOptions = {
     Type = "travel",
     Speed = 0.075,
@@ -251,4 +240,11 @@ PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = true
+TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_books"
+PART.Model = "models/molda/toyota_int/books.mdl"
+PART.AutoSetup = true
+PART.Collision = true
 TARDIS:AddPart(PART)

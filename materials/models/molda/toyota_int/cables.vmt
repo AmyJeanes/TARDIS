@@ -10,4 +10,17 @@
 
 	"$nodecal" "1"
 	"$nocull" "0"
+
+	"$envmaptint_on" "[0.2 0.3 0.3]"
+	"$envmaptint_off" "[0 0 0]"
+
+	Proxies
+	{
+		TARDIS_Power
+		{
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+	}
 }

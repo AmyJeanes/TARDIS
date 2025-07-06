@@ -135,7 +135,7 @@ T.Interior = {
     Scanners = {
         {
             part = "default_console_scanner",
-            mat = "models/cem/toyota_contr/screen",
+            mat = "models/molda/toyota_int/scanner",
             width = 1024,
             height = 1024,
             ang = Angle(0,0,0),
@@ -188,7 +188,6 @@ T.Interior = {
         default_floor = {},
         default_entry = {},
         default_walls = {},
-        default_roof = {},
         default_pillars = {},
         default_rings = {},
         default_side_panels = {},
@@ -520,7 +519,6 @@ T.CustomHooks = {
         },
         func = function(ext, int, on)
             if CLIENT then return end
-            print(on)
             if on then
                 int:ApplyTextureSet("normal")
             else
@@ -707,13 +705,44 @@ T.Interior = {
     TextureSets = {
         ["normal"] = {
             prefix = "models/molda/toyota_int/",
-            { "default_telepathic", 0, "telepathics2" }
+            { "default_telepathic", 0, "telepathics2" },
+            { "default_rotor", 8, "neon_out_capaldi" },
+            { "default_rotor", 9, "neon_mid_capaldi" },
+            { "default_rotor", 10, "neon_in_capaldi" },
+            { "default_console", 6, "gearsglow_capaldi" },
+            { "default_floor", 4, "floornew_capaldi" },
+            { "default_floor", 3, "floornew2_capaldi" },
+            { "self", 0, "floornew_capaldi" },
+            { "self", 5, "floornew2_capaldi" },
+            { "default_pillars", 0, "bluepaint_capaldi" },
+            { "default_floor", 1, "bluepaint_capaldi" },
+            { "default_walls", 0, "bluepaint_capaldi" },
+            { "default_side_panels", 1, "bluepaint_capaldi" },
+            { "default_chairs", 1, "bluepaint_capaldi" },
+            { "self", 14, "bluepaint_capaldi" },
         },
         ["off"] = {
             prefix = "models/molda/toyota_int/",
-            { "default_telepathic", 0, "telepathics_off" }
+            { "default_telepathic", 0, "telepathics_off" },
         },
-    }
+    },
+    Parts = {
+        default_books = {},
+        default_floor = {
+            model = "models/molda/toyota_int/floorcapaldi.mdl",
+        },
+    },
+    Lights={
+        console_white = {
+            color = Color(255,50,0),
+            warn_color = Color(255,143,143),
+            off_color = Color(74,142,187),
+            off_brightness = 0.025,
+        },
+        console_bottom = {
+            nopower = false,
+        },
+    },
 }
 
 T.CustomHooks = {
@@ -726,6 +755,26 @@ T.CustomHooks = {
             int:ApplyTextureSet("normal")
         end,
     },
+    capaldi_power = {
+        exthooks = {
+            ["PowerToggled"] = true,
+        },
+        func = function(ext, int, on)
+            if CLIENT or not IsValid(int) then return end
+            local rotor = int:GetPart("default_rotor")
+            if on then
+                if IsValid(rotor) then
+                    rotor:SetBodygroup(1, 3) -- Base
+                    rotor:SetBodygroup(2, 3) -- Neon
+                end
+            else
+                if IsValid(rotor) then
+                    rotor:SetBodygroup(1, 2) -- Base
+                    rotor:SetBodygroup(2, 5) -- Neon
+                end
+            end
+        end
+    }
 }
 
 TARDIS:AddInterior(T)
