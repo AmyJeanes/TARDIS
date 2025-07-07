@@ -25,13 +25,14 @@ function Get-AITranslation {
 
     Write-Host "Retrieving AI translation for ${LanguageCode}: $Phrase"
 
-    $prompt = "Translate the following phrase to $LanguageName ($LanguageCode) language: `"$Phrase`". " +
+    $prompt = "Translate the following phrase from English to $LanguageName ($LanguageCode) language: `"$Phrase`". " +
     "Ensure the translation is accurate and idiomatic. " +
     "If you cannot translate it, return an empty string. " +
-    "Do not include any additional text or explanations."
+    "Do not include any additional text or explanations." +
+    "Do not return the original phrase in English, only the translated phrase."
 
     $body = @{
-        model = "gpt-4.5-preview"
+        model = "gpt-4.1"
         input = @(
             @{
                 role    = "user"
