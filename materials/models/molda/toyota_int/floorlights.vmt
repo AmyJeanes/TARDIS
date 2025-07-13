@@ -34,9 +34,9 @@
 				idle "models/molda/toyota_int/bulbs"
 				handbrake "idle"
 
-				travel { "models/molda/toyota_int/bulbs_travel" 10 }
+				travel { "models/molda/toyota_int/bulbs_travel" 12.5 }
 				takeoff "travel"
-				parking { "models/molda/toyota_int/bulbs" 10 }
+				parking { "models/molda/toyota_int/bulbs" 12.5 }
 
 				demat_abort "models/molda/toyota_int/bulbs"
 				demat_fail "off"
@@ -44,15 +44,15 @@
 
 
 				off_warning "off"
-				idle_warning { "models/molda/toyota_int/bulbs_warning" 10 }
+				idle_warning { "models/molda/toyota_int/bulbs_warning" 12.5 }
 				handbrake_warning "models/molda/toyota_int/bulbs_warning"
 
-				travel_warning { "models/molda/toyota_int/bulbs_travel_warning" 10 }
+				travel_warning { "models/molda/toyota_int/bulbs_travel_warning" 12.5 }
 				takeoff_warning "travel_warning"
 				parking_warning "idle_warning"
 
 				demat_abort_warning "idle_warning"
-				demat_fail_warning { "models/molda/toyota_int/bulbs_travel_warning" 20 }
+				demat_fail_warning { "models/molda/toyota_int/bulbs_travel_warning" 12.5 }
 				mat_fail_warning { "models/molda/toyota_int/bulbs_warning" 30 }
 			}
 		}

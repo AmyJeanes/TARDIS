@@ -50,21 +50,21 @@
 				parking { "models/molda/toyota_int/bulbs_travel" 50 }
 
 				demat_abort "models/molda/toyota_int/bulbs_half"
-				demat_fail { "models/molda/toyota_int/bulbs_warning" 30 }
-				mat_fail { "models/molda/toyota_int/bulbs_travel_warning" 30 }
+				demat_fail { "models/molda/toyota_int/bulbs_warning" 12.5 }
+				mat_fail { "models/molda/toyota_int/bulbs_travel_warning" 12.5 }
 
 
 				off_warning "off"
-				idle_warning { "models/molda/toyota_int/bulbs_warning" 10 }
+				idle_warning { "models/molda/toyota_int/bulbs_warning" 12.5 }
 				handbrake_warning "models/molda/toyota_int/bulbs_warning_static"
 
-				travel_warning { "models/molda/toyota_int/bulbs_travel_warning" 10 }
+				travel_warning { "models/molda/toyota_int/bulbs_travel_warning" 12.5 }
 				takeoff_warning { "models/molda/toyota_int/bulbs_travel_warning" 40 }
 				parking_warning "takeoff_warning"
 
 				demat_abort_warning "idle_warning"
-				demat_fail_warning { "models/molda/toyota_int/bulbs_warning" 40 }
-				mat_fail_warning "takeoff_warning"
+				demat_fail_warning { "models/molda/toyota_int/bulbs_hectic" 12.5 }
+				mat_fail_warning "demat_fail_warning"
 			}
 		}
 	}

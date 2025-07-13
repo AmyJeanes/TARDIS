@@ -30,6 +30,9 @@ TARDIS:AddInteriorTemplate("default_lamps", {
                     ["normal"] = { enabled = true, },
                     ["moving"] = { enabled = false, },
                 },
+                warn = {
+                    brightness = 0,
+                }
             },
         },
         Light={
@@ -252,15 +255,15 @@ TARDIS:AddInteriorTemplate("default_small_version", {
         },
 
         Parts = {
-            default_rotor = {
-                model = "models/molda/toyota_int/rotor_small.mdl",
+            default_rotor = false,
+            default_rotor_small = {
+                pos = Vector(0, 0, -0.07),
             },
             default_intdoors = false,
             default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
             default_corridor_doors_static = { pos = Vector(-475.5, 213, 160.8) },
-            default_corridors = {
-                model = "models/molda/toyota_int/corridor_version3.mdl"
-            },
+            default_corridors = false,
+            default_corridors_small = { ang = Angle(0,90,0) },
         },
     },
 })
@@ -341,7 +344,8 @@ TARDIS:AddInteriorTemplate("default_capaldi", {
                 local console = int:GetPart("default_console")
                 if IsValid(console) then
                     console:SetBodygroup(2, 1) -- Phone port
-                    console:SetBodygroup(5, 1) -- Siege panel
+                    console:SetBodygroup(5, 1) -- DVD slot
+                    console:SetBodygroup(6, 1) -- Siege panel
                 end
                 local doorframe = int:GetPart("default_doorframe")
                 if IsValid(doorframe) then
@@ -357,6 +361,11 @@ TARDIS:AddInteriorTemplate("default_capaldi", {
                 if IsValid(rotor) then
                     rotor:SetBodygroup(1, 3) -- Base
                     rotor:SetBodygroup(2, 3) -- Neon
+                end
+                local rotor_small = int:GetPart("default_rotor_small")
+                if IsValid(rotor_small) then
+                    rotor_small:SetBodygroup(1, 3) -- Base
+                    rotor_small:SetBodygroup(2, 3) -- Neon
                 end
                 local phone = int:GetPart("default_phone")
                 if IsValid(phone) then

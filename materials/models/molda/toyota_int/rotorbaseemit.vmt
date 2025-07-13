@@ -1,10 +1,18 @@
-"VertexLitGeneric"
+"UnlitGeneric"
 {
 	"$basetexture" "models/molda/toyota_int/rotorbaseemit"
-
-    "$selfillum" 1
-    "$selfillummask" "models/molda/toyota_int/rotorbaseemit"
-
 	"$nodecal" "1"
 	"$nocull" "0"
+	"$color2" "[1 1 1]"
+
+	"$color2_on" "[1 1 1]"
+	"$color2_off" "[0.25 0.25 0.25]"
+
+	Proxies {
+		TARDIS_Power {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
 }

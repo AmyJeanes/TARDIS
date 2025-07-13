@@ -143,7 +143,7 @@ PART.AutoSetup = true
 PART.Animate = true
 PART.Collision = true
 PART.ShouldTakeDamage = true
-PART.AnimateSpeed = 1
+PART.AnimateSpeed = 0.8
 PART.Sound = "p00gie/tardis/default/intdoors_open.ogg"
 
 if SERVER then
@@ -176,9 +176,7 @@ TARDIS:AddPart(PART)
 PART.ID = "default_top_doors_1"
 PART.Model = "models/molda/toyota_int/slidedoors1.mdl"
 PART.ShouldTakeDamage = true
-PART.Sound = nil
-PART.SoundOn = "p00gie/tardis/default/topdoor_open.ogg"
-PART.SoundOff = "p00gie/tardis/default/topdoor_close.ogg"
+PART.Sound = "p00gie/tardis/default/intdoors_open.ogg"
 PART.AnimateSpeed = 0.8
 TARDIS:AddPart(PART)
 
@@ -234,12 +232,21 @@ PART.ExtraAnimations = {
 
 TARDIS:AddPart(PART)
 
+PART.ID = "default_rotor_small"
+PART.Model = "models/molda/toyota_int/rotor_small.mdl"
+
+TARDIS:AddPart(PART)
+
 local PART={}
 PART.ID = "default_corridors"
 PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = true
+TARDIS:AddPart(PART)
+
+PART.ID = "default_corridors_small"
+PART.Model = "models/molda/toyota_int/corridor_version3.mdl"
 TARDIS:AddPart(PART)
 
 local PART = {}

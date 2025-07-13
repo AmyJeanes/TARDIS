@@ -332,7 +332,7 @@ T.Interior = {
 
         default_rotor_ring = {},
 
-        default_rotor = {},
+        default_rotor = { pos = Vector(0,0,-0.07) },
         default_corridors = { ang = Angle(0,90,0), },
         default_intdoors = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
 
@@ -484,7 +484,6 @@ T.Interior = {
         {pos = Vector(130.65, 71.77, 125.87), right = true, down = true, part = "default_side_speakers", },
         {pos = Vector(-38.64, -144.1, 125.97), right = true, down = true, part = "default_side_speakers", },
         {pos = Vector(-101.11, -110.17, 126.19), right = true, down = true, part = "default_side_speakers", },
-        {pos = Vector(334.946, -34.611, 40.627), text = "Never Gonna Give You Up!\nNever Gonna Let You Down!"}
     },
 
     TextureSets = {
@@ -504,6 +503,13 @@ T.Exterior = {
         Spawn = "drmatt/tardis/repairfinish.wav",
         Delete = "p00gie/tardis/tardis_delete.wav",
     },
+    Parts = {
+        vortex = {
+            matrixScale = Vector(0.25, 1, 1),
+            ang = Angle(180, 0, 0),
+            scale = 5
+        },
+    }
 }
 
 T.Timings = {
@@ -706,20 +712,36 @@ T.Interior = {
         ["normal"] = {
             prefix = "models/molda/toyota_int/",
             { "default_telepathic", 0, "telepathics2" },
-            { "default_rotor", 8, "neon_out_capaldi" },
-            { "default_rotor", 9, "neon_mid_capaldi" },
-            { "default_rotor", 10, "neon_in_capaldi" },
+            { "default_rotor", 10, "neon_out_capaldi" },
+            { "default_rotor", 11, "neon_mid_capaldi" },
+            { "default_rotor", 12, "neon_in_capaldi" },
+            { "default_rotor_small", 8, "neon_out_capaldi" },
+            { "default_rotor_small", 9, "neon_mid_capaldi" },
+            { "default_rotor_small", 10, "neon_in_capaldi" },
             { "default_console", 6, "gearsglow_capaldi" },
+            { "default_floor", 0, "rails_capaldi" },
             { "default_floor", 4, "floornew_capaldi" },
             { "default_floor", 3, "floornew2_capaldi" },
             { "self", 0, "floornew_capaldi" },
             { "self", 5, "floornew2_capaldi" },
+            { "default_corridors", 5, "floornew_capaldi" },
+            { "default_corridors_small", 6, "floornew_capaldi" },
             { "default_pillars", 0, "bluepaint_capaldi" },
             { "default_floor", 1, "bluepaint_capaldi" },
             { "default_walls", 0, "bluepaint_capaldi" },
             { "default_side_panels", 1, "bluepaint_capaldi" },
             { "default_chairs", 1, "bluepaint_capaldi" },
             { "self", 14, "bluepaint_capaldi" },
+            { "default_intdoors", 0, "portalsnew_capaldi" },
+            { "default_intdoors", 1, "portalsnew2_capaldi" },
+            { "default_intdoors_static", 0, "portalsnew_capaldi" },
+            { "default_intdoors_static", 1, "portalsnew2_capaldi" },
+            { "self", 2, "portalsnew_capaldi" },
+            { "self", 4, "portalsnew2_capaldi" },
+            { "default_corridors", 0, "portalsnew_capaldi" },
+            { "default_corridors", 1, "portalsnew2_capaldi" },
+            { "default_corridors_small", 3, "portalsnew_capaldi" },
+            { "default_corridors_small", 4, "portalsnew2_capaldi" },
         },
         ["off"] = {
             prefix = "models/molda/toyota_int/",
@@ -732,17 +754,31 @@ T.Interior = {
             model = "models/molda/toyota_int/floorcapaldi.mdl",
         },
     },
+    Light = {
+        color = Color(255, 20, 0),
+    },
     Lights={
         console_white = {
             color = Color(255,50,0),
             warn_color = Color(255,143,143),
             off_color = Color(74,142,187),
             off_brightness = 0.025,
+            warn_brightness = 0.25,
         },
         console_bottom = {
+            color = Color(255, 50, 0),
+            warn_color = Color(255, 50, 0),
             nopower = false,
         },
     },
+}
+
+T.Exterior = {
+    Parts = {
+        vortex = {
+            model = "models/doctorwho1200/toyota/2014timevortex.mdl",
+        },
+    }
 }
 
 T.CustomHooks = {
