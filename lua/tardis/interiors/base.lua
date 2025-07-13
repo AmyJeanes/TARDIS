@@ -27,10 +27,7 @@ T.Interior = {
             Death = "jeredek/tardis/damage_death.wav",
             Artron = "p00gie/tardis/force_artron.wav",
         },
-        Teleport = { -- uses exterior sounds if not specified
-            demat_fail_loop = "molda/tardis/demat_fail_loop.wav",
-            demat_fail_loop_stop = "molda/tardis/demat_fail_loop_stop.wav",
-        },
+        Teleport = {}, -- uses exterior sounds if not specified
         Power = {
             On = "drmatt/tardis/power_on.wav",
             Off = "drmatt/tardis/power_off.wav"

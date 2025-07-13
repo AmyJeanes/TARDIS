@@ -183,7 +183,7 @@ else -- CLIENT
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
             self:EmitSound(ext.demat_fail)
-            if not infinite then
+            if (not infinite) or (not int.demat_fail_loop) then
                 self.interior:EmitSound(int.demat_fail or ext.demat_fail)
             end
         end
@@ -212,9 +212,10 @@ else -- CLIENT
     ENT:AddHook("Think", "failing-demat", function(self)
         if self:GetData("failing-demat", false) and TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local setting = TARDIS:GetSetting("teleport_warning_infinite", self)
-            if setting then
+            local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop
+            if setting and sound then
                 if not self.interior.dematfailsound then
-                    self.interior.dematfailsound = CreateSound(self.interior, self.metadata.Interior.Sounds.Teleport.demat_fail_loop)
+                    self.interior.dematfailsound = CreateSound(self.interior, sound)
                     self.interior.dematfailsound:SetSoundLevel(90)
                 end
                 if not self.interior.dematfailsound:IsPlaying() then
@@ -233,8 +234,9 @@ else -- CLIENT
             self.interior.dematfailsound = nil
             local power = self:GetPower()
             local teleport = self:GetData("teleport", false)
-            if power and (not teleport) then
-                self.interior:EmitSound(self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop)
+            local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop
+            if power and (not teleport) and sound then
+                self.interior:EmitSound(sound)
             end
         end
     end)

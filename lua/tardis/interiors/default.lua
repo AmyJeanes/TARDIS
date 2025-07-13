@@ -100,6 +100,8 @@ T.Interior = {
             mat = "p00gie/tardis/default/mat_int.ogg",
             fullflight = "p00gie/tardis/default/full_int.ogg",
             demat_fail = "p00gie/tardis/default/demat_fail.ogg",
+            demat_fail_loop = "molda/tardis/demat_fail_loop.wav",
+            demat_fail_loop_stop = "molda/tardis/demat_fail_loop_stop.wav",
             demat_hads = "p00gie/tardis/demat_hads.wav",
             interrupt = "p00gie/tardis/default/demat_interrupt.ogg",
         },
