@@ -13,11 +13,11 @@ end)
 
 if SERVER then
     function ENT:TogglePower()
-        self.exterior:TogglePower()
+        return self.exterior:TogglePower()
     end
 
     function ENT:SetPower(on)
-        self.exterior:SetPower(on)
+        return self.exterior:SetPower(on)
     end
 
     ENT:AddHook("PostInitialize","power-init", function(self)

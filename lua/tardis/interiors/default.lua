@@ -391,7 +391,7 @@ T.Interior = {
         default_side_lever2 = {pos = Vector(-59.115, -151.548, 126.17), right = true, down = false, },
         default_telepathic = {pos = Vector(19.919, 35.908, 130.754), right = true, down = false, },
         default_keyboard = {pos = Vector(20.64, -39.63, 129.29), right = true, down = true, },
-        default_crank4 = {pos = Vector(-34.917, -29.135, 132.425), right = true, down = true, },
+        default_crank4 = {pos = Vector(-34.917, -29.135, 132.425), right = true, down = false, },
         default_toggles = {pos = Vector(39.523, 0.016, 133.705), right = true, down = false, },
         default_buttons = {pos = Vector(10.193, -49.502, 128.582), right = true, down = true,  },
         default_switch2 = {pos = Vector(-35.645, 12.629, 135.094), right = true, down = true,  },

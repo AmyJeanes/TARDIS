@@ -97,7 +97,7 @@ if SERVER then
 
     ENT:AddHook("CanTogglePower", "repair", function(self, on)
         if on and (self:GetRepairing() or self:GetRepairPrimed()) then
-            return false
+            return false, "Controls.Power.FailedToggle.Repairing"
         end
     end)
 

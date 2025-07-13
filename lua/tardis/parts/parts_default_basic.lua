@@ -180,7 +180,6 @@ PART.Sound = "p00gie/tardis/default/intdoors_open.ogg"
 PART.AnimateSpeed = 0.8
 TARDIS:AddPart(PART)
 
-
 PART.ID = "default_top_doors_2"
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
@@ -188,8 +187,7 @@ TARDIS:AddPart(PART)
 PART.Use = nil
 PART.Animate = false
 PART.AnimateSpeed = nil
-PART.SoundOn = nil
-PART.SoundOff = nil
+PART.Sound = nil
 PART.SoundPos = nil
 
 PART.ID = "default_intdoors_static"

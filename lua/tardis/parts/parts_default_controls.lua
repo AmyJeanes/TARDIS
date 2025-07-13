@@ -232,7 +232,7 @@ PART.Sound = "p00gie/tardis/default/crank.ogg"
 
 PART.AnimateOptions = {
     Type = "perpetual_use",
-    Speed = 1,
+    Speed = 0.65,
 }
 
 TARDIS:AddPart(PART)

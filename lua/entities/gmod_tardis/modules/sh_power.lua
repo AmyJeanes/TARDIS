@@ -36,7 +36,8 @@ if SERVER then
         return self:SetPower(not self:GetPower())
     end
     function ENT:SetPower(on)
-        if (self:CallCommonHook("CanTogglePower", on) == false) then return false end
+        local cantoggle, reason, arg1, arg2 = self:CallCommonHook("CanTogglePower", on)
+        if cantoggle == false then return false, reason, arg1, arg2 end
         self:SetData("power-state",on,true)
         self:CallCommonHook("PowerToggled", on)
         self:SendMessage("power_toggled", {on})
@@ -51,7 +52,7 @@ if SERVER then
 
     ENT:AddHook("CanTogglePower", "vortex", function(self, on)
         if self:GetData("teleport") or self:GetData("vortex") then
-            return false
+            return false, "Controls.Power.FailedToggle.Travelling"
         end
     end)
 

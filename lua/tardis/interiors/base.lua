@@ -29,7 +29,7 @@ T.Interior = {
         },
         Teleport = { -- uses exterior sounds if not specified
             demat_fail_loop = "molda/tardis/demat_fail_loop.wav",
-            demat_fail_loop_stop = "p00gie/tardis/base/tardis_landing.wav",
+            demat_fail_loop_stop = "molda/tardis/demat_fail_loop_stop.wav",
         },
         Power = {
             On = "drmatt/tardis/power_on.wav",

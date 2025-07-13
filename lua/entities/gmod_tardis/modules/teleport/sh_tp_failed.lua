@@ -163,6 +163,18 @@ if SERVER then
         self:SetData("failing-mat", false, true)
     end)
 
+    ENT:AddHook("PowerToggled", "failing-demat", function(self, on)
+        if not on then
+            self:FailDematStop()
+        end
+    end)
+
+    ENT:AddHook("HandbrakeToggled", "failing-demat", function(self, on)
+        if not on then
+            self:FailDematStop()
+        end
+    end)
+
 else -- CLIENT
     ENT:OnMessage("failed-demat", function(self, data, ply)
         self:CallCommonHook("DematFailed")
@@ -171,11 +183,7 @@ else -- CLIENT
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
             self:EmitSound(ext.demat_fail)
-            if infinite then
-                self.interior.dematfailsound = CreateSound(self.interior, int.demat_fail_loop)
-                self.interior.dematfailsound:SetSoundLevel(90)
-                self.interior.dematfailsound:Play()
-            else
+            if not infinite then
                 self.interior:EmitSound(int.demat_fail or ext.demat_fail)
             end
         end
@@ -201,12 +209,31 @@ else -- CLIENT
         self:InteriorExplosion()
     end)
 
+    ENT:AddHook("Think", "failing-demat", function(self)
+        if self:GetData("failing-demat", false) and TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
+            local setting = TARDIS:GetSetting("teleport_warning_infinite", self)
+            if setting then
+                if not self.interior.dematfailsound then
+                    self.interior.dematfailsound = CreateSound(self.interior, self.metadata.Interior.Sounds.Teleport.demat_fail_loop)
+                    self.interior.dematfailsound:SetSoundLevel(90)
+                end
+                if not self.interior.dematfailsound:IsPlaying() then
+                    self.interior.dematfailsound:Play()
+                end
+            end
+        elseif self.interior.dematfailsound then
+            self.interior.dematfailsound:Stop()
+            self.interior.dematfailsound = nil
+        end
+    end)
+
     ENT:AddHook("DematFailStopped", "failing-demat", function(self)
         if self.interior.dematfailsound then
             self.interior.dematfailsound:Stop()
             self.interior.dematfailsound = nil
+            local power = self:GetPower()
             local teleport = self:GetData("teleport", false)
-            if not teleport then
+            if power and (not teleport) then
                 self.interior:EmitSound(self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop)
             end
         end

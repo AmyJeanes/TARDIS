@@ -121,7 +121,7 @@ if SERVER then
         if self:GetData("redecorate") then return end
 
         if self:GetArtron() <= 0 and self:GetPower() == false then
-            return false
+            return false, "Controls.Power.FailedToggle.NoArtron"
         end
     end)
 

@@ -1,5 +1,17 @@
 -- Teleport interrupting
 
+function ENT:GetTeleportInterrupted()
+    return self:GetData("teleport-interrupted", false)
+end
+
+function ENT:GetTeleportInterruptedTimeRemaining(round)
+    local time = CurTime() - self:GetData("teleport-interrupt-time", 0)
+    if round then
+        time = math.ceil(time)
+    end
+    return 10 - time
+end
+
 if SERVER then
     function ENT:InterruptTeleport(callback)
         if not self:GetData("teleport", false) and not self:GetData("vortex", false) then return end
@@ -80,7 +92,7 @@ if SERVER then
 
     ENT:AddHook("CanTogglePower", "tp_interrupt", function(self, on)
         if on and self:GetData("teleport-interrupted", false) then
-            return false
+            return false, "Controls.Power.FailedToggle.Interrupted", self:GetTeleportInterruptedTimeRemaining(true)
         end
     end)
 
@@ -138,7 +150,7 @@ end
 ENT:AddHook("Think", "tp_interrupt", function(self)
     if not self:GetData("teleport-interrupted", false) then return end
 
-    local timediff = CurTime() - self:GetData("teleport-interrupt-time")
+    local timediff = CurTime() - self:GetData("teleport-interrupt-time", 0)
 
     if timediff > 6 and timediff < 6.2 and self:GetData("teleport-interrupt-effects", false) then
         self:SetData("teleport-interrupt-effects", false, true)

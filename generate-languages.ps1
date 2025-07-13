@@ -28,8 +28,11 @@ function Get-AITranslation {
     $prompt = "Translate the following phrase from English to $LanguageName ($LanguageCode) language: `"$Phrase`". " +
     "Ensure the translation is accurate and idiomatic. " +
     "If you cannot translate it, return an empty string. " +
-    "Do not include any additional text or explanations." +
-    "Do not return the original phrase in English, only the translated phrase."
+    "Do not include any additional text or explanations. " +
+    "Do not return the original phrase in English, only the translated phrase. " +
+    "Punctuation and capitalization should match the original phrase. " +
+    "Variable replacement characters e.g. %s must be maintained. " +
+    "Do not put a full stop at the end of your response unless the original phrase had one. "
 
     $body = @{
         model = "gpt-4.1"

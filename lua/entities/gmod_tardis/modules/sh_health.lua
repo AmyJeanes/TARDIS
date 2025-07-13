@@ -103,7 +103,7 @@ if SERVER then
 
     ENT:AddHook("CanTogglePower", "health", function(self, on)
         if on and self:GetHealth() <= 0 then
-            return false
+            return false, "Controls.Power.FailedToggle.NoHealth"
         end
     end)
 
