@@ -14,7 +14,7 @@ TARDIS:AddControl({
         mmenu = false,
         toggle = true,
         frame_type = {2, 1},
-        text = "  ",
+        text = "Controls.FlightlessFlight",
         pressed_state_data = "flightless",
         order = 10,
     },
