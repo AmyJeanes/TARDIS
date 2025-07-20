@@ -1,0 +1,22 @@
+"VertexLitGeneric"
+{
+    "$basetexture" "models/molda/toyota_int/telepathics_warning"
+
+    "$surfaceprop" "Metal"
+
+    "$nodecal" "1"
+    "$nocull" "0"
+
+    "$selfillummask" "models/drmatt/tardis/exterior/white"
+	"$selfillum" 1
+    "$selfillumtint" "[0.75 0.75 0.75]"
+
+    "Proxies"
+	{
+		"AnimatedTexture" {
+			"animatedTextureVar" "$basetexture"
+			"animatedTextureFrameNumVar" "$frame"
+			"animatedTextureFrameRate" "2.25"
+		}
+    }
+}

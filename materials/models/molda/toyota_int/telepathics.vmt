@@ -26,25 +26,25 @@
         }
         Sine
         {
-            sineperiod 5
-            sinemin 0
-            sinemax 0.7
+            sineperiod 10
+            sinemin 0.9
+            sinemax 1.1
             resultVar "$sine_r"
         }
         Sine
         {
-            sineperiod 5
-            timeoffset 0.5
-            sinemin 0.8
-            sinemax 1.4
+            sineperiod 10
+            timeoffset 1
+            sinemin 0.9
+            sinemax 1.1
             resultVar "$sine_g"
         }
         Sine
         {
-            sineperiod 5
-            timeoffset 2
-            sinemin 1
-            sinemax 1.8
+            sineperiod 10
+            timeoffset 4
+            sinemin 0.9
+            sinemax 1.1
             resultVar "$sine_b"
         }
         Add

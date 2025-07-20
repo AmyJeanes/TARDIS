@@ -493,6 +493,10 @@ T.Interior = {
             prefix = "models/molda/toyota_int/",
             { "default_telepathic", 0, "telepathics" }
         },
+        ["warning"] = {
+            prefix = "models/molda/toyota_int/",
+            { "default_telepathic", 0, "telepathics_warning" }
+        },
         ["off"] = {
             prefix = "models/molda/toyota_int/",
             { "default_telepathic", 0, "telepathics_off" }
@@ -521,16 +525,21 @@ T.Timings = {
 }
 
 T.CustomHooks = {
-    power = {
+    state = {
         exthooks = {
             ["PowerToggled"] = true,
+            ["WarningToggled"] = true,
         },
-        func = function(ext, int, on)
+        func = function(ext, int)
             if CLIENT then return end
-            if on then
-                int:ApplyTextureSet("normal")
-            else
+            if not ext:GetPower() then
                 int:ApplyTextureSet("off")
+                return
+            end
+            if ext:GetWarning() then
+                int:ApplyTextureSet("warning")
+            else
+                int:ApplyTextureSet("normal")
             end
         end
     },
@@ -713,7 +722,7 @@ T.Interior = {
     TextureSets = {
         ["normal"] = {
             prefix = "models/molda/toyota_int/",
-            { "default_telepathic", 0, "telepathics2" },
+            { "default_telepathic", 0, "telepathics" },
             { "default_rotor", 10, "neon_out_capaldi" },
             { "default_rotor", 11, "neon_mid_capaldi" },
             { "default_rotor", 12, "neon_in_capaldi" },
