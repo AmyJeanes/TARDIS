@@ -9,8 +9,10 @@ TARDIS:AddControl({
         local tp = self:GetData("teleport")
         local vx = self:GetData("vortex")
 
-        if (tp and on) or (vx and on) or (not on and not tp and not vx) then
+        if (vx and on) or (not on and not tp and not vx) then
             TARDIS:Control("teleport", ply, part)
+        elseif tp and (not vx) and on then
+            self:InterruptTeleport()
         end
 
         if on then
