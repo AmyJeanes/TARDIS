@@ -68,7 +68,7 @@ PART.AutoSetup = true
 PART.Collision = true
 PART.ShouldTakeDamage = false
 PART.Animate = true
-PART.AnimateSpeed = 2.3
+PART.AnimateSpeed = 3
 TARDIS:AddPart(PART)
 
 local PART={}

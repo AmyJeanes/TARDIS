@@ -211,7 +211,7 @@ T.Interior = {
         default_gears2 = {},
         default_gears3 = {},
 
-        default_handbrake = { pos = Vector(0,0,-0.1) },
+        default_handbrake = { pos = Vector(0,0,-0.08) },
         default_keyboard = {},
         default_telepathic = {},
         default_throttle = {},
