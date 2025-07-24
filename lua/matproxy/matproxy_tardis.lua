@@ -1,3 +1,6 @@
+local fallbackcol = Color(255, 255, 255)
+fallbackcol = Color(fallbackcol.r, fallbackcol.g, fallbackcol.b):ToVector()
+
 matproxy.Add({
     name = "TARDIS_State_Texture",
 
@@ -108,8 +111,7 @@ local function matproxy_tardis_power_bind(self, mat, ent)
             mat:SetVector(self.ResultTo, value)
         end
     else
-        local value = Vector(1, 1, 1)
-        mat:SetVector(self.ResultTo, value)
+        mat:SetVector(self.ResultTo, fallbackcol)
     end
 end
 
@@ -146,9 +148,6 @@ matproxy.Add({
     end
 })
 
-local fallbackcol = Color(255, 255, 255)
-fallbackcol = Color(fallbackcol.r, fallbackcol.g, fallbackcol.b):ToVector()
-
 matproxy.Add({
     name = "TARDIS_Interior_Color1",
 
@@ -165,10 +164,10 @@ matproxy.Add({
             if ent.metadata.Interior.MatProxy then
                 local col = ent.metadata.Interior.MatProxy.Color1
                 col = Color(col.r, col.g, col.b):ToVector()
-                mat:SetVector( self.ResultTo, col)
+                mat:SetVector(self.ResultTo, col)
             end
         else
-            mat:SetVector( self.ResultTo, fallbackcol);
+            mat:SetVector(self.ResultTo, fallbackcol);
         end
     end
 })
@@ -189,10 +188,10 @@ matproxy.Add({
             if ent.metadata.Interior.MatProxy then
                 local col = ent.metadata.Interior.MatProxy.Color2
                 col = Color(col.r, col.g, col.b):ToVector()
-                mat:SetVector( self.ResultTo, col)
+                mat:SetVector(self.ResultTo, col)
             end
         else
-            mat:SetVector( self.ResultTo, fallbackcol);
+            mat:SetVector(self.ResultTo, fallbackcol);
         end
     end
 })
@@ -213,10 +212,10 @@ matproxy.Add({
             if ent.metadata.Interior.MatProxy then
                 local col = ent.metadata.Interior.MatProxy.Color3
                 col = Color(col.r, col.g, col.b):ToVector()
-                mat:SetVector( self.ResultTo, col)
+                mat:SetVector(self.ResultTo, col)
             end
         else
-            mat:SetVector( self.ResultTo, fallbackcol);
+            mat:SetVector(self.ResultTo, fallbackcol);
         end
     end
 })
@@ -246,8 +245,7 @@ local function matproxy_tardis_warning_bind(self, mat, ent)
             mat:SetVector(self.ResultTo, value)
         end
     else
-        local value = Vector(1, 1, 1)
-        mat:SetVector(self.ResultTo, value)
+        mat:SetVector(self.ResultTo, fallbackcol)
     end
 
 end
