@@ -90,19 +90,27 @@ local function matproxy_tardis_power_init(self, mat, values)
 end
 
 local function matproxy_tardis_power_bind(self, mat, ent)
-    if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
+    if not IsValid(ent) then return end
 
-    local var = ent.exterior:GetPower() and self.on_var or self.off_var
-    if not var then return end
-
-    local value = mat:GetVector(var)
-
-    if var ~= self.last_var or value ~= self.last_value then
-        self.last_var = var
-        self.last_value = value
-        mat:SetVector(self.ResultTo, value)
+    if ent.interior then
+        ent = ent.interior
     end
 
+    if ent.exterior then
+        local var = ent.exterior:GetPower() and self.on_var or self.off_var
+        if not var then return end
+
+        local value = mat:GetVector(var)
+
+        if var ~= self.last_var or value ~= self.last_value then
+            self.last_var = var
+            self.last_value = value
+            mat:SetVector(self.ResultTo, value)
+        end
+    else
+        local value = Vector(1, 1, 1)
+        mat:SetVector(self.ResultTo, value)
+    end
 end
 
 matproxy.Add({
@@ -220,16 +228,25 @@ local function matproxy_tardis_warning_init(self, mat, values)
 end
 
 local function matproxy_tardis_warning_bind(self, mat, ent)
-    if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
+    if not IsValid(ent) then return end
 
-    local var = ent.exterior:GetWarning() and self.on_var or self.off_var
-    if not var then return end
+    if ent.interior then
+        ent = ent.interior
+    end
 
-    local value = mat:GetVector(var)
+    if ent.exterior then
+        local var = ent.exterior:GetWarning() and self.on_var or self.off_var
+        if not var then return end
 
-    if var ~= self.last_var or value ~= self.last_value then
-        self.last_var = var
-        self.last_value = value
+        local value = mat:GetVector(var)
+
+        if var ~= self.last_var or value ~= self.last_value then
+            self.last_var = var
+            self.last_value = value
+            mat:SetVector(self.ResultTo, value)
+        end
+    else
+        local value = Vector(1, 1, 1)
         mat:SetVector(self.ResultTo, value)
     end
 
