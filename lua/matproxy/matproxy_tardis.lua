@@ -284,3 +284,25 @@ matproxy.Add({
     init = matproxy_tardis_HDR_init,
     bind = matproxy_tardis_HDR_bind,
 })
+
+matproxy.Add({
+    name = "TARDIS_ExteriorBaseLight",
+
+    init = function(self, mat, values)
+        self.ResultTo = values.resultvar
+    end,
+
+    bind = function(self, mat, ent)
+        if not IsValid(ent) then return end
+        if ent.interior then
+            ent = ent.interior
+        end
+        if ent.exterior then
+            ent = ent.exterior
+            local col = render.ComputeLighting((ent:GetPos()+Vector(0, 0, 1)),Vector(0, 0, 1) ) -- Gets the position just above the tardis origin just in case it spawns slightly in the ground
+            mat:SetVector(self.ResultTo, col)
+        else
+            mat:SetVector(self.ResultTo, fallbackcol);
+        end
+    end
+})
