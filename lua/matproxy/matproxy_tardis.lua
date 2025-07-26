@@ -298,8 +298,18 @@ matproxy.Add({
             ent = ent.interior
         end
         if ent.exterior then
+            local vortexcol = Color(0, 0, 0) -- Uses black if no custom colour is set since that can fit for any tardis
+            if ent.metadata.Interior.MatProxy then
+                if ent.metadata.Interior.MatProxy.VortexColor then -- Making sure a vortex colour is set in the first place since people tend to re-use door on multiple tardises
+                    vortexcol = ent.metadata.Interior.MatProxy.VortexColor
+                end
+            end
+            vortexcol = Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()
             ent = ent.exterior
             local col = render.ComputeLighting((ent:GetPos()+Vector(0, 0, 1)),Vector(0, 0, 1) ) -- Gets the position just above the tardis origin just in case it spawns slightly in the ground
+            local ExteriorAlpha = (ent:GetData("alpha",255)/255)
+            local ExteriorAlphaInvert = ((ExteriorAlpha - 1)*-1)
+            col = ((col*ExteriorAlpha) + (vortexcol*ExteriorAlphaInvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
             mat:SetVector(self.ResultTo, col)
         else
             mat:SetVector(self.ResultTo, fallbackcol);
