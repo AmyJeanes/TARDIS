@@ -302,7 +302,7 @@ matproxy.Add({
             end
             vortexcol = Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()
             ent = ent.exterior
-            local col = render.ComputeLighting((ent:GetPos()+Vector(0, 0, 80)),ent:GetForward()) -- Gets the position just above the tardis origin just in case it spawns slightly in the ground
+            local col = render.ComputeLighting((ent:GetPos()+Vector(0, 0, 80)),ent:GetForward()) -- Gets the lighting from the perspective of the doors
             if ent:GetData("teleport") or ent:GetData("vortex") then
                 local ExteriorAlpha = (ent:GetData("alpha",255)/255)
                 local ExteriorAlphaInvert = ((ExteriorAlpha - 1)*-1)
