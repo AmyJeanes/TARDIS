@@ -110,8 +110,6 @@ local function matproxy_tardis_power_bind(self, mat, ent)
             self.last_value = value
             mat:SetVector(self.ResultTo, value)
         end
-    else
-        mat:SetVector(self.ResultTo, fallbackcol)
     end
 end
 
@@ -244,8 +242,6 @@ local function matproxy_tardis_warning_bind(self, mat, ent)
             self.last_value = value
             mat:SetVector(self.ResultTo, value)
         end
-    else
-        mat:SetVector(self.ResultTo, fallbackcol)
     end
 
 end
