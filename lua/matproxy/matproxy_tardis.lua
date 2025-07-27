@@ -110,8 +110,6 @@ local function matproxy_tardis_power_bind(self, mat, ent)
             self.last_value = value
             mat:SetVector(self.ResultTo, value)
         end
-    else
-        mat:SetVector(self.ResultTo, fallbackcol)
     end
 end
 
@@ -244,8 +242,6 @@ local function matproxy_tardis_warning_bind(self, mat, ent)
             self.last_value = value
             mat:SetVector(self.ResultTo, value)
         end
-    else
-        mat:SetVector(self.ResultTo, fallbackcol)
     end
 
 end
@@ -283,4 +279,38 @@ matproxy.Add({
     name = "TARDIS_HDR_State",
     init = matproxy_tardis_HDR_init,
     bind = matproxy_tardis_HDR_bind,
+})
+
+matproxy.Add({
+    name = "TARDIS_ExteriorBaseLight",
+
+    init = function(self, mat, values)
+        self.ResultTo = values.resultvar
+    end,
+
+    bind = function(self, mat, ent)
+        if not IsValid(ent) then return end
+        if ent.interior then
+            ent = ent.interior
+        end
+        if ent.exterior then
+            local vortexcol = Color(0, 0, 0) -- Uses black if no custom colour is set since that can fit for any tardis
+            if ent.metadata.Interior.MatProxy then
+                if ent.metadata.Interior.MatProxy.VortexColor then -- Making sure a vortex colour is set in the first place since people tend to re-use door on multiple tardises
+                    vortexcol = ent.metadata.Interior.MatProxy.VortexColor
+                end
+            end
+            vortexcol = (Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()*2.5)
+            ent = ent.exterior
+            local col = render.ComputeLighting((ent:GetPos()+Vector(0, 0, 80)),ent:GetForward()) -- Gets the lighting from the perspective of the doors
+            if ent:GetData("teleport") or ent:GetData("vortex") then
+                local exterioralpha = (ent:GetData("alpha",255)/255)
+                local exterioralphainvert = ((exterioralpha - 1)*-1)
+                col = ((col*exterioralpha) + (vortexcol*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
+            end
+            mat:SetVector(self.ResultTo, col)
+        else
+            mat:SetVector(self.ResultTo, fallbackcol);
+        end
+    end
 })
