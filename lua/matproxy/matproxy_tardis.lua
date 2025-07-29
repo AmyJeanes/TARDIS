@@ -284,7 +284,7 @@ matproxy.Add({
 local vortexfallbackcol = Color(0, 0, 0) -- Uses black if no custom colour is set since that can fit for any tardis
 
 matproxy.Add({
-    name = "TARDIS_ExteriorBaseLight",
+    name = "TARDIS_ExteriorWindowLight",
 
     init = function(self, mat, values)
         self.ResultTo = values.resultvar

@@ -14,7 +14,7 @@
 
 	"Proxies"
 	{
-		"TARDIS_ExteriorBaseLight" {
+		"TARDIS_ExteriorWindowLight" {
 			"defaultColor" "$envmaptint_default"
 			"resultVar" "$envmaptint_color"
 		}
