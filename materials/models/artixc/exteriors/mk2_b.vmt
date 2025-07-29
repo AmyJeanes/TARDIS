@@ -17,6 +17,29 @@
 	"$phong"					"1"
 	"$phongexponent"			"10"
 	"$phongboost"				"10"
+
+	"$envmapdarken" "0.2"
+
+// Creating Variable
+	"$envmapcolor" "[ 1 1 1]"
+
+	"Proxies"
+	{
+		TARDIS_ExteriorBaseLight
+		{
+			defaultColor "$envmaptint"
+			resultVar "$envmapcolor"
+		}
+
+		Multiply
+		{
+			srcVar1	"$envmapcolor"
+			srcVar2		"$envmapdarken"
+			resultVar "$envmaptint"
+		}
+
+	}
+
 }
 
 

@@ -5,6 +5,30 @@
 	"$envmaptint" "[0.3 0.3 0.3]"
 	"$nodecal" "1"
 	"$surfaceprop" "Glass"
+
+
+	"$envmapdarken" "0.25"
+
+// Creating Variable
+	"$envmapcolor" "[ 1 1 1]"
+
+	"Proxies"
+	{
+		TARDIS_ExteriorBaseLight
+		{
+			defaultColor "$envmaptint"
+			resultVar "$envmapcolor"
+		}
+
+		Multiply
+		{
+			srcVar1	"$envmapcolor"
+			srcVar2		"$envmapdarken"
+			resultVar "$envmaptint"
+		}
+
+	}
+
 }
 
 
