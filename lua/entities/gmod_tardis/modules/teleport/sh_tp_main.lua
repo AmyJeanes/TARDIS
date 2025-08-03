@@ -79,6 +79,10 @@ if SERVER then
 
     function ENT:Demat(pos, ang, callback, force)
 
+        if pos and ang then
+            self:SetDestination(pos, ang)
+        end
+
         force = force or self:CallCommonHook("ShouldForceDemat", pos, ang)
 
         if self:CallHook("CanDemat", force, false) == false then
@@ -92,7 +96,8 @@ if SERVER then
             return callback and callback(false)
         end
 
-        if not self:DematDoorCheck(pos, ang, callback, force) then return end
+        local doorcheck = self:DematDoorCheck(pos, ang, callback, force)
+        if not doorcheck then return doorcheck end
 
         if force then
             self:SetData("force-demat", true, true)
