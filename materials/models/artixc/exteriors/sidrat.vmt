@@ -8,8 +8,7 @@
 
 	"$envmapdarken" "0.14"
 
-// Creating Variable
-	"$envmapcolor" "[ 1 1 1]"
+	"$envmapcolor" "[1 1 1]"
 
 	"Proxies"
 	{

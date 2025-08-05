@@ -289,6 +289,8 @@ matproxy.Add({
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.DefaultColor = mat:GetVector(values.defaultcolor)
+        self.LastColor = self.DefaultColor
+        self.TransitionSpeed = values.transitionspeed or 0
     end,
 
     bind = function(self, mat, ent)
@@ -306,6 +308,17 @@ matproxy.Add({
                 local exterioralphainvert = ((exterioralpha - 1)*-1)
                 col = ((col*exterioralpha) + (vortexcol*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
             end
+
+            -- Smoothly transition the color
+            if self.TransitionSpeed > 0 then
+                local dir  = col - self.LastColor
+                local dist = dir:Length()
+                if dist > 1e-6 then -- Avoids floating point errors
+                    local step = math.min(dist, self.TransitionSpeed * FrameTime())
+                    col = self.LastColor + dir:GetNormalized() * step
+                end
+                self.LastColor = col
+            end
             mat:SetVector(self.ResultTo, col)
         else
             mat:SetVector(self.ResultTo, self.DefaultColor);
@@ -319,6 +332,8 @@ matproxy.Add({
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.DefaultColor = mat:GetVector(values.defaultcolor)
+        self.LastColor = self.DefaultColor
+        self.TransitionSpeed = values.transitionspeed or 2
     end,
 
     bind = function(self, mat, ent)
@@ -338,6 +353,17 @@ matproxy.Add({
                 local exterioralpha = (ext:GetData("alpha",255)/255)
                 local exterioralphainvert = ((exterioralpha - 1)*-1)
                 col = ((col*exterioralpha) + (vortexcol*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
+            end
+
+            -- Smoothly transition the color
+            if self.TransitionSpeed > 0 then
+                local dir  = col - self.LastColor
+                local dist = dir:Length()
+                if dist > 1e-6 then -- Avoids floating point errors
+                    local step = math.min(dist, self.TransitionSpeed * FrameTime())
+                    col = self.LastColor + dir:GetNormalized() * step
+                end
+                self.LastColor = col
             end
             mat:SetVector(self.ResultTo, col)
         else

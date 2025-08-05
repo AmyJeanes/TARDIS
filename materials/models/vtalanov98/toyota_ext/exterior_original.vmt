@@ -7,4 +7,25 @@
 	"$nodecal" "1"
 	"$surfaceprop" "Wood_Solid"
 	"$color2" "[2 2 2]"
+
+	"$envmapdarken" "0.3"
+
+	"$envmapcolor" "[1 1 1]"
+
+	"Proxies"
+	{
+		TARDIS_ExteriorBaseLight
+		{
+			defaultColor "$envmaptint"
+			resultVar "$envmapcolor"
+		}
+
+		Multiply
+		{
+			srcVar1	"$envmapcolor"
+			srcVar2		"$envmapdarken"
+			resultVar "$envmaptint"
+		}
+
+	}
 }
