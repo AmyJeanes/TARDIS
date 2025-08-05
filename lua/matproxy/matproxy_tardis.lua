@@ -284,7 +284,7 @@ matproxy.Add({
 local vortexfallbackcol = Color(0, 0, 0) -- Uses black if no custom colour is set since that can fit for any tardis
 
 matproxy.Add({
-    name = "TARDIS_ExteriorBaseLight",
+    name = "TARDIS_ExteriorWindowLight",
 
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
@@ -301,6 +301,39 @@ matproxy.Add({
             end
             vortexcol = (Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()*2.5)
             local col = render.ComputeLighting((ext:GetPos()+Vector(0, 0, 80)),ext:GetForward()) -- Gets the lighting from the perspective of the doors
+            if ext:GetData("teleport") or ext:GetData("vortex") then
+                local exterioralpha = (ext:GetData("alpha",255)/255)
+                local exterioralphainvert = ((exterioralpha - 1)*-1)
+                col = ((col*exterioralpha) + (vortexcol*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
+            end
+            mat:SetVector(self.ResultTo, col)
+        else
+            mat:SetVector(self.ResultTo, self.DefaultColor);
+        end
+    end
+})
+
+matproxy.Add({
+    name = "TARDIS_ExteriorBaseLight",
+
+    init = function(self, mat, values)
+        self.ResultTo = values.resultvar
+        self.DefaultColor = mat:GetVector(values.defaultcolor)
+    end,
+
+    bind = function(self, mat, ent)
+        if not IsValid(ent) then return end
+        if ent.interior then
+            ent = ent.interior
+        end
+        if ent.exterior then
+            local ext = ent.exterior
+            local vortexcol = vortexfallbackcol
+            if ext.metadata.Interior.MatProxy and ext.metadata.Interior.MatProxy.VortexColor then -- Making sure a vortex colour is set in the first place since people tend to re-use door on multiple tardises
+                vortexcol = ext.metadata.Interior.MatProxy.VortexColor
+            end
+            vortexcol = (Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()*2.5)
+            local col = render.ComputeLighting((ext:GetPos()+Vector(0, 0, 10)),Vector(0, 0, 1)) -- Gets the lighting from near the origin of the tardis
             if ext:GetData("teleport") or ext:GetData("vortex") then
                 local exterioralpha = (ext:GetData("alpha",255)/255)
                 local exterioralphainvert = ((exterioralpha - 1)*-1)
