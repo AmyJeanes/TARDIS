@@ -6,14 +6,12 @@
 
     "$selfillum" "1"
     "$selfillummask" "models/molda/toyota_int/white"
-    "$selfillumtint" "[0.3 0.3 0.3]"
+    "$selfillumtint" "[2 2 2]"
     "$color2" "[1 1 1]"
 
     "$nodecal" "1"
     "$nocull" "0"
 
-    $sine_basic 1
-    $sine_use 0
     $sine_add 1
     $sine_r 1
     $sine_g 1

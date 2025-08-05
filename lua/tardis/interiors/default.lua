@@ -374,6 +374,9 @@ T.Interior = {
         default_spin_b_4 = "spin_cycle",
         default_thick_lever = "shields",
 
+        default_button_1 = "toggle_handbrake_control",
+        default_button_2 = "toggle_teleport_control",
+
         default_flat_switch_1 = "toggle_screen_1",
         default_flat_switch_2 = "toggle_screen_2",
         default_flat_switch_3 = "toggle_scanners",
