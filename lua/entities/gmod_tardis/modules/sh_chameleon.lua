@@ -221,6 +221,9 @@ function ENT:ChangeExterior(id, animate, ply, retry)
 
         self:SetMaterial()
         self:SetSubMaterial()
+        for k,v in ipairs(self:GetBodyGroups()) do
+            self:SetBodygroup(v.id, 0)
+        end
         -- reset submaterials etc.
         self:SetModel(ext_md.Model)
         self:PhysicsInit(SOLID_VPHYSICS)
