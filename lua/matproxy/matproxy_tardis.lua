@@ -1,6 +1,21 @@
 local fallbackcol = Color(255, 255, 255)
 fallbackcol = Color(fallbackcol.r, fallbackcol.g, fallbackcol.b):ToVector()
 
+TARDIS.DynamicProxyVars = TARDIS.DynamicProxyVars or {}
+
+local function getdynamicproxyvars(ent, mat, name, default)
+    if not TARDIS.DynamicProxyVars[ent] then
+        TARDIS.DynamicProxyVars[ent] = {}
+    end
+    if not TARDIS.DynamicProxyVars[ent][mat] then
+        TARDIS.DynamicProxyVars[ent][mat] = {}
+    end
+    if not TARDIS.DynamicProxyVars[ent][mat][name] then
+        TARDIS.DynamicProxyVars[ent][mat][name] = default
+    end
+    return TARDIS.DynamicProxyVars[ent][mat][name]
+end
+
 matproxy.Add({
     name = "TARDIS_State_Texture",
 
@@ -90,7 +105,7 @@ local function matproxy_tardis_power_init(self, mat, values)
     self.ResultTo = values.resultvar
     self.on_var = values.onvar
     self.off_var = values.offvar
-    self.last_value = mat:GetVector(values.onvar)
+    self.LastValue = mat:GetVector(values.onvar)
     self.TransitionSpeedOn = values.transitionspeedon or 0
     self.TransitionSpeedOff = values.transitionspeedoff or 0
 end
@@ -103,26 +118,29 @@ local function matproxy_tardis_power_bind(self, mat, ent)
     end
 
     if ent.exterior then
-        local on = ent.exterior:GetPower()
+        local ext = ent.exterior
+        local on = ext:GetPower()
         local var = on and self.on_var or self.off_var
         if not var then return end
 
         local value = mat:GetVector(var)
 
-        if var ~= self.last_var or value ~= self.last_value then
+        local dynvars = getdynamicproxyvars(ext, mat, "TARDIS_Power", { LastValue = self.LastValue })
+        if var ~= dynvars.LastVar or value ~= dynvars.LastValue then
              -- Smoothly transition the color
             local transition_speed = on and self.TransitionSpeedOn or self.TransitionSpeedOff
             if transition_speed > 0 then
-                local dir  = value - self.last_value
+                local dir = value - dynvars.LastValue
                 local dist = dir:Length()
                 if dist > 1e-6 then -- Avoids floating point errors
                     local step = math.min(dist, transition_speed * FrameTime())
-                    value = self.last_value + dir:GetNormalized() * step
+                    value = dynvars.LastValue + dir:GetNormalized() * step
                 end
+                print("TARDIS_Power transitioning", dynvars.LastValue, "->", value)
             end
 
-            self.last_var = var
-            self.last_value = value
+            dynvars.LastVar = var
+            dynvars.LastValue = value
             mat:SetVector(self.ResultTo, value)
         end
     end
@@ -247,14 +265,16 @@ local function matproxy_tardis_warning_bind(self, mat, ent)
     end
 
     if ent.exterior then
-        local var = ent.exterior:GetWarning() and self.on_var or self.off_var
+        local ext = ent.exterior
+        local var = ext:GetWarning() and self.on_var or self.off_var
         if not var then return end
 
         local value = mat:GetVector(var)
 
-        if var ~= self.last_var or value ~= self.last_value then
-            self.last_var = var
-            self.last_value = value
+        local dynvars = getdynamicproxyvars(ext, mat, "TARDIS_Warning", {})
+        if var ~= dynvars.LastVar or value ~= dynvars.LastValue then
+            dynvars.LastVar = var
+            dynvars.LastValue = value
             mat:SetVector(self.ResultTo, value)
         end
     end
@@ -326,13 +346,14 @@ matproxy.Add({
 
             -- Smoothly transition the color
             if self.TransitionSpeed > 0 then
-                local dir  = col - self.LastColor
+                local dynvars = getdynamicproxyvars(ext, mat, "TARDIS_ExteriorWindowLight", { LastColor = self.DefaultColor })
+                local dir  = col - dynvars.LastColor
                 local dist = dir:Length()
                 if dist > 1e-6 then -- Avoids floating point errors
                     local step = math.min(dist, self.TransitionSpeed * FrameTime())
-                    col = self.LastColor + dir:GetNormalized() * step
+                    col = dynvars.LastColor + dir:GetNormalized() * step
                 end
-                self.LastColor = col
+                dynvars.LastColor = col
             end
             mat:SetVector(self.ResultTo, col)
         else
@@ -372,13 +393,14 @@ matproxy.Add({
 
             -- Smoothly transition the color
             if self.TransitionSpeed > 0 then
-                local dir  = col - self.LastColor
+                local dynvars = getdynamicproxyvars(ext, mat, "TARDIS_ExteriorBaseLight", { LastColor = self.DefaultColor })
+                local dir  = col - dynvars.LastColor
                 local dist = dir:Length()
                 if dist > 1e-6 then -- Avoids floating point errors
                     local step = math.min(dist, self.TransitionSpeed * FrameTime())
-                    col = self.LastColor + dir:GetNormalized() * step
+                    col = dynvars.LastColor + dir:GetNormalized() * step
                 end
-                self.LastColor = col
+                dynvars.LastColor = col
             end
             mat:SetVector(self.ResultTo, col)
         else
