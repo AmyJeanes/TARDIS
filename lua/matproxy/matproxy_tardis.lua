@@ -126,7 +126,7 @@ local function matproxy_tardis_power_bind(self, mat, ent)
         local value = mat:GetVector(var)
 
         local dynvars = getdynamicproxyvars(ext, mat, self.name, { LastValue = self.LastValue })
-        if var ~= self.last_var or value ~= self.last_value then
+        if var ~= self.last_var or value ~= self.last_value or value ~= dynvars.LastValue then
              -- Smoothly transition the color
             local transition_speed = on and self.TransitionSpeedOn or self.TransitionSpeedOff
             if transition_speed > 0 then
