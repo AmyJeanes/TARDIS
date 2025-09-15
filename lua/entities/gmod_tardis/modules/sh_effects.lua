@@ -15,7 +15,7 @@ if SERVER then
     end
 
     ENT:AddHook("Think", "smoke", function(self)
-        if self:CallHook("ShouldStartSmoke") and self:CallHook("ShouldStopSmoke")~=true then
+        if self:CallHook("ShouldStartSmoke") and self:CallHook("ShouldStopSmoke")~=true and TARDIS:GetSetting("extwarningsmoke-enabled", self) then
             if self.smoke then return end
             self:StartSmoke()
         else

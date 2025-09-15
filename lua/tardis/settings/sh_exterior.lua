@@ -158,6 +158,18 @@ TARDIS:AddSetting({
     name="RotorwashEnabled",
 })
 
+TARDIS:AddSetting({
+    id="extwarningsmoke-enabled",
+    type="bool",
+    value=true,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Effects",
+    name="WarningSmokeEnabled",
+})
 
 --------------------------------------------------------------------------------
 -- Rendering
