@@ -45,7 +45,7 @@ function TARDIS.ShouldDrawExteriorPart(self)
     return false
 end
 
-function TARDIS.DrawOverride(self,override)
+function TARDIS.DrawOverride(self)
     if self.NoDraw then return end
     if self:IsInvisible() then return end
 
@@ -61,13 +61,7 @@ function TARDIS.DrawOverride(self,override)
             if self.parent:CallHook("ShouldDrawPart", self) == false then return end
             if self.parent:CallHook("PreDrawPart",self) == false then return end
             if self.PreDraw then self:PreDraw() end
-            if self.UseTransparencyFix and (not override) then
-                render.SetBlend(0)
-                self.o.Draw(self)
-                render.SetBlend(1)
-            else
-                self.o.Draw(self)
-            end
+            self.o.Draw(self)
             if self.PostDraw then self:PostDraw() end
             self.parent:CallHook("PostDrawPart",self)
         end
@@ -233,6 +227,11 @@ local overrides={
                 return
             end
             self.o.Initialize(self)
+            local col = self:GetColor()
+            if col.a ~= 255 then
+                -- compatibility workaround for older addons that set alpha on init
+                self:SetRenderMode( RENDERMODE_TRANSALPHA )
+            end
         end
     end, CLIENT or SERVER},
     ["Think"]={function(self)
@@ -420,7 +419,7 @@ local function AutoSetup(self,e,id)
     e:PhysicsInit( SOLID_VPHYSICS )
     e:SetMoveType( MOVETYPE_VPHYSICS )
     e:SetSolid( SOLID_VPHYSICS )
-    e:SetRenderMode( RENDERMODE_TRANSALPHA )
+    e:SetRenderMode( RENDERMODE_NORMAL )
     e:SetUseType( SIMPLE_USE )
     e.phys = e:GetPhysicsObject()
     if (e.phys:IsValid()) then

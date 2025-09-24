@@ -32,6 +32,7 @@ else
         for k, v in pairs(self.interior:GetParts()) do
             if IsValid(v) then
                 v.RenderGroup = RENDERGROUP_BOTH
+                v:SetRenderMode(RENDERMODE_TRANSALPHA)
             end
         end
         self.interior.tips = {}
