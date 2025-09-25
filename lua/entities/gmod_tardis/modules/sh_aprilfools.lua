@@ -29,6 +29,8 @@ else
             return
         end
 
+        self.interior.RenderGroup = RENDERGROUP_BOTH
+        self.interior:SetRenderMode(RENDERMODE_TRANSALPHA)
         for k, v in pairs(self.interior:GetParts()) do
             if IsValid(v) then
                 v.RenderGroup = RENDERGROUP_BOTH
