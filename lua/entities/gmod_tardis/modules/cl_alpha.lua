@@ -71,10 +71,42 @@ local function dopostdraw(self,part)
     end
 end
 
+ENT:AddHook("AlphaTranslucentChanged", "enhanced_fade_cache", function(self,transparent)
+    if transparent then
+        use_enhanced_fade_cache[self:EntIndex()] = shouldUseEnhancedFade(self)
+    end
+end)
+
+ENT:AddHook("AlphaTranslucentChanged", "rendergroup", function(self,transparent)
+    local rendergroup
+    if transparent then
+        rendergroup = RENDERGROUP_TRANSLUCENT
+        rendermode = RENDERMODE_TRANSALPHA
+    else
+        rendergroup = RENDERGROUP_OPAQUE
+        rendermode = RENDERMODE_NORMAL
+    end
+    self.RenderGroup = rendergroup
+    self:SetRenderMode(rendermode)
+    for k,v in pairs(self.parts) do
+        if v.ExteriorPart then
+            v.RenderGroup = rendergroup
+            v:SetRenderMode(rendermode)
+        end
+    end
+end)
+
 ENT:AddHook("Think", "enhanced_fade_cache", function(self)
     local alpha = self:GetAlpha()
+    local alpha_translucent = self:GetData("alpha_translucent", false)
     if alpha > 0 and alpha < 1 then
-        use_enhanced_fade_cache[self:EntIndex()] = shouldUseEnhancedFade(self)
+        if alpha_translucent ~= true then
+            self:SetData("alpha_translucent", true)
+            self:CallHook("AlphaTranslucentChanged", true)
+        end
+    elseif alpha_translucent then
+        self:SetData("alpha_translucent", false)
+        self:CallHook("AlphaTranslucentChanged", false)
     end
 end)
 

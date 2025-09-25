@@ -592,7 +592,7 @@ else
                 table.Merge(e,data)
             end
 
-            if e.ExteriorPart or e.UseTransparencyFix then
+            if e.UseTransparencyFix then
                 e.RenderGroup = RENDERGROUP_BOTH
             end
 
