@@ -177,7 +177,7 @@ TARDIS:AddSetting({
 TARDIS:AddSetting({
     id="enhanced-fading-enabled",
     type="bool",
-    value=false,
+    value=true,
 
     class="local",
 
