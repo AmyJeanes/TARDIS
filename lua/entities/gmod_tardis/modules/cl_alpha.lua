@@ -99,7 +99,7 @@ end)
 ENT:AddHook("Think", "enhanced_fade_cache", function(self)
     local alpha = self:GetAlpha()
     local alpha_translucent = self:GetData("alpha_translucent", false)
-    if alpha > 0 and alpha < 1 then
+    if alpha < 1 then
         if alpha_translucent ~= true then
             self:SetData("alpha_translucent", true)
             self:CallHook("AlphaTranslucentChanged", true)
