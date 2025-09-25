@@ -40,8 +40,7 @@ function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable )
 
     ent.TardisPart=true
     ent:GetPhysicsObject():EnableMotion(false)
-    ent:SetRenderMode(RENDERMODE_TRANSALPHA)
-    ent:SetColor(Color(255,255,255,0))
+    ent:SetNoDraw(true)
     self:DeleteOnRemove(ent)
 
     constraint.Weld(self,ent,0,0)
