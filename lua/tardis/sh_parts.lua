@@ -45,7 +45,7 @@ function TARDIS.ShouldDrawExteriorPart(self)
     return false
 end
 
-function TARDIS.DrawOverride(self)
+function TARDIS.DrawOverride(self,override)
     if self.NoDraw then return end
     if self:IsInvisible() then return end
 
@@ -61,7 +61,13 @@ function TARDIS.DrawOverride(self)
             if self.parent:CallHook("ShouldDrawPart", self) == false then return end
             if self.parent:CallHook("PreDrawPart",self) == false then return end
             if self.PreDraw then self:PreDraw() end
-            self.o.Draw(self)
+            if self.UseTransparencyFix and int.metadata.UseLegacyTransparency and (not override) then
+                render.SetBlend(0)
+                self.o.Draw(self)
+                render.SetBlend(1)
+            else
+                self.o.Draw(self)
+            end
             if self.PostDraw then self:PostDraw() end
             self.parent:CallHook("PostDrawPart",self)
         end

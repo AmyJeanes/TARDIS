@@ -185,6 +185,7 @@ T.Timings = {
     ParkingState = 0,
 }
 T.SyncExteriorBodygroupToDoors = true
+T.UseLegacyTransparency = true
 
 TARDIS:AddInterior(T)
 

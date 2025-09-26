@@ -29,6 +29,18 @@ function ENT:SetPartInvisible(id, invisible)
 end
 
 if CLIENT then
+    -- Special rendering for transparent parts
+
+    ENT:AddHook("PostDrawTranslucentRenderables","parts",function(self)
+        if self.parts then
+            for _,part in pairs(self.parts) do
+                if IsValid(part) and part.UseTransparencyFix and part.interior.metadata.UseLegacyTransparency then
+                    TARDIS.DrawOverride(part,true)
+                end
+            end
+        end
+    end)
+
     ENT:OnMessage("part_use", function(self,data,ply)
         local part = data[1]
 
