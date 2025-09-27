@@ -599,7 +599,7 @@ else
             end
 
             if e.Translucent then
-                e.RenderGroup = RENDERGROUP_BOTH
+                e.RenderGroup = RENDERGROUP_TRANSLUCENT
             end
 
             if not parent.controlparts then parent.controlparts = {} end
