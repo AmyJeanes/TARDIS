@@ -34,7 +34,7 @@ if CLIENT then
     ENT:AddHook("PostDrawTranslucentRenderables","parts",function(self)
         if self.parts then
             for _,part in pairs(self.parts) do
-                if IsValid(part) and part.UseTransparencyFix and part.interior.metadata.UseLegacyTransparency then
+                if IsValid(part) and part.UseTransparencyFix then
                     TARDIS.DrawOverride(part,true)
                 end
             end

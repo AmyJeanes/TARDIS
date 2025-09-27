@@ -553,7 +553,6 @@ T.Timings = {
     ParkingState = 3.2,
 }
 
-T.UseLegacyTransparency = false
 
 T.CustomHooks = {
     state = {
