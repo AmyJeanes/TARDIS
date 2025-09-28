@@ -128,7 +128,7 @@ function ENT:ShouldRenderScreen(screen)
     return true, pos, ang
 end
 
-ENT:AddHook("PostDrawTranslucentRenderables", "screens", function(self)
+ENT:AddHook("PreDrawTranslucentRenderables", "screens", function(self)
     if self.screens3D then
         for k,v in pairs(self.screens3D) do
             local should,pos,ang = self:ShouldRenderScreen(v)
