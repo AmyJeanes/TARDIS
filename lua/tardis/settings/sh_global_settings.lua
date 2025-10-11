@@ -114,6 +114,7 @@ TARDIS:AddSetting({
     id="artron_energy_start",
     type="list",
     value=0.25,
+    sort=false,
     get_values_func = function()
         return {
             { "0%", 0.0 },

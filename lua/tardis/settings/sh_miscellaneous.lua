@@ -4,6 +4,7 @@ TARDIS:AddSetting({
     id="notification_type",
     type="list",
     value=3,
+    sort=false,
     get_values_func = function()
         local prefix = "Settings.Sections.Misc.NotificationType.Types."
         return {
@@ -19,6 +20,29 @@ TARDIS:AddSetting({
     option=true,
     section=SETTING_SECTION,
     name="NotificationType",
+})
+
+TARDIS:AddSetting({
+    id="events",
+    type="list",
+    value=1,
+    sort=false,
+    get_values_func = function()
+        local prefix = "Settings.Sections.Misc.Events.Types."
+        return {
+            { prefix.."Disabled", 0 },
+            { prefix.."Automatic", 1 },
+            -- { prefix.."AprilFools", 2 },
+            -- { prefix.."Halloween", 3 },
+            -- { prefix.."Christmas", 4 },
+        }
+    end,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    name="Events",
 })
 
 TARDIS:AddSetting({
@@ -54,7 +78,7 @@ TARDIS:AddSetting({
 
     option=true,
     section=SETTING_SECTION,
-    name="IsomorphicSecurityDefault",
+    name="EnableIsomorphicSecurityDefault",
 })
 
 TARDIS:AddSetting({
