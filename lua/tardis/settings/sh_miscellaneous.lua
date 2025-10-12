@@ -32,9 +32,9 @@ TARDIS:AddSetting({
         return {
             { "Common.Disabled", TARDIS_EVENTS_DISABLED },
             { "Common.Automatic", TARDIS_EVENTS_AUTO },
-            -- { TARDIS:GetEventName(TARDIS_EVENTS_APRIL_FOOLS) .. " " .. event, TARDIS_EVENTS_APRIL_FOOLS },
+            { TARDIS:GetEventName(TARDIS_EVENTS_APRIL_FOOLS) .. " " .. event, TARDIS_EVENTS_APRIL_FOOLS },
             { TARDIS:GetEventName(TARDIS_EVENTS_HALLOWEEN) .. " " .. event, TARDIS_EVENTS_HALLOWEEN },
-            -- { TARDIS:GetEventName(TARDIS_EVENTS_CHRISTMAS) .. " " .. event, TARDIS_EVENTS_CHRISTMAS },
+            { TARDIS:GetEventName(TARDIS_EVENTS_CHRISTMAS) .. " " .. event, TARDIS_EVENTS_CHRISTMAS },
         }
     end,
 
