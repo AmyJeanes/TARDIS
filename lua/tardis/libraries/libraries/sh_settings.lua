@@ -83,7 +83,6 @@ function TARDIS:SetSetting(id, value, ignore_convar)
     if SERVER then
         if data.class == "global" then
             old_value = self.GlobalSettings[id]
-            if old_value == value then return value end
             self.GlobalSettings[id]=value
 
             if data.convar and not ignore_convar then
@@ -104,15 +103,12 @@ function TARDIS:SetSetting(id, value, ignore_convar)
     else
         if data.class == "networked" then
             old_value = self.NetworkedSettings[id]
-            if old_value == value then return value end
             self.NetworkedSettings[id]=value
         elseif data.class == "local" then
             old_value = self.LocalSettings[id]
-            if old_value == value then return value end
             self.LocalSettings[id]=value
         elseif data.class == "global" then
             old_value = self.GlobalSettings[id]
-            if old_value == value then return value end
             TARDIS:GlobalSettingChange(id, value)
         else
             error("Setting " .. id .. " is being set clientside, but has unsupported class")
