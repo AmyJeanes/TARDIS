@@ -2,11 +2,21 @@
 {
 	"$basetexture" "models/molda/toyota_int/setroof"
 
-	"$color2" "[0.15 0.15 0.15]"
+	"$color2" "[1 1 1]"
+	"$color2_on" "[0.15 0.15 0.15]"
+	"$color2_off" "[0 0 0]"
 
 	"$surfaceprop" "Metal"
 
 	"$nodecal" "1"
 	"$nocull" "0"
 
+	"Proxies"
+	{
+		TARDIS_Power {
+			onVar "$color2_on"
+			offVar "$color2_off"
+			resultVar "$color2"
+		}
+	}
 }
