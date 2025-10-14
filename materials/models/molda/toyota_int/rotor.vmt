@@ -11,7 +11,7 @@
 //	"$envmapmask" "models/molda/toyota_int/smudgeN"
 
 	"$nodecal" "1"
-	"$nocull" "0"
+	"$nocull" "1"
 
 	$envmaptint_mult "0.4"
 	$envmaptint_color "[0 0.4 0.5]"
