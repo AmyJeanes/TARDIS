@@ -425,7 +425,7 @@ else
     end)
 end
 
-function ENT:GetTeleport()
+function ENT:IsTeleporting()
     return self:GetData("teleport", false)
 end
 
