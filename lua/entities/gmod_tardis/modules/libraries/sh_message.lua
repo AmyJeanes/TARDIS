@@ -46,6 +46,8 @@ net.Receive("TARDIS-MessageExt", function(len,ply)
 
     if messagehandlers[name] and (ent._init or SERVER) then
         messagehandlers[name](ent,data,ply)
+    elseif ent.metadata and ent.metadata.CustomMessages and ent.metadata.CustomMessages[name] and (ent._init or SERVER) then
+        ent.metadata.CustomMessages[name](ent,data,ply)
     else
         if not ent.msg_queue then ent.msg_queue = {} end
         ent.msg_queue[#ent.msg_queue + 1] = { name = name, data = data, ply = ply }
@@ -59,6 +61,8 @@ if CLIENT then
         for k,v in ipairs(self.msg_queue) do
             if messagehandlers[v.name] then
                 messagehandlers[v.name](self, v.data, v.ply)
+            elseif self.metadata and self.metadata.CustomMessages and self.metadata.CustomMessages[v.name] then
+                self.metadata.CustomMessages[v.name](self, v.data, v.ply)
             end
         end
     end)
