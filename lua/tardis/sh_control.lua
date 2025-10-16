@@ -78,13 +78,13 @@ function TARDIS:Control(control_id, ply, part)
         if ext:CallCommonHook("CanUseTardisControl", control, ply, part) == false then
             return
         end
+        if not ext.controlpartsactive then
+            ext.controlpartsactive = {}
+        end
+        if IsValid(int) and not int.controlpartsactive then
+            int.controlpartsactive = ext.controlpartsactive
+        end
         if IsValid(part) then
-            if not ext.controlpartsactive then
-                ext.controlpartsactive = {}
-            end
-            if IsValid(int) and not int.controlpartsactive then
-                int.controlpartsactive = ext.controlpartsactive
-            end
             ext.controlpartsactive[control_id] = part
         end
         local async_complete = function(ent)
