@@ -21,7 +21,7 @@ local function shouldapply(self,part)
     local target,override = self:GetAlpha()
     if (target ~= 1 or override) and ((not part) or (part and (not part.CustomAlpha))) then
         if use_enhanced_fade_cache[self:EntIndex()] then
-            target = target * (target * 2)
+            target = (2 * target * target) / (1 + target * target)
         end
         return target
     end
