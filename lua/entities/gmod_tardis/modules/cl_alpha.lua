@@ -9,7 +9,7 @@ function ENT:GetAlpha()
     end
     if self:GetData("vortex") then
         return 0
-    elseif self:GetData("teleport") then
+    elseif self:GetData("teleport") or self:GetData("teleport-interrupt-fade") then
         return alpha
     elseif self:GetData("teleport-trace") or self:GetData("tracking-trace") then
         return 20/255

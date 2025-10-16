@@ -18,6 +18,8 @@ if SERVER then
 
         local was_demating = self:GetData("demat", false)
 
+        self:SetData("teleport-interrupt-fade", nil, true)
+
         local door_ok = true
         self:CloseDoor(function(state)
             if state then door_ok = false end
@@ -69,6 +71,7 @@ if SERVER then
             self:SetData("teleport-interrupt-time", CurTime(), true)
             self:SetData("teleport-interrupt-effects", true, true)
         else
+            self:SetData("teleport-interrupt-fade", true, true)
             self:CallCommonHook("DematInterrupted")
             self:CallClientCommonHook("DematInterrupted")
         end

@@ -156,6 +156,7 @@ T.Exterior = {
         SequenceSpeedFast = 0.935,
         SequenceSpeedHads = 1.8,
         SequenceSpeedWarnFast = 0.97,
+        DematInterruptSpeed = 5,
         PrematDelayFast = 1.9,
         PrematDelay = 8.5,
         DematSequence = {
