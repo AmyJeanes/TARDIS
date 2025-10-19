@@ -10,6 +10,8 @@ TARDIS:AddInteriorTemplate("default_lamps", {
                 default_corridors = 0.05,
                 default_intdoors = 0.05,
                 default_intdoors_static = 0.05,
+                default_corridor_doors_1 = 0.05,
+                default_corridor_doors_2 = 0.05,
                 default_corridor_doors_static = 0.05,
             },
             parts_nopower = {
@@ -259,6 +261,8 @@ TARDIS:AddInteriorTemplate("default_small_version", {
             default_intdoors_static = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
             default_corridor_doors_static = { pos = Vector(-475.5, 213, 160.8) },
             default_corridors = false,
+            default_corridor_doors_1 = false,
+            default_corridor_doors_2 = false,
             default_corridors_small = { ang = Angle(0,90,0) },
         },
     },

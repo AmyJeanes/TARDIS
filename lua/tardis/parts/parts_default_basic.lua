@@ -168,8 +168,13 @@ end
 
 TARDIS:AddPart(PART)
 
-PART.Model = "models/molda/toyota_int/slidedoors3.mdl"
-PART.ID = "default_corridor_doors"
+PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
+PART.ID = "default_corridor_doors_1"
+PART.ShouldTakeDamage = true
+TARDIS:AddPart(PART)
+
+PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
+PART.ID = "default_corridor_doors_2"
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 

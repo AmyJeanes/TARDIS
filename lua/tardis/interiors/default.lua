@@ -335,9 +335,11 @@ T.Interior = {
         default_rotor_ring = {},
 
         default_rotor = { pos = Vector(0,0,-0.07), ang = Angle(0,180,0) },
-        default_transparent = {},
+        default_transparent = { pos = Vector(0,0,-0.07) },
         default_corridors = { ang = Angle(0,90,0), },
-        default_intdoors = { pos = Vector(73.559, -417.853, 47.506), ang = Angle(0,10,0), },
+        default_corridor_doors_1 = { pos = Vector(550.412, -751.723, 42.0499),  ang = Angle(0, 10, 0) },
+        default_corridor_doors_2 = { pos = Vector(-298.36, -672.676, 41.9816),  ang = Angle(0, 10, 0) },
+        default_intdoors = { pos = Vector(72.782, -412.767, 42.0395), ang = Angle(0,10,0), },
 
         default_sonic_dispenser_hitbox = { ang = Angle(0,90,0), },
     },

@@ -433,6 +433,10 @@ function ENT:IsTeleporting()
     return self:GetData("teleport", false)
 end
 
+function ENT:IsInVortex()
+    return self:GetData("vortex", false)
+end
+
 function ENT:SetStepDelay()
     local demat=self:GetData("demat")
     local fast=self:GetFastRemat()
