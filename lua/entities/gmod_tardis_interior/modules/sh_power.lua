@@ -44,8 +44,7 @@ else
                 for k,v in pairs(idle_sounds) do
                     if self.idlesounds[k] then
                         if state then
-                            self.idlesounds[k]:Play()
-                            self.idlesounds[k]:ChangeVolume(v.volume or 1,0)
+                            self.idlesounds[k]:PlayEx(v.volume or 1, 100)
                         else
                             self.idlesounds[k]:Stop()
                         end

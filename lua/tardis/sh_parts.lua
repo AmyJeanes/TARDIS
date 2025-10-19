@@ -182,8 +182,7 @@ function TARDIS.ProcessAnimation(self, a)
             if moving and self.SoundLoop and not self.use_sound then
                 self.use_sound = CreateSound(self, self.SoundLoop)
                 self.use_sound:SetSoundLevel(90)
-                self.use_sound:ChangeVolume(self.SoundLoopVolume or 0.75)
-                self.use_sound:Play()
+                self.use_sound:PlayEx(self.SoundLoopVolume or 0.75, 100)
             elseif self.use_sound and not moved_recently then
                 self.use_sound:Stop()
                 self.use_sound = nil

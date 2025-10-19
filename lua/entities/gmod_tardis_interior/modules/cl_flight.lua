@@ -48,19 +48,18 @@ end
 
 ENT:AddHook("Think", "flight", function(self)
     if self:GetData("flight") and ShouldPlayFlightSounds(self) then
+        local p=95+math.Clamp(self.exterior:GetVelocity():Length()/250,0,15)
         if self.flightsound and self.flightsound:IsPlaying() then
-            local p=math.Clamp(self.exterior:GetVelocity():Length()/250,0,15)
-            self.flightsound:ChangePitch(95+p,0.1)
-            self.flightsound:ChangeVolume(0.4)
+            self.flightsound:ChangePitch(p, 0.1)
 
             if IsFlightSoundWrong(self) then
                 self.flightsound:Stop()
                 self:ChooseFlightSound()
-                self.flightsound:Play()
+                self.flightsound:PlayEx(0.4, p)
             end
         else
             self:ChooseFlightSound()
-            self.flightsound:Play()
+            self.flightsound:PlayEx(0.4, p)
         end
     elseif self.flightsound then
         self.flightsound:Stop()

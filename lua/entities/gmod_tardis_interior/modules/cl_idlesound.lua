@@ -35,8 +35,7 @@ ENT:AddHook("Think", "idlesound", function(self)
             if TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound") then
                 if not self.idlesounds[k] then
                     self.idlesounds[k]=CreateSound(self, v.path)
-                    self.idlesounds[k]:Play()
-                    self.idlesounds[k]:ChangeVolume(v.volume or 1,0)
+                    self.idlesounds[k]:PlayEx(v.volume or 1, 100)
                 end
             else
                 if self.idlesounds[k] then

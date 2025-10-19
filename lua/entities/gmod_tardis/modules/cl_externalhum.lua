@@ -100,8 +100,7 @@ ENT:AddHook("Think", "externalhum", function(self)
         then
             if not self.ExternalHum then
                 self.ExternalHum = CreateSound(self, hum_sound_path)
-                self.ExternalHum:Play()
-                self.ExternalHum:ChangeVolume(hum_sound.volume or 1,0)
+                self.ExternalHum:PlayEx(hum_sound.volume or 1, 100)
             end
         elseif self.ExternalHum then
             self.ExternalHum:Stop()
@@ -130,8 +129,7 @@ ENT:AddHook("Think", "externalhum", function(self)
             if snd.path ~= hum_sound_path and not self.LeakedInteriorHums[k] then
                 local final_vol = (snd.volume or 1) * vol_setting * ratio
                 local chan = CreateSound(emitter, snd.path)
-                chan:Play()
-                chan:ChangeVolume(final_vol, 0)
+                chan:PlayEx(final_vol, 100)
                 self.LeakedInteriorHums[k] = chan
             end
         end
