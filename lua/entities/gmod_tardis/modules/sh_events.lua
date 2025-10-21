@@ -16,15 +16,21 @@ function ENT:GetEvent()
     return self:GetData("event")
 end
 
-function ENT:NotifyEvent(event)
-    if not event then event = self:GetEvent() end
+function ENT:NotifyEvent(force, all)
+    local event = self:GetEvent()
     if not event then return end
-    local ply = self:GetCreator()
-    if CLIENT and LocalPlayer() ~= ply then return end
+    local target
+    if all then
+        target = nil
+    else
+        target = self:GetCreator()
+    end
     if SERVER then
-        self:SendMessage("events-notify", {event}, ply)
-    elseif CLIENT and LocalPlayer() == ply then
+        self:SendMessage("events-notify", {force, all}, target)
+    elseif CLIENT and (all or LocalPlayer() == target) then
+        if self:GetData("events-notified", false) and not force then return end
         TARDIS:NotifyEvent(event)
+        self:SetData("events-notified", true)
     end
 end
 
@@ -42,8 +48,7 @@ if SERVER then
     end)
 else
     ENT:OnMessage("events-notify", function(self, data, ply)
-        if self:GetData("events-notified", false) then return end
-        self:NotifyEvent(data[1])
+        self:NotifyEvent(data[1], data[2])
         self:SetData("events-notified", true)
     end)
 end

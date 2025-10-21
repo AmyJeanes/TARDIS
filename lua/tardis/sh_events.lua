@@ -35,7 +35,7 @@ function TARDIS:GetCurrentEvent(ent, autoonly)
     return event
 end
 
-function TARDIS:GetEventName(event)
+function TARDIS:GetEventName(event, id)
     if not event then event = TARDIS:GetCurrentEvent() end
     local name
     if not event then
@@ -47,7 +47,11 @@ function TARDIS:GetEventName(event)
     elseif event == TARDIS_EVENTS_CHRISTMAS then
         name = "Events.Types.Christmas"
     end
-    return TARDIS:GetPhrase(name)
+    if id then
+        return name
+    else
+        return TARDIS:GetPhrase(name)
+    end
 end
 
 if CLIENT then
@@ -80,7 +84,8 @@ if CLIENT then
 
     function TARDIS:NotifyEvent(event)
         if not event then event = self:GetCurrentEvent() end
-        self:Message(LocalPlayer(), "Events.NotifyEvent", TARDIS:GetEventName(event), "Settings.Sections.Misc")
+        local eventname = self:GetEventName(event, true)
+        self:Message(LocalPlayer(), "Events.NotifyEvent", eventname .. ".NotifyEvent", "Settings.Sections.Misc")
     end
 
     hook.Add("TARDIS_SettingChanged", "TARDIS_EventsSettingChanged", function(id, value, old_value, ply)

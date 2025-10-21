@@ -16,6 +16,6 @@ function ENT:GetEvent()
     return IsValid(self.exterior) and self.exterior:GetEvent()
 end
 
-function ENT:NotifyEvent(event)
-    return IsValid(self.exterior) and self.exterior:NotifyEvent()
+function ENT:NotifyEvent(force, all)
+    return IsValid(self.exterior) and self.exterior:NotifyEvent(force, all)
 end
