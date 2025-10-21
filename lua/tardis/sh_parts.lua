@@ -498,7 +498,11 @@ if SERVER then
         if data and data.Parts then
             for k,v in pairs(data.Parts) do
                 if v then
-                    local part=parts[k]
+                    local partid = k
+                    if type(v)=="table" and v.id then
+                        partid = v.id
+                    end
+                    local part=parts[partid]
                     if part then
                         tempparts[k]=part.class
                     else
