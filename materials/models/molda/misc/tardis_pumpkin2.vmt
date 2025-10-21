@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/misc/tardis_pumpkin2"
+	"$surfaceprop" "Flesh"
+
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[0.25 0.25 0.25]"
+	"$color2" "[5 5 5]"
+}
