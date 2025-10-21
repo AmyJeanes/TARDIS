@@ -430,7 +430,23 @@ local function AutoSetup(self,e,id)
     local data=GetData(self,e,id)
     if not data then return end
 
-    e:SetModel(e.model or e.Model)
+    if e.model then
+        e.Model = e.model
+    end
+    if e.pos then
+        e.Pos = e.pos
+    end
+    if e.ang then
+        e.Ang = e.ang
+    end
+    if e.scale then
+        e.Scale = e.scale
+    end
+    if e.invisible then
+        e.Invisible = e.invisible
+    end
+
+    e:SetModel(e.Model)
     e:PhysicsInit( SOLID_VPHYSICS )
     e:SetMoveType( MOVETYPE_VPHYSICS )
     e:SetSolid( SOLID_VPHYSICS )
@@ -451,19 +467,19 @@ local function AutoSetup(self,e,id)
         end
     end
     if e.AutoPosition ~= false then
-        e:SetPos(self:LocalToWorld(e.pos or e.Pos or Vector(0,0,0)))
-        e:SetAngles(self:LocalToWorldAngles(e.ang or e.Ang or Angle(0,0,0)))
+        e:SetPos(self:LocalToWorld(e.Pos or Vector(0,0,0)))
+        e:SetAngles(self:LocalToWorldAngles(e.Ang or Angle(0,0,0)))
     end
     if not e.Collision then
         e:SetParent(self)
     end
-    if e.scale then
-        e:SetModelScale(e.scale,0)
+    if e.Scale then
+        e:SetModelScale(e.Scale,0)
     end
     if e.NoShadow then
         e:DrawShadow(false)
     end
-    if e.Invisible or e.invisible then
+    if e.Invisible then
         e:SetInvisible(true)
     end
 end
