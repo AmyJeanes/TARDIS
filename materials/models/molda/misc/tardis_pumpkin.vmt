@@ -1,35 +1,38 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/molda/misc/tardis_pumpkin"
-	"$surfaceprop" "Flesh"
+	"$surfaceprop" "Watermelon"
 
-	"$selfillum" "1"
-	"$selfillummask" "models/molda/misc/tardis_pumpkin_emit"
-	"$selfillumtint" "[1 1 1]"
-	"$sine" "1"
+	"$color2"            "[2 2 2]"
+	"$envmap"            "models/molda/mccc/environment"
+	"$envmaptint"        "[0.35 0.25 0.25]"
 
-	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0.25 0.25 0.25]"
-	"$color2" "[5 5 5]"
+	"$selfillum"         "1"
+	"$selfillummask"     "models/molda/misc/tardis_pumpkin_emit"
 
-	Proxies {
-		Sine {
-			sineperiod 2
-			sinemin 0.5
-			sinemax 1
-			resultVar $sine
-		}
-		Equals {
-			srcVar1 $sine
-			resultVar "$selfillumtint[0]"
-		}
-		Equals {
-			srcVar1 $sine
-			resultVar "$selfillumtint[1]"
-		}
-		Equals {
-			srcVar1 $sine
-			resultVar "$selfillumtint[2]"
-		}
+	"$nocull" "0"
+	"$nodecal" "1"
+
+	"$sine1" "1"
+	"$sine2" "1"
+	"$sine3" "1"
+	"$sinesum" "1"
+	"$sineall" "1"
+	"$sineavg" "1"
+	"$layers" "0.333333"
+
+	Proxies
+	{
+		Sine { sineperiod 1.30  sinemin 0.70  sinemax 2  resultVar $sine1 }
+		Sine { sineperiod 0.54  sinemin 0.60  sinemax 2  resultVar $sine2 }
+		Sine { sineperiod 0.24  sinemin 0.85  sinemax 2  resultVar $sine3 }
+
+		Add      { srcVar1 $sine1    srcVar2 $sine2      resultVar $sinesum }
+		Add      { srcVar1 $sinesum  srcVar2 $sine3      resultVar $sinesum }
+		Multiply { srcVar1 $sinesum  srcVar2 $layers     resultVar $sineavg }
+
+		Equals { srcVar1 $sineavg resultVar "$selfillumtint[0]" }
+		Equals { srcVar1 $sineavg resultVar "$selfillumtint[1]" }
+		Equals { srcVar1 $sineavg resultVar "$selfillumtint[2]" }
 	}
 }

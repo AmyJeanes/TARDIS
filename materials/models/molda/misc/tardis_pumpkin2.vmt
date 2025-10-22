@@ -1,9 +1,14 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "models/molda/misc/tardis_pumpkin2"
-	"$surfaceprop" "Flesh"
 
-	"$envmap" "models/molda/toyota_int/environment"
-	"$envmaptint" "[0.25 0.25 0.25]"
-	"$color2" "[5 5 5]"
+	"$color2"	"[2 2 2]"
+
+	"$surfaceprop" "Watermelon"
+
+	"$envmap" "models/molda/mccc/environment"
+	"$envmaptint" "[0.35 0.25 0.25]"
+
+	"$nocull" "0"
+	"$nodecal" "1"
 }
