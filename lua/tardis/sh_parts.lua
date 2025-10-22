@@ -481,6 +481,9 @@ local function AutoSetup(self,e,id)
     if e.invisiblefade then
         e.InvisibleFade = e.invisiblefade
     end
+    if e.fadespeed then
+        e.FadeSpeed = e.fadespeed
+    end
 
     e:SetModel(e.Model)
     e:PhysicsInit( SOLID_VPHYSICS )
