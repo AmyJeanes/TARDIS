@@ -275,7 +275,7 @@ local overrides={
                 return ply_pos:Distance(ext_pos) < close_dist
             end
 
-            if think_ok or self.ExteriorPart or is_visible_through_door() then
+            if think_ok or self.ExteriorPart or self.AllowThroughPortals or is_visible_through_door() then
                 if self.Animate then
                     TARDIS.ProcessAnimation(self, self.animation)
 
