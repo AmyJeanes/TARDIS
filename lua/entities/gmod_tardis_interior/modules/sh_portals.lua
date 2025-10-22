@@ -2,7 +2,7 @@
 
 if SERVER then
     ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
-        if (not self.exterior:DoorOpen() and portal==self.portals.interior) or ent.TardisPart then
+        if (not self.exterior:DoorOpen() and portal==self.portals.interior) or (ent.TardisPart and not ent.AllowThroughPortals) then
             return false
         end
         if portal:GetCustomLink() then

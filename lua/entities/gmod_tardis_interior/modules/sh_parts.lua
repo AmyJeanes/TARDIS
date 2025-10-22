@@ -11,7 +11,7 @@ ENT:AddHook("Initialize","parts",function(self)
 end)
 
 ENT:AddHook("Cordon","parts",function(self,class,ent)
-    if ent.TardisPart then return false end
+    if ent.TardisPart and not ent.AllowThroughPortals then return false end
 end)
 
 function ENT:GetPart(id)

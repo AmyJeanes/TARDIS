@@ -8,6 +8,10 @@ function TARDIS.ShouldDrawInteriorPart(self)
     local int=self.interior
     local ext=self.exterior
 
+    if self.AllowThroughPortals then
+        return true
+    end
+
     if not IsValid(int) then
         return false
     end
