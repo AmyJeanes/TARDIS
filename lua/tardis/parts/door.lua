@@ -48,7 +48,6 @@ function PART:Initialize()
         end
 
         if self.use_enhanced_door_collision then
-            print("server init door experimental collision")
             if self.ExteriorPart then
                 constraint.NoCollide(self.parent, self, 0, 0)
             end
@@ -109,7 +108,6 @@ if SERVER then
 
     function PART:Think()
         if self.ExteriorPart and self.use_enhanced_door_collision then
-            print("server think door experimental collision")
             local pos,ang=LocalToWorld(self.posoffset,self.angoffset,self.portal_pos,self.portal_ang)
             self:SetPos(self.parent:LocalToWorld(pos))
             self:SetAngles(self.parent:LocalToWorldAngles(ang))
@@ -173,7 +171,6 @@ else
             self:InvalidateBoneCache()
 
             if self.use_enhanced_door_collision then
-                print("client think door experimental collision")
                 local pos,ang=LocalToWorld(self.posoffset,self.angoffset,self.portal_pos,self.portal_ang)
                 self:SetPos(self.parent:LocalToWorld(pos))
                 self:SetAngles(self.parent:LocalToWorldAngles(ang))
