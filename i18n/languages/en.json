@@ -587,6 +587,8 @@
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "Whether classic (big) door versions of interiors will spawn by default",
     "Settings.Sections.Misc.Spawning.RandomizeSkins": "Randomize skins",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Whether or not TARDIS skin will be randomized when it's spawned",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision": "Use enhanced door collision (experimental)",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision.Description": "TARDIS doors will have collision with all entities when closed, not just players",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Use winter skins",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Whether or not winter TARDIS skins will be used while it's randomized",
     "Settings.Sections.Misc.SpawnmenuInteriorIcons": "Always show interiors in spawnmenu",

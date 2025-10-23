@@ -587,6 +587,8 @@
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "İç mekanların klasik (büyük) kapı versiyonlarının varsayılan olarak ortaya çıkıp çıkmayacağı",
     "Settings.Sections.Misc.Spawning.RandomizeSkins": "Derileri rastgele seç",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "TARDIS görünümünün ortaya çıktığında rastgele olup olmayacağı",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision": "Gelişmiş kapı çarpışmasını kullan (deneysel)",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision.Description": "TARDIS kapıları kapalıyken yalnızca oyuncularla değil, tüm varlıklarla çarpışma yaşayacak",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Kış derileri kullanın",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Kış TARDIS görünümlerinin rastgele seçildiğinde kullanılıp kullanılmayacağı",
     "Settings.Sections.Misc.SpawnmenuInteriorIcons": "Spawn menüsünde her zaman iç mekanı göster",

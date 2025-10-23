@@ -587,6 +587,8 @@
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "Εάν οι κλασικές (μεγάλες) εκδόσεις των εσωτερικών χώρων θα δημιουργηθούν από προεπιλογή",
     "Settings.Sections.Misc.Spawning.RandomizeSkins": "Τυχαιοποιήστε τα κελύφη",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "Εάν το κέλυφος του ΤΑΡΝΤΙΣ θα τυχαιοποιηθεί ή όχι κατά την δημιουργία",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision": "Χρησιμοποιήστε ενισχυμένη σύγκρουση πόρτας (πειραματικό)",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision.Description": "Οι πόρτες της TARDIS θα έχουν σύγκρουση με όλες τις οντότητες όταν είναι κλειστές, όχι μόνο με τους παίκτες.",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Χρησιμοποιήστε χειμωνιάτικα κελύφη",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Εάν θα χρησιμοποιηθούν χειμερινά κελύφη ΤΑΡΝΤΙΣ",
     "Settings.Sections.Misc.SpawnmenuInteriorIcons": "Να εμφανίζονται πάντα οι εσωτερικοί χώροι στο spawnmenu",

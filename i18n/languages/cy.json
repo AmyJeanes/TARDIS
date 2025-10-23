@@ -587,6 +587,8 @@
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "A fydd fersiynau drws clasurol (mawr) o'r tu mewn yn silio yn ddiofyn",
     "Settings.Sections.Misc.Spawning.RandomizeSkins": "Ar hap crwyn",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "A fydd croen TARDIS yn cael ei hapnodi ai peidio pan fydd wedi silio",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision": "Defnyddiwch wrthdrawiad drws gwell (arbrofol)",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision.Description": "Bydd drysau'r TARDIS yn cael gwrthdrawiad â phob endid pan fyddant ar gau, nid gyda chwaraewyr yn unig.",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "Defnyddiwch grwyn gaeaf",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "P'un a fydd crwyn TARDIS y gaeaf yn cael eu defnyddio ai peidio tra'i fod ar hap",
     "Settings.Sections.Misc.SpawnmenuInteriorIcons": "Dangoswch y tu mewn bob amser yn y ddewislen silio",

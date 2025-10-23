@@ -587,6 +587,8 @@
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "是否預設生成經典門版本的內飾（雙層門）",
     "Settings.Sections.Misc.Spawning.RandomizeSkins": "隨機皮膚",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "生成塔迪斯時是否隨機皮膚",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision": "使用增強的門碰撞（實驗性）",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision.Description": "當TARDIS門關閉時，將會與所有實體產生碰撞，而不僅僅是玩家",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "使用冬季皮膚",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "隨機皮膚時是否會使用冬季皮膚",
     "Settings.Sections.Misc.SpawnmenuInteriorIcons": "始終在產卵菜單中顯示內飾",

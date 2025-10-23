@@ -587,6 +587,8 @@
     "Settings.Sections.Misc.Spawning.PreferClassicDoor.Description": "是否默认生成新版内饰",
     "Settings.Sections.Misc.Spawning.RandomizeSkins": "随机皮肤",
     "Settings.Sections.Misc.Spawning.RandomizeSkins.Description": "TARDIS 在生成时是否随机使用皮肤",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision": "使用增强型门碰撞（实验性）",
+    "Settings.Sections.Misc.Spawning.UseEnhancedDoorCollision.Description": "TARDIS门关闭时将会与所有实体发生碰撞，而不仅仅是玩家",
     "Settings.Sections.Misc.Spawning.UseWinterSkins": "使用冬季皮肤",
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "随机皮肤时是否会使用冬季皮肤（覆盖雪）",
     "Settings.Sections.Misc.SpawnmenuInteriorIcons": "总是在生成菜单中显示 TARDIS 内饰",
