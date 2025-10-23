@@ -506,6 +506,12 @@ local function AutoSetup(self,e,id)
     if e.fadespeed then
         e.FadeSpeed = e.fadespeed
     end
+    if e.resetpositionuse then
+        e.ResetPositionUse = e.resetpositionuse
+    end
+    if e.startfrozen then
+        e.StartFrozen = e.startfrozen
+    end
 
     e:SetModel(e.Model)
     e:PhysicsInit( SOLID_VPHYSICS )
