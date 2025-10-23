@@ -403,6 +403,7 @@
     "Parts.Door.Locked": "Las puertas están trabadas",
     "Parts.Moveable.Reset": "La ubicación del objeto se ha restablecido.",
     "Parts.Moveable.Unfreeze": "Objeto descongelado, CAMINAR + USAR para reiniciarlo",
+    "Parts.Moveable.UnfreezeHint": "PISTA: Este objeto se puede descongelar pulsando CAMINAR + USAR sobre él",
     "Prompts.LightingOverride": "Esta TARDIS recomienda el Cambio de Iluminación, el cual se encuentra desactivado. ¿Quieres activarlo ahora? Puedes cambiarlo luego en los ajustes",
     "Prompts.LOD": "El interior de la TARDIS puede requerir que el Detalle de Modelos esté ajustado en \"Alto\", ¿quieres ajustarlo ahora?",
     "Redecorate.Failed": "Falló la redecoración: no se pudo crear el reemplazo",

@@ -406,6 +406,7 @@ T.Phrases = {
     ["Parts.Door.Locked"] = "The doors are locked",
     ["Parts.Moveable.Reset"] = "Object location has been reset",
     ["Parts.Moveable.Unfreeze"] = "Object unfrozen, WALK + USE to reset it",
+    ["Parts.Moveable.UnfreezeHint"] = "HINT: This object can be unfrozen by pressing WALK + USE on it",
     ["Prompts.LightingOverride"] = "This TARDIS recommends Lighting Override which you do not have enabled. Enable now? This can be changed in TARDIS settings later",
     ["Prompts.LOD"] = "The TARDIS Interior may require model detail on high, set now?",
     ["Redecorate.Failed"] = "Redecoration failed: failed to spawn the replacement",

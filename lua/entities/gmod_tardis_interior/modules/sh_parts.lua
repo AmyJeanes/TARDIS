@@ -35,8 +35,10 @@ if SERVER then
             if part.Motion then
                 local phys = part:GetPhysicsObject()
                 if IsValid(phys) then
-                    phys:EnableMotion(not invisible)
-                    if not invisible then
+                    if invisible then
+                        phys:EnableMotion(false)
+                    elseif not part.StartFrozen then
+                        phys:EnableMotion(true)
                         phys:Wake()
                     end
                 end
@@ -50,6 +52,21 @@ if SERVER then
                 elseif part.CollisionUse then
                     part:SetCollisionGroup(COLLISION_GROUP_WORLD)
                 end
+            end
+        end
+    end
+
+    function ENT:ResetPartPositions()
+        for _,part in pairs(self:GetParts()) do
+            if IsValid(part) and part.init_pos and part.init_ang then
+                local phys = part:GetPhysicsObject()
+                part:SetPos(part.init_pos)
+                part:SetAngles(part.init_ang)
+                if part.StartFrozen and IsValid(phys) then
+                    phys:EnableMotion(false)
+                end
+                part.unfrozen=nil
+                part.unfreezehint=nil
             end
         end
     end

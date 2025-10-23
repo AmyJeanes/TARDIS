@@ -23,11 +23,11 @@ function ENT:SetupDataTables()
 end
 
 hook.Add("PhysgunPickup", "tardis-part", function(ply,ent)
-    if ent.TardisPart and not ent.Motion then return false end
+    if ent.TardisPart and (not ent.Motion or (ent.StartFrozen and not ent.unfrozen)) then return false end
 end)
 
 hook.Add("PlayerUnfrozeObject", "tardis-part", function(ply,ent,phys)
-    if ent.TardisPart and not ent.Motion then phys:EnableMotion(false) end
+    if ent.TardisPart and (not ent.Motion or (ent.StartFrozen and not ent.unfrozen)) then phys:EnableMotion(false) end
 end)
 
 hook.Add("CanProperty", "tardis-part", function(ply,prop,ent)

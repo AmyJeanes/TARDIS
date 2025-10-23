@@ -406,6 +406,7 @@ T.Phrases = {
     ["Parts.Door.Locked"] = "Mae'r drysau ar glo",
     ["Parts.Moveable.Reset"] = "Mae lleoliad y gwrthrych wedi cael ei ailosod.",
     ["Parts.Moveable.Unfreeze"] = "Gwrthrych wedi dadrewi, CERDDED + DEFNYDDIO i’w ailosod",
+    ["Parts.Moveable.UnfreezeHint"] = "AWGRYM: Gellir dadrewi'r gwrthrych hwn drwy wasgu CERDDED + DEFNYDDIO arno",
     ["Prompts.LightingOverride"] = "Mae'r TARDIS hwn yn argymell Lighting Override nad ydych wedi'i alluogi. Galluogi nawr? Gellir newid hyn yng ngosodiadau TARDIS yn ddiweddarach",
     ["Prompts.LOD"] = "Efallai y bydd y TARDIS Interior angen manylion model yn uchel, wedi'u gosod nawr?",
     ["Redecorate.Failed"] = "Methodd yr ailaddurno: methwyd â silio'r un newydd",

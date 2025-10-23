@@ -406,6 +406,7 @@ T.Phrases = {
     ["Parts.Door.Locked"] = "门已上锁",
     ["Parts.Moveable.Reset"] = "对象位置已重置",
     ["Parts.Moveable.Unfreeze"] = "物体已解冻，按 WALK + USE 重置",
+    ["Parts.Moveable.UnfreezeHint"] = "提示：可以通过按下行走键 + 使用键来解冻该物体",
     ["Prompts.LightingOverride"] = "建议您启用照明覆盖，是否启用？这可以稍后在 TARDIS 设置中更改",
     ["Prompts.LOD"] = "TARDIS 内部可能需要较高的模型细节，需要现在更改吗？",
     ["Redecorate.Failed"] = "改变桌面主题失败：未能生成替代部分",

@@ -403,6 +403,7 @@
     "Parts.Door.Locked": "As portas estão trancadas",
     "Parts.Moveable.Reset": "A localização do objeto foi redefinida.",
     "Parts.Moveable.Unfreeze": "Objeto descongelado, ANDAR + USAR para redefinir",
+    "Parts.Moveable.UnfreezeHint": "DICA: Este objeto pode ser descongelado pressionando ANDAR + USAR nele.",
     "Prompts.LightingOverride": "Esta TARDIS recomenda Substituição de Iluminação, que você não ativou. Ativar agora? Isto pode ser alterado nas configurações da TARDIS mais tarde",
     "Prompts.LOD": "O Interior da TARDIS talvez precise dos detalhes de modelo no alto, definir agora?",
     "Redecorate.Failed": "Redecoração falhou: falha ao criar a substituição",

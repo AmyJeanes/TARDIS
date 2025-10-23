@@ -333,25 +333,43 @@ local overrides={
                 if self.HasUseBasic then
                     self.UseBasic(self,a,...)
                 end
+                local blockuse=false
                 if SERVER and self.Control and (not self.HasUse) then
                     TARDIS:Control(self.Control,a,self)
-                elseif SERVER and self.ResetPositionUse and IsValid(a) and a:IsPlayer() and a:KeyDown(IN_WALK) then
+                    blockuse=true
+                end
+
+                if SERVER and IsValid(a) and a:IsPlayer() and self.Motion then
                     local phys = self:GetPhysicsObject()
-                    if self.StartFrozen and self:GetPos() == self.init_pos then
-                        if IsValid(phys) then
-                            phys:EnableMotion(true)
-                            phys:Wake()
-                            TARDIS:Message(a, "Parts.Moveable.Unfreeze")
-                        end
-                    else
+                    local walk = a:KeyDown(IN_WALK)
+                    if walk and self.StartFrozen and IsValid(phys) and not phys:IsMoveable() and not self.unfrozen then
+                        phys:EnableMotion(true)
+                        phys:Wake()
+                        TARDIS:Message(a, "Parts.Moveable.Unfreeze")
+                        blockuse=true
+                        self.unfrozen=true
+                    elseif walk and self.ResetPositionUse then
                         self:SetPos(self.init_pos)
                         self:SetAngles(self.init_ang)
                         if self.StartFrozen and IsValid(phys) then
                             phys:EnableMotion(false)
                         end
                         TARDIS:Message(a, "Parts.Moveable.Reset")
+                        self.unfrozen=nil
+                        self.unfreezehint=nil
+                        blockuse=true
+                    elseif not walk and self.StartFrozen and IsValid(phys) and not phys:IsMoveable() then
+                        if not self.unfreezehint then
+                            self.unfreezehint={}
+                        end
+                        if not self.unfreezehint[a] then
+                            self.unfreezehint[a]=true
+                            TARDIS:Message(a, "Parts.Moveable.UnfreezeHint")
+                        end
                     end
-                else
+                end
+
+                if not blockuse then
                     res=self.o.Use(self,a,...)
                 end
             end

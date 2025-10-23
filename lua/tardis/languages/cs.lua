@@ -406,6 +406,7 @@ T.Phrases = {
     ["Parts.Door.Locked"] = "Dveře jsou uzamčené",
     ["Parts.Moveable.Reset"] = "Umístění objektu bylo resetováno.",
     ["Parts.Moveable.Unfreeze"] = "Objekt rozmrazen, CHŮZE + POUŽÍT pro resetování",
+    ["Parts.Moveable.UnfreezeHint"] = "NÁPOVĚDA: Tento objekt lze rozmrazit stisknutím CHŮZE + POUŽÍT.",
     ["Prompts.LightingOverride"] = "Tato TARDIS doporučuje Světelné přepsání, který nemáte aktivované. Aktivovat nyní? Toto lze později změnit v nastavení TARDIS",
     ["Prompts.LOD"] = "Interiér TARDIS může vyžadovat modelový detail na vysoký, nastavit nyní?",
     ["Redecorate.Failed"] = "Přestavba selhala: nepodařilo se spawnovat náhradu",

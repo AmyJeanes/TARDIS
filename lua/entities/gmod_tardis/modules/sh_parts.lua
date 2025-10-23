@@ -31,8 +31,10 @@ if SERVER then
             if part.Motion then
                 local phys = part:GetPhysicsObject()
                 if IsValid(phys) then
-                    phys:EnableMotion(not invisible)
-                    if not invisible then
+                    if invisible then
+                        phys:EnableMotion(false)
+                    elseif not part.StartFrozen then
+                        phys:EnableMotion(true)
                         phys:Wake()
                     end
                 end

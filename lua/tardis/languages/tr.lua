@@ -406,6 +406,7 @@ T.Phrases = {
     ["Parts.Door.Locked"] = "Kapılar kilitli",
     ["Parts.Moveable.Reset"] = "Nesnenin konumu sıfırlandı.",
     ["Parts.Moveable.Unfreeze"] = "Nesne çözüldü, sıfırlamak için YÜRÜ + KULLAN",
+    ["Parts.Moveable.UnfreezeHint"] = "İPUCU: Bu nesneye YÜRÜ + KULLAN tuşlarına basarak çözebilirsiniz",
     ["Prompts.LightingOverride"] = "Bu TARDIS, etkinleştirmediğiniz Lighting Override'ı önerir. Şuan etkin? Bu daha sonra TARDIS ayarlarından değiştirilebilir",
     ["Prompts.LOD"] = "TARDIS Interior model detaylarının yüksek olmasını gerektirebilir, şimdi mi ayarlanmış?",
     ["Redecorate.Failed"] = "Yeniden dekorasyon başarısız oldu: yenisi oluşturulamadı",

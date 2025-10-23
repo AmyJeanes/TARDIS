@@ -89,6 +89,9 @@ if SERVER then
         self:StopSmoke()
         self:FlashLight(1.5)
         self:RemoveAllDecals()
+        if IsValid(self.interior) then
+            self.interior:ResetPartPositions()
+        end
     end
 
     ENT:AddHook("CanLock", "repair", function(self)
