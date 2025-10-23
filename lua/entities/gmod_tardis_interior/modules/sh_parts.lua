@@ -70,6 +70,14 @@ if SERVER then
             end
         end
     end
+
+    function ENT:RemoveAllPartDecals()
+        for _,part in pairs(self:GetParts()) do
+            if IsValid(part) then
+                part:RemoveAllDecals()
+            end
+        end
+    end
 else
     -- Special rendering for transparent parts
 

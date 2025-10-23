@@ -91,6 +91,8 @@ if SERVER then
         self:RemoveAllDecals()
         if IsValid(self.interior) then
             self.interior:ResetPartPositions()
+            self.interior:RemoveAllDecals()
+            self.interior:RemoveAllPartDecals()
         end
     end
 
