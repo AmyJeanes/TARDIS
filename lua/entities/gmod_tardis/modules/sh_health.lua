@@ -93,14 +93,6 @@ if SERVER then
 
     ENT:AddWireOutput("Health", "Wiremod.Outputs.Health")
 
-    ENT:AddHook("CanRepair", "health", function(self, ignore_health)
-        if (self:GetHealth() >= self:GetHealthMax())
-            and not ignore_health and not self:GetData("redecorate")
-        then
-            return false
-        end
-    end)
-
     ENT:AddHook("CanTogglePower", "health", function(self, on)
         if on and self:GetHealth() <= 0 then
             return false, "Controls.Power.FailedToggle.NoHealth"
