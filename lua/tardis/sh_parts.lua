@@ -353,10 +353,10 @@ local overrides={
                         self:SetAngles(self.init_ang)
                         if self.StartFrozen and IsValid(phys) then
                             phys:EnableMotion(false)
+                            self.unfrozen=nil
+                            self.unfreezehint=nil
                         end
                         TARDIS:Message(a, "Parts.Moveable.Reset")
-                        self.unfrozen=nil
-                        self.unfreezehint=nil
                         blockuse=true
                     elseif not walk and self.StartFrozen and IsValid(phys) and not phys:IsMoveable() then
                         if not self.unfreezehint then

@@ -64,9 +64,9 @@ if SERVER then
                 part:SetAngles(part.init_ang)
                 if part.StartFrozen and IsValid(phys) then
                     phys:EnableMotion(false)
+                    part.unfrozen=nil
+                    part.unfreezehint=nil
                 end
-                part.unfrozen=nil
-                part.unfreezehint=nil
             end
         end
     end
