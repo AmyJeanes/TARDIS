@@ -257,6 +257,8 @@ local overrides={
                 -- compatibility workaround for older addons that set alpha on init
                 self:SetRenderMode( RENDERMODE_TRANSALPHA )
             end
+            self.init_pos = self:GetPos()
+            self.init_ang = self:GetAngles()
         end
     end, CLIENT or SERVER},
     ["Think"]={function(self)
@@ -333,6 +335,22 @@ local overrides={
                 end
                 if SERVER and self.Control and (not self.HasUse) then
                     TARDIS:Control(self.Control,a,self)
+                elseif SERVER and self.ResetPositionUse and IsValid(a) and a:IsPlayer() and a:KeyDown(IN_WALK) then
+                    local phys = self:GetPhysicsObject()
+                    if self.StartFrozen and self:GetPos() == self.init_pos then
+                        if IsValid(phys) then
+                            phys:EnableMotion(true)
+                            phys:Wake()
+                            TARDIS:Message(a, "Parts.Moveable.Unfreeze")
+                        end
+                    else
+                        self:SetPos(self.init_pos)
+                        self:SetAngles(self.init_ang)
+                        if self.StartFrozen and IsValid(phys) then
+                            phys:EnableMotion(false)
+                        end
+                        TARDIS:Message(a, "Parts.Moveable.Reset")
+                    end
                 else
                     res=self.o.Use(self,a,...)
                 end
@@ -348,14 +366,14 @@ local overrides={
             end
         end
 
-        if SERVER and self.Motion then
-            if not IsValid(a) or not a:IsPlayer() then return end
-            if self:IsPlayerHolding() then return end
+        if SERVER and self.Motion and IsValid(a) and a:IsPlayer()
+            and not (self.ResetPositionUse and a:KeyDown(IN_WALK))
+            and not self:IsPlayerHolding() then
 
             local phys = self:GetPhysicsObject()
-            if not IsValid(phys) or not phys:IsMoveable() then return end
-
-            a:PickupObject(self)
+            if IsValid(phys) and phys:IsMoveable() then 
+                a:PickupObject(self)
+            end
         end
         return res
     end, SERVER or CLIENT},
@@ -496,10 +514,12 @@ local function AutoSetup(self,e,id)
     e:SetRenderMode( RENDERMODE_NORMAL )
     e:SetUseType( SIMPLE_USE )
     e.phys = e:GetPhysicsObject()
-    if (e.phys:IsValid()) then
-        e.phys:EnableMotion(e.Motion or false)
-        if e.Motion then
+    if e.phys:IsValid() then
+        if e.Motion and not e.StartFrozen then
+            e.phys:EnableMotion(true)
             e.phys:Wake()
+        else
+            e.phys:EnableMotion(false)
         end
     end
     if not e.Collision then

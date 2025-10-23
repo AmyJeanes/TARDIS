@@ -401,6 +401,8 @@
     "Parts.DefaultScreen.Text": "Näyttö",
     "Parts.DefaultWibblyLever.Text": "Wibbly-vipu",
     "Parts.Door.Locked": "Ovet ovat lukossa",
+    "Parts.Moveable.Reset": "Kohteen sijainti on palautettu.",
+    "Parts.Moveable.Unfreeze": "Kohde sulatettu, KÄVELE + KÄYTÄ nollataksesi sen",
     "Prompts.LightingOverride": "Tämä TARDIS suosittelee Lighting Override -asetusta, jota sinulla ei ole käytössä. Ota käyttöön nyt? Tämän voi muuttaa TARDISin asetuksista myöhemmin",
     "Prompts.LOD": "TARDISin sisätila saattaa vaatia mallin yksityiskohdat korkealle, asetetaanko nyt?",
     "Redecorate.Failed": "Uudelleensisustus epäonnistui: korvaavan sisätilan luonti epäonnistui",

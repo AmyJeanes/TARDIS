@@ -401,6 +401,8 @@
     "Parts.DefaultScreen.Text": "Moniteur",
     "Parts.DefaultWibblyLever.Text": "Levier d'oscillation",
     "Parts.Door.Locked": "Les portes sont verrouillées",
+    "Parts.Moveable.Reset": "L’emplacement de l’objet a été réinitialisé.",
+    "Parts.Moveable.Unfreeze": "Objet dégelé, MARCHE + UTILISER pour le réinitialiser",
     "Prompts.LightingOverride": "Ce TARDIS recommande le remplacement d'éclairage que vous n'avez pas activé. Activer maintenant ? Cela peut être modifié dans les paramètres TARDIS plus tard",
     "Prompts.LOD": "L'intérieur du TARDIS peut nécessiter les détails de modèle élevé, définir maintenant ?",
     "Redecorate.Failed": "Échec de la reconstruction: impossible de faire apparaître le remplacement",

@@ -401,6 +401,8 @@
     "Parts.DefaultScreen.Text": "Monitor",
     "Parts.DefaultWibblyLever.Text": "Wibbly-Hebel",
     "Parts.Door.Locked": "Die Türen sind verschlossen",
+    "Parts.Moveable.Reset": "Der Objektstandort wurde zurückgesetzt.",
+    "Parts.Moveable.Unfreeze": "Objekt aufgetaut, GEHEN + BENUTZEN zum Zurücksetzen.",
     "Prompts.LightingOverride": "Diese TARDIS empfiehlt eine Beleuchtungsüberbrückung, die Sie nicht aktiviert haben. Jetzt einschalten? Dies kann später in den TARDIS-Einstellungen geändert werden",
     "Prompts.LOD": "Das Innere der TARDIS erfordert möglicherweise eine hohe Detailgenauigkeit des Modells, das jetzt eingestellt wird.",
     "Redecorate.Failed": "Renovierung fehlgeschlagen: Es ist nicht gelungen, den Ersatz zu beschaffen",

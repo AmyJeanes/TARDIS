@@ -10,7 +10,6 @@ ENT:AddHook("Use", "interior", function(self,a,c)
     end
 end)
 
-
 ENT:AddHook("FindingPosition", "interior", function(self,e,ply)
     TARDIS:Message(ply, "Interior.FindingPosition")
     return true
