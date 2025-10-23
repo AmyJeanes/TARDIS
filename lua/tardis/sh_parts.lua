@@ -345,7 +345,11 @@ local overrides={
                     if walk and self.StartFrozen and IsValid(phys) and not phys:IsMoveable() and not self.unfrozen then
                         phys:EnableMotion(true)
                         phys:Wake()
-                        TARDIS:Message(a, "Parts.Moveable.Unfreeze")
+                        if self.ResetPositionOnUse then
+                            TARDIS:Message(a, "Parts.Moveable.UnfreezeWithResetPositionOnUse")
+                        else
+                            TARDIS:Message(a, "Parts.Moveable.Unfreeze")
+                        end
                         blockuse=true
                         self.unfrozen=true
                     elseif walk and self.ResetPositionOnUse then
