@@ -58,7 +58,7 @@ if SERVER then
 
     function ENT:ResetPartPositions()
         for _,part in pairs(self:GetParts()) do
-            if IsValid(part) and part.init_pos and part.init_ang then
+            if IsValid(part) and part.Motion and part.init_pos and part.init_ang then
                 local phys = part:GetPhysicsObject()
                 part:SetPos(part.init_pos)
                 part:SetAngles(part.init_ang)
