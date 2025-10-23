@@ -2,6 +2,7 @@
 
 local function predraw_o(self, part)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
+    if part and part.AllowThroughPortals and not self.props[part] then return end
     local lo = self.metadata.Interior.LightOverride
     if not lo then return end
 
