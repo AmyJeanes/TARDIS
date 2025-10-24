@@ -780,6 +780,12 @@ T.Templates = {
             return (lamps and small)
         end,
     },
+    default_halloween = {
+        override = true,
+        condition = function(id, ply, ent)
+            return ent:IsHalloweenEvent()
+        end,
+    },
 }
 T.TemplatesMergeOrder = {
     "default_lamps",
