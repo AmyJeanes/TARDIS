@@ -42,6 +42,7 @@ function PART:Initialize()
         if self.ExteriorPart then
             self.ClientDrawOverride = true
             self:SetSolid(SOLID_VPHYSICS)
+            self:DrawShadow(false)
         elseif self.InteriorPart then
             self.DrawThroughPortal = true
             table.insert(self.interior.stuckfilter, self)
