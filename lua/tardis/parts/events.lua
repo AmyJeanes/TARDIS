@@ -9,6 +9,7 @@ PART.Motion = true
 PART.Model = "models/molda/misc/tardis_pumpkin.mdl"
 PART.InvisibleCollision = false
 PART.InvisibleFade = true
+PART.FadeSpeed = 2
 PART.AllowThroughPortals = true
 
 if CLIENT then
