@@ -6,7 +6,7 @@
 
 	"$surfaceprop" "Watermelon"
 
-	"$envmap" "models/molda/mccc/environment"
+	"$envmap" "models/molda/toyota_int/environment"
 	"$envmaptint" "[0.35 0.25 0.25]"
 
 	"$nocull" "0"

@@ -4,7 +4,7 @@
 	"$surfaceprop" "Watermelon"
 
 	"$color2"            "[2 2 2]"
-	"$envmap"            "models/molda/mccc/environment"
+	"$envmap"            "models/molda/toyota_int/environment"
 	"$envmaptint"        "[0.35 0.25 0.25]"
 
 	"$selfillum"         "1"
