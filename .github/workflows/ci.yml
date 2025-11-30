@@ -29,14 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
 
-      - name: Create gma file
-        run: |
-          wget -O /tmp/fastgmad.zip "https://github.com/WilliamVenner/fastgmad/releases/download/v0.2.0/fastgmad_linux.zip"
-          unzip /tmp/fastgmad.zip -d /tmp/fastgmad
-          chmod +x /tmp/fastgmad/fastgmad
-          mkdir -p /tmp/addon
-          /tmp/fastgmad/fastgmad create -folder . -out /tmp/addon/addon.gma
-
       - name: Set workshop addon id
         id: workshop_id
         if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
@@ -53,12 +45,12 @@ jobs:
           echo "Publishing to workshop ID $WORKSHOP_ID"
           echo "WORKSHOP_ID=$WORKSHOP_ID" >> $GITHUB_OUTPUT
       
-      - uses: vurv78/gmod-upload@master
+      - uses: AmyJeanes/gmod-upload@main
         name: Publish to workshop
-        if: steps.workshop_id.outputs.WORKSHOP_ID
         with:
           id: ${{ steps.workshop_id.outputs.WORKSHOP_ID }}
           changelog: "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          dry-run: ${{ steps.workshop_id.outputs.WORKSHOP_ID == '' }}
         env:
           STEAM_USERNAME: ${{ vars.STEAM_USERNAME }}
           STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
