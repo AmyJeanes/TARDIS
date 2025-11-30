@@ -33,7 +33,7 @@ else
     ENT:AddHook("ShouldNotRenderPortal", "portals", function(self,parent,portal,exit)
         if portal:GetCustomLink() then
             local part = self:GetPart(portal:GetCustomLink())
-            if IsValid(part) and ((part.Animate and part.posepos==0) or ((not part.Animate) and part:GetOn()==false)) then
+            if IsValid(part) and ((part.Animate and part.animation and part.animation.pos==0) or ((not part.Animate) and part:GetOn()==false)) then
                 return true
             end
         end
