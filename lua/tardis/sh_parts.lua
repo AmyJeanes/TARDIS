@@ -264,9 +264,7 @@ local overrides={
     ["Think"]={function(self)
         local int=self.interior
         local ext=self.exterior
-        if self._init and IsValid(int) and IsValid(ext) then
-            local think_ok = (int:CallHook("ShouldThink") ~= false)
-
+        if self._init and IsValid(ext) then
             local function is_visible_through_door()
                 if not ext:DoorOpen() then return false end
                 if not self.ClientThinkOverride then return false end
@@ -277,7 +275,7 @@ local overrides={
                 return ply_pos:Distance(ext_pos) < close_dist
             end
 
-            if think_ok or self.ExteriorPart or self.AllowThroughPortals or is_visible_through_door() then
+            if (IsValid(int) and (int:CallHook("ShouldThink") ~= false)) or self.ExteriorPart or self.AllowThroughPortals or is_visible_through_door() then
                 if self.Animate then
                     TARDIS.ProcessAnimation(self, self.animation)
 
