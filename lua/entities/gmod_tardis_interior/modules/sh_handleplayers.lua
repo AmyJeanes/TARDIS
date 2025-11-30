@@ -22,4 +22,9 @@ else
             return false
         end
     end)
+    ENT:AddHook("ShouldDrawPlayer", "players", function(self, ply, localply)
+        if localply:GetTardisData("outside") then
+            return false
+        end
+    end)
 end
