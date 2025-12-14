@@ -1,0 +1,16 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/decorations_xmas"
+
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[0.75 0.75 0.75]"
+
+	"$selfillum" "1"
+	"$selfillummask" "models/molda/toyota_int/decorations_xmas"
+	"$selfillumtint" "[1 1 1]"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+	
+	"$surfaceprop" "Metal"
+}

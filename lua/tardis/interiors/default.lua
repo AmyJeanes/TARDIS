@@ -786,6 +786,12 @@ T.Templates = {
             return ent:IsHalloweenEvent()
         end,
     },
+    default_christmas = {
+        override = true,
+        condition = function(id, ply, ent)
+            return ent:IsChristmasEvent()
+        end,
+    },
 }
 T.TemplatesMergeOrder = {
     "default_lamps",
@@ -847,6 +853,7 @@ T.Interior = {
             { "default_corridors", 1, "portalsnew2_capaldi" },
             { "default_corridors_small", 3, "portalsnew_capaldi" },
             { "default_corridors_small", 4, "portalsnew2_capaldi" },
+            { "default_decorations_christmas", 0, "decorations_xmas_metalic_capaldi" },
         },
         ["off"] = {
             prefix = "models/molda/toyota_int/",
