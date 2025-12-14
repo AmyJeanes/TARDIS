@@ -91,6 +91,9 @@ function TARDIS:CompileLanguage(code)
 
     for k, v in pairs(lang.Phrases) do
         phrases[k] = v
+        if not phrases[k..".Lower"] then
+            phrases[k..".Lower"] = string.lower(v)
+        end
     end
 
     local extensions = self.LanguageExtensions[code]
