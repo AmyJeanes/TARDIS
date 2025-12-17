@@ -387,7 +387,32 @@ TARDIS:AddInteriorTemplate("default_capaldi", {
                 if IsValid(walls) then
                     walls:SetBodygroup(1, 1) -- Walls
                 end
+                local christmas = int:GetPart("default_decorations_christmas")
+                if IsValid(christmas) then
+                    christmas:SetBodygroup(1, 1) -- Christmas decorations
+                end
             end,
         },
     },
+})
+
+TARDIS:AddInteriorTemplate("default_christmas", {
+    Interior = {
+        Parts = {
+            default_decorations_christmas = {
+                pos = Vector(0, 0, 0),
+                ang = Angle(0, 90, 0),
+            },
+        },
+    },
+    CustomHooks = {
+        christmas_playerentered = {
+            exthooks = {
+                ["PlayerEnter"] = SERVER,
+            },
+            func = function(ext,int,ply)
+                ext:NotifyEvent()
+            end,
+        }
+    }
 })

@@ -9,8 +9,10 @@ ENT:AddHook("PartBodygroupChanged", "doors", function(self, part, bodygroup, val
     local door_ext = self.exterior:GetPart("door")
     if not IsValid(door_ext) then return end
 
-    if door_ext:GetBodygroup(bodygroup) ~= value then
-        door_ext:SetBodygroup(bodygroup, value)
+    local name = part:GetBodygroupName(bodygroup)
+    local doorbodygroup = door_ext:FindBodygroupByName(name)
+    if doorbodygroup > -1 and door_ext:GetBodygroup(doorbodygroup) ~= value then
+        door_ext:SetBodygroup(doorbodygroup, value)
     end
 end)
 

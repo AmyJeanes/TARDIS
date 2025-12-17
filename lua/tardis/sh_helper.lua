@@ -1,13 +1,5 @@
 -- Helper functions
 
-function TARDIS:GetExteriorEnt(ply)
-    return (CLIENT and LocalPlayer() or ply):GetTardisData("exterior")
-end
-
-function TARDIS:GetInteriorEnt(ply)
-    return (CLIENT and LocalPlayer() or ply):GetTardisData("interior")
-end
-
 function TARDIS:Benchmark(name,func)
     local time=SysTime()
     func()

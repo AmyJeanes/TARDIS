@@ -258,3 +258,23 @@ PART.Model = "models/molda/toyota_int/books.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)
+
+local PART = {}
+PART.ID = "default_decorations_christmas"
+PART.Model = "models/molda/toyota_int/decorations_xmas.mdl"
+PART.AutoSetup = true
+PART.Collision = true
+
+if SERVER then
+    function PART:Use()
+        self.static = not self.static
+        if self.static then
+            self:SetSubMaterial(4, "models/molda/toyota_int/decorations_xmas_emit_static")
+        else
+            self:SetSubMaterial(4, "models/molda/toyota_int/decorations_xmas")
+        end
+        TARDIS:Message(self.interior:GetCreator(), "Events.Types.Christmas.Lights.Changed", self.static and "Events.Types.Christmas.Lights.Static.Lower" or "Events.Types.Christmas.Lights.Animated.Lower")
+    end
+end
+
+TARDIS:AddPart(PART)

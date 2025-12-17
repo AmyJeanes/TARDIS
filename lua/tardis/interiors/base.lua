@@ -65,7 +65,12 @@ T.Exterior = {
         pos = Vector(26,0,51.65),
         ang = Angle(0,0,0),
         width = 44,
-        height = 91
+        height = 91,
+        model = "models/error.mdl",
+        model_offset = {
+            pos = Vector(0, 0, 0),
+            ang = Angle(0, 0, 0),
+        }
     },
     Fallback = {
         pos = Vector(60,0,5),

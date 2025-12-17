@@ -19,8 +19,8 @@ if SERVER then
     end
 
     hook.Add("PlayerInitialSpawn", "TARDIS-Data", function(ply)
-        for k,v in pairs(ents.FindByClass("gmod_tardis")) do
-            v:SendData(ply)
+        for _,ent in ipairs(TARDIS:GetExteriorEnts()) do
+            ent:SendData(ply)
         end
     end)
 else

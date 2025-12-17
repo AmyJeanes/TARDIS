@@ -435,9 +435,9 @@ end
 
 function TARDIS:OnSettingChanged(id,value,old_value,ply)
     hook.Call("TARDIS_SettingChanged", GAMEMODE, id, value, old_value, ply)
-    for k,v in pairs(ents.FindByClass("gmod_tardis")) do
-        if v.CallCommonHook then
-            v:CallCommonHook("SettingChanged", id, value, old_value, ply)
+    for _,ent in ipairs(TARDIS:GetExteriorEnts()) do
+        if ent.CallCommonHook then
+            ent:CallCommonHook("SettingChanged", id, value, old_value, ply)
         end
     end
 end

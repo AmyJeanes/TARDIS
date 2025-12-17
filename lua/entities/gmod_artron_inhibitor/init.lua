@@ -167,15 +167,15 @@ function ENT:Think()
 
     if self.ArtronTick ~= nil and CurTime() - self.ArtronTick > 3 then
         self.ArtronTick = CurTime()
-        for i,v in ipairs(ents.FindByClass("gmod_tardis")) do
-            if v:GetPos():Distance(self:GetPos()) <= self.Radius then
-                v:AddArtron(-2)
+        for _,ent in ipairs(TARDIS:GetExteriorEnts()) do
+            if ent:GetPos():Distance(self:GetPos()) <= self.Radius then
+                ent:AddArtron(-2)
             end
         end
 
-        for i,v in ipairs(ents.FindByClass("gmod_tardis_interior")) do
-            if v:GetPos():Distance(self:GetPos()) <= self.Radius then
-                v.exterior:AddArtron(-2)
+        for _,ent in ipairs(TARDIS:GetInteriorEnts()) do
+            if ent:GetPos():Distance(self:GetPos()) <= self.Radius then
+                ent.exterior:AddArtron(-2)
             end
         end
     end

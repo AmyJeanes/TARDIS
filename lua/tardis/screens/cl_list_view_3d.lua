@@ -262,6 +262,10 @@ end
 function ListView3D:SetScrollSpeed(s)
     self.scroll_speed = s
 end
+function ListView3D:IsValid()
+    return IsValid(self.panel)
+end
+
 
 
 -- interface / placeholder / compatibility functions

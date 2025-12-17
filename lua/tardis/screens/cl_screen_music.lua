@@ -219,7 +219,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     list_categories.loading = true
 
     http.Fetch("https://cdn.amyjeanes.com/tardis/songs.json", function(body)
-        if not list_categories then return end
+        if not IsValid(list_categories) then return end
         default_music = util.JSONToTable(body)
         list_categories:Clear()
         categories = {}

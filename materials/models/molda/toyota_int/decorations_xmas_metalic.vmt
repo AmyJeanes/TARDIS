@@ -1,0 +1,24 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/molda/toyota_int/decorations_xmas"
+
+	"$envmap" "models/molda/toyota_int/environment"
+	"$envmaptint" "[0.5 0.5 0.5]"
+
+	"$nodecal" "1"
+	"$nocull" "0"
+	
+	"$surfaceprop" "Metal"
+
+	"$envmaptint_on" "[0 0.3 0.4]"
+	"$envmaptint_off" "[0 0.05 0.1]"
+
+	"Proxies"
+	{
+		TARDIS_Power2 {
+			onVar "$envmaptint_on"
+			offVar "$envmaptint_off"
+			resultVar "$envmaptint"
+		}
+	}
+}

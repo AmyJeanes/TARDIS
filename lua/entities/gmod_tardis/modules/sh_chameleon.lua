@@ -252,6 +252,9 @@ function ENT:ChangeExterior(id, animate, ply, retry)
             extportal:SetHeight(portal_md.height)
             extportal:SetThickness(portal_md.thickness or 0)
             extportal:SetInverted(portal_md.inverted)
+            extportal:SetModel(portal_md.model)
+            extportal:SetModelPos(portal_md.model_offset.pos)
+            extportal:SetModelAng(portal_md.model_offset.ang)
             extportal:SetParent(self)
 
 

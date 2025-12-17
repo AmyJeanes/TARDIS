@@ -5,10 +5,10 @@ function ENT:GetSphere()
 end
 
 -- hook.Add("PostDrawTranslucentRenderables", "tardis-sphere", function()
---     for k, v in pairs(ents.FindByClass("gmod_tardis_interior")) do
---         local center,radius = v:GetSphere()
+--     for _,ent in ipairs(TARDIS:GetInteriorEnts()) do
+--         local center,radius = ent:GetSphere()
 --         if radius then
---             local pos = v:LocalToWorld(center)
+--             local pos = ent:LocalToWorld(center)
 --             render.DrawWireframeSphere(pos, radius, 20, 20, Color(255, 255, 255), true)
 --         end
 --     end

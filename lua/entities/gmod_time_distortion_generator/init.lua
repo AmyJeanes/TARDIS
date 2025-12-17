@@ -160,19 +160,19 @@ function ENT:Think()
         sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
         
         local int
-        for i,v in ipairs(ents.FindByClass("gmod_tardis_interior")) do
-            local size = v.metadata.Interior.Size
+        for _,ent in ipairs(TARDIS:GetInteriorEnts()) do
+            local size = ent.metadata.Interior.Size
             if size.Min and size.Max then
-                local min = v:LocalToWorld(size.Min)
-                local max = v:LocalToWorld(size.Max)
+                local min = ent:LocalToWorld(size.Min)
+                local max = ent:LocalToWorld(size.Max)
                 if self:GetPos():WithinAABox(min, max) then
-                    int = v
+                    int = ent
                     break
                 end
             else
-                local center,radius=v:GetSphere()
-                if v:LocalToWorld(center):Distance(self:GetPos()) <= radius then
-                    int = v
+                local center,radius=ent:GetSphere()
+                if ent:LocalToWorld(center):Distance(self:GetPos()) <= radius then
+                    int = ent
                     break
                 end
             end

@@ -32,7 +32,7 @@ local function shouldUseEnhancedFade(self)
         return false
     end
     
-    if self:GetData("is_redecorate_child") then
+    if self:GetData("redecorate") or self:GetData("redecorate_parent") then
         return false
     end
 

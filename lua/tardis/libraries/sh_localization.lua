@@ -91,6 +91,9 @@ function TARDIS:CompileLanguage(code)
 
     for k, v in pairs(lang.Phrases) do
         phrases[k] = v
+        if not phrases[k..".Lower"] then
+            phrases[k..".Lower"] = string.lower(v)
+        end
     end
 
     local extensions = self.LanguageExtensions[code]
@@ -185,8 +188,8 @@ function TARDIS:UpdateLanguage()
     if oldLangCode == langCode then return end
 
     hook.Call("TARDIS_LanguageChanged", GAMEMODE, langCode, oldLangCode)
-    for k,v in pairs(ents.FindByClass("gmod_tardis")) do
-        v:CallCommonHook("LanguageChanged", langCode, oldLangCode)
+    for _,ent in ipairs(TARDIS:GetExteriorEnts()) do
+        ent:CallCommonHook("LanguageChanged", langCode, oldLangCode)
     end
 end
 
