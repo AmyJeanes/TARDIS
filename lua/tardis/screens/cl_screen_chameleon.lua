@@ -74,6 +74,11 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     panel:SetPos(2 * listW + 3 * gap, gap)
     panel:SetBackgroundColor(bgcolor)
 
+    local preview3D = vgui.Create("DModelPanel", panel)
+    preview3D:SetSize(imS, imS)
+    preview3D:SetPos(gap3, gap2)
+
+
     local preview = vgui.Create("DImage", panel)
     preview:SetSize(imS, imS)
     preview:SetPos(gap3, gap2)
@@ -140,11 +145,50 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local function select_exterior(id)
         change_id = id
         local icon = TARDIS:GetExteriorIcon(id)
+        local ext_data = ext:ChangeExteriorMetadata(id)
 
-        preview:SetVisible(icon ~= nil)
-        if icon then
-            preview:SetImage(icon)
+        if screen.is3D2D then
+            preview:SetVisible(icon ~= nil)
+            if icon then
+                preview:SetImage(icon)
+            end
+        else
+            preview3D:SetVisible(ext_data ~= nil)
+            if ext_data then
+
+                local basemodel = ext_data.Model
+                local doormodel = ext_data.Parts.door.model or ext_data.Parts.door.Model -- case sensitive, some extensions have it capitalised
+                local doorpos = (ext_data.Portal.pos + ext_data.Parts.door.posoffset)
+
+                PrintTable(ext_data)
+
+                preview3D:SetModel(basemodel)
+                local mn, mx = preview3D.Entity:GetRenderBounds()
+                local size = 0
+                size = math.max( size, math.abs(mn.x) + math.abs(mx.x) )
+                size = math.max( size, math.abs(mn.y) + math.abs(mx.y) )
+                size = math.max( size, math.abs(mn.z) + math.abs(mx.z) )
+
+                preview3D:SetFOV( 45 )
+                preview3D:SetCamPos( Vector( size, size, size ) )
+                preview3D:SetLookAt( (mn + mx) * 0.5 )
+
+                if doormodel then
+                    function preview3D:PostDrawModel( ent )
+                        door = ClientsideModel(doormodel)
+                        door:SetPos(doorpos)
+                        door:DrawModel()
+                        door:Remove()
+                    end
+                end
+
+                function preview3D:LayoutEntity( ent )
+                    -- do nothing
+                end
+
+            end
         end
+
     end
     local function unselect_exterior()
         change_id = nil
