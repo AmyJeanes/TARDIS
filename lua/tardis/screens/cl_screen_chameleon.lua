@@ -197,7 +197,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                             for i,v in ipairs(textures) do
                                 if v[1] == "door" then
                                     door:SetSubMaterial(v[2],prefix .. v[3])
-                                    print(prefix .. v[3])
                                 end
                             end
                         end
