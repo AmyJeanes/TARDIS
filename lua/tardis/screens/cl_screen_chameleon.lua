@@ -144,7 +144,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local function select_exterior(id)
         change_id = id
         local icon = TARDIS:GetExteriorIcon(id)
-        local ext_data = ext:ChangeExteriorMetadata(id)
+        local ext_data = TARDIS:CreateExteriorMetadata(id)
 
         if screen.is3D2D then -- 3D Preview doesnt work on 3D screens, so icon is used instead as a fallback
             preview:SetVisible(icon ~= nil)
@@ -163,7 +163,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                     textures = ext_data.TextureSets.normal
                 end
 
-                --PrintTable(ext_data)
                 preview3D:SetModel(basemodel)
 
                 modelent = preview3D:GetEntity()
@@ -214,7 +213,11 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     end
     local function unselect_exterior()
         change_id = nil
-        preview:SetVisible(false)
+        if screen.is3D2D then
+            preview:SetVisible(false)
+        else
+            preview3D:SetVisible(false)
+        end
     end
 
     function list_categories:OnRowSelected(rowIndex, row)
