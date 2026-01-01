@@ -74,10 +74,9 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     panel:SetPos(2 * listW + 3 * gap, gap)
     panel:SetBackgroundColor(bgcolor)
 
-    local preview3D = vgui.Create("DModelPanel", panel)
+    local preview3D = vgui.Create("DAdjustableModelPanel", panel)
     preview3D:SetSize(imS, imS)
     preview3D:SetPos(gap3, gap2)
-
 
     local preview = vgui.Create("DImage", panel)
     preview:SetSize(imS, imS)
@@ -167,17 +166,19 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                 --PrintTable(ext_data)
                 preview3D:SetModel(basemodel)
 
-                modelent = preview3D.Entity
+                modelent = preview3D:GetEntity()
 
-                local mn, mx = modelent:GetRenderBounds()
+                local mn, mx = modelent:GetModelBounds()
                 local size = 0
                 size = math.max( size, math.abs(mn.x) + math.abs(mx.x) )
                 size = math.max( size, math.abs(mn.y) + math.abs(mx.y) )
                 size = math.max( size, math.abs(mn.z) + math.abs(mx.z) )
 
-                preview3D:SetFOV( 45 )
-                preview3D:SetCamPos( Vector( size, size, size ) )
-                preview3D:SetLookAt( (mn + mx) * 0.5 )
+                preview3D:SetFOV( 30 )
+                preview3D:SetLookAng( Angle(5,193,0) )
+                --preview3D:SetCamPos( Vector( size, size, size ) )
+                preview3D:SetCamPos( Vector( size*2.2, size/2, size/1.5 ) )
+
 
                 if textures then
                     local prefix = textures.prefix or ""
@@ -204,7 +205,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                         door:Remove()
                     end
                 end
-
+                preview3D:Refresh()
                 function preview3D:LayoutEntity( ent )
                     -- do nothing
                 end
