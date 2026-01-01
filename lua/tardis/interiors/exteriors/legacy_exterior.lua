@@ -6,7 +6,7 @@ local E = {
 
     Parts = {
         door = {
-            model = "models/drmatt/tardis/exterior/door.mdl"
+            model = "models/drmatt/tardis/exterior/door.mdl",
             posoffset=Vector(-28,0,-54.6)
         }
     },
