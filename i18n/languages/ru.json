@@ -541,6 +541,7 @@
     "Settings.Sections.Global.WaitLongForRepair": "Включить долгое восстановление",
     "Settings.Sections.Global.WaitLongForRepair.Description": "Должен ли максимальный срок восстановления быть 60 секунд вместо 15?",
     "Settings.Sections.GUI": "Графический интерфейс",
+    "Settings.Sections.GUI.Chameleon3DPreview": "3D-просмотр схемы хамелеона (экспериментально)",
     "Settings.Sections.GUI.OldGUI": "Использовать старый интерфейс",
     "Settings.Sections.GUI.OldGUI.Description": "Использовать старый 2D интерфейс без картинок вместо нового",
     "Settings.Sections.GUI.PopupRows": "Количество рядов интерфейса (на экране)",

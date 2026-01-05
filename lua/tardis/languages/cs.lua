@@ -544,6 +544,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair"] = "Povolit dlouhou opravu",
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "Měl by být maximální čas opravy 60 sekund místo 15?",
     ["Settings.Sections.GUI"] = "GUI",
+    ["Settings.Sections.GUI.Chameleon3DPreview"] = "3D náhled chameleonního obvodu (experimentální)",
     ["Settings.Sections.GUI.OldGUI"] = "Použít staré GUI",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Použít staré 2D GUI bez obrázků místo nového",
     ["Settings.Sections.GUI.PopupRows"] = "Řádky GUI (vyskakovací okno)",

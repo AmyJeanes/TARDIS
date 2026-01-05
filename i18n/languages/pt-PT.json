@@ -541,6 +541,7 @@
     "Settings.Sections.Global.WaitLongForRepair": "Ativar reparo longo",
     "Settings.Sections.Global.WaitLongForRepair.Description": "O tempo máximo de reparo deve ser de 60 segundos ao invés de 15?",
     "Settings.Sections.GUI": "Interface gráfica",
+    "Settings.Sections.GUI.Chameleon3DPreview": "Pré-visualização 3D do Circuito Camaleão (experimental)",
     "Settings.Sections.GUI.OldGUI": "Usar a interface gráfica antiga",
     "Settings.Sections.GUI.OldGUI.Description": "Usar a interface gráfica 2D antiga, sem imagens, ao invés da nova",
     "Settings.Sections.GUI.PopupRows": "Fileiras da interface gráfica (janela)",

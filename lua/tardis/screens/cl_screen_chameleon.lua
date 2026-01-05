@@ -74,7 +74,12 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     panel:SetPos(2 * listW + 3 * gap, gap)
     panel:SetBackgroundColor(bgcolor)
 
-    local preview3D = vgui.Create("DAdjustableModelPanel", panel)
+    local preview3D
+    if screen.is3D2D then
+        preview3D = vgui.Create("DModelPanel3D2D", panel)
+    else
+        preview3D = vgui.Create("DAdjustableModelPanel", panel)
+    end
     preview3D:SetSize(imS, imS)
     preview3D:SetPos(gap3, gap2)
 
@@ -146,17 +151,18 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         local icon = TARDIS:GetExteriorIcon(id)
         local ext_data = TARDIS:CreateExteriorMetadata(id)
 
-        if screen.is3D2D then -- 3D Preview doesnt work on 3D screens, so icon is used instead as a fallback
+        if not TARDIS:GetSetting("gui_chameleon_3d_preview") then
             preview:SetVisible(icon ~= nil)
+            preview3D:SetVisible(false)
             if icon then
                 preview:SetImage(icon)
             end
         else
             preview3D:SetVisible(ext_data ~= nil)
+            preview:SetVisible(false)
             if ext_data then
-
                 local basemodel = ext_data.Model
-                local doormodel = ext_data.Parts.door.model or ext_data.Parts.door.Model -- case sensitive, some extensions have it capitalised, this can be done better but im not sure how
+                local doormodel = ext_data.Parts.door.model or ext_data.Parts.door.Model
                 local doorpos = (ext_data.Portal.pos + ext_data.Parts.door.posoffset)
                 local textures
                 if ext_data.TextureSets then
@@ -177,7 +183,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                 preview3D:SetLookAng( Angle(5,193,0) )
                 preview3D:SetCamPos( Vector( size*2.2, size/2, size/1.5 ) )
 
-
                 if textures then -- Apply texturesets if they exist
                     local prefix = textures.prefix or ""
                     for i,v in ipairs(textures) do
@@ -188,19 +193,38 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                 end
 
                 if doormodel then
-                    function preview3D:PostDrawModel( ent )
-                        door = ClientsideModel(doormodel)
-                        door:SetPos(doorpos)
-                        if textures then
-                            local prefix = textures.prefix or ""
-                            for i,v in ipairs(textures) do
-                                if v[1] == "door" then
-                                    door:SetSubMaterial(v[2],prefix .. v[3])
-                                end
+                    if preview3D.door then
+                        preview3D.door:SetModel(doormodel)
+                    else
+                        preview3D.door = ClientsideModel(doormodel)
+                        preview3D.door:SetNoDraw(true)
+                    end
+                    for i,v in ipairs(preview3D.door:GetMaterials()) do
+                        preview3D.door:SetSubMaterial(i-1)
+                    end
+                    if textures then
+                        local prefix = textures.prefix or ""
+                        for i,v in ipairs(textures) do
+                            if v[1] == "door" then
+                                preview3D.door:SetSubMaterial(v[2],prefix .. v[3])
                             end
                         end
-                        door:DrawModel()
-                        door:Remove()
+                    end
+                elseif IsValid(preview3D.door) then
+                    preview3D.door:Remove()
+                    preview3D.door = nil
+                end
+
+                function preview3D:PostDrawModel( ent )
+                    if not IsValid(self.door) then return end
+                    self.door:SetPos(doorpos)
+                    self.door:DrawModel()
+                end
+
+                function preview3D:OnRemove()
+                    if IsValid(self.door) then
+                        self.door:Remove()
+                        self.door = nil
                     end
                 end
 

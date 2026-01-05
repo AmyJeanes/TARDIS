@@ -91,3 +91,15 @@ TARDIS:AddSetting({
     section = SETTING_SECTION,
     name = "Theme",
 })
+
+TARDIS:AddSetting({
+    id = "gui_chameleon_3d_preview",
+    type = "bool",
+    value = false,
+
+    class="local",
+
+    option = true,
+    section = SETTING_SECTION,
+    name = "Chameleon3DPreview",
+})

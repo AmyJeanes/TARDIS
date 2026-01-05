@@ -544,6 +544,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair"] = "Activer la réparation longue",
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "La durée de réparation maximale doit-elle être de 60 secondes au lieu de 15 ?",
     ["Settings.Sections.GUI"] = "IGU",
+    ["Settings.Sections.GUI.Chameleon3DPreview"] = "Aperçu 3D du Circuit Caméléon (expérimental)",
     ["Settings.Sections.GUI.OldGUI"] = "Utiliser l'ancien IGU",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Utiliser l'ancien IGU en 2D sans image au lieu de la nouvelle",
     ["Settings.Sections.GUI.PopupRows"] = "Lignes de l'IGU (popup)",
