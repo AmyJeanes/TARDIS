@@ -545,6 +545,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "Should the max repair time be 60 seconds instead of 15?",
     ["Settings.Sections.GUI"] = "GUI",
     ["Settings.Sections.GUI.Chameleon3DPreview"] = "Chameleon Circuit 3D Preview (experimental)",
+    ["Settings.Sections.GUI.Chameleon3DPreview.Description"] = "Enable 3D movable preview of the selected exterior in the chameleon circuit GUI",
     ["Settings.Sections.GUI.OldGUI"] = "Use old GUI",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Use the old 2D GUI with no pictures instead of the new one",
     ["Settings.Sections.GUI.PopupRows"] = "GUI rows (popup)",

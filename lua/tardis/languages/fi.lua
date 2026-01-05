@@ -545,6 +545,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "Onko maksimikorjausaika 60 sekuntia 15 sekunnin sijaan?",
     ["Settings.Sections.GUI"] = "Käyttöliittymä",
     ["Settings.Sections.GUI.Chameleon3DPreview"] = "Kameleonttipiiri 3D-esikatselu (kokeellinen)",
+    ["Settings.Sections.GUI.Chameleon3DPreview.Description"] = "Ota käyttöön valitun ulkokuoren 3D-liikutettava esikatselu kameleonttikierron käyttöliittymässä.",
     ["Settings.Sections.GUI.OldGUI"] = "Käytä vanhaa käyttöliittymää",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Käytä vanhaa 2D-käyttöliittymää ilman kuvia uuden sijaan",
     ["Settings.Sections.GUI.PopupRows"] = "Käyttöliittymän rivit (ponnahdusikkuna)",

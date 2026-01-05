@@ -545,6 +545,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "Maksimum onarım süresi 15 yerine 60 saniye mi olmalı?",
     ["Settings.Sections.GUI"] = "GUI",
     ["Settings.Sections.GUI.Chameleon3DPreview"] = "Bukalemun Devresi 3B Önizleme (deneysel)",
+    ["Settings.Sections.GUI.Chameleon3DPreview.Description"] = "Kameleon devre arayüzünde seçilen dış görünümün 3D hareketli önizlemesini etkinleştir",
     ["Settings.Sections.GUI.OldGUI"] = "Eski GUI'yi kullan",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Yenisi yerine eski 2D GUI'yi resimsiz kullanın",
     ["Settings.Sections.GUI.PopupRows"] = "GUI satırları (açılır pencere)",

@@ -545,6 +545,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "Soll die maximale Reparaturzeit 60 Sekunden anstatt 15 betragen?",
     ["Settings.Sections.GUI"] = "GUI",
     ["Settings.Sections.GUI.Chameleon3DPreview"] = "Chameleon-Schaltkreis 3D-Vorschau (experimentell)",
+    ["Settings.Sections.GUI.Chameleon3DPreview.Description"] = "Aktiviere die 3D-bewegliche Vorschau des ausgewählten Äußeren in der Chameleonkreis-Benutzeroberfläche",
     ["Settings.Sections.GUI.OldGUI"] = "Alte GUI verwenden",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Verwenden Sie die alte 2D-GUI ohne Bilder anstelle der neuen",
     ["Settings.Sections.GUI.PopupRows"] = "GUI-Zeilen (Popup)",

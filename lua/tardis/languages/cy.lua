@@ -545,6 +545,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "A ddylai uchafswm yr amser atgyweirio fod yn 60 eiliad yn lle 15?",
     ["Settings.Sections.GUI"] = "GUI",
     ["Settings.Sections.GUI.Chameleon3DPreview"] = "Chwilotydd Chamaeleon Rhagolwg 3D (arbrawf)",
+    ["Settings.Sections.GUI.Chameleon3DPreview.Description"] = "Galluogi rhagolwg symudol 3D o’r tu allan a ddewiswyd yn GUI cylched y camiliwn.",
     ["Settings.Sections.GUI.OldGUI"] = "Defnyddiwch hen GUI",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Defnyddiwch yr hen GUI 2D heb unrhyw luniau yn lle'r un newydd",
     ["Settings.Sections.GUI.PopupRows"] = "Rhesi GUI (popup)",

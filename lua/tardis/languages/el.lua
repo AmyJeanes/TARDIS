@@ -545,6 +545,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "Ο μέγιστος χρόνος επισκευής να είναι 60 δευτερόλεπτα αντί για 15;",
     ["Settings.Sections.GUI"] = "Γραφική διεπαφή",
     ["Settings.Sections.GUI.Chameleon3DPreview"] = "Προεπισκόπηση 3D Κυκλώματος Χαμαιλέοντα (πειραματικό)",
+    ["Settings.Sections.GUI.Chameleon3DPreview.Description"] = "Ενεργοποίηση 3D μετακινούμενης προεπισκόπησης του επιλεγμένου εξωτερικού στο περιβάλλον χρήστη του κυκλώματος χαμαιλέοντα.",
     ["Settings.Sections.GUI.OldGUI"] = "Χρησιμοποίησε την παλιά διεπαφή",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Χρησιμοποιήστε την παλιά διεπαφή χωρίς εικόνες",
     ["Settings.Sections.GUI.PopupRows"] = "Σειρές διεπαφής (αναδυόμενο παράθυρο)",

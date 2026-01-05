@@ -542,6 +542,7 @@
     "Settings.Sections.Global.WaitLongForRepair.Description": "最大修復時間應該是 60 秒而不是 15 秒嗎？",
     "Settings.Sections.GUI": "用戶界面",
     "Settings.Sections.GUI.Chameleon3DPreview": "變色龍電路 3D 預覽（實驗性）",
+    "Settings.Sections.GUI.Chameleon3DPreview.Description": "在變色龍電路 GUI 中啟用所選外觀的 3D 可移動預覽",
     "Settings.Sections.GUI.OldGUI": "舊界面",
     "Settings.Sections.GUI.OldGUI.Description": "使用沒有圖片的舊界面",
     "Settings.Sections.GUI.PopupRows": "界面行（彈出框）",

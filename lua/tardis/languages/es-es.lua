@@ -545,6 +545,7 @@ T.Phrases = {
     ["Settings.Sections.Global.WaitLongForRepair.Description"] = "¿Debería el tiempo máximo de reparación ser 60 segundos en lugar de 15?",
     ["Settings.Sections.GUI"] = "Interfaz gráfica",
     ["Settings.Sections.GUI.Chameleon3DPreview"] = "Vista previa 3D del Circuito Camaleón (experimental)",
+    ["Settings.Sections.GUI.Chameleon3DPreview.Description"] = "Habilitar vista previa 3D móvil del exterior seleccionado en la interfaz de la circuitería camaleónica",
     ["Settings.Sections.GUI.OldGUI"] = "Utilizar interfaz antigua",
     ["Settings.Sections.GUI.OldGUI.Description"] = "Utilizar la interfaz gráfica 2D anterior, sin imágenes, en lugar de la nueva",
     ["Settings.Sections.GUI.PopupRows"] = "Filas de interfaz (ventana emergente)",
