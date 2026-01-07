@@ -22,13 +22,6 @@ function PART:Initialize()
         local portal_pos = portal.pos
         local portal_ang = portal.ang
 
-        if portal.posoffset then
-            portal_pos = portal_pos + portal.posoffset
-        end
-        if portal.angoffset then
-            portal_ang = portal_ang + portal.angoffset
-        end
-
         if self.use_exit_point_offset and portal.exit_point_offset then
             portal_pos = portal_pos + portal.exit_point_offset.pos
             portal_ang = portal_ang + portal.exit_point_offset.ang

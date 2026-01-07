@@ -425,13 +425,6 @@ else
             local portal_pos = portal.pos or Vector(0,0,0)
             local portal_ang = portal.ang or Angle(0,0,0)
 
-            if portal.posoffset then
-                portal_pos = portal_pos + portal.posoffset
-            end
-            if portal.angoffset then
-                portal_ang = portal_ang + portal.angoffset
-            end
-
             if d.use_exit_point_offset and portal.exit_point_offset then
                 portal_pos = portal_pos + portal.exit_point_offset.pos
                 portal_ang = portal_ang + portal.exit_point_offset.ang
