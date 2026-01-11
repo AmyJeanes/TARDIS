@@ -79,10 +79,10 @@ if SERVER then
         if self:GetData("redecorate") and self:Redecorate() then
             return
         end
-        self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
         self:SetData("repairing", false, true)
         self:ChangeHealth(self:GetHealthMax())
         self:CallHook("RepairFinished")
+        self:SendMessage("repair_finished", {})
         self:SetPower(true)
         self:SetLocked(false, nil, true)
         TARDIS:Message(self:GetCreator(), "Health.RepairFinished")
@@ -107,14 +107,13 @@ if SERVER then
     end)
 
     ENT:AddHook("PostPlayerExit", "repair", function(self,ply,forced,notp)
-        if (self:GetRepairPrimed()==true) and (table.IsEmpty(self.occupants)) then
-            self:SetData("repair-shouldstart", true)
-            self:SetData("repair-delay", CurTime()+0.3)
+        if self:GetRepairPrimed() and (table.IsEmpty(self.occupants)) then
+            TARDIS:Message(ply, "Health.RepairCloseDoors")
         end
     end)
 
     ENT:AddHook("PlayerEnter", "repair", function(self,ply,forced,notp)
-        if (self:GetRepairPrimed()==true) and table.Count(self.occupants)>=0 then
+        if self:GetRepairPrimed() then
             self:SetData("repair-shouldstart", false)
         end
     end)
@@ -127,15 +126,18 @@ if SERVER then
     end)
 
     ENT:AddHook("Think", "repair", function(self)
-        if self:GetRepairPrimed() and self:CallHook("CanRepair") == false then
+        local primed = self:GetRepairPrimed()
+        local shouldstart = self:GetData("repair-shouldstart", false)
+        if primed and self:CallHook("CanRepair") == false then
             self:SetData("repair-primed", false, true)
             self:SetPower(true)
             for k,_ in pairs(self.occupants) do
                 TARDIS:Message(k, "Health.RepairCancelled")
             end
-        end
-
-        if self:GetRepairPrimed() and self:GetData("repair-shouldstart") and CurTime() > self:GetData("repair-delay") then
+        elseif primed and not shouldstart and table.IsEmpty(self.occupants) and not self:DoorOpen() then
+            self:SetData("repair-shouldstart", true)
+            self:SetData("repair-delay", CurTime()+0.3)
+        elseif shouldstart and CurTime() > self:GetData("repair-delay") then
             self:SetData("repair-shouldstart", false)
             self:StartRepair()
         end
@@ -188,6 +190,47 @@ if SERVER then
             else
                 return 0
             end
+        end
+    end)
+else
+    ENT:OnMessage("repair_finished", function(self)
+        if not TARDIS:GetSetting("sound") then return end
+        self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
+    end)
+
+    local function StopRepairLoop(self)
+        if self.repairloopsound then
+            self.repairloopsound:Stop()
+            self.repairloopsound = nil
+            self.repairloopsoundname = nil
+        end
+    end
+
+    ENT:AddHook("OnRemove", "repair", function(self)
+        StopRepairLoop(self)
+    end)
+
+    ENT:AddHook("Think", "repair_sound", function(self)
+        if not self:GetRepairing() or not TARDIS:GetSetting("sound") then
+            StopRepairLoop(self)
+            return
+        end
+
+        local soundname = self.metadata.Exterior.Sounds.RepairLoop
+        if not soundname then
+            StopRepairLoop(self)
+            return
+        end
+
+        if (self.repairloopsoundname ~= soundname) or (not self.repairloopsound) then
+            StopRepairLoop(self)
+            self.repairloopsound = CreateSound(self, soundname)
+            self.repairloopsoundname = soundname
+        end
+
+        if self.repairloopsound and not self.repairloopsound:IsPlaying() then
+            self.repairloopsound:SetSoundLevel(60)
+            self.repairloopsound:Play()
         end
     end)
 end

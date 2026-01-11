@@ -345,6 +345,7 @@
     "HADS.UnderAttack": "Mae eich TARDIS dan ymosodiad!",
     "Health.RepairActivated": "Mae'r TARDIS hwn wedi'i osod i hunan-atgyweirio. Gadewch y tu mewn os gwelwch yn dda",
     "Health.RepairCancelled": "Mae hunan-atgyweirio wedi'i ganslo",
+    "Health.RepairCloseDoors": "Cau'r drysau i ddechrau hunan-atgyweirio.",
     "Health.RepairFinished": "Mae eich TARDIS wedi gorffen hunan-atgyweirio",
     "Health.Repairing": "Mae'r TARDIS hwn yn atgyweirio. Bydd yn cael ei wneud ymhen %d eiliad",
     "Interior.FindingPosition": "Arhoswch, i ddod o hyd i leoliad silio addas ar gyfer y tu mewn..",

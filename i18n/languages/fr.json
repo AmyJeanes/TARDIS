@@ -345,6 +345,7 @@
     "HADS.UnderAttack": "Votre TARDIS est attaqué !",
     "Health.RepairActivated": "Ce TARDIS a été réglé sur auto-réparation. Veuillez évacuer l'intérieur",
     "Health.RepairCancelled": "L'auto-réparation a été annulée",
+    "Health.RepairCloseDoors": "Fermez les portes pour commencer l'auto-réparation.",
     "Health.RepairFinished": "Votre TARDIS a terminé son auto-réparation",
     "Health.Repairing": "Ce TARDIS est en cours de réparation. Il aura terminé dans %d secondes",
     "Interior.FindingPosition": "Veuillez patienter, recherche d'un emplacement d'apparition approprié pour l'intérieur..",

@@ -345,6 +345,7 @@
     "HADS.UnderAttack": "Vaše TARDIS je pod útokem!",
     "Health.RepairActivated": "Tato TARDIS byla nastavena na samoopravu. Prosím, opusťte interiér",
     "Health.RepairCancelled": "Samooprava byla zrušena",
+    "Health.RepairCloseDoors": "Zavřete dveře pro zahájení automatické opravy.",
     "Health.RepairFinished": "Vaše TARDIS dokončila samoopravu",
     "Health.Repairing": "Tato TARDIS se opravuje. Bude hotova za %d sekund",
     "Interior.FindingPosition": "Prosím, čekejte, hledám vhodné místo pro spawn interiéru..",

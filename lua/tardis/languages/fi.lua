@@ -348,6 +348,7 @@ T.Phrases = {
     ["HADS.UnderAttack"] = "Tardiksesi on hyökkäyksen kohteena!",
     ["Health.RepairActivated"] = "Tämä TARDIS on asetettu itsekorjaukseen. Poistu sisätiloista",
     ["Health.RepairCancelled"] = "Itsekorjaus on keskeytetty",
+    ["Health.RepairCloseDoors"] = "Sulje ovet aloittaaksesi itsediagnoosin.",
     ["Health.RepairFinished"] = "Tardiksesi on saanut itsekorjauksen valmiiksi",
     ["Health.Repairing"] = "Tämä TARDIS korjaa itseään. Valmista %d sekunnin kuluttua",
     ["Interior.FindingPosition"] = "Odota, etsitään sopivaa sisätilan sijaintia...",

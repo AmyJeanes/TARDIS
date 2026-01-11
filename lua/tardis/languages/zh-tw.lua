@@ -348,6 +348,7 @@ T.Phrases = {
     ["HADS.UnderAttack"] = "你的塔迪斯遭到攻擊！",
     ["Health.RepairActivated"] = "這架塔迪斯已啟動自我修復。請離開內部",
     ["Health.RepairCancelled"] = "自我修復已被取消",
+    ["Health.RepairCloseDoors"] = "關閉門以開始自我修復",
     ["Health.RepairFinished"] = "你的塔迪斯已完成自我修復",
     ["Health.Repairing"] = "這架塔迪斯正在修復。將在 %d 秒內完成",
     ["Interior.FindingPosition"] = "請稍候，正在為內部尋找合適的生成位置..",

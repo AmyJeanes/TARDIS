@@ -348,6 +348,7 @@ T.Phrases = {
     ["HADS.UnderAttack"] = "¡Tu TARDIS está bajo ataque!",
     ["Health.RepairActivated"] = "Esta TARDIS ha sido configurada para auto-reparación. Por favor, vacía el interior",
     ["Health.RepairCancelled"] = "La auto-reparación ha sido cancelada",
+    ["Health.RepairCloseDoors"] = "Cierra las puertas para iniciar la autorreparación.",
     ["Health.RepairFinished"] = "Tu TARDIS ha finalizado la auto-reparación",
     ["Health.Repairing"] = "Este TARDIS se está auto-reparando. Terminará en %d segundos",
     ["Interior.FindingPosition"] = "Buscando ubicación adecuada para crear el interior, espere...",

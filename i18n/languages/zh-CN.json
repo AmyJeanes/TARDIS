@@ -345,6 +345,7 @@
     "HADS.UnderAttack": "您的 TARDIS 正遭到攻击！",
     "Health.RepairActivated": "这架 TARDIS 已启动自我修复。请离开内部",
     "Health.RepairCancelled": "自我修复已被取消",
+    "Health.RepairCloseDoors": "关闭门以开始自我修复。",
     "Health.RepairFinished": "你的 TARDIS 已完成自我修复",
     "Health.Repairing": "这架 TARDIS 正在修复。将在 %d 秒内完成",
     "Interior.FindingPosition": "请稍候，正在为内部寻找合适的生成位置",

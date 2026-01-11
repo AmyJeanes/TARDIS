@@ -345,6 +345,7 @@
     "HADS.UnderAttack": "TARDIS'iniz saldırı altında!",
     "Health.RepairActivated": "Bu TARDIS kendi kendini onaracak şekilde ayarlandı. Lütfen içeriyi boşaltın",
     "Health.RepairCancelled": "Kendi kendine onarım iptal edildi",
+    "Health.RepairCloseDoors": "Kendi kendini onarmaya başlamak için kapıları kapatın.",
     "Health.RepairFinished": "TARDIS'iniz kendi kendini onarmayı tamamladı",
     "Health.Repairing": "Bu TARDIS tamir ediyor. %d saniye içinde yapılacak",
     "Interior.FindingPosition": "Lütfen bekleyin, iç mekan için uygun yumurtlama yeri bulun..",

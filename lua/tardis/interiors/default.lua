@@ -528,6 +528,7 @@ T.Exterior = {
     Sounds = {
         Spawn = "drmatt/tardis/repairfinish.wav",
         Delete = "p00gie/tardis/tardis_delete.wav",
+        RepairLoop = "molda/tardis/repair_loop.wav",
     },
     Parts = {
         vortex = {
