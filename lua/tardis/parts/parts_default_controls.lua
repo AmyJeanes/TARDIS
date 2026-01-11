@@ -81,12 +81,6 @@ PART.SoundOn = "p00gie/tardis/default/keyboard_2014.ogg"
 PART.SoundOff = "p00gie/tardis/default/keyboard_2015.ogg"
 PART.SoundNoPower = "p00gie/tardis/default/keyboard.ogg"
 
-if SERVER then
-    function PART:Use(ply)
-        TARDIS:Control(self.Control, ply, self)
-    end
-end
-
 TARDIS:AddPart(PART)
 
 local PART={}
@@ -639,33 +633,7 @@ PART.ID = "default_side_panels"
 PART.Model = "models/molda/toyota_int/sidepanels.mdl"
 PART.AutoSetup = true
 PART.Collision = true
-
-if SERVER then
-    -- temporary fix for side panels collision
-    local function TraceEyeThroughSidePanels(self, ply)
-        local trace = {
-            start = ply:EyePos(),
-            endpos = ply:EyePos() + ( ply:GetAimVector() * 4096 ),
-            filter = { ply, self },
-        }
-        return util.TraceLine(trace).Hit and util.TraceLine(trace).Entity
-    end
-
-    function PART:Use(ply)
-        local tr_ent = TraceEyeThroughSidePanels(self, ply)
-        local p1 = self.interior:GetPart("default_side_cranks1")
-        local p2 = self.interior:GetPart("default_side_cranks2")
-
-        if IsValid(tr_ent) and (tr_ent == p1 or tr_ent == p2) then
-            return tr_ent:Use(ply, ply, SIMPLE_USE, 1)
-        end
-
-        TARDIS:Control(self.Control, ply, self)
-    end
-end
-
 TARDIS:AddPart(PART)
-
 
 local PART={}
 PART.Model = "models/molda/toyota_int/side_toggle.mdl"
@@ -685,14 +653,16 @@ PART.NoDraw = true
 PART.Sound = "p00gie/tardis/default/sonic_dispenser.ogg"
 PART.PowerOffUse = false
 
-function PART:Use(ply)
-    TARDIS:Control(self.Control, ply, self)
+if SERVER then
+    function PART:Use(ply)
+        TARDIS:Control(self.Control, ply, self)
 
-    self:SetData("default_sonic_charger_active", true, true)
+        self:SetData("default_sonic_charger_active", true, true)
 
-    self.interior:Timer(self.ID, 3, function()
-        self:SetData("default_sonic_charger_active", false, true)
-    end)
+        self.interior:Timer(self.ID, 3, function()
+            self:SetData("default_sonic_charger_active", false, true)
+        end)
+    end
 end
 
 TARDIS:AddPart(PART)
