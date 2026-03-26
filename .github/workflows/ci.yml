@@ -45,7 +45,7 @@ jobs:
           echo "Publishing to workshop ID $WORKSHOP_ID"
           echo "WORKSHOP_ID=$WORKSHOP_ID" >> $GITHUB_OUTPUT
       
-      - uses: AmyJeanes/gmod-upload@main
+      - uses: AmyJeanes/gmod-upload@c660f7674019f7f19246ab87b69124d209f74665 # main
         name: Publish to workshop
         with:
           id: ${{ steps.workshop_id.outputs.WORKSHOP_ID }}
