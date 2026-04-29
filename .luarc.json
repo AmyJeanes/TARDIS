@@ -1,0 +1,34 @@
+{
+    "runtime": {
+        "version": "LuaJIT"
+    },
+    "workspace": {
+        "library": [
+            "./.tools/glua-api",
+            "./.luatypes",
+            "../Doors",
+            "../world-portals",
+            "../Sonic-Screwdriver",
+            "../wire"
+        ],
+        "ignoreGlobs": [
+            ".tools/*.zip",
+            "lua/entities/gmod_wire_expression2/**"
+        ]
+    },
+    "diagnostics": {
+        "disable": [
+            "assign-type-mismatch",
+            "param-type-mismatch",
+            "undefined-field",
+            "missing-fields",
+            "missing-parameter",
+            "redundant-parameter",
+            "unbalanced-assignments",
+            "unused",
+            "redefined-local",
+            "need-check-nil",
+            "deprecated"
+        ]
+    }
+}

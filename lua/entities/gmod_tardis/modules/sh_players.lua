@@ -23,7 +23,9 @@ if SERVER then
         ply:ClearTardisData()
     end)
 
+    ---@class Player
     local meta=FindMetaTable("Player")
+
     function meta:SetTardisData(k,v,network)
         if not self.tardis then self.tardis = {} end
         self.tardis[k]=v
@@ -53,7 +55,9 @@ if SERVER then
         end
     end)
 else
+    ---@class Player
     local meta=FindMetaTable("Player")
+
     function meta:SetTardisData(k,v)
         if not self.tardis then self.tardis = {} end
         self.tardis[k]=v
