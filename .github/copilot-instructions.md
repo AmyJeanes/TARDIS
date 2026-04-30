@@ -11,7 +11,7 @@ When making changes to language strings:
 3. Only edit the English source file `i18n/languages/en.json` directly.
 4. After updating the source file, run the script to generate the Lua files:
    ```
-   pwsh -File ./generate-languages.ps1
+   pwsh -File scripts/generate-languages.ps1
    ```
 
 ## Command Limitations

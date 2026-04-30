@@ -18,8 +18,10 @@
         ".claude/*",
         ".luatypes/*",
         ".luarc.json",
+        ".tools/*",
         "i18n/*",
         "assets/*",
+        "scripts/*",
         "crowdin.yml",
         "version.json"
     ]
