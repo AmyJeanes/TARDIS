@@ -161,6 +161,7 @@ function TARDIS:CreateOptionInterface(id, data)
         elem.RefreshVal = function(self) end
     else
         elem = vgui.Create("DLabel")
+        elem.RefreshVal = function(self) end
     end
 
     if elem.SetText then elem:SetText(text) end

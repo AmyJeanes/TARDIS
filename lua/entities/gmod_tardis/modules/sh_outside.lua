@@ -106,7 +106,7 @@ else
     function GetViewEntity(...)
         if LocalPlayer():GetTardisData("outside") then
             local ext=LocalPlayer():GetTardisData("exterior")
-            if IsValid(ext.thpprop) then
+            if ext and IsValid(ext.thpprop) then
                 return ext.thpprop
             end
         end
