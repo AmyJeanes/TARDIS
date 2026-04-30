@@ -795,30 +795,31 @@ function ENT:GetGroundedPos(point, get_angle)
     end
 
     local cur_normal = GetPlaneNormal(a,b,c)
+    local best_c = c
 
     -- looking for the highest selected plane with the first two points
     for _,c2 in ipairs(traces) do
         local n = GetPlaneNormal(a, b, c2)
         if n.z > cur_normal.z then
-            c = c2
+            best_c = c2
             cur_normal = n
         end
     end
 
-    local ca = c - a
-    local cb = c - b
+    local ca = best_c - a
+    local cb = best_c - b
 
     if TRACE_DEBUG then
         -- Debugging code, might be useful in the future
         for _,v in ipairs(traces) do
-            if not v:IsEqualTol(a, 0.0001) and not v:IsEqualTol(b, 0.0001) and not v:IsEqualTol(c, 0.0001) then
+            if not v:IsEqualTol(a, 0.0001) and not v:IsEqualTol(b, 0.0001) and not v:IsEqualTol(best_c, 0.0001) then
                 RunConsoleCommand("tardis2_debug_pointer", "worldpos", v.x, v.y, v.z)
             end
         end
         RunConsoleCommand("tardis2_debug_pointer_color")
         RunConsoleCommand("tardis2_debug_pointer", "worldpos", a.x, a.y, a.z)
         RunConsoleCommand("tardis2_debug_pointer", "worldpos", b.x, b.y, b.z)
-        RunConsoleCommand("tardis2_debug_pointer", "worldpos", c.x, c.y, c.z)
+        RunConsoleCommand("tardis2_debug_pointer", "worldpos", best_c.x, best_c.y, best_c.z)
     end
 
     ---@type Vector -- ca/cb are inferred as `unknown` because the analyzer drops Vector's @operator sub after narrowing through Vector?

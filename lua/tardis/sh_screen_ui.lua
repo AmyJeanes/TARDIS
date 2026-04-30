@@ -638,7 +638,8 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         screen.RestoreHexLayout()
     else
         local pages={}
-        local page,spacew,spaceh
+        local page
+        local spacew,spaceh = 0,0
         local function newpage()
             page=vgui.Create("DPanel",frame)
             if #pages~=0 then
@@ -657,7 +658,8 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
             spacew=page:GetWide()-w-button:GetWide()-screen.gap
             if spacew < 0 then
                 h=h+button:GetTall()+screen.gap
-                spaceh=page:GetTall()-h
+                -- analyzer widens this to number? (screen.gap is `any`, propagating up the chain); cast keeps spaceh's type stable
+                spaceh=(page:GetTall()-h) --[[@as number]]
                 spacew=page:GetWide()-screen.gap
                 w=page:GetWide()-spacew
                 spacew=page:GetWide()-w-button:GetWide()-screen.gap

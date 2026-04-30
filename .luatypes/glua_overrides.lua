@@ -22,6 +22,17 @@
 ---@return DebugInfo
 function debug.getinfo(funcOrStackLevel, fields, _function) end
 
+-- glua-api-snippets only declares the 3-arg signature of table.insert; without
+-- a 2-arg overload, the analyzer flags every `table.insert(t, value)` call as
+-- passing a non-number where it expects `position`. Re-declare with both forms.
+---@diagnostic disable-next-line: duplicate-set-field
+---@overload fun(tbl: table, value: any): integer
+---@param tbl table
+---@param position integer
+---@param value any
+---@return integer
+function table.insert(tbl, position, value) end
+
 -- DModelPanel internal fields/methods that GMod sets at runtime but
 -- glua-api-snippets only exposes via getter/setter pairs. We rely on
 -- direct field access in cl_vgui.lua's RT-based DModelPanel3D2D wrapper.
