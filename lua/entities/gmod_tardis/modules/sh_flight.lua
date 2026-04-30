@@ -360,9 +360,9 @@ if SERVER then
                         ph:AddVelocity(0.5 * (old_dir_mult * vel + new_direction * math.Rand(2,3)) )
                     end
 
-                    local stabilize = (math.random(4) == 1)
-                    stabilize = stabilize or (fbinds.rotate and fbinds.down and not self:SetData("broken_flight_stabilize"))
-                    self:SetData("broken_flight_stabilize", stabilize)
+                    local should_stabilize = (math.random(4) == 1)
+                    should_stabilize = should_stabilize or (fbinds.rotate and fbinds.down and not self:GetData("broken_flight_stabilize"))
+                    self:SetData("broken_flight_stabilize", should_stabilize)
 
                     self:SetData("broken_flight_dir_change_time", CurTime() + math.random(3) - 0.5)
 

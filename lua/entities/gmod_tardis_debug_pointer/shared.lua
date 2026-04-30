@@ -34,7 +34,7 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
     local tr = util.TraceLine({
         start = ply:EyePos(),
         endpos = ply:EyePos() + ply:EyeAngles():Forward() * 10000,
-        filter = function( ent ) if ( ent:GetClass() == "prop_physics" ) then return true end end
+        filter = function(trace_ent) if (trace_ent:GetClass() == "prop_physics") then return true end end
     })
 
     local close_pos = ply:EyePos() + ply:EyeAngles():Forward() * 40
@@ -131,14 +131,14 @@ else
             return
         end
 
-        local x = ScrW() * 0.2;
-        local y = ScrH() * 0.8;
+        local menu_w = ScrW() * 0.2;
+        local menu_h = ScrH() * 0.8;
 
         g_ContextMenu:Open()
         local frame=g_ContextMenu:Add( "DFrame" )
         frame:SetTitle("TARDIS Pointer Debug")
         frame:SetSizable(true)
-        frame:SetSize(x + 50, y + 50)
+        frame:SetSize(menu_w + 50, menu_h + 50)
         frame:SetPos(ScrW() * 0.25 - frame:GetWide() * 0.5, ScrH() * 0.5 - frame:GetTall() * 0.5)
         frame:ShowCloseButton(true)
         frame:RequestFocus()
@@ -146,7 +146,7 @@ else
         p.debug_window = frame
 
         local pr = vgui.Create( "DProperties", frame )
-        pr:SetSize(x, y)
+        pr:SetSize(menu_w, menu_h)
         pr:Center()
 
         local ent = LocalPlayer():GetTardisData("interior")

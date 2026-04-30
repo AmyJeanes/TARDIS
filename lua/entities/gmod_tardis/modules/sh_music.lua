@@ -7,8 +7,8 @@ if SERVER then
                 TARDIS:Message(ply, "Security.ControlUseDenied")
                 return false
             end
-            for ply, _ in pairs(self.occupants) do
-                self:SendMessage("play-music", {url}, ply)
+            for occupant, _ in pairs(self.occupants) do
+                self:SendMessage("play-music", {url}, occupant)
             end
 
             self.music = url

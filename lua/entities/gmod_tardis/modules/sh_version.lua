@@ -24,7 +24,7 @@ local function get_release_notes(version, newVersion)
     local headers = {
         ["X-GitHub-Api-Version"] = "2022-11-28"
     }
-    local function onsuccess(body, size, headers, code)
+    local function onsuccess(body, size, response_headers, code)
         if code ~= 200 then
             print("Failed to retrieve TARDIS release notes for " .. version .. ", code: " .. code .. ", body: " .. body)
             return

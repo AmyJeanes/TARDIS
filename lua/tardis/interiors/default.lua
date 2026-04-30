@@ -803,7 +803,7 @@ TARDIS:AddInterior(T)
 
 -- Capaldi
 
-local T = {}
+T = {}
 
 T.Base = "default"
 T.Name = "Interiors.Default"
@@ -910,7 +910,7 @@ TARDIS:AddInterior(T)
 
 -- Default (classic doors)
 
-local T = {}
+T = {}
 
 T.Base = "default"
 T.Name = "Interiors.Default"

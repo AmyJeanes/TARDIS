@@ -49,7 +49,7 @@ if SERVER then
                 local cen=ph:GetMassCenter()
                 local lev=ph:GetInertia():Length()
 
-                local vel=0
+                local control_vel=0
                 local rforce=2
                 local mul=3
                 local tilt=0
@@ -58,7 +58,7 @@ if SERVER then
                     or TARDIS:IsBindDown(self.pilot,"flight-left")
                     or TARDIS:IsBindDown(self.pilot,"flight-right")
                     or TARDIS:IsBindDown(self.pilot,"flight-backward") then
-                    vel=vel+1
+                    control_vel=control_vel+1
                     tilt=tilt+1
                 end
                 if TARDIS:IsBindDown(self.pilot,"flight-boost") then
@@ -78,7 +78,7 @@ if SERVER then
                         ph:AddAngleVelocity(Vector(0,0,-rforce))
                     end
                 elseif not (self:GetSpinDir() == 0) then
-                    local twist=Vector(0, 0, vel * mul * - self:GetSpinDir())
+                    local twist=Vector(0, 0, control_vel * mul * - self:GetSpinDir())
                     ph:AddAngleVelocity(twist)
                     ph:ApplyForceOffset( up*-ang.p,cen-fwd2*lev)
                     ph:ApplyForceOffset(-up*-ang.p,cen+fwd2*lev)

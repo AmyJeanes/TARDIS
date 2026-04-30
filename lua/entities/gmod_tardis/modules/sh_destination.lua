@@ -363,10 +363,10 @@ else
     function ENT:GetDestinationPropPos(ply, pos, ang)
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
-        local pos=prop:LocalToWorld(Vector(0,0,60))
+        local trace_pos=prop:LocalToWorld(Vector(0,0,60))
         local tr = util.TraceLine({
-            start=pos,
-            endpos=pos-(ang:Forward()*ply:GetTardisData("destinationdist",defaultdist)),
+            start=trace_pos,
+            endpos=trace_pos-(ang:Forward()*ply:GetTardisData("destinationdist",defaultdist)),
             mask=MASK_NPCWORLDSTATIC,
             ignoreworld=self:GetData("vortex")
         })
@@ -376,13 +376,13 @@ else
     function ENT:GetDestinationPropTrace(ply,ang)
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
-        local pos,ang=self:GetDestinationPropPos(ply,nil,ang)
-        if not pos or not ang then return end
+        local trace_pos,trace_ang=self:GetDestinationPropPos(ply,nil,ang)
+        if not trace_pos or not trace_ang then return end
         ---@type Entity[]
         local filter={self,TARDIS:GetPart(self,"door"),prop}
-        local trace=util.QuickTrace(pos,ang:Forward()*TRACE_DISTANCE,filter)
+        local trace=util.QuickTrace(trace_pos,trace_ang:Forward()*TRACE_DISTANCE,filter)
         local hitNormal = trace.HitNormal
-        if not hitNormal then return trace.HitPos, ang end
+        if not hitNormal then return trace.HitPos, trace_ang end
         local angle=hitNormal:Angle()
         angle:RotateAroundAxis(angle:Right(),-90)
         return trace.HitPos,angle
@@ -551,14 +551,14 @@ else
                     rt = rt + Angle(0,angforce*-1*dt,0)
                 end
 
-                local fwd = TARDIS:IsBindDown("destination-forward")
+                local forward_pressed = TARDIS:IsBindDown("destination-forward")
                 local back = TARDIS:IsBindDown("destination-backward")
 
-                if fwd or back then
+                if forward_pressed or back then
                     if not self:GetData("destination_rotate_key") then
                         local ang = prop:GetAngles()
 
-                        local k = fwd and 1 or ((ang.y % 45) == 0) and -1 or 0
+                        local k = forward_pressed and 1 or ((ang.y % 45) == 0) and -1 or 0
 
                         if ang:Up() == Vector(0,0,1) then
                             prop:SetAngles(Angle(ang.x, ang.y + 45 * k - (ang.y % 45), ang.z))
@@ -663,7 +663,7 @@ function ENT:GetDestinationAng(auto)
 end
 
 function ENT:DestinationTraceDown(point, vertical_offset)
-    local vertical_offset = vertical_offset or 50
+    vertical_offset = vertical_offset or 50
 
     local filter = function(ent)
         if ent:IsNPC() or ent:IsPlayer() then return false end
@@ -737,7 +737,7 @@ local function SelectPlaneDefiningPoints(points)
             table.insert(todelete, i)
         end
     end
-    table.sort(todelete, function(a,b) return a > b end)
+    table.sort(todelete, function(left_index,right_index) return left_index > right_index end)
     for i,c in ipairs(todelete) do
         table.remove(points, c)
     end

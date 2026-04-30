@@ -62,7 +62,7 @@ end
 
 
 function TARDIS:DefaultPreferredVersion(int_id)
-    local int_id = TARDIS:GetMainVersionId(int_id)
+    int_id = TARDIS:GetMainVersionId(int_id)
     local versions = self.MetadataVersions[int_id]
 
     if versions and versions.randomize_custom and not table.IsEmpty(versions.custom) then
@@ -138,12 +138,12 @@ end
 -- Redecoration
 
 function TARDIS:ShouldRedecorateInto(int_id, ent)
-    local int_id = TARDIS:GetMainVersionId(int_id)
+    int_id = TARDIS:GetMainVersionId(int_id)
     return not TARDIS:GetCustomSetting(int_id, "redecoration_exclude", ent)
 end
 
 function TARDIS:SelectNewRandomInterior(current, ent)
-    local current = TARDIS:GetMainVersionId(current)
+    current = TARDIS:GetMainVersionId(current)
     local chosen_int
     local attempts = 1000
 

@@ -90,9 +90,9 @@ else
     end)
 
     ENT:OnMessage("Outside", function(self, data, ply)
-        local ply = data[1]
+        local target_ply = data[1]
         local enabled = data[2]
-        self:CallHook("Outside",ply,enabled)
+        self:CallHook("Outside",target_ply,enabled)
     end)
 
     ENT:AddHook("ShouldVortexIgnoreZ", "outside", function(self)

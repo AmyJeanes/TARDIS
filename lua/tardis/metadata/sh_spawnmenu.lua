@@ -160,7 +160,7 @@ if CLIENT then
     end
 
     function TARDIS.Spawnmenu.AddSettings(parent, int_id)
-        local int_id = TARDIS:GetMainVersionId(int_id)
+        int_id = TARDIS:GetMainVersionId(int_id)
 
         local versions = TARDIS.MetadataVersions[int_id]
         local custom_settings = TARDIS.IntCustomSettings[int_id]

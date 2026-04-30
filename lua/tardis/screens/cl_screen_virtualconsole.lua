@@ -193,7 +193,7 @@ local function old_virtual_console(self,ext,int,frame,screen)
     doorlock:SetPos((frame:GetWide()*0.57)-(doorlock:GetWide()*0.5),(frame:GetTall()*0.15)-(doorlock:GetTall()*0))
     doorlock:SetText(TARDIS:GetPhrase(ext:Locked() and "Screens.VirtualConsole.Old.UnlockDoor" or "Screens.VirtualConsole.Old.LockDoor"))
 
-    doorswitch.DoClick = function(doorswitch)
+    doorswitch.DoClick = function()
         TARDIS:Control("door", LocalPlayer())
     end
 

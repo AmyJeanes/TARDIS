@@ -44,7 +44,7 @@ local health_icon = Material("vgui/tardis_health.png")
 local energy_icon = Material("vgui/tardis_energy.png")
 local shields_icon = Material("vgui/tardis_shields.png")
 
-local function DrawNumber(icon_mat, value, x, y, bad_level, very_bad_level, dead_level)
+local function DrawNumber(icon_mat, value, draw_x, draw_y, bad_level, very_bad_level, dead_level)
     local dead = (dead_level ~= nil) and (value <= dead_level)
 
     local verybad = (very_bad_level ~= nil) and (value <= very_bad_level) and not dead
@@ -68,12 +68,12 @@ local function DrawNumber(icon_mat, value, x, y, bad_level, very_bad_level, dead
     surface.SetMaterial(icon_mat)
     surface.SetDrawColor(textcolor)
 
-    surface.DrawTexturedRect( x, y + icon_size, icon_size, icon_size)
+    surface.DrawTexturedRect( draw_x, draw_y + icon_size, icon_size, icon_size)
 
-    draw.DrawText( tostring(value), "TARDIS-HUD", x + number_offset, y, textcolor, TEXT_ALIGN_LEFT)
+    draw.DrawText( tostring(value), "TARDIS-HUD", draw_x + number_offset, draw_y, textcolor, TEXT_ALIGN_LEFT)
 
     if verybad then
-        draw.DrawText( tostring(value), "TARDIS-HUD-Glow", x + number_offset - 2, y - 2, textcolor, TEXT_ALIGN_LEFT)
+        draw.DrawText( tostring(value), "TARDIS-HUD-Glow", draw_x + number_offset - 2, draw_y - 2, textcolor, TEXT_ALIGN_LEFT)
     end
 end
 

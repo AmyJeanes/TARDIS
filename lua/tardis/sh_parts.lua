@@ -641,9 +641,9 @@ if SERVER then
             e.parent=ent
             e.ExteriorPart=(e.parent==e.exterior)
             e.InteriorPart=(e.parent==e.interior)
-            local data=GetData(ent,e,k)
-            if type(data)=="table" then
-                table.Merge(e,data)
+            local part_data=GetData(ent,e,k)
+            if type(part_data)=="table" then
+                table.Merge(e,part_data)
             end
 
             SetupPartControl(e)

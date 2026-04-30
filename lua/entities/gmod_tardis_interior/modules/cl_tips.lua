@@ -220,7 +220,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             local printtext = tip.randtext or tip.text
 
             local w, h = surface.GetTextSize( printtext )
-            local pos = pos:ToScreen()
+            local screen_pos = pos:ToScreen()
             local padding = tip.padding or 10
             local offset = tip.offset or 30
             local fr_width = tip.fr_width or 2
@@ -234,28 +234,28 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             local trY = {}
 
             if tip.down then
-                y = pos.y + offset
+                y = screen_pos.y + offset
                 t = -1
-                trY[1] = pos.y
+                trY[1] = screen_pos.y
                 trY[2] = y - padding
                 trY[3] = y - padding
             else
-                y = pos.y - h - offset
+                y = screen_pos.y - h - offset
                 t = 1
                 trY[1] = y + h + padding
                 trY[2] = y + h + padding
-                trY[3] = pos.y
+                trY[3] = screen_pos.y
             end
             if tip.right then
-                x = pos.x + offset
+                x = screen_pos.x + offset
                 trX[2 - t] = x - (padding / 2)
                 trX[2] = x + (padding * 2)
-                trX[2 + t] = pos.x
+                trX[2 + t] = screen_pos.x
             else
-                x = pos.x - w - offset
+                x = screen_pos.x - w - offset
                 trX[2 - t] = x + w - (padding * 2)
                 trX[2] = x + w + (padding / 2)
-                trX[2 + t] = pos.x
+                trX[2 + t] = screen_pos.x
             end
 
             local verts = {}

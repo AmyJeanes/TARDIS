@@ -1,10 +1,12 @@
+-- Default doorframe
 local PART = {}
 PART.ID = "default_doorframe"
 PART.Model = "models/molda/toyota_int/doorframe.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default floor
+PART = {}
 PART.ID = "default_floor"
 PART.Model = "models/molda/toyota_int/floor.mdl"
 PART.AutoSetup = true
@@ -12,7 +14,8 @@ PART.Collision = true
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default walls
+PART = {}
 PART.ID = "default_walls"
 PART.Model = "models/molda/toyota_int/walls.mdl"
 PART.AutoSetup = true
@@ -20,7 +23,8 @@ PART.Collision = true
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default entry
+PART = {}
 PART.ID = "default_entry"
 PART.Model = "models/molda/toyota_int/entry.mdl"
 PART.AutoSetup = true
@@ -28,7 +32,8 @@ PART.Collision = true
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default pillars
+PART = {}
 PART.ID = "default_pillars"
 PART.Model = "models/molda/toyota_int/pillars.mdl"
 PART.AutoSetup = true
@@ -36,7 +41,8 @@ PART.Collision = true
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default rings
+PART = {}
 PART.ID = "default_rings"
 PART.Model = "models/molda/toyota_int/rings.mdl"
 PART.AutoSetup = true
@@ -48,38 +54,44 @@ PART.AnimateOptions = {
 }
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default cables 1
+PART = {}
 PART.ID = "default_cables1"
 PART.Model = "models/molda/toyota_int/cables1.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default cables 2
+PART = {}
 PART.ID = "default_cables2"
 PART.Model = "models/molda/toyota_int/cables2.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default cables 3
+PART = {}
 PART.ID = "default_cables3"
 PART.Model = "models/molda/toyota_int/cables3.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default chairs
+PART = {}
 PART.ID = "default_chairs"
 PART.Model = "models/molda/toyota_int/chairs.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default casing
+PART = {}
 PART.ID = "default_casing"
 PART.Model = "models/molda/toyota_int/casing.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default console
+PART = {}
 PART.ID = "default_console"
 PART.Model = "models/molda/toyota_int/console.mdl"
 PART.AutoSetup = true
@@ -87,43 +99,50 @@ PART.Collision = true
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default side details 1
+PART = {}
 PART.ID = "default_side_details1"
 PART.Model = "models/molda/toyota_int/side_details1.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default side details 2
+PART = {}
 PART.ID = "default_side_details2"
 PART.Model = "models/molda/toyota_int/side_details2.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default top lights
+PART = {}
 PART.ID = "default_toplights"
 PART.Model = "models/molda/toyota_int/toplights.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default roundels 1
+PART = {}
 PART.ID = "default_roundels1"
 PART.Model = "models/molda/toyota_int/roundels1.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default roundels 2
+PART = {}
 PART.ID = "default_roundels2"
 PART.Model = "models/molda/toyota_int/roundels2.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default bulbs
+PART = {}
 PART.ID = "default_bulbs"
 PART.Model = "models/molda/toyota_int/bulbs.mdl"
 PART.AutoSetup = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default ticks
+PART = {}
 PART.ID = "default_ticks"
 PART.Model = "models/molda/toyota_int/ticks.mdl"
 PART.AutoSetup = true
@@ -136,7 +155,8 @@ PART.AnimateOptions = {
 }
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default interior doors
+PART = {}
 PART.ID = "default_intdoors"
 PART.Model = "models/molda/toyota_int/slidedoors2.mdl"
 PART.AutoSetup = true
@@ -205,7 +225,8 @@ PART.Model = "models/molda/toyota_int/slidedoors3.mdl"
 PART.ShouldTakeDamage = true
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default rotor
+PART = {}
 PART.ID = "default_rotor"
 PART.Model = "models/molda/toyota_int/rotor.mdl"
 PART.AutoSetup = true
@@ -240,7 +261,8 @@ PART.Translucent = true
 
 TARDIS:AddPart(PART)
 
-local PART={}
+-- Default corridors
+PART = {}
 PART.ID = "default_corridors"
 PART.Model = "models/molda/toyota_int/corridor_version2.mdl"
 PART.AutoSetup = true
@@ -252,14 +274,16 @@ PART.ID = "default_corridors_small"
 PART.Model = "models/molda/toyota_int/corridor_version3.mdl"
 TARDIS:AddPart(PART)
 
-local PART = {}
+-- Default books
+PART = {}
 PART.ID = "default_books"
 PART.Model = "models/molda/toyota_int/books.mdl"
 PART.AutoSetup = true
 PART.Collision = true
 TARDIS:AddPart(PART)
 
-local PART = {}
+-- Default Christmas decorations
+PART = {}
 PART.ID = "default_decorations_christmas"
 PART.Model = "models/molda/toyota_int/decorations_xmas.mdl"
 PART.AutoSetup = true

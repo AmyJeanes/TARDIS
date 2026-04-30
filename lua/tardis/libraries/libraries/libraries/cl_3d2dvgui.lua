@@ -159,9 +159,9 @@ hook.Add("KeyPress", "VGUI3D2DMousePress", function(_, key)
                 angle = pnl.Angle
                 normal = pnl.Normal
 
-                local key = input.IsKeyDown(KEY_LSHIFT) and MOUSE_RIGHT or MOUSE_LEFT
+                local mouse_button = input.IsKeyDown(KEY_LSHIFT) and MOUSE_RIGHT or MOUSE_LEFT
 
-                postPanelEvent(pnl, "OnMousePressed", key)
+                postPanelEvent(pnl, "OnMousePressed", mouse_button)
             end
         end
     end
@@ -169,7 +169,7 @@ end)
 
 hook.Add("KeyRelease", "VGUI3D2DMouseRelease", function(_, key)
     if key == IN_USE then
-        for pnl, key in pairs(usedpanel) do
+        for pnl, used_key in pairs(usedpanel) do
             if IsValid(pnl) then
                 origin = pnl.Origin
                 scale = pnl.Scale
@@ -177,7 +177,7 @@ hook.Add("KeyRelease", "VGUI3D2DMouseRelease", function(_, key)
                 normal = pnl.Normal
 
                 if pnl["OnMouseReleased"] then
-                    pnl["OnMouseReleased"](pnl, key[1])
+                    pnl["OnMouseReleased"](pnl, used_key[1])
                 end
 
                 usedpanel[pnl] = nil

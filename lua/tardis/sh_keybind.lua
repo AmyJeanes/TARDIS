@@ -215,19 +215,19 @@ else
     local BINDS_FILE = "tardis/binds.txt"
 
     function TARDIS:SaveKeyBinds()
-        local keys={}
+        local saved_keys={}
         for k,v in pairs(self.binds) do
             if self.bindkeys[k] and self.bindkeys[k]~=v.key then
-                keys[k]=self.bindkeys[k]
+                saved_keys[k]=self.bindkeys[k]
             end
         end
-        file.Write(BINDS_FILE, self.von.serialize(keys))
+        file.Write(BINDS_FILE, self.von.serialize(saved_keys))
     end
 
     function TARDIS:LoadKeyBinds()
-        local keys=file.Read(BINDS_FILE,"DATA")
-        if keys then
-            table.Merge(self.bindkeys,self.von.deserialize(keys))
+        local saved_keys=file.Read(BINDS_FILE,"DATA")
+        if saved_keys then
+            table.Merge(self.bindkeys,self.von.deserialize(saved_keys))
         end
     end
     TARDIS:LoadKeyBinds()

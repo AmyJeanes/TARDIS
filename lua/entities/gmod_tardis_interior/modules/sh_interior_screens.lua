@@ -64,10 +64,10 @@ end
 
 function ENT:LoadScreens()
     self:RemoveScreens()
-    local screens=self.metadata.Interior.Screens
-    if screens then
+    local metadata_screens=self.metadata.Interior.Screens
+    if metadata_screens then
         self.screens3D={}
-        for k,v in pairs(screens) do
+        for k,v in pairs(metadata_screens) do
             local black = v.power_off_black
             if black == nil then
                 black = true

@@ -1,6 +1,5 @@
 local HIDE_COLLISIONS = true
-
-
+-- Default monitors
 local PART = {}
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
@@ -153,11 +152,11 @@ local function trace_console_angle(int, ply)
 end
 
 local function trace_monitor_pos(ply, part)
-    local ang_y, down = trace_console_angle(part.interior, ply)
+    local ang_y, down_pos = trace_console_angle(part.interior, ply)
     if not ang_y then return end
 
     local rotation = math.Clamp((ang_y - part:GetAngles().y) % 360 / 360, 0, 1)
-    local down = 1 - (down - 140) / 25
+    local down = 1 - (down_pos - 140) / 25
 
     return rotation, down
 end
@@ -563,7 +562,8 @@ end
 -- Hitbox parts
 
 local function Setup_Hitbox_Parts(MonitorID)
-    local PART = {}
+    -- Default monitor hitboxes
+    PART = {}
     PART.MonitorID = MonitorID
     PART.AutoSetup = true
     PART.Collision = false
@@ -627,7 +627,8 @@ Setup_Hitbox_Parts("default_monitor_2")
 
 -- Rotor ring
 
-local PART={}
+-- Default rotor ring
+PART = {}
 PART.ID = "default_rotor_ring"
 PART.Model = "models/molda/toyota_int/rotor_ring.mdl"
 PART.AutoSetup = true

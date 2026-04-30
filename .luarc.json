@@ -20,8 +20,7 @@
         "disable": [
             "param-type-mismatch",
             "undefined-field",
-            "unused",
-            "redefined-local"
+            "unused"
         ]
     }
 }

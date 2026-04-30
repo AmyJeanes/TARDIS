@@ -12,9 +12,9 @@ if SERVER then
         local winter = entity.metadata.Exterior.WinterSkins
         local winter_ok = TARDIS:GetSetting("winter_skins", entity)
 
-        local function cannot_use_skin(chosen_skin)
-            local is_excluded = table.HasValue(excluded, chosen_skin)
-            return is_excluded or (not winter_ok and winter and table.HasValue(winter, chosen_skin) )
+        local function cannot_use_skin(skin)
+            local is_excluded = table.HasValue(excluded, skin)
+            return is_excluded or (not winter_ok and winter and table.HasValue(winter, skin) )
         end
 
         if excluded then

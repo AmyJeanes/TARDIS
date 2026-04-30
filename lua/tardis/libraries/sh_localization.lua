@@ -98,12 +98,12 @@ function TARDIS:CompileLanguage(code)
 
     local extensions = self.LanguageExtensions[code]
     if extensions then
-        for k, v in pairs(extensions) do
-            for k,v in pairs(v.Phrases) do
-                if phrases[k] then
-                    ErrorNoHalt("Extension " .. v.Code .. " attempted to override existing language phrase " .. k)
+        for _, extension in pairs(extensions) do
+            for phrase_id, phrase_text in pairs(extension.Phrases) do
+                if phrases[phrase_id] then
+                    ErrorNoHalt("Extension " .. extension.Code .. " attempted to override existing language phrase " .. phrase_id)
                 else
-                    phrases[k] = v
+                    phrases[phrase_id] = phrase_text
                 end
             end
         end
@@ -126,19 +126,19 @@ function TARDIS:CompileLanguage(code)
 
     for k, v in pairs(self.Languages) do
         if k ~= code then
-            local base = v.Base or self.DefaultLanguage
-            local baseLang
+            local current_base = v.Base or self.DefaultLanguage
+            local current_base_lang
             repeat
-                baseLang = self.Languages[base]
-                if not baseLang then
+                current_base_lang = self.Languages[current_base]
+                if not current_base_lang then
                     break
                 end
-                if base == code then
+                if current_base == code then
                     self:CompileLanguage(k)
                     break
                 end
-                base = baseLang.Base or self.DefaultLanguage
-            until base == self.DefaultLanguage
+                current_base = current_base_lang.Base or self.DefaultLanguage
+            until current_base == self.DefaultLanguage
         end
     end
 

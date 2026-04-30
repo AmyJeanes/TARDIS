@@ -473,8 +473,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         local name,pos,ang
         if i > locations_num then
             local ground = (i == locations_num + 1)
-            local ext = LocalPlayer():GetTardisData("exterior")
-            pos = ext:GetRandomLocation(ground) or ext:GetPos()
+            local current_ext = LocalPlayer():GetTardisData("exterior")
+            pos = current_ext:GetRandomLocation(ground) or current_ext:GetPos()
             ang = {p = 0, y = 0, r = 0}
             if ground then
                 name = TARDIS:GetPhrase("Screens.Coordinates.RandomLocationGround")

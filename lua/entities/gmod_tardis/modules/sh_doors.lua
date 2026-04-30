@@ -257,9 +257,9 @@ if SERVER then
         local name = part:GetBodygroupName(bodygroup)
 
         if self.metadata.SyncExteriorBodygroupToDoors then
-            local bodygroup = self:FindBodygroupByName(name)
-            if bodygroup > -1 and self:GetBodygroup(bodygroup) ~= value then
-                self:SetBodygroup(bodygroup, value)
+            local exterior_bodygroup = self:FindBodygroupByName(name)
+            if exterior_bodygroup > -1 and self:GetBodygroup(exterior_bodygroup) ~= value then
+                self:SetBodygroup(exterior_bodygroup, value)
             end
         end
         

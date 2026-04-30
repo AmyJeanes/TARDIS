@@ -29,7 +29,7 @@ local default_custom_setting_values = {
 }
 
 function TARDIS:GetCustomSetting(int_id, setting_id, ent, default_val)
-    local int_id = self:GetMainVersionId(int_id)
+    int_id = self:GetMainVersionId(int_id)
 
     local custom_settings = self:GetCustomSettings(ent)
     local settings = custom_settings[int_id]
@@ -63,7 +63,7 @@ if CLIENT then
     end
 
     function TARDIS:SetCustomSetting(int_id, setting_id, value)
-        local int_id = self:GetMainVersionId(int_id)
+        int_id = self:GetMainVersionId(int_id)
 
         local custom_settings = self:GetCustomSettings(LocalPlayer())
         custom_settings[int_id] = custom_settings[int_id] or {}
@@ -72,7 +72,7 @@ if CLIENT then
     end
 
     function TARDIS:ResetCustomSettings(int_id)
-        local int_id = self:GetMainVersionId(int_id)
+        int_id = self:GetMainVersionId(int_id)
 
         if int_id == nil then
             self:SaveCustomSettings({})

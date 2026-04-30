@@ -87,11 +87,11 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                         -- save the subsection state for more convenience
                         subsection:SetExpanded(expanded)
 
-                        subsection.OnToggle = function(self, expanded)
-                            local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections")
-                            unfolded_subsections[section] = unfolded_subsections[section] or {}
-                            unfolded_subsections[section][data.subsection] = expanded
-                            TARDIS:SetSetting("options-unfolded-subsections", unfolded_subsections)
+                        subsection.OnToggle = function(self, is_expanded)
+                            local unfolded_setting = TARDIS:GetSetting("options-unfolded-subsections")
+                            unfolded_setting[section] = unfolded_setting[section] or {}
+                            unfolded_setting[section][data.subsection] = is_expanded
+                            TARDIS:SetSetting("options-unfolded-subsections", unfolded_setting)
                         end
 
                         for a2,b2 in ipairs(options) do
@@ -178,17 +178,17 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     -- Binds
     spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Binds", " "..TARDIS:GetPhrase("Settings.Sections.Binds"), "", "", function(panel)
         local keybinds={}
-        local sections={}
+        local bind_sections={}
         for k,v in pairs(TARDIS:GetBinds()) do
             table.insert(keybinds,{k,v})
-            if v.section and not table.HasValue(sections,v.section) then
-                table.insert(sections,v.section)
+            if v.section and not table.HasValue(bind_sections,v.section) then
+                table.insert(bind_sections,v.section)
             end
         end
         table.SortByMember(keybinds,1,true)
-        table.SortByMember(sections,1,true)
+        table.SortByMember(bind_sections,1,true)
 
-        for k,v in ipairs(sections) do
+        for k,v in ipairs(bind_sections) do
             local category = vgui.Create("DForm")
             panel:AddItem(category)
 
@@ -233,7 +233,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Reset_Settings", " "..TARDIS:GetPhrase("MenuOptions.ResetAllSettings"), "", "", function(panel)
         local button = vgui.Create("DButton")
         button:SetText(TARDIS:GetPhrase("MenuOptions.ResetClientsideSettings"))
-        button.DoClick = function(button)
+        button.DoClick = function()
             Derma_Query(
                 TARDIS:GetPhrase("MenuOptions.ConfirmResetSettings"),
                 TARDIS:GetPhrase("Common.Interface"),

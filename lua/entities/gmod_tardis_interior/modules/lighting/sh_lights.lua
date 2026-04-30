@@ -187,9 +187,9 @@ if CLIENT then
         end
         if lights and TARDIS:GetSetting("extra-lights") then
             local i=0
-            for _,light in pairs(lights) do
+            for _,extra_light in pairs(lights) do
                 i=i+1
-                self:DrawLight((index*1000)+i,light)
+                self:DrawLight((index*1000)+i,extra_light)
             end
         end
     end)
