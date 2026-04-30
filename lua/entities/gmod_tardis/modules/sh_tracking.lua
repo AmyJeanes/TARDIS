@@ -104,7 +104,7 @@ if SERVER then
 
         local entSize = get_ent_size(ent)
 
-        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
+        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent --[[@as Player]]))) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
             return false
         elseif ent == self then

@@ -1,5 +1,6 @@
 local HIDE_COLLISIONS = true
 -- Default monitors
+---@class part_default_monitors : gmod_tardis_part
 local PART = {}
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true

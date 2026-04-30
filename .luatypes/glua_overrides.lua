@@ -13,3 +13,11 @@
 ---@alias MATERIAL_RT_DEPTH integer
 ---@alias CREATERENDERTARGETFLAGS integer
 ---@alias BOX integer
+
+-- glua-api-snippets types debug.getinfo's first param as `function`, but the
+-- runtime accepts a stack-level number too (and that's how TARDIS uses it).
+---@param funcOrStackLevel function|integer
+---@param fields? string
+---@param _function? function
+---@return DebugInfo
+function debug.getinfo(funcOrStackLevel, fields, _function) end

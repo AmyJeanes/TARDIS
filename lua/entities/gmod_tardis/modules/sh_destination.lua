@@ -711,6 +711,10 @@ local function GenerateTracePoints(self, yaw)
     return trace_offsets
 end
 
+---@param p1 Vector
+---@param p2 Vector
+---@param p3 Vector
+---@return Vector
 local function GetPlaneNormal(p1, p2, p3)
     local d1 = p1 - p2
     local d2 = p1 - p3
@@ -721,6 +725,10 @@ local function GetPlaneNormal(p1, p2, p3)
     return normal:GetNormalized()
 end
 
+---@param points Vector[]
+---@return Vector? a
+---@return Vector? b
+---@return Vector? c
 local function SelectPlaneDefiningPoints(points)
     local a,b = points[1], points[2]
 
@@ -762,6 +770,7 @@ function ENT:GetGroundedPos(point, get_angle)
     local prop = self:GetData("destinationprop")
     local initial_yaw = Angle(0, IsValid(prop) and prop:GetAngles().y or self:GetAngles().y, 0)
 
+    ---@type Vector[]
     local traces = {}
     table.insert(traces, self:DestinationTraceDownHit(point))
 
@@ -781,7 +790,7 @@ function ENT:GetGroundedPos(point, get_angle)
     end
 
     local a,b,c = SelectPlaneDefiningPoints(traces)
-    if a == nil then
+    if not a or not b or not c then
         return pos, initial_yaw
     end
 
@@ -820,7 +829,7 @@ function ENT:GetGroundedPos(point, get_angle)
     end
 
     local ang = normal:Angle() + Angle(90,0,0)
-    ang:RotateAroundAxis(normal, initial_yaw.y)
+    ang:RotateAroundAxis(normal --[[@as Vector]], initial_yaw.y)
 
     if normal ~= Vector(0,0,0) and normal.z > 0.5 then
         -- the TARDIS can land there and the selected position is not vertical
@@ -862,12 +871,10 @@ function ENT:FindPosInBox(p1, p2)
         return
     end
 
+    ---@type Trace
     local td = {}
-    local tdret = {}
-    td.output = tdret
+    ---@type Trace
     local td3d = {}
-    local td3dret = {}
-    td3d.output = td3dret
     td3d.mask = MASK_NPCWORLDSTATIC
     -- skycampos has to be networked as it is inaccessible clientside
     local skycampos = self:GetData("skycampos")
@@ -875,9 +882,8 @@ function ENT:FindPosInBox(p1, p2)
     if isskycam then
         td3d.endpos = skycampos
     end
+    ---@type Trace
     local td3dtop = {}
-    local td3dtopret = {}
-    td3dtop.output = td3dtopret
     td3dtop.mask = MASK_NPCWORLDSTATIC
 
     local inskybox = false

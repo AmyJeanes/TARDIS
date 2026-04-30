@@ -102,6 +102,7 @@ end)
 TARDIS.DebugTipsFunction = function(self, ply, ...)
     local int = self.interior
 
+    ---@type Trace
     local trace = {
         start = ply:EyePos(),
         endpos = ply:EyePos() + (ply:GetAimVector() * 4096),

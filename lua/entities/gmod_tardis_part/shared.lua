@@ -1,3 +1,5 @@
+---@class gmod_tardis_part : Entity
+
 ENT.Type = "anim"
 if WireLib then
     ENT.Base            = "base_wire_entity"

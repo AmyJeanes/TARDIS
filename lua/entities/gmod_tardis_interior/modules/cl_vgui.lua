@@ -119,7 +119,7 @@ function dmodel_tbl:Paint( w, h )
                 for i = 0, 6 do
                     local col = self.DirectionalLight[ i ]
                     if ( col ) then
-                        render.SetModelLighting( i, col.r / 255, col.g / 255, col.b / 255 )
+                        render.SetModelLighting( i --[[@as BOX]], col.r / 255, col.g / 255, col.b / 255 )
                     end
                 end
 

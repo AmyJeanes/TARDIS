@@ -10,10 +10,10 @@ function ENT:SendMessage(name,data,ply)
     net.WriteString(name)
 
     if data then
-        net.WriteBit(1)
+        net.WriteBool(true)
         net.WriteString(TARDIS.von.serialize(data))
     else
-        net.WriteBit(0)
+        net.WriteBool(false)
     end
 
     if SERVER then
@@ -35,10 +35,10 @@ end
 net.Receive("TARDIS-MessageInt", function(len,ply)
     local ent = net.ReadEntity()
     local name = net.ReadString()
-    local data_exists = net.ReadBit()
+    local data_exists = net.ReadBool()
     local data
 
-    if data_exists == 1 then
+    if data_exists then
         data = TARDIS.von.deserialize(net.ReadString())
     end
 
