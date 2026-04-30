@@ -22,6 +22,7 @@
 ---@field toggle_images boolean
 ---@field id string?
 ---@field order integer?
+---@field ThinkInternal fun()
 TardisScreenButton = {}
 
 ---@return TardisScreenButton

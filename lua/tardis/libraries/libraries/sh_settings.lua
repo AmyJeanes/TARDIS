@@ -2,6 +2,7 @@
 
 TARDIS.SettingsData = TARDIS.SettingsData or {}
 
+---@type table<string, any>
 TARDIS.GlobalSettings = TARDIS.GlobalSettings or {}
 TARDIS.ClientSettings = TARDIS.ClientSettings or {}
 

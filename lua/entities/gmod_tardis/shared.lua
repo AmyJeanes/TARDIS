@@ -2,6 +2,9 @@
 
 ---@class gmod_tardis : gmod_door_exterior
 ---@field BaseClass gmod_door_exterior
+---@field timers table<string, table>
+---@field metadataID string
+---@field effect_pos Vector
 
 ENT.Base="gmod_door_exterior"
 ENT.Spawnable=false

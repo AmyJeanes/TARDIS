@@ -19,6 +19,7 @@
 ---@field scroll_panel DPanel?
 ---@field up_button DButton?
 ---@field down_button DButton?
+---@field DoDoubleClick fun(self: ListView3D, rowIndex: integer, row: Panel)
 ListView3D = {}
 
 ---@return ListView3D

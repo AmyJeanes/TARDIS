@@ -122,9 +122,10 @@ if SERVER then
     end)
 else
     function TARDIS:ShowPointerDebugMenu(p)
+        local cmenu = g_ContextMenu --[[@as ContextMenuPanel]]
         if IsValid(p.debug_window) then
-            if not g_ContextMenu:IsVisible() then
-                g_ContextMenu:Open()
+            if not cmenu:IsVisible() then
+                cmenu:Open()
             end
             local w = p.debug_window
             w:SetPos(ScrW() * 0.25 - w:GetWide() * 0.5, ScrH() * 0.5 - w:GetTall() * 0.5)
@@ -134,8 +135,8 @@ else
         local menu_w = ScrW() * 0.2;
         local menu_h = ScrH() * 0.8;
 
-        g_ContextMenu:Open()
-        local frame=g_ContextMenu:Add( "DFrame" )
+        cmenu:Open()
+        local frame=cmenu:Add( "DFrame" )
         frame:SetTitle("TARDIS Pointer Debug")
         frame:SetSizable(true)
         frame:SetSize(menu_w + 50, menu_h + 50)

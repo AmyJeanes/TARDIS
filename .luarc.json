@@ -14,10 +14,5 @@
         "ignoreGlobs": [
             ".tools/*.zip"
         ]
-    },
-    "diagnostics": {
-        "disable": [
-            "undefined-field"
-        ]
     }
 }

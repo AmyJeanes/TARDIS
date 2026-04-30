@@ -737,7 +737,9 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 end
 
 function TARDIS:LoadScreen(id, options)
-    local screen = vgui.Create("DPanel")
+    ---@class TardisScreen : DPanel
+    ---@field frame DPanel
+    local screen = vgui.Create("DPanel") --[[@as TardisScreen]]
     screen.id=id
     screen.is3D2D=true
     local maxWidth = math.min(ScrW(), 1000)

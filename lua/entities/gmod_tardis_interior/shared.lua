@@ -2,6 +2,9 @@
 
 ---@class gmod_tardis_interior : gmod_door_interior
 ---@field BaseClass gmod_door_interior
+---@field timers table<string, table>
+---@field roundthings table<integer, integer>
+---@field owner Player?
 
 ENT.Base="gmod_door_interior"
 ENT.TardisInterior=true

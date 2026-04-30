@@ -821,6 +821,7 @@ function ENT:GetGroundedPos(point, get_angle)
         RunConsoleCommand("tardis2_debug_pointer", "worldpos", c.x, c.y, c.z)
     end
 
+    ---@type Vector -- ca/cb are inferred as `unknown` because the analyzer drops Vector's @operator sub after narrowing through Vector?
     local normal = ca:Cross(cb):GetNormalized()
 
     if normal.z < 0 then
@@ -829,7 +830,7 @@ function ENT:GetGroundedPos(point, get_angle)
     end
 
     local ang = normal:Angle() + Angle(90,0,0)
-    ang:RotateAroundAxis(normal --[[@as Vector]], initial_yaw.y)
+    ang:RotateAroundAxis(normal, initial_yaw.y)
 
     if normal ~= Vector(0,0,0) and normal.z > 0.5 then
         -- the TARDIS can land there and the selected position is not vertical

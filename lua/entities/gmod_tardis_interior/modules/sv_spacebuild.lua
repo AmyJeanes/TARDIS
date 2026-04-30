@@ -14,6 +14,7 @@ ENT:AddHook("PostInitialize", "spacebuild", function(self)
     self.spacebuild_env:Spawn()
     self.spacebuild_env:Activate()
 
+    ---@diagnostic disable-next-line: undefined-field -- CreateEnvironment is a Spacebuild SENT method; addon isn't in workspace.library
     self.spacebuild_env:CreateEnvironment(self, radius)
 
     -- override functions on the cube environment to the simpler base ones
