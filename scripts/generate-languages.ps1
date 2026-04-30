@@ -1,7 +1,8 @@
 $ErrorActionPreference = "Stop"
 
-$sourceLanguageFolder = Join-Path $PSScriptRoot "i18n/languages"
-$targetLanguageFolder = Join-Path $PSScriptRoot "lua/tardis/languages"
+$Root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$sourceLanguageFolder = Join-Path $Root "i18n/languages"
+$targetLanguageFolder = Join-Path $Root "lua/tardis/languages"
 
 $targetLanguageFolder | Get-ChildItem | Remove-Item
 

@@ -1,7 +1,8 @@
 $ErrorActionPreference = "Stop"
 
+$Root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $versionFile = "version.json"
-$version = Get-Content -Raw (Join-Path $PSScriptRoot $versionFile) | ConvertFrom-Json -AsHashtable
+$version = Get-Content -Raw (Join-Path $Root $versionFile) | ConvertFrom-Json -AsHashtable
 
 $major = $version.Major
 $minor = $version.Minor
@@ -28,7 +29,7 @@ else {
     Write-Host "Tag $versionString does not exist yet"
 }
 
-$targetFilename = Join-Path $PSScriptRoot "lua/tardis/libraries/libraries/libraries/sh_version_generated.lua"
+$targetFilename = Join-Path $Root "lua/tardis/libraries/libraries/libraries/sh_version_generated.lua"
 
 $content = [System.Text.StringBuilder]::new()
 
