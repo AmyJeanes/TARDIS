@@ -10,11 +10,11 @@ $ErrorActionPreference = 'Stop'
 
 # Pinned versions ------------------------------------------------------------
 # Renovate (.github/renovate.json customManagers) bumps these on upstream
-# releases; the Renovate PR runs glua-check.yml so a release that surfaces new
-# diagnostics is caught before merge.
+# releases; the Renovate PR runs the GLua Check job in CI so a release that
+# surfaces new diagnostics is caught before merge.
 # Releases: https://github.com/Pollux12/gmod-glua-ls/releases
 # renovate: datasource=github-releases depName=Pollux12/gmod-glua-ls
-$GluaLsVersion  = '1.0.0'
+$GluaLsVersion  = '1.0.15'
 # Releases: https://github.com/luttje/glua-api-snippets/releases
 # renovate: datasource=github-releases depName=luttje/glua-api-snippets versioning=loose
 $GluaApiVersion = '2026-03-31_16-30-01'
