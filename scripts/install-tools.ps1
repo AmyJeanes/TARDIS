@@ -17,7 +17,7 @@ $ErrorActionPreference = 'Stop'
 $GluaLsVersion  = '1.0.0'
 # Releases: https://github.com/luttje/glua-api-snippets/releases
 # renovate: datasource=github-releases depName=luttje/glua-api-snippets versioning=loose
-$GluaApiVersion = '2026-02-28_19-00-07'
+$GluaApiVersion = '2026-03-31_16-30-01'
 
 # Paths ----------------------------------------------------------------------
 $Root         = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
