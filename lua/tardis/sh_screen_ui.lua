@@ -652,7 +652,6 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
             table.insert(pages,page)
         end
         local function movebutton(button)
-            local x,y=button:GetSize()
             local w=page:GetWide()-spacew
             local h=page:GetTall()-spaceh
             spacew=page:GetWide()-w-button:GetWide()-screen.gap
@@ -764,7 +763,7 @@ function TARDIS:LoadScreen(id, options)
     screen:SetPaintBackground(true)
     screen:SetBackgroundColor(Color(0,0,0,0))
 
-    local main=self:LoadScreenUI(screen)
+    self:LoadScreenUI(screen)
     local frame=screen.frame
     frame:SetVisible(true)
     frame:SetPos(screen.gap,screen.gap)
@@ -773,8 +772,6 @@ function TARDIS:LoadScreen(id, options)
     screen.Think = function(self)
         local shouldDraw = not (self.int:CallHook("ShouldNotDrawScreen", self.id) or false)
         local blackScreen = self.int:CallHook("ShouldDrawBlackScreen", self.id) or false
-        local scr_on = self.int:GetData("screens_on", false)
-        local pwr_on = self.ext:GetData("power-state", false)
         if self.draw ~= shouldDraw or self.black ~= blackScreen then
             self.frame:SetVisible(shouldDraw and not blackScreen)
             if shouldDraw or (blackScreen and self.power_off_black) then

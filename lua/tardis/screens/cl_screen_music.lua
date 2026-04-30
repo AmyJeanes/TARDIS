@@ -63,7 +63,7 @@ function TARDIS:AddCustomMusic(name, url)
         end
     end
 
-    local next = table.insert(custom_music,{name, url})
+    table.insert(custom_music,{name, url})
     TARDIS:Message(LocalPlayer(), "Screens.Music.CustomAdded", name, url)
     TARDIS:SaveCustomMusic()
 end

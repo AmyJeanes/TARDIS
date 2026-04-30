@@ -210,7 +210,7 @@ TARDIS:AddKeyBind("destination-chameleon",{
                 ang = prop:GetAngles()
             end
 
-            local ext, ext_id = table.Random(TARDIS:GetExteriors())
+            local _, ext_id = table.Random(TARDIS:GetExteriors())
 
             self:CreateDestinationProp(ext_id)
             self:SetData("destination_chameleon", ext_id)
@@ -682,7 +682,7 @@ local function GenerateTracePoints(self, yaw)
     local trace_offsets = { Vector(0,0,0), }
 
     local xmin, ymin, zmin = self:OBBMins():Unpack()
-    local xmax, ymax, zmax = self:OBBMaxs():Unpack()
+    local xmax, ymax = self:OBBMaxs():Unpack()
 
     -- add points on the border rectangle
 
@@ -788,7 +788,7 @@ function ENT:GetGroundedPos(point, get_angle)
     local cur_normal = GetPlaneNormal(a,b,c)
 
     -- looking for the highest selected plane with the first two points
-    for j,c2 in ipairs(traces) do
+    for _,c2 in ipairs(traces) do
         local n = GetPlaneNormal(a, b, c2)
         if n.z > cur_normal.z then
             c = c2

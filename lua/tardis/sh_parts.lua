@@ -53,7 +53,6 @@ function TARDIS.DrawOverride(self,override)
     if self.NoDraw then return end
     if self:IsInvisible() and not (self.alpha and self.alpha > 0) then return end
 
-    local int=self.interior
     local ext=self.exterior
 
     if IsValid(ext) then
@@ -312,7 +311,6 @@ local overrides={
             self.parent:SendMessage("part_use", {self, a, ...})
         end
 
-        local call=false
         local res
         if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
         local allowed, animate
@@ -672,7 +670,6 @@ if SERVER then
                 net.WriteEntity(e.exterior)
                 net.WriteEntity(e.interior)
                 net.WriteBool(e.ExteriorPart)
-                net.WriteBool(e.InteriorPart)
                 net.WriteString(e.ID)
             net.Send(ply)
         end
@@ -752,7 +749,6 @@ else
         local ext=net.ReadEntity()
         local int=net.ReadEntity()
         local extpart=net.ReadBool()
-        local intpart=net.ReadBool()
         local parent
         if extpart then
             parent=ext

@@ -373,7 +373,6 @@ if SERVER then
         local offsetdist = entPos:Distance(target)
         local tdiff = target:Distance(pos)
         local targetpredicted = target+(tfwd*tvel:Length()*phm)
-        local mass = ph:GetMass()
         local vel = ph:GetVelocity()
         local velnorm = vel:GetNormalized()
         local len = vel:Length()
@@ -454,10 +453,6 @@ if SERVER then
         ph:AddVelocity(-velnorm*brakeClamped)
 
         if not spin then
-            local cen = ph:GetMassCenter()
-            local fwd = self:GetForward()
-            local lev = ph:GetInertia():Length()
-            local ri = self:GetRight()
             local ang = self:GetAngles()
 
             local targetang = yawoffset

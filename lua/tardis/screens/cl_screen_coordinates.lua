@@ -548,7 +548,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
 
     function input_save:DoClick()
-        local vortex = ext:GetData("vortex", false)
         local pos, ang, name = fetchtextinputs()
 
         if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end

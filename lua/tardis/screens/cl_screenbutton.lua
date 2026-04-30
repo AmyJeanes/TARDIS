@@ -237,14 +237,14 @@ end
 function TardisScreenButton:AdjustTextOffset()
     local label = assert(self.label)
     local text = label:GetText()
-    local w, h = label:GetTextSize()
+    local w = label:GetTextSize()
     local size = self.size[1]
 
     label:SetBGColor(255,255,255,255)
 
     if w < size then
         surface.SetFont(label:GetFont())
-        local spacesizeX, spacesizeY = surface.GetTextSize(" ")
+        local spacesizeX = surface.GetTextSize(" ")
 
         local spaces = math.floor(0.5 * (size - w) / spacesizeX)
         for _ = 1, spaces do

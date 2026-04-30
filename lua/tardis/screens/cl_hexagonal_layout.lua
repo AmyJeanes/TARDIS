@@ -58,7 +58,6 @@ function HexagonalLayout:AddNewButton(screen_button)
 end
 
 function HexagonalLayout:DrawButtons()
-    local m = self.n_cols
     local n = self.n_rows
     local i = 1 -- cols
     local j = 0 -- rows

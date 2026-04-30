@@ -259,8 +259,6 @@ ENT:AddHook("Think","breakdown-effects", function(self)
             and TARDIS:GetSetting("breakdown-effects"))
 
         if showeffects then
-            local effpos
-
             if timediff > 0.5 and timediff < 0.6 then
                 self:InteriorExplosion()
                 util.ScreenShake(self.effect_pos, 10, 100, 10, 300)

@@ -39,8 +39,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local imS = math.min(imW, imT)
     local gap3 = 0.5 * (listW - imS)
 
-    local midX = 3 * gap + 2 * listW
-
     local background=vgui.Create("DImage", frame)
     local theme = TARDIS:GetScreenGUITheme(screen)
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "music")
@@ -49,7 +47,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local bgcolor = TARDIS:GetScreenGUIColor(screen)
 
     local list_exteriors
-    local list_custom
 
     if screen.is3D2D then
         list_categories = ListView3D:new(frame,screen,34,bgcolor)

@@ -319,7 +319,6 @@ function TARDIS:Debug(...)
         full_text = full_text .. "<nil>"
     else
         for _,arg in pairs(args) do
-            local text
             if istable(arg) then
                 table.insert(tables_to_print, arg)
                 full_text = full_text .. "<" .. tostring(arg) .. ">  "

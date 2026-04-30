@@ -264,7 +264,7 @@ if CLIENT then
 
         end
 
-        local reset_button = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.ResetSettings"), function(self)
+        dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.ResetSettings"), function(self)
             TARDIS:ResetCustomSettings(int_id)
         end)
 

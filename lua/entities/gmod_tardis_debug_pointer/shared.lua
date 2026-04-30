@@ -397,20 +397,20 @@ else
             pv_ignore_vertical_angle = (val == 1)
         end
 
-        local ap, ap2 = SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
+        SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
             ang_p = val
             UpdatePointerAng()
         end)
-        local ay, ay2 = SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
+        SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
             ang_y = val
             UpdatePointerAng()
         end)
-        local ar, ar2 = SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
+        SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
             ang_r = val
             UpdatePointerAng()
         end)
 
-        local sc, sc2 = SetupProperty( "Scale", "Pointer scale", scale, 0.1, 10, function(val)
+        SetupProperty( "Scale", "Pointer scale", scale, 0.1, 10, function(val)
             scale = val
             UpdatePointerScale()
         end)

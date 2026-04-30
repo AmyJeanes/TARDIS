@@ -12,8 +12,7 @@
             "../wire"
         ],
         "ignoreGlobs": [
-            ".tools/*.zip",
-            "lua/entities/gmod_wire_expression2/**"
+            ".tools/*.zip"
         ]
     },
     "diagnostics": {

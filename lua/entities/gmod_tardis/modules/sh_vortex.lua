@@ -135,7 +135,6 @@ else
 
     ENT:AddHook("PreDrawPart","vortex",function(self,part)
         if not (part and part.ID=="vortex") then return end
-        local target = self:GetData("vortex") and 1 or 0
         local vortexalpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()
         if TARDIS:GetExteriorEnt()==self and enabled then

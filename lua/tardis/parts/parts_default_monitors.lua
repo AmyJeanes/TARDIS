@@ -137,9 +137,7 @@ local function trace_console_angle(int, ply)
     local circle_pos = int:LocalToWorld(Vector(0,0,0))
     circle_pos.z = origin.z
 
-    local r = 70
-
-    local p1, p2 = util.IntersectRayWithSphere(origin, delta, circle_pos, 50)
+    local p1 = util.IntersectRayWithSphere(origin, delta, circle_pos, 50)
     if not p1 then return nil end
 
     local point = int:WorldToLocal(origin + p1 * aim)
@@ -242,7 +240,7 @@ if SERVER then
     function PART:Use(ply)
         if ply:KeyDown(IN_WALK) then
 
-            local rotation, down = trace_monitor_pos(ply, self)
+            local rotation = trace_monitor_pos(ply, self)
 
             local rot_this = self:GetData(self.data_other_rotation, 0)
             local rot_other = self:GetOtherRotation()

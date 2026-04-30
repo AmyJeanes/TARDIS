@@ -64,7 +64,6 @@ if SERVER then
 
     ENT:AddHook("ToggleDoorReal", "spin-dir", function(self,open)
         if TARDIS:GetSetting("opened-door-no-spin", self) then
-            local current = self:GetSpinDir()
             local before = self:GetData("spindir-beforedoor", false)
 
             if open and self:GetSpinDir() ~= 0 then

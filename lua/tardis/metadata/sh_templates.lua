@@ -253,7 +253,7 @@ function TARDIS:GetMergedTextureSets(texture_sets_table)
         texture_sets_merged[id] = merged
     end
 
-    for ts_id, ts in pairs(texture_sets_table) do
+    for ts_id, _ in pairs(texture_sets_table) do
         merge_texture_set(ts_id)
     end
 

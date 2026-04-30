@@ -62,7 +62,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
         TARDIS.SpawnmenuOptionsSectionElements[section] = section_elements
 
         spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), section_id, section_text, "", "", function(panel)
-            for a,b in ipairs(options) do
+            for _,b in ipairs(options) do
                 local id,data=b[1],b[2]
                 if data.section == section then
                     if not data.subsection then
@@ -94,7 +94,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                             TARDIS:SetSetting("options-unfolded-subsections", unfolded_setting)
                         end
 
-                        for a2,b2 in ipairs(options) do
+                        for _,b2 in ipairs(options) do
                             local id2,data2 = b2[1],b2[2]
                             if data2.section == section and data2.subsection == data.subsection then
                                 local el1,el2 = TARDIS:CreateOptionInterface(id2, data2)
@@ -140,7 +140,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     end
 
     local others_exist = false
-    for a,b in ipairs(options) do
+    for _,b in ipairs(options) do
         if not b[2].section then
             others_exist = true
             break
@@ -149,7 +149,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
 
     if others_exist then
         spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Options_Other", " ".. TARDIS:GetPhrase("Settings.Sections.Other"), "", "", function(panel)
-            for a,b in ipairs(options) do
+            for _,b in ipairs(options) do
                 local id,data=b[1],b[2]
                 if not data.section then
                     local option_changer = TARDIS:CreateOptionInterface(id, data)
@@ -195,7 +195,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             category:SetLabel(TARDIS:GetPhrase("Binds.Sections."..v))
             category:SetExpanded(false)
 
-            for a,b in ipairs(keybinds) do
+            for _,b in ipairs(keybinds) do
                 local id,data=b[1],b[2]
                 if data.section == v then
                     local keybind_changer = TARDIS:CreateBindOptionInterface(id, data)
@@ -206,7 +206,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
 
         local other_exist = false
 
-        for a,b in ipairs(keybinds) do
+        for _,b in ipairs(keybinds) do
             if not b[2].section then
                 other_exist = true
                 break
@@ -219,7 +219,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             other_category:SetLabel(TARDIS:GetPhrase("Binds.Sections.Other"))
             other_category:SetExpanded(false)
 
-            for a,b in ipairs(keybinds) do
+            for _,b in ipairs(keybinds) do
                 local id,data=b[1],b[2]
                 if not data.section then
                     local keybind_changer = TARDIS:CreateBindOptionInterface(id, data)

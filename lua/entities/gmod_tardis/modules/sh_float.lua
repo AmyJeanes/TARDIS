@@ -120,13 +120,10 @@ if SERVER then
                 if not eye then
                     eye=angle_zero
                 end
-                local fwd=eye:Forward()
-                local ri=eye:Right()
                 local ang=self:WorldToLocalAngles(eye)
 
                 local force=1
                 local rforce=2
-                local offset=-1*eye
                 if TARDIS:IsBindDown(self.pilot,"float-boost") then
                     force=force*2.5
                     rforce=rforce*2.5

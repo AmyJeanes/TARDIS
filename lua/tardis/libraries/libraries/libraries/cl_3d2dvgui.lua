@@ -88,10 +88,6 @@ end
 local inputWindows = {}
 local usedpanel = {}
 
-local function isMouseOver(pnl)
-    return pointInsidePanel(pnl, getCursorPos())
-end
-
 local function postPanelEvent(pnl, event, ...)
     if not IsValid(pnl) or not pnl:IsVisible() or not pointInsidePanel(pnl, getCursorPos()) then return false end
 
@@ -120,7 +116,7 @@ local function checkHover(pnl, x, y, found)
     end
 
     local validchild = false
-    for c, child in pairs(table.Reverse(pnl:GetChildren())) do
+    for _, child in pairs(table.Reverse(pnl:GetChildren())) do
         local check = checkHover(child, x, y, found or validchild)
 
         if check then
@@ -246,7 +242,7 @@ function Panel:Paint3D2D()
     end
 
     -- Update the hover state of controls
-    local _, tab = checkHover(self)
+    checkHover(self)
 
     -- Store the orientation of the window to calculate the position outside the render loop
     self.Origin = origin

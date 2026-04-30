@@ -257,29 +257,29 @@ else
             UpdatePortalPos(true)
         end)
 
-        local ap, ap2 = SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
+        SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
             ang_p = val
             UpdatePortalAng()
         end)
-        local ay, ay2 = SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
+        SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
             ang_y = val
             UpdatePortalAng()
         end)
-        local ar, ar2 = SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
+        SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
             ang_r = val
             UpdatePortalAng()
         end)
 
-        local w, w2 = SetupProperty("Size", "Width", width, 0, 300, function(val)
+        SetupProperty("Size", "Width", width, 0, 300, function(val)
             width = val
             UpdatePortalSize()
         end)
-        local h, h2 = SetupProperty("Size", "Height", height, 0, 300, function(val)
+        SetupProperty("Size", "Height", height, 0, 300, function(val)
             height = val
             UpdatePortalSize()
         end)
 
-        local thick, thick2 = SetupProperty( "3D", "Thickness", thickness, 150, function(val)
+        SetupProperty( "3D", "Thickness", thickness, 150, function(val)
             thickness = val
             UpdatePortal3D()
         end)
@@ -294,28 +294,28 @@ else
 
         local exit_point_category = "Exit point offset (asymmetric portals)"
 
-        local epox, epox2 = SetupProperty(exit_point_category, "X", epo_x, 300, function(val)
+        SetupProperty(exit_point_category, "X", epo_x, 300, function(val)
             epo_x = val
             UpdatePortalExitOffset()
         end)
-        local epoy, epoy2 = SetupProperty(exit_point_category, "Y", epo_y, 300, function(val)
+        SetupProperty(exit_point_category, "Y", epo_y, 300, function(val)
             epo_y = val
             UpdatePortalExitOffset()
         end)
-        local epoz, epoz2 = SetupProperty(exit_point_category, "Z", epo_z, 300, function(val)
+        SetupProperty(exit_point_category, "Z", epo_z, 300, function(val)
             epo_z = val
             UpdatePortalExitOffset()
         end)
 
-        local eaop, eaop2 = SetupProperty(exit_point_category, "Pitch", eao_p, 360, function(val)
+        SetupProperty(exit_point_category, "Pitch", eao_p, 360, function(val)
             eao_p = val
             UpdatePortalExitOffset()
         end)
-        local eaoy, eaoy2 = SetupProperty(exit_point_category, "Yaw", eao_y, 360, function(val)
+        SetupProperty(exit_point_category, "Yaw", eao_y, 360, function(val)
             eao_y = val
             UpdatePortalExitOffset()
         end)
-        local eaor, eaor2 = SetupProperty(exit_point_category, "Roll", eao_r, 360, function(val)
+        SetupProperty(exit_point_category, "Roll", eao_r, 360, function(val)
             eao_r = val
             UpdatePortalExitOffset()
         end)

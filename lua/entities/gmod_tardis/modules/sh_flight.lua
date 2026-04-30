@@ -237,14 +237,12 @@ if SERVER then
 
             local up=self:GetUp()
             local ri2=self:GetRight()
-            local left=ri2*-1
             local fwd2=self:GetForward()
             local ang=self:GetAngles()
             local angvel=ph:GetAngleVelocity()
             local vel=ph:GetVelocity()
             local vell=ph:GetVelocity():Length()
             local cen=ph:GetMassCenter()
-            local mass=ph:GetMass()
             local lev=ph:GetInertia():Length()
             local force=15
             local vforce=5
@@ -279,13 +277,6 @@ if SERVER then
                     end
                 end
                 return count
-            end
-
-            local function VectorClamp(vec, minv, maxv)
-                local x = math.Clamp(vec.x, minv, maxv)
-                local y = math.Clamp(vec.y, minv, maxv)
-                local z = math.Clamp(vec.z, minv, maxv)
-                return Vector(x,y,z)
             end
 
             local function stabilize()
