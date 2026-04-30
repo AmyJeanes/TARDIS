@@ -1,5 +1,27 @@
+---@class ListView3D
+---@field parent Panel
+---@field screen table
+---@field font string
+---@field selection_font string
+---@field pos number[]
+---@field size number[]
+---@field elem_h number
+---@field lines string[]
+---@field elements Panel[]
+---@field line_elements DLabel[]
+---@field selected_line integer?
+---@field bgcolor Color
+---@field scroll number
+---@field max_scroll number
+---@field scroll_speed number
+---@field panel DPanel
+---@field list_panel DPanel?
+---@field scroll_panel DPanel?
+---@field up_button DButton?
+---@field down_button DButton?
 ListView3D = {}
 
+---@return ListView3D
 function ListView3D:new(parent,screen,elem_height,col)
     local l = {
         parent = parent,
@@ -247,6 +269,7 @@ end
 function ListView3D:SelectFirstItem()
     self:ClearSelection()
     local first = self.line_elements[1]
+    if not first then return end
     first:SetToggle(true)
     first:OnToggled(true)
 end
@@ -256,8 +279,11 @@ function ListView3D:GetScroll()
 end
 function ListView3D:SetScroll(s)
     self.scroll = math.Clamp(s, 0, self.max_scroll)
-    self.up_button:SetEnabled(self.scroll ~= 0)
-    self.down_button:SetEnabled(self.scroll ~= self.max_scroll)
+    local up_button = self.up_button
+    local down_button = self.down_button
+    if not up_button or not down_button then return end
+    up_button:SetEnabled(self.scroll ~= 0)
+    down_button:SetEnabled(self.scroll ~= self.max_scroll)
 end
 function ListView3D:SetScrollSpeed(s)
     self.scroll_speed = s

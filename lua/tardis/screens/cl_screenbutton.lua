@@ -1,5 +1,40 @@
+---@class TardisScreenButton
+---@field visible boolean
+---@field transparency number
+---@field outside boolean
+---@field parent Panel
+---@field clickable boolean
+---@field text string
+---@field click_time number
+---@field icon DImageButton
+---@field frame DImageButton
+---@field label DLabel
+---@field is_toggle boolean
+---@field theme table
+---@field frame_off string
+---@field frame_on string
+---@field icon_off string
+---@field icon_on string
+---@field on boolean
+---@field pos number[]
+---@field size number[]
+---@field moving TardisScreenButtonMove
+---@field toggle_images boolean
+---@field id string?
+---@field order integer?
 TardisScreenButton = {}
 
+---@class TardisScreenButtonMove
+---@field now boolean?
+---@field parent TardisScreenButton?
+---@field speed number?
+---@field aim number[]?
+---@field now_outside boolean?
+---@field aim_outside boolean?
+---@field transp_aim number?
+---@field move fun()?
+
+---@return TardisScreenButton
 function TardisScreenButton:new(parent,screen)
     local sb = {}
 
@@ -192,15 +227,15 @@ function TardisScreenButton:SetText(text)
     if not self.id then error("You must set button id before calling SetText") end
     self.text = text
     local theme = self.theme
-    local file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on", self.id, true)
-    local file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off", self.id, true)
+    local file_on =  TARDIS:GetGUIThemeElement(theme, "text_icons_on", self.id, true)
+    local file_off = TARDIS:GetGUIThemeElement(theme, "text_icons_off", self.id, true)
 
     if file_on == nil then
         file_on = file_off
     end
     if file_off == nil then
-        file_on =  TARDIS:GetGUIThemeElement(self.theme, "text_icons_on")
-        file_off = TARDIS:GetGUIThemeElement(self.theme, "text_icons_off")
+        file_on =  TARDIS:GetGUIThemeElement(theme, "text_icons_on")
+        file_off = TARDIS:GetGUIThemeElement(theme, "text_icons_off")
         self.label:SetColor(Color(0,0,0,255))
         self.label:SetText(TARDIS:GetPhrase(text))
     end
@@ -210,9 +245,9 @@ function TardisScreenButton:SetText(text)
 end
 
 function TardisScreenButton:AdjustTextOffset()
-    local label = self.label
+    local label = assert(self.label)
     local text = label:GetText()
-    local w, h = self.label:GetTextSize()
+    local w, h = label:GetTextSize()
     local size = self.size[1]
 
     label:SetBGColor(255,255,255,255)
@@ -309,6 +344,10 @@ function TardisScreenButton:SetPressedStateData(ent, data)
     end
 end
 
+---@param x number
+---@param y number
+---@param relative boolean?
+---@param speed number?
 function TardisScreenButton:InitiateMove(x, y, relative, speed)
     if self.moving.now then return end
 
@@ -316,6 +355,7 @@ function TardisScreenButton:InitiateMove(x, y, relative, speed)
     self.frame:SetVisible(true)
     self.label:SetVisible(true)
 
+    ---@type TardisScreenButtonMove
     local moving = {}
     moving.now = true
     moving.parent = self

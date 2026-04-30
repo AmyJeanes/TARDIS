@@ -440,7 +440,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local function updatelist()
         local scr
         if screen.is3D2D then
-            scr = llist:GetScroll()
+            local list3D = llist --[[@as ListView3D]]
+            scr = list3D:GetScroll()
         end
 
         llist:Clear()
@@ -453,7 +454,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
 
         if screen.is3D2D and scr then
-            llist:SetScroll(scr)
+            local list3D = llist --[[@as ListView3D]]
+            list3D:SetScroll(scr)
         end
     end
 

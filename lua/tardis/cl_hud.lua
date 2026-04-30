@@ -1,6 +1,6 @@
 -- HUD
 
-local m, x_offset, y_offset, width, height, x, y, icon_size, number_offset
+local m, x_offset, y_offset, y_offset_2, y_offset_3, width, height, x, y, icon_size, number_offset = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 local function UpdateHudFont()
     surface.CreateFont("TARDIS-HUD", {

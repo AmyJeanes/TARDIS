@@ -113,12 +113,13 @@ else
         return oldgetviewentity(...)
     end
 
-    local meta=FindMetaTable("Player")
+    local meta=assert(FindMetaTable("Player"))
     oldgetviewentity2=oldgetviewentity2 or meta.GetViewEntity
     function meta:GetViewEntity(...)
+        if not self then return oldgetviewentity2(self,...) end
         if self:GetTardisData("outside") then
             local ext=self:GetTardisData("exterior")
-            if IsValid(ext.thpprop) then
+            if IsValid(ext) and IsValid(ext.thpprop) then
                 return ext.thpprop
             end
         end

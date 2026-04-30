@@ -63,6 +63,7 @@ local function get_ent_size(ent)
         end
         return entsize
     end
+    return 0
 end
 
 if SERVER then

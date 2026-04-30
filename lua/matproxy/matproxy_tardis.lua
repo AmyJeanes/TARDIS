@@ -331,6 +331,7 @@ matproxy.Add({
         if not IsValid(ent) then return end
         if ent.TardisPart and ent.InteriorPart then
             local ext = ent.exterior
+            if not IsValid(ext) then return end
             local vortexcol = vortexfallbackcol
             if ext.metadata.Interior.MatProxy and ext.metadata.Interior.MatProxy.VortexColor then -- Making sure a vortex colour is set in the first place since people tend to re-use door on multiple tardises
                 vortexcol = ext.metadata.Interior.MatProxy.VortexColor

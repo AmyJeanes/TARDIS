@@ -73,25 +73,26 @@ function ENT:RemoveProjectedLight()
 end
 
 function ENT:UpdateProjectedLight()
-    if not IsValid(self.projectedlight) or not self.projectedlight then return end
+    local projectedlight = self.projectedlight
+    if not IsValid(projectedlight) then return end
     local color = self:PickProjectedLightColor()
     if color~=self:GetData("pl-color",false) then
         self:SetData("pl-color",color)
-        self.projectedlight:SetColor(color)
+        projectedlight:SetColor(color)
     end
     local brightness = self:PickProjectedLightBrightness()
     if brightness~=self:GetData("pl-brightness",false) then
         self:SetData("pl-brightness",brightness)
-        self.projectedlight:SetBrightness(brightness)
+        projectedlight:SetBrightness(brightness)
     end
     local distance = self:PickProjectedLightDistance()
     if distance~=self:GetData("pl-distance",false) then
         self:SetData("pl-distance",distance)
-        self.projectedlight:SetFarZ(distance)
+        projectedlight:SetFarZ(distance)
     end
-    self.projectedlight:SetPos(self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset))
-    self.projectedlight:SetAngles(self:GetAngles())
-    self.projectedlight:Update()
+    projectedlight:SetPos(self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset))
+    projectedlight:SetAngles(self:GetAngles())
+    projectedlight:Update()
 end
 
 --Hooks

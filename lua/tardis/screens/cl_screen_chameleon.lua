@@ -216,12 +216,14 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                 end
 
                 function preview3D:PostDrawModel( ent )
+                    if not self then return end
                     if not IsValid(self.door) then return end
                     self.door:SetPos(doorpos)
                     self.door:DrawModel()
                 end
 
                 function preview3D:OnRemove()
+                    if not self then return end
                     if IsValid(self.door) then
                         self.door:Remove()
                         self.door = nil

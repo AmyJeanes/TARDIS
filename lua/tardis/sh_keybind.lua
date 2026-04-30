@@ -10,8 +10,8 @@ if SERVER then
         local int=ply:GetTardisData("interior")
         if IsValid(ext) then
             local id=net.ReadString()
-            if TARDIS.binds[id] then
-                local bind=TARDIS.binds[id]
+            local bind=TARDIS.binds[id]
+            if bind then
                 local b=net.ReadBool()
                 bind.b[ply]=b
                 if bind.func then

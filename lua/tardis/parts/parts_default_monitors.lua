@@ -386,13 +386,13 @@ else
         local a_down = self.extra_animations.down
         local a_flip = self.extra_animations.flip
 
-        if a_rotate.pos ~= self:GetData(self.data_rotation,0) then
+        if a_rotate and a_rotate.pos ~= self:GetData(self.data_rotation,0) then
             return true
         end
-        if a_down.pos ~= self:GetData(self.data_down_pos, 0.5) then
+        if a_down and a_down.pos ~= self:GetData(self.data_down_pos, 0.5) then
             return true
         end
-        if a_flip.pos ~= self:GetData(self.data_flip_pos, 0.5) then
+        if a_flip and a_flip.pos ~= self:GetData(self.data_flip_pos, 0.5) then
             return true
         end
         return false

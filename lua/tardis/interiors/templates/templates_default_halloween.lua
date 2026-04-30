@@ -220,7 +220,7 @@ TARDIS:AddInteriorTemplate("default_halloween", {
                     if not loopsound then
                         local nextsoundtime = ext:GetData("halloween-nextcorridorsound", 0)
                         if CurTime() - nextsoundtime > 0 then
-                            local sound = HALLOWEEN_NON_LOOPED_SOUNDS[math.random(1,#HALLOWEEN_NON_LOOPED_SOUNDS)]
+                            local sound = assert(HALLOWEEN_NON_LOOPED_SOUNDS[math.random(1,#HALLOWEEN_NON_LOOPED_SOUNDS)])
                             local soundduration = SoundDuration(sound[1])
                             debug_print("Playing non-looped corridor sound: " .. sound[1])
                             ext:SendMessage("halloween-corridorsound", {sound[1], sound[2]})

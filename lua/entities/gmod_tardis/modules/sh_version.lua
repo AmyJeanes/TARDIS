@@ -30,11 +30,16 @@ local function get_release_notes(version, newVersion)
             return
         end
         local data = util.JSONToTable(body)
+        if not data then return end
         local release_notes = data.body
+        if not release_notes then return end
         local json = string.match(release_notes, "<!%-%-(.-)%-%->")
         if not json then return end
         local releaseMetadata = util.JSONToTable(json)
+        if not releaseMetadata then return end
         if releaseMetadata.showPopup and releaseMetadata.summary then
+            local release_url = data.html_url
+            if not release_url then return end
             local notes = releaseMetadata.summary
             if releaseMetadata.changes then
                 notes = notes .. "\n"
@@ -47,7 +52,7 @@ local function get_release_notes(version, newVersion)
                 "TARDIS Update",
                 TARDIS:GetPhrase("Common.Yes"),
                 function()
-                    gui.OpenURL(data.html_url)
+                    gui.OpenURL(release_url)
                 end,
                 TARDIS:GetPhrase("Common.No"),
                 function() end,

@@ -118,7 +118,7 @@ TARDIS.DebugTipsFunction = function(self, ply, ...)
     tip_pos.z = tip_pos.z - 1
 
     local ent = trace_res.Entity
-    local id = ent.TardisPart and ent.ID or nil
+    local id = IsValid(ent) and ent.TardisPart and ent.ID or nil
 
     local function sm(x) return math.Round(x,2) end
 

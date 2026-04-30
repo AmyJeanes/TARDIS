@@ -51,7 +51,7 @@ local T = {
 TARDIS:AddInteriorTemplate("exterior_sidrat", T)
 
 
-local E = TARDIS:CopyTable(T.Exterior)
+local E = assert(TARDIS:CopyTable(T.Exterior))
 E.ID = "sidrat"
 E.Base = "base"
 E.Name = "Exteriors.SIDRAT"
@@ -116,7 +116,7 @@ local T = {
 TARDIS:AddInteriorTemplate("exterior_ttcapsule_type40", T)
 
 
-local E = TARDIS:CopyTable(T.Exterior)
+local E = assert(TARDIS:CopyTable(T.Exterior))
 E.ID = "ttcapsule_type40"
 E.Base = "base"
 E.Name = "Exteriors.TTCapsuleType40"
@@ -179,7 +179,7 @@ local T = {
 
 TARDIS:AddInteriorTemplate("exterior_ttcapsule_type50", T)
 
-local E = TARDIS:CopyTable(T.Exterior)
+local E = assert(TARDIS:CopyTable(T.Exterior))
 E.ID = "ttcapsule_type50"
 E.Base = "base"
 E.Name = "Exteriors.TTCapsuleType50"
@@ -243,7 +243,7 @@ local T = {
 TARDIS:AddInteriorTemplate("exterior_ttcapsule_type55", T)
 TARDIS:AddInteriorTemplate("ttcapsule", T)
 
-local E = TARDIS:CopyTable(T.Exterior)
+local E = assert(TARDIS:CopyTable(T.Exterior))
 E.ID = "ttcapsule_type55"
 E.Base = "base"
 E.Name = "Exteriors.TTCapsuleType55"

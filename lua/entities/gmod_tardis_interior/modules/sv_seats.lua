@@ -5,7 +5,7 @@ ENT:AddHook("Initialize","seats",function(self)
     if seats then
         self.seats={}
         local vname="Seat_Airboat"
-        local chair=list.Get("Vehicles")[vname]
+        local chair=assert(list.Get("Vehicles")[vname])
         for k,v in pairs(seats) do
             table.insert(self.seats,self:MakeVehicle(self:LocalToWorld(v.pos), self:LocalToWorldAngles(v.ang), chair.Model, chair.Class, vname, chair))
         end

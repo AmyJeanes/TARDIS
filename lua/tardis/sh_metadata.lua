@@ -212,9 +212,9 @@ function TARDIS:CreateInteriorMetadata(id, ent)
         return self:CreateInteriorMetadata("default", ent)
     end
 
-    local metadata = TARDIS:CopyTable(self.Metadata[id])
+    local metadata = assert(TARDIS:CopyTable(self.Metadata[id]))
 
-    metadata = TARDIS:MergeTemplates(metadata, ent)
+    metadata = assert(TARDIS:MergeTemplates(metadata, ent))
 
     metadata.Interior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Interior.TextureSets)
     metadata.Exterior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Exterior.TextureSets)

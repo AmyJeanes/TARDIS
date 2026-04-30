@@ -375,11 +375,15 @@ else
 
     function ENT:GetDestinationPropTrace(ply,ang)
         local prop = self:GetData("destinationprop")
+        if not IsValid(prop) then return end
         local pos,ang=self:GetDestinationPropPos(ply,nil,ang)
+        if not pos or not ang then return end
         ---@type Entity[]
         local filter={self,TARDIS:GetPart(self,"door"),prop}
         local trace=util.QuickTrace(pos,ang:Forward()*TRACE_DISTANCE,filter)
-        local angle=trace.HitNormal:Angle()
+        local hitNormal = trace.HitNormal
+        if not hitNormal then return trace.HitPos, ang end
+        local angle=hitNormal:Angle()
         angle:RotateAroundAxis(angle:Right(),-90)
         return trace.HitPos,angle
     end
@@ -418,6 +422,7 @@ else
         end
 
         local prop = setup(self, (md and md.Model))
+        if not IsValid(prop) then return end
 
         if md and md.Portal and md.Parts and md.Parts["door"] then
             local d = md.Parts["door"]
@@ -944,7 +949,7 @@ function ENT:GetRandomLocation(grounded)
 
     if #locations < 1 then return pos end
 
-    local newpos = locations[math.random(#locations)]
+    local newpos = assert(locations[math.random(#locations)])
     local z_size = self:OBBMaxs().z - self:OBBMins().z + 50
 
     -- we gotta make sure the TARDIS fits

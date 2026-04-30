@@ -149,7 +149,7 @@ if CLIENT then
             if not table.IsEmpty(exteriors) then
                 local exteriors_tbl = {}
                 for id,v in pairs(exteriors) do
-                    local ext_md = TARDIS:GetExteriors()[id]
+                    local ext_md = assert(TARDIS:GetExteriors()[id])
                     if v and ext_md.Base ~= true and ext_md.Hide ~= true then
                         exteriors_tbl[id] = TARDIS:GetPhrase(ext_md.Name or id)
                     end

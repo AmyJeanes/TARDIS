@@ -218,16 +218,19 @@ else
             px, py, pz = (B * posr):Unpack()
 
             if x then
+                local x_precise = assert(x2)
                 x:SetValue(px)
-                x2:SetValue(px)
+                x_precise:SetValue(px)
             end
             if y then
+                local y_precise = assert(y2)
                 y:SetValue(py)
-                y2:SetValue(py)
+                y_precise:SetValue(py)
             end
             if z then
+                local z_precise = assert(z2)
                 z:SetValue(pz)
-                z2:SetValue(pz)
+                z_precise:SetValue(pz)
             end
         end
 
@@ -249,16 +252,19 @@ else
             ppvx, ppvy, ppvz = (B_inv * pos):Unpack()
 
             if xpv then
+                local xpv_precise = assert(xpv2)
                 xpv:SetValue(ppvx)
-                xpv2:SetValue(ppvx)
+                xpv_precise:SetValue(ppvx)
             end
             if ypv then
+                local ypv_precise = assert(ypv2)
                 ypv:SetValue(ppvy)
-                ypv2:SetValue(ppvy)
+                ypv_precise:SetValue(ppvy)
             end
             if zpv then
+                local zpv_precise = assert(zpv2)
                 zpv:SetValue(ppvz)
-                zpv2:SetValue(ppvz)
+                zpv_precise:SetValue(ppvz)
             end
         end
 

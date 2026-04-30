@@ -21,8 +21,7 @@
             "param-type-mismatch",
             "undefined-field",
             "unused",
-            "redefined-local",
-            "need-check-nil"
+            "redefined-local"
         ]
     }
 }

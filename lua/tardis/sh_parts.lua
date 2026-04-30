@@ -619,7 +619,8 @@ if SERVER then
         end
         for k,v in pairs(parts) do
             if not tempparts[k] then
-                local tbl=scripted_ents.GetStored(v.class).t
+                local stored = assert(scripted_ents.GetStored(v.class))
+                local tbl = assert(stored.t)
                 local t
                 if ent.TardisExterior then
                     t=tbl.Exteriors

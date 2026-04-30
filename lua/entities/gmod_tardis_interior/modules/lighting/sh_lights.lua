@@ -80,7 +80,7 @@ end
 
 if CLIENT then
     local function MergeLightTable(tbl, base)
-        local new_table = TARDIS:CopyTable(base)
+        local new_table = assert(TARDIS:CopyTable(base))
         if not tbl then return new_table end
 
         new_table.NoLO = nil

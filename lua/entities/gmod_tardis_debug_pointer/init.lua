@@ -34,6 +34,8 @@ end
 function ENT:Use( activator, caller )
     if activator:GetTardisData("interior") then
         local pos,ang = TARDIS:GetLocalPos(self, activator)
+        if not pos then return end
+        if not ang then return end
         local decimals = 3
         local text =   "  pos = Vector("..math.Round(pos.x,decimals)..", "..math.Round(pos.y,decimals)..", "..math.Round(pos.z,decimals).."),"
         text = text .. "  ang = Angle("..math.Round(ang.p,decimals)..", "..math.Round(ang.y,decimals)..", "..math.Round(ang.r,decimals)..")"

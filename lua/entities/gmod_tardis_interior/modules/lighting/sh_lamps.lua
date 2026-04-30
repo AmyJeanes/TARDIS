@@ -4,7 +4,7 @@ if CLIENT then
     local function MergeLampTable(tbl, base, keep_warn_off_options)
         if not tbl then return nil end
 
-        local new_table = TARDIS:CopyTable(base)
+        local new_table = assert(TARDIS:CopyTable(base))
         new_table.states = nil
         if not keep_warn_off_options then
             new_table.warn = nil
@@ -127,9 +127,10 @@ if CLIENT then
         if TARDIS.debug_lamps_enabled then return end
         if not self.lamps_data then return end
 
-        self.lamps = {}
+        local lamps = {}
+        self.lamps = lamps
         for k,v in pairs(self.lamps_data) do
-            self.lamps[k] = self:CreateLamp(SelectLampTable(self, v))
+            lamps[k] = self:CreateLamp(SelectLampTable(self, v))
         end
     end
 

@@ -209,8 +209,9 @@ function vgui.IsPointingPanel(pnl)
     return pointInsidePanel(pnl, getCursorPos())
 end
 
-local Panel = FindMetaTable("Panel")
+local Panel = assert(FindMetaTable("Panel"))
 function Panel:Paint3D2D()
+    if not self then return end
     if not self:IsValid() then return end
 
     -- Add it to the list of windows to receive input
