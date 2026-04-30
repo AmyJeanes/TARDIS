@@ -67,6 +67,8 @@ local function get_ent_size(ent)
 end
 
 if SERVER then
+    ---@param ent Entity
+    ---@param ply Player?
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
@@ -158,7 +160,7 @@ if SERVER then
         end
 
         if wasTrackingEnt ~= ent then
-            local name = ent.PrintName or (isfunction(ent.Name) and ent:Name()) or ent.Name or ent:GetModel() or ent:GetClass()
+            local name = ent.PrintName or (ent:IsPlayer() and (ent --[[@as Player]]):Nick()) or ent:GetModel() or ent:GetClass()
             if ent.GetCreator then
                 local creator = ent:GetCreator()
                 if IsValid(creator) then

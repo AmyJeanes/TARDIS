@@ -5,13 +5,20 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 function TARDIS:LoadInteriors()
     if TARDIS.InteriorsLoading then return end
 
+    ---@type table<string, table>
     TARDIS.Metadata = {}
+    ---@type table<string, table>
     TARDIS.MetadataRaw = {}
+    ---@type table<string, table>
     TARDIS.MetadataTemplates = {}
+    ---@type table<string, table>
     TARDIS.MetadataVersions = {}
+    ---@type table<string, table<string, table>>
     TARDIS.MetadataCustomVersions = {}
 
+    ---@type table<string, table>
     TARDIS.ExteriorsMetadata = {}
+    ---@type table<string, table>
     TARDIS.ExteriorsMetadataRaw = {}
     TARDIS.ExteriorCategories = {}
 

@@ -9,7 +9,7 @@
             "../Doors",
             "../world-portals",
             "../Sonic-Screwdriver",
-            "../wire"
+            "../wire/lua/wire"
         ],
         "ignoreGlobs": [
             ".tools/*.zip"
