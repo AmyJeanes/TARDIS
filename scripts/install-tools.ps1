@@ -14,7 +14,7 @@ $ErrorActionPreference = 'Stop'
 # diagnostics is caught before merge.
 # Releases: https://github.com/Pollux12/gmod-glua-ls/releases
 # renovate: datasource=github-releases depName=Pollux12/gmod-glua-ls
-$GluaLsVersion  = '1.0.0'
+$GluaLsVersion  = '1.0.19'
 # Releases: https://github.com/luttje/glua-api-snippets/releases
 # renovate: datasource=github-releases depName=luttje/glua-api-snippets versioning=loose
 $GluaApiVersion = '2026-03-31_16-30-01'
