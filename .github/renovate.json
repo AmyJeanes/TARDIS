@@ -19,12 +19,5 @@
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+\\$\\w+\\s*=\\s*'(?<currentValue>[^']+)'"
       ]
     }
-  ],
-  "packageRules": [
-    {
-      "description": "gmod-glua-ls publishes most releases as prereleases; track them so glua-check.yml (run on the PR) gates breakage instead of waiting weeks for the next stable.",
-      "matchDepNames": ["Pollux12/gmod-glua-ls"],
-      "ignoreUnstable": false
-    }
   ]
 }
