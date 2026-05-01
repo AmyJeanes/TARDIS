@@ -2,7 +2,7 @@ function TARDIS:AddInteriorPartsOffset(template, offset)
     local moved = table.Copy(template)
 
     if istable(moved.Interior.Parts) then
-        for k,v in pairs(moved.Interior.Parts) do
+        for _,v in pairs(moved.Interior.Parts) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)
                 if v.pos then new_pos:Add(v.pos) end
@@ -13,7 +13,7 @@ function TARDIS:AddInteriorPartsOffset(template, offset)
     end
 
     if istable(moved.Interior.PartTips) then
-        for k,v in pairs(moved.Interior.PartTips) do
+        for _,v in pairs(moved.Interior.PartTips) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)
                 if v.pos then new_pos:Add(v.pos) end
@@ -25,7 +25,7 @@ function TARDIS:AddInteriorPartsOffset(template, offset)
     end
 
     if istable(moved.Interior.CustomTips) then
-        for k,v in pairs(moved.Interior.CustomTips) do
+        for _,v in pairs(moved.Interior.CustomTips) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)
                 if v.pos then new_pos:Add(v.pos) end
@@ -43,7 +43,7 @@ function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
     local rotated = table.Copy(template)
 
     if istable(rotated.Interior.Parts) then
-        for k,v in pairs(rotated.Interior.Parts) do
+        for _,v in pairs(rotated.Interior.Parts) do
             if v and istable(v) then
                 local new_ang = Angle(0,0,0)
                 local new_pos = Vector(0,0,0)
@@ -61,7 +61,7 @@ function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
     end
 
     if istable(rotated.Interior.PartTips) then
-        for k,v in pairs(rotated.Interior.PartTips) do
+        for _,v in pairs(rotated.Interior.PartTips) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)
                 if v.pos then new_pos:Add(v.pos) end
@@ -73,7 +73,7 @@ function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
     end
 
     if istable(rotated.Interior.CustomTips) then
-        for k,v in pairs(rotated.Interior.CustomTips) do
+        for _,v in pairs(rotated.Interior.CustomTips) do
             if v and istable(v) then
                 local new_pos = Vector(0,0,0)
                 if v.pos then new_pos:Add(v.pos) end
@@ -123,6 +123,9 @@ function TARDIS:HandleMissingTemplate(template_id, id, template)
     end
 end
 
+---@param metadata table
+---@param ent Entity?
+---@return table
 function TARDIS:MergeTemplates(metadata, ent)
     if not metadata.Templates then
         return metadata
@@ -151,7 +154,7 @@ function TARDIS:MergeTemplates(metadata, ent)
         end
 
         if metadata.TemplatesMergeOrder then
-            for i, template_id in ipairs(metadata.TemplatesMergeOrder) do
+            for _, template_id in ipairs(metadata.TemplatesMergeOrder) do
                 add_to_list(template_id, metadata.Templates[template_id])
                 added_already[template_id] = true
             end
@@ -178,7 +181,7 @@ function TARDIS:MergeTemplates(metadata, ent)
     end
 
 
-    for i,template_id in ipairs(templates_todo) do
+    for _,template_id in ipairs(templates_todo) do
         local template = metadata.Templates[template_id]
 
         if template and template.realID then
@@ -250,7 +253,7 @@ function TARDIS:GetMergedTextureSets(texture_sets_table)
         texture_sets_merged[id] = merged
     end
 
-    for ts_id, ts in pairs(texture_sets_table) do
+    for ts_id, _ in pairs(texture_sets_table) do
         merge_texture_set(ts_id)
     end
 

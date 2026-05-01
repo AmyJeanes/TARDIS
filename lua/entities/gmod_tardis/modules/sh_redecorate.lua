@@ -71,7 +71,7 @@ if SERVER then
 
         -- save tardis state
         local saved_data = {}
-        for k,v in ipairs(saved_data_names) do
+        for _,v in ipairs(saved_data_names) do
             saved_data[v] = self:GetData(v)
         end
 

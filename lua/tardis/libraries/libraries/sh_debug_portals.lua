@@ -3,6 +3,8 @@ if SERVER then
     util.AddNetworkString("TARDIS-Debug-Portals")
     util.AddNetworkString("TARDIS-Debug-Portals-Update")
 
+    -- Dynamic read/write counts not handled by analyzer.
+    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Debug-Portals-Update",function(len,ply)
         if not ply:IsAdmin() then return end
 
@@ -28,23 +30,24 @@ if SERVER then
     end)
 else
     function TARDIS:ShowPortalDebugMenu(p)
+        local cmenu = g_ContextMenu --[[@as ContextMenuPanel]]
         if IsValid(p.debug_window) then
-            if not g_ContextMenu:IsVisible() then
-                g_ContextMenu:Open()
+            if not cmenu:IsVisible() then
+                cmenu:Open()
             end
             local w = p.debug_window
             w:SetPos(ScrW() * 0.25 - w:GetWide() * 0.5, ScrH() * 0.5 - w:GetTall() * 0.5)
             return
         end
 
-        local x = ScrW() * 0.2;
-        local y = ScrH() * 0.8;
+        local menu_w = ScrW() * 0.2;
+        local menu_h = ScrH() * 0.8;
 
-        g_ContextMenu:Open()
-        local frame=g_ContextMenu:Add( "DFrame" )
+        cmenu:Open()
+        local frame=cmenu:Add( "DFrame" )
         frame:SetTitle("Portals Debug")
         frame:SetSizable(true)
-        frame:SetSize(x + 50, y + 50)
+        frame:SetSize(menu_w + 50, menu_h + 50)
         frame:SetPos(ScrW() * 0.25 - frame:GetWide() * 0.5, ScrH() * 0.5 - frame:GetTall() * 0.5)
         frame:ShowCloseButton(true)
         frame:RequestFocus()
@@ -52,7 +55,7 @@ else
         p.debug_window = frame
 
         local pr = vgui.Create( "DProperties", frame )
-        pr:SetSize(x, y)
+        pr:SetSize(menu_w, menu_h)
         pr:Center()
 
         function pr:Think()
@@ -255,29 +258,29 @@ else
             UpdatePortalPos(true)
         end)
 
-        local ap, ap2 = SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
+        SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
             ang_p = val
             UpdatePortalAng()
         end)
-        local ay, ay2 = SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
+        SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
             ang_y = val
             UpdatePortalAng()
         end)
-        local ar, ar2 = SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
+        SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
             ang_r = val
             UpdatePortalAng()
         end)
 
-        local w, w2 = SetupProperty("Size", "Width", width, 0, 300, function(val)
+        SetupProperty("Size", "Width", width, 0, 300, function(val)
             width = val
             UpdatePortalSize()
         end)
-        local h, h2 = SetupProperty("Size", "Height", height, 0, 300, function(val)
+        SetupProperty("Size", "Height", height, 0, 300, function(val)
             height = val
             UpdatePortalSize()
         end)
 
-        local thick, thick2 = SetupProperty( "3D", "Thickness", thickness, 150, function(val)
+        SetupProperty( "3D", "Thickness", thickness, 150, function(val)
             thickness = val
             UpdatePortal3D()
         end)
@@ -292,28 +295,28 @@ else
 
         local exit_point_category = "Exit point offset (asymmetric portals)"
 
-        local epox, epox2 = SetupProperty(exit_point_category, "X", epo_x, 300, function(val)
+        SetupProperty(exit_point_category, "X", epo_x, 300, function(val)
             epo_x = val
             UpdatePortalExitOffset()
         end)
-        local epoy, epoy2 = SetupProperty(exit_point_category, "Y", epo_y, 300, function(val)
+        SetupProperty(exit_point_category, "Y", epo_y, 300, function(val)
             epo_y = val
             UpdatePortalExitOffset()
         end)
-        local epoz, epoz2 = SetupProperty(exit_point_category, "Z", epo_z, 300, function(val)
+        SetupProperty(exit_point_category, "Z", epo_z, 300, function(val)
             epo_z = val
             UpdatePortalExitOffset()
         end)
 
-        local eaop, eaop2 = SetupProperty(exit_point_category, "Pitch", eao_p, 360, function(val)
+        SetupProperty(exit_point_category, "Pitch", eao_p, 360, function(val)
             eao_p = val
             UpdatePortalExitOffset()
         end)
-        local eaoy, eaoy2 = SetupProperty(exit_point_category, "Yaw", eao_y, 360, function(val)
+        SetupProperty(exit_point_category, "Yaw", eao_y, 360, function(val)
             eao_y = val
             UpdatePortalExitOffset()
         end)
-        local eaor, eaor2 = SetupProperty(exit_point_category, "Roll", eao_r, 360, function(val)
+        SetupProperty(exit_point_category, "Roll", eao_r, 360, function(val)
             eao_r = val
             UpdatePortalExitOffset()
         end)
@@ -352,11 +355,11 @@ else
             frame:Remove()
         end
 
-        local inv = pr:CreateRow( "Actions", "Print to console" )
-        inv:Setup( "Bool" )
-        inv:SetValue(false)
-        inv.DataChanged = function( _, val )
-            inv:SetValue(false)
+        local print_row = pr:CreateRow( "Actions", "Print to console" )
+        print_row:Setup( "Bool" )
+        print_row:SetValue(false)
+        print_row.DataChanged = function( _, val )
+            print_row:SetValue(false)
 
             print("Portal = {")
             print("\t-- Generated by portals debug tool")

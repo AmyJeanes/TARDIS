@@ -39,8 +39,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local imS = math.min(imW, imT)
     local gap3 = 0.5 * (listW - imS)
 
-    local midX = 3 * gap + 2 * listW
-
     local background=vgui.Create("DImage", frame)
     local theme = TARDIS:GetScreenGUITheme(screen)
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "music")
@@ -49,7 +47,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local bgcolor = TARDIS:GetScreenGUIColor(screen)
 
     local list_exteriors
-    local list_custom
 
     if screen.is3D2D then
         list_categories = ListView3D:new(frame,screen,34,bgcolor)
@@ -116,7 +113,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     table.sort(categories)
 
     list_categories:Clear()
-    for k,v in ipairs(categories) do
+    for _,v in ipairs(categories) do
         list_categories:AddLine(TARDIS:GetPhrase(v))
     end
 
@@ -139,7 +136,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
         table.SortByMember(exteriors, 2, true)
         list_exteriors:Clear()
-        for i,v in ipairs(exteriors) do
+        for _,v in ipairs(exteriors) do
             list_exteriors:AddLine(TARDIS:GetPhrase(v[2]))
         end
     end
@@ -185,7 +182,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
                 if textures then -- Apply texturesets if they exist
                     local prefix = textures.prefix or ""
-                    for i,v in ipairs(textures) do
+                    for _,v in ipairs(textures) do
                         if v[1] == "self" then
                             modelent:SetSubMaterial(v[2],prefix .. v[3])
                         end
@@ -199,12 +196,12 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                         preview3D.door = ClientsideModel(doormodel)
                         preview3D.door:SetNoDraw(true)
                     end
-                    for i,v in ipairs(preview3D.door:GetMaterials()) do
+                    for i,_ in ipairs(preview3D.door:GetMaterials()) do
                         preview3D.door:SetSubMaterial(i-1)
                     end
                     if textures then
                         local prefix = textures.prefix or ""
-                        for i,v in ipairs(textures) do
+                        for _,v in ipairs(textures) do
                             if v[1] == "door" then
                                 preview3D.door:SetSubMaterial(v[2],prefix .. v[3])
                             end
@@ -216,12 +213,14 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                 end
 
                 function preview3D:PostDrawModel( ent )
+                    if not self then return end
                     if not IsValid(self.door) then return end
                     self.door:SetPos(doorpos)
                     self.door:DrawModel()
                 end
 
                 function preview3D:OnRemove()
+                    if not self then return end
                     if IsValid(self.door) then
                         self.door:Remove()
                         self.door = nil

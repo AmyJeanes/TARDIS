@@ -14,7 +14,7 @@ if SERVER then
         local pos = self.interior:LocalToWorld(self.interior.Fallback.pos)
         local entities = ents.FindInBox(min, max)
         if #entities ~= 0 then
-            for k,v in pairs(entities) do
+            for _,v in pairs(entities) do
                 if v:IsPlayer() and v:GetTardisData("exterior")~=self then
                     self:PlayerEnter(v)
                     v:ScreenFade(SCREENFADE.IN, Color(255,255,255,200), 1, 0.1)
@@ -43,7 +43,7 @@ if SERVER then
         local entities = ents.FindInBox(min, max)
 
         if #entities ~= 0 then
-            for k,v in pairs(entities) do
+            for _,v in pairs(entities) do
                 if v:IsPlayer() and v:GetTardisData("exterior")~=self then
                     v:ScreenFade(SCREENFADE.IN, Color(255, 255, 255, math.max(self:GetData("alpha", 255) - 30, 0)), 0.1, 0.1)
                 end

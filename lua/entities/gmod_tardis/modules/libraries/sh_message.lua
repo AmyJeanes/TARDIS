@@ -10,10 +10,10 @@ function ENT:SendMessage(name,data,ply)
     net.WriteString(name)
 
     if data then
-        net.WriteBit(1)
+        net.WriteBool(true)
         net.WriteString(TARDIS.von.serialize(data))
     else
-        net.WriteBit(0)
+        net.WriteBool(false)
     end
 
     if SERVER then
@@ -35,10 +35,10 @@ end
 net.Receive("TARDIS-MessageExt", function(len,ply)
     local ent = net.ReadEntity()
     local name = net.ReadString()
-    local data_exists = net.ReadBit()
+    local data_exists = net.ReadBool()
     local data
 
-    if data_exists == 1 then
+    if data_exists then
         data = TARDIS.von.deserialize(net.ReadString())
     end
 
@@ -58,7 +58,7 @@ if CLIENT then
     ENT:AddHook("Initialize","messages",function(self)
         if not self.msg_queue then return end
 
-        for k,v in ipairs(self.msg_queue) do
+        for _,v in ipairs(self.msg_queue) do
             if messagehandlers[v.name] then
                 messagehandlers[v.name](self, v.data, v.ply)
             elseif self.metadata and self.metadata.CustomMessages and self.metadata.CustomMessages[v.name] then

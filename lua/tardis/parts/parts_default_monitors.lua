@@ -1,6 +1,6 @@
 local HIDE_COLLISIONS = true
-
-
+-- Default monitors
+---@class part_default_monitors : gmod_tardis_part
 local PART = {}
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
@@ -138,9 +138,7 @@ local function trace_console_angle(int, ply)
     local circle_pos = int:LocalToWorld(Vector(0,0,0))
     circle_pos.z = origin.z
 
-    local r = 70
-
-    local p1, p2 = util.IntersectRayWithSphere(origin, delta, circle_pos, 50)
+    local p1 = util.IntersectRayWithSphere(origin, delta, circle_pos, 50)
     if not p1 then return nil end
 
     local point = int:WorldToLocal(origin + p1 * aim)
@@ -153,11 +151,11 @@ local function trace_console_angle(int, ply)
 end
 
 local function trace_monitor_pos(ply, part)
-    local ang_y, down = trace_console_angle(part.interior, ply)
+    local ang_y, down_pos = trace_console_angle(part.interior, ply)
     if not ang_y then return end
 
     local rotation = math.Clamp((ang_y - part:GetAngles().y) % 360 / 360, 0, 1)
-    local down = 1 - (down - 140) / 25
+    local down = 1 - (down_pos - 140) / 25
 
     return rotation, down
 end
@@ -243,7 +241,7 @@ if SERVER then
     function PART:Use(ply)
         if ply:KeyDown(IN_WALK) then
 
-            local rotation, down = trace_monitor_pos(ply, self)
+            local rotation = trace_monitor_pos(ply, self)
 
             local rot_this = self:GetData(self.data_other_rotation, 0)
             local rot_other = self:GetOtherRotation()
@@ -386,13 +384,13 @@ else
         local a_down = self.extra_animations.down
         local a_flip = self.extra_animations.flip
 
-        if a_rotate.pos ~= self:GetData(self.data_rotation,0) then
+        if a_rotate and a_rotate.pos ~= self:GetData(self.data_rotation,0) then
             return true
         end
-        if a_down.pos ~= self:GetData(self.data_down_pos, 0.5) then
+        if a_down and a_down.pos ~= self:GetData(self.data_down_pos, 0.5) then
             return true
         end
-        if a_flip.pos ~= self:GetData(self.data_flip_pos, 0.5) then
+        if a_flip and a_flip.pos ~= self:GetData(self.data_flip_pos, 0.5) then
             return true
         end
         return false
@@ -419,6 +417,8 @@ if SERVER then
     function PART:RequestPositionUpdate(ply) self:RequestUpdate(true, false, ply) end
     function PART:RequestFullUpdate(ply) self:RequestUpdate(true, true, ply) end
 
+    -- Dynamic read/write counts not handled by analyzer.
+    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS_DefaultMonitorsUpdate", function(len,ply)
         local part = net.ReadEntity()
         local update_pos = net.ReadBool()
@@ -561,7 +561,8 @@ end
 -- Hitbox parts
 
 local function Setup_Hitbox_Parts(MonitorID)
-    local PART = {}
+    -- Default monitor hitboxes
+    PART = {}
     PART.MonitorID = MonitorID
     PART.AutoSetup = true
     PART.Collision = false
@@ -625,7 +626,8 @@ Setup_Hitbox_Parts("default_monitor_2")
 
 -- Rotor ring
 
-local PART={}
+-- Default rotor ring
+PART = {}
 PART.ID = "default_rotor_ring"
 PART.Model = "models/molda/toyota_int/rotor_ring.mdl"
 PART.AutoSetup = true

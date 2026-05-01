@@ -8,7 +8,7 @@ end)
 
 ENT:AddHook("OnRemove", "idlesound", function(self)
     if self.idlesounds then
-        for k,v in pairs(self.idlesounds) do
+        for _,v in pairs(self.idlesounds) do
             v:Stop()
             v=nil
         end

@@ -1,6 +1,6 @@
 local found=false
 local f=file.Find('entities/gmod_door_exterior/*.lua', "LUA")
-for k,v in pairs(f) do
+for _,v in pairs(f) do
     if (SERVER and v=="init.lua") or (CLIENT and v=="cl_init.lua") then
         found=true
     end

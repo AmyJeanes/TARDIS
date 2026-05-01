@@ -27,7 +27,7 @@ function TARDIS:AddLocation(pos,ang,name,map)
     if TARDIS.Locations and TARDIS.Locations[map] then
 
         local function location_exists(l_name)
-            for k,v in ipairs(TARDIS.Locations[map]) do
+            for _,v in ipairs(TARDIS.Locations[map]) do
                 if v.name == l_name then
                     return true
                 end

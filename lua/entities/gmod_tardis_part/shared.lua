@@ -1,3 +1,5 @@
+---@class gmod_tardis_part : Entity
+
 ENT.Type = "anim"
 if WireLib then
     ENT.Base            = "base_wire_entity"
@@ -42,6 +44,10 @@ function ENT:SetData(k,v,network)
     return IsValid(self.exterior) and self.exterior:SetData(k, v, network)
 end
 
+---@generic T
+---@param k string
+---@param default? T
+---@return T
 function ENT:GetData(k,default)
     if IsValid(self.exterior) then
         return self.exterior:GetData(k, default)

@@ -53,7 +53,6 @@ function TARDIS.DrawOverride(self,override)
     if self.NoDraw then return end
     if self:IsInvisible() and not (self.alpha and self.alpha > 0) then return end
 
-    local int=self.interior
     local ext=self.exterior
 
     if IsValid(ext) then
@@ -280,7 +279,7 @@ local overrides={
                     TARDIS.ProcessAnimation(self, self.animation)
 
                     if self.extra_animations then
-                        for k,v in pairs(self.extra_animations) do
+                        for _,v in pairs(self.extra_animations) do
                             TARDIS.ProcessAnimation(self, v)
                         end
                     end
@@ -312,7 +311,6 @@ local overrides={
             self.parent:SendMessage("part_use", {self, a, ...})
         end
 
-        local call=false
         local res
         if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
         local allowed, animate
@@ -424,6 +422,7 @@ end
 
 local parts={}
 
+---@return Entity
 function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
@@ -469,7 +468,7 @@ function TARDIS:GetRegisteredPart(id)
 end
 
 hook.Add("InitPostEntity", "tardis-parts", function()
-    for k,v in pairs(overridequeue) do
+    for _,v in pairs(overridequeue) do
         SetupOverrides(v)
     end
     overridequeue={}
@@ -618,7 +617,8 @@ if SERVER then
         end
         for k,v in pairs(parts) do
             if not tempparts[k] then
-                local tbl=scripted_ents.GetStored(v.class).t
+                local stored = assert(scripted_ents.GetStored(v.class))
+                local tbl = assert(stored.t)
                 local t
                 if ent.TardisExterior then
                     t=tbl.Exteriors
@@ -639,9 +639,9 @@ if SERVER then
             e.parent=ent
             e.ExteriorPart=(e.parent==e.exterior)
             e.InteriorPart=(e.parent==e.interior)
-            local data=GetData(ent,e,k)
-            if type(data)=="table" then
-                table.Merge(e,data)
+            local part_data=GetData(ent,e,k)
+            if type(part_data)=="table" then
+                table.Merge(e,part_data)
             end
 
             SetupPartControl(e)
@@ -670,7 +670,6 @@ if SERVER then
                 net.WriteEntity(e.exterior)
                 net.WriteEntity(e.interior)
                 net.WriteBool(e.ExteriorPart)
-                net.WriteBool(e.InteriorPart)
                 net.WriteString(e.ID)
             net.Send(ply)
         end
@@ -750,7 +749,6 @@ else
         local ext=net.ReadEntity()
         local int=net.ReadEntity()
         local extpart=net.ReadBool()
-        local intpart=net.ReadBool()
         local parent
         if extpart then
             parent=ext

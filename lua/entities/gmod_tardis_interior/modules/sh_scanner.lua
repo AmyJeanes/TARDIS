@@ -2,7 +2,7 @@
 
 local function UpdateScannerState(self)
     local state = false
-    for k,v in pairs(self.scanners) do
+    for k,_ in pairs(self.scanners) do
         if self:GetData("scanners_on_"..k, false) then
             state = true
             break
@@ -32,7 +32,7 @@ if SERVER then
         if on and self:CallHook("CanTurnOnScanners")==false then
             return false
         end
-        for k,v in pairs(self.scanners) do
+        for k,_ in pairs(self.scanners) do
             self:SetData("scanners_on_"..k, on, true)
             self:CallHook("ScannerToggled", k, on)
         end
@@ -122,7 +122,7 @@ ENT:AddHook("Initialize", "scanner", function(self)
                         ["$nodecal"] = "1"
                     }
                 )
-                scanner.rt = GetRenderTarget(scanner.uid, v.width, v.height, false)
+                scanner.rt = GetRenderTarget(scanner.uid, v.width, v.height)
                 scanner.mat:SetTexture("$basetexture",scanner.rt)
             end
             scanner.ang = v.ang
@@ -162,7 +162,7 @@ ENT:AddHook("ShouldNotRenderPortal","scanner",function(self,parent,portal,exit)
 end)
 
 ENT:AddHook("PreScannerRender", "scanner", function(self)
-    for k,v in pairs(self.props) do
+    for k,_ in pairs(self.props) do
         if IsValid(k) then
             k.olddrawscanner=k:GetNoDraw()
             k:SetNoDraw(true)
@@ -171,7 +171,7 @@ ENT:AddHook("PreScannerRender", "scanner", function(self)
 end)
 
 ENT:AddHook("PostScannerRender", "scanner", function(self)
-    for k,v in pairs(self.props) do
+    for k,_ in pairs(self.props) do
         if IsValid(k) and k.olddrawscanner~=nil then
             k:SetNoDraw(false)
             k.olddrawscanner=nil

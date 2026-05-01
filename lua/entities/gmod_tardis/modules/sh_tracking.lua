@@ -63,9 +63,12 @@ local function get_ent_size(ent)
         end
         return entsize
     end
+    return 0
 end
 
 if SERVER then
+    ---@param ent Entity
+    ---@param ply Player?
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
@@ -101,7 +104,7 @@ if SERVER then
 
         local entSize = get_ent_size(ent)
 
-        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
+        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent --[[@as Player]]))) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
             return false
         elseif ent == self then
@@ -157,7 +160,7 @@ if SERVER then
         end
 
         if wasTrackingEnt ~= ent then
-            local name = ent.PrintName or (isfunction(ent.Name) and ent:Name()) or ent.Name or ent:GetModel() or ent:GetClass()
+            local name = ent.PrintName or (ent:IsPlayer() and (ent --[[@as Player]]):Nick()) or ent:GetModel() or ent:GetClass()
             if ent.GetCreator then
                 local creator = ent:GetCreator()
                 if IsValid(creator) then
@@ -372,7 +375,6 @@ if SERVER then
         local offsetdist = entPos:Distance(target)
         local tdiff = target:Distance(pos)
         local targetpredicted = target+(tfwd*tvel:Length()*phm)
-        local mass = ph:GetMass()
         local vel = ph:GetVelocity()
         local velnorm = vel:GetNormalized()
         local len = vel:Length()
@@ -406,7 +408,9 @@ if SERVER then
         end
 
         local diffang = (entPos - pos):Angle()
-        local trace = util.QuickTrace(pos,diffang:Forward()*(TRACKING_MAX_DISTANCE_TRACE + entSize),{self,TARDIS:GetPart(self,"door")})
+        ---@type Entity[]
+        local filter = {self,TARDIS:GetPart(self,"door")}
+        local trace = util.QuickTrace(pos,diffang:Forward()*(TRACKING_MAX_DISTANCE_TRACE + entSize),filter)
         local targetfound = trace.Entity==ent or tdiff < (TRACKING_MAX_DISTANCE_NO_LOS + entSize)
 
         local trackinglost = self:GetData("tracking-lost")
@@ -451,10 +455,6 @@ if SERVER then
         ph:AddVelocity(-velnorm*brakeClamped)
 
         if not spin then
-            local cen = ph:GetMassCenter()
-            local fwd = self:GetForward()
-            local lev = ph:GetInertia():Length()
-            local ri = self:GetRight()
             local ang = self:GetAngles()
 
             local targetang = yawoffset

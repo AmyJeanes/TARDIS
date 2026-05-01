@@ -6,7 +6,7 @@ function ENT:ApplyTextureSet(set_id)
 
     local prefix = texture_set.prefix or ""
 
-    for i,v in ipairs(texture_set) do
+    for _,v in ipairs(texture_set) do
         self:ChangeTexture(v[1], v[2], v[3], prefix)
     end
 
@@ -53,7 +53,7 @@ if SERVER then
 
         print("Exterior part textures:")
         print()
-        for k,v in pairs(parts) do
+        for _,v in pairs(parts) do
             for k1,v1 in pairs(v:GetMaterials()) do
                 print("{\"" .. v.ID .. "\", " .. k1 - 1 .. ", \"" .. v1 .. "\"},")
             end

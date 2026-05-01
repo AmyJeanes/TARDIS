@@ -188,7 +188,6 @@ if SERVER then
     end)
 
     ENT:AddHook("HandleE2", "health", function(self, name, e2, ...)
-        local args = {...}
         if name == "GetHealth" then
             return self:GetHealthPercent()
         end

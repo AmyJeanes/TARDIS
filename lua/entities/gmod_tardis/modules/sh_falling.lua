@@ -50,7 +50,6 @@ if SERVER then
         local vel=ph:GetVelocity()
         local vell=ph:GetVelocity():Length()
         local cen=ph:GetMassCenter()
-        local mass=ph:GetMass()
         local lev=ph:GetInertia():Length()
         local angv=ph:GetAngleVelocity()
 

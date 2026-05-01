@@ -11,10 +11,10 @@ list.Set( "ContentCategoryIcons", "#TARDIS.Spawnmenu.CategoryTools", "vgui/tardi
 if CLIENT then
 
     -- this option would be very useful for developers but noone else
-    CreateClientConVar("tardis2_spawnmenu_copy_id", 0, {FCVAR_ARCHIVE}, "TARDIS - show 'copy id' option in the spawnmenu")
+    CreateClientConVar("tardis2_spawnmenu_copy_id", "0", true, false, "TARDIS - show 'copy id' option in the spawnmenu")
     TARDIS.spawnmenu_copy_id = GetConVar("tardis2_spawnmenu_copy_id"):GetBool()
 
-    hook.Add("OnSpawnMenuOpen", "tardis-spawnmenu-copy-id-setting", function(ply,ent)
+    hook.Add("OnSpawnMenuOpen", "tardis-spawnmenu-copy-id-setting", function()
         TARDIS.spawnmenu_copy_id = GetConVar("tardis2_spawnmenu_copy_id"):GetBool()
     end)
 
@@ -129,7 +129,7 @@ if CLIENT then
 
         function submenu:Think()
             local value = TARDIS:GetCustomSetting(int_id, setting_id, LocalPlayer())
-            for i,v in ipairs(option_buttons) do
+            for _,v in ipairs(option_buttons) do
                 local checked = (value == v[1])
                 if compare_func then
                     checked = compare_func(value, v[1])
@@ -149,7 +149,7 @@ if CLIENT then
             if not table.IsEmpty(exteriors) then
                 local exteriors_tbl = {}
                 for id,v in pairs(exteriors) do
-                    local ext_md = TARDIS:GetExteriors()[id]
+                    local ext_md = assert(TARDIS:GetExteriors()[id])
                     if v and ext_md.Base ~= true and ext_md.Hide ~= true then
                         exteriors_tbl[id] = TARDIS:GetPhrase(ext_md.Name or id)
                     end
@@ -160,7 +160,7 @@ if CLIENT then
     end
 
     function TARDIS.Spawnmenu.AddSettings(parent, int_id)
-        local int_id = TARDIS:GetMainVersionId(int_id)
+        int_id = TARDIS:GetMainVersionId(int_id)
 
         local versions = TARDIS.MetadataVersions[int_id]
         local custom_settings = TARDIS.IntCustomSettings[int_id]
@@ -191,12 +191,12 @@ if CLIENT then
             end
 
             if other_versions_exist then
-                for k,v in SortedPairs(versions.other) do
+                for _,v in SortedPairs(versions.other) do
                     add_version_option(v.name, v, 3)
                 end
             end
             if custom_versions_exist then
-                for k,v in SortedPairs(versions.custom) do
+                for _,v in SortedPairs(versions.custom) do
                     add_version_option(v.name, v, 4)
                 end
             end
@@ -218,7 +218,7 @@ if CLIENT then
 
         local function search_for_double_versions(version_list, current_val)
             if current_val then return true end
-            for k,v in pairs(version_list) do
+            for _,v in pairs(version_list) do
                 if v.classic_doors_id then
                     return true
                 end
@@ -264,7 +264,7 @@ if CLIENT then
 
         end
 
-        local reset_button = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.ResetSettings"), function(self)
+        dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.ResetSettings"), function(self)
             TARDIS:ResetCustomSettings(int_id)
         end)
 
@@ -275,7 +275,7 @@ if CLIENT then
 
         if setting ~= container.interior_icons_applied then
 
-            for k,v in pairs(container.tardis_icons) do
+            for _,v in pairs(container.tardis_icons) do
                 if v.is_tardis_icon then
                     v:SetMaterial( (setting and v.interior_material) or v.original_material )
                 end
@@ -316,7 +316,7 @@ if CLIENT then
 
             if not table.IsEmpty(versions.other) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.AlternativeVersions")
-                for k,v in SortedPairs(versions.other) do
+                for _,v in SortedPairs(versions.other) do
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
                 dmenu:AddSpacer()
@@ -324,7 +324,7 @@ if CLIENT then
 
             if not table.IsEmpty(versions.custom) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.CustomVersions")
-                for k,v in SortedPairs(versions.custom) do
+                for _,v in SortedPairs(versions.custom) do
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
                 dmenu:AddSpacer()
@@ -405,14 +405,14 @@ if CLIENT then
     hook.Add("PostGamemodeLoaded", "tardis-interiors", TARDIS.Spawnmenu.Populate)
 
     hook.Add("TARDIS_LanguageChanged", "tardis-spawnmenu", function()
-        for k,v in pairs(TARDIS:GetInteriors()) do
+        for k,_ in pairs(TARDIS:GetInteriors()) do
             TARDIS:AddSpawnmenuInterior(k)
         end
         RunConsoleCommand("spawnmenu_reload")
     end)
 
     hook.Add("PreReloadToolsMenu", "tardis-spawnmenu", function()
-        for k,v in pairs(TARDIS:GetInteriors()) do
+        for k,_ in pairs(TARDIS:GetInteriors()) do
             TARDIS:AddSpawnmenuInterior(k)
         end
     end)

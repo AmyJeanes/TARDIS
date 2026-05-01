@@ -90,9 +90,9 @@ else
     end)
 
     ENT:OnMessage("Outside", function(self, data, ply)
-        local ply = data[1]
+        local target_ply = data[1]
         local enabled = data[2]
-        self:CallHook("Outside",ply,enabled)
+        self:CallHook("Outside",target_ply,enabled)
     end)
 
     ENT:AddHook("ShouldVortexIgnoreZ", "outside", function(self)
@@ -106,25 +106,26 @@ else
     function GetViewEntity(...)
         if LocalPlayer():GetTardisData("outside") then
             local ext=LocalPlayer():GetTardisData("exterior")
-            if IsValid(ext.thpprop) then
+            if ext and IsValid(ext.thpprop) then
                 return ext.thpprop
             end
         end
         return oldgetviewentity(...)
     end
 
-    local meta=FindMetaTable("Player")
+    local meta=assert(FindMetaTable("Player"))
     oldgetviewentity2=oldgetviewentity2 or meta.GetViewEntity
     function meta:GetViewEntity(...)
+        if not self then return oldgetviewentity2(self,...) end
         if self:GetTardisData("outside") then
             local ext=self:GetTardisData("exterior")
-            if IsValid(ext.thpprop) then
+            if IsValid(ext) and IsValid(ext.thpprop) then
                 return ext.thpprop
             end
         end
         return oldgetviewentity2(self,...)
     end
-    hook.Add("CalcView", "tardis-outside", function(ply, pos, ang)
+    hook.Add("CalcView", "tardis-outside", function(ply, pos, ang, fov)
         if ply:GetTardisData("outside") then
             local ext=ply:GetTardisData("exterior")
             if IsValid(ext) then
@@ -165,7 +166,7 @@ else
         end
     end)
 
-    hook.Add("Initialize", "tardis-outside", function(name)
+    hook.Add("Initialize", "tardis-outside", function()
         oldtargetid=oldtargetid or GAMEMODE.HUDDrawTargetID
         GAMEMODE.HUDDrawTargetID = function(...)
             if LocalPlayer():GetTardisData("outside") then return end

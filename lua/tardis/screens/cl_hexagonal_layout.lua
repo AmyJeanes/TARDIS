@@ -58,7 +58,6 @@ function HexagonalLayout:AddNewButton(screen_button)
 end
 
 function HexagonalLayout:DrawButtons()
-    local m = self.n_cols
     local n = self.n_rows
     local i = 1 -- cols
     local j = 0 -- rows
@@ -73,7 +72,7 @@ function HexagonalLayout:DrawButtons()
         return (a.text < b.text)
     end)
 
-    for k,button in ipairs(self.buttons) do
+    for _,button in ipairs(self.buttons) do
         j = j + 2
         if j > n then
             if (j % 2) == 1 then
@@ -103,20 +102,20 @@ function HexagonalLayout:DrawButtons()
         offsetX = offsetX % self.dw
     end
 
-    for k,button in ipairs(self.buttons) do
+    for _,button in ipairs(self.buttons) do
         button:InitiateMove(0.5 * offsetX, 0, true, 600)
     end
 end
 
 function HexagonalLayout:ScrollButtons(x)
     local cancel = false
-    for k,button in ipairs(self.buttons) do
+    for _,button in ipairs(self.buttons) do
         if button.moving.now then
             cancel = true
         end
     end
     if not cancel then
-        for k,button in ipairs(self.buttons) do
+        for _,button in ipairs(self.buttons) do
             button:InitiateMove(x * self.dw, 0, true, 500)
         end
     end
@@ -124,7 +123,7 @@ end
 
 function HexagonalLayout:CanMoveLeft()
     local maxX = 0
-    for k,button in ipairs(self.buttons) do
+    for _,button in ipairs(self.buttons) do
         maxX = math.max(button:GetPosX() + button:GetWide(), maxX)
     end
     return (maxX > self.screen_width)
@@ -132,7 +131,7 @@ end
 
 function HexagonalLayout:CanMoveRight()
     local minX = 0
-    for k,button in ipairs(self.buttons) do
+    for _,button in ipairs(self.buttons) do
         minX = math.min(button:GetPosX(), minX)
     end
     return (minX < 0)

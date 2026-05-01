@@ -24,21 +24,26 @@ local function get_release_notes(version, newVersion)
     local headers = {
         ["X-GitHub-Api-Version"] = "2022-11-28"
     }
-    local function onsuccess(body, size, headers, code)
+    local function onsuccess(body, size, response_headers, code)
         if code ~= 200 then
             print("Failed to retrieve TARDIS release notes for " .. version .. ", code: " .. code .. ", body: " .. body)
             return
         end
         local data = util.JSONToTable(body)
+        if not data then return end
         local release_notes = data.body
+        if not release_notes then return end
         local json = string.match(release_notes, "<!%-%-(.-)%-%->")
         if not json then return end
         local releaseMetadata = util.JSONToTable(json)
+        if not releaseMetadata then return end
         if releaseMetadata.showPopup and releaseMetadata.summary then
+            local release_url = data.html_url
+            if not release_url then return end
             local notes = releaseMetadata.summary
             if releaseMetadata.changes then
                 notes = notes .. "\n"
-                for k,v in ipairs(releaseMetadata.changes) do
+                for _,v in ipairs(releaseMetadata.changes) do
                     notes = notes .. "\n" .. "• ".. v
                 end
             end
@@ -47,7 +52,7 @@ local function get_release_notes(version, newVersion)
                 "TARDIS Update",
                 TARDIS:GetPhrase("Common.Yes"),
                 function()
-                    gui.OpenURL(data.html_url)
+                    gui.OpenURL(release_url)
                 end,
                 TARDIS:GetPhrase("Common.No"),
                 function() end,

@@ -8,7 +8,7 @@ function TARDIS:ReloadSpawnmenuOptionElements(section)
         return true
     else
         if self.SpawnmenuOptionsSectionElements[section] then
-            for k,v in ipairs(self.SpawnmenuOptionsSectionElements[section]) do
+            for _,v in ipairs(self.SpawnmenuOptionsSectionElements[section]) do
                 if v.RefreshVal then
                     v:RefreshVal()
                 end
@@ -25,7 +25,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     local options={}
     local sections={}
     local subsections={}
-    for k,v in pairs(TARDIS:GetSettingsData()) do
+    for _,v in pairs(TARDIS:GetSettingsData()) do
         if v.option then
             table.insert(options,{v.id, v, (v.subsection or " ") .. v.name})
             if v.section and not table.HasValue(sections,v.section) then
@@ -38,7 +38,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
         end
     end
 
-    for k,v in pairs(TARDIS:GetButtonOptions()) do
+    for _,v in pairs(TARDIS:GetButtonOptions()) do
         table.insert(options,{v.id, v, (v.subsection or " ") .. v.name})
         if v.section and not table.HasValue(sections,v.section) then
             table.insert(sections, v.section)
@@ -54,7 +54,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
 
     TARDIS.SpawnmenuOptionsSectionElements = {}
 
-    for k,section in ipairs(sections) do
+    for _,section in ipairs(sections) do
         local section_id = "TARDIS2_Options_" .. section
         local section_text = " " .. TARDIS:GetPhrase("Settings.Sections."..section)
 
@@ -62,7 +62,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
         TARDIS.SpawnmenuOptionsSectionElements[section] = section_elements
 
         spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), section_id, section_text, "", "", function(panel)
-            for a,b in ipairs(options) do
+            for _,b in ipairs(options) do
                 local id,data=b[1],b[2]
                 if data.section == section then
                     if not data.subsection then
@@ -87,14 +87,14 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                         -- save the subsection state for more convenience
                         subsection:SetExpanded(expanded)
 
-                        subsection.OnToggle = function(self, expanded)
-                            local unfolded_subsections = TARDIS:GetSetting("options-unfolded-subsections")
-                            unfolded_subsections[section] = unfolded_subsections[section] or {}
-                            unfolded_subsections[section][data.subsection] = expanded
-                            TARDIS:SetSetting("options-unfolded-subsections", unfolded_subsections)
+                        subsection.OnToggle = function(self, is_expanded)
+                            local unfolded_setting = TARDIS:GetSetting("options-unfolded-subsections")
+                            unfolded_setting[section] = unfolded_setting[section] or {}
+                            unfolded_setting[section][data.subsection] = is_expanded
+                            TARDIS:SetSetting("options-unfolded-subsections", unfolded_setting)
                         end
 
-                        for a2,b2 in ipairs(options) do
+                        for _,b2 in ipairs(options) do
                             local id2,data2 = b2[1],b2[2]
                             if data2.section == section and data2.subsection == data.subsection then
                                 local el1,el2 = TARDIS:CreateOptionInterface(id2, data2)
@@ -125,7 +125,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
                         TARDIS:ResetSectionSettings(section)
                         TARDIS:Message(LocalPlayer(), "MenuOptions.SectionReset", "Settings.Sections."..section)
 
-                        for i,v in ipairs(section_elements) do
+                        for _,v in ipairs(section_elements) do
                             if v.RefreshVal then
                                 v:RefreshVal()
                             end
@@ -140,7 +140,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     end
 
     local others_exist = false
-    for a,b in ipairs(options) do
+    for _,b in ipairs(options) do
         if not b[2].section then
             others_exist = true
             break
@@ -149,7 +149,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
 
     if others_exist then
         spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Options_Other", " ".. TARDIS:GetPhrase("Settings.Sections.Other"), "", "", function(panel)
-            for a,b in ipairs(options) do
+            for _,b in ipairs(options) do
                 local id,data=b[1],b[2]
                 if not data.section then
                     local option_changer = TARDIS:CreateOptionInterface(id, data)
@@ -178,24 +178,24 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     -- Binds
     spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Binds", " "..TARDIS:GetPhrase("Settings.Sections.Binds"), "", "", function(panel)
         local keybinds={}
-        local sections={}
+        local bind_sections={}
         for k,v in pairs(TARDIS:GetBinds()) do
             table.insert(keybinds,{k,v})
-            if v.section and not table.HasValue(sections,v.section) then
-                table.insert(sections,v.section)
+            if v.section and not table.HasValue(bind_sections,v.section) then
+                table.insert(bind_sections,v.section)
             end
         end
         table.SortByMember(keybinds,1,true)
-        table.SortByMember(sections,1,true)
+        table.SortByMember(bind_sections,1,true)
 
-        for k,v in ipairs(sections) do
+        for _,v in ipairs(bind_sections) do
             local category = vgui.Create("DForm")
             panel:AddItem(category)
 
             category:SetLabel(TARDIS:GetPhrase("Binds.Sections."..v))
             category:SetExpanded(false)
 
-            for a,b in ipairs(keybinds) do
+            for _,b in ipairs(keybinds) do
                 local id,data=b[1],b[2]
                 if data.section == v then
                     local keybind_changer = TARDIS:CreateBindOptionInterface(id, data)
@@ -206,7 +206,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
 
         local other_exist = false
 
-        for a,b in ipairs(keybinds) do
+        for _,b in ipairs(keybinds) do
             if not b[2].section then
                 other_exist = true
                 break
@@ -219,7 +219,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
             other_category:SetLabel(TARDIS:GetPhrase("Binds.Sections.Other"))
             other_category:SetExpanded(false)
 
-            for a,b in ipairs(keybinds) do
+            for _,b in ipairs(keybinds) do
                 local id,data=b[1],b[2]
                 if not data.section then
                     local keybind_changer = TARDIS:CreateBindOptionInterface(id, data)
@@ -233,7 +233,7 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
     spawnmenu.AddToolMenuOption("Options", TARDIS:GetPhrase("Common.TARDIS"), "TARDIS2_Reset_Settings", " "..TARDIS:GetPhrase("MenuOptions.ResetAllSettings"), "", "", function(panel)
         local button = vgui.Create("DButton")
         button:SetText(TARDIS:GetPhrase("MenuOptions.ResetClientsideSettings"))
-        button.DoClick = function(button)
+        button.DoClick = function()
             Derma_Query(
                 TARDIS:GetPhrase("MenuOptions.ConfirmResetSettings"),
                 TARDIS:GetPhrase("Common.Interface"),

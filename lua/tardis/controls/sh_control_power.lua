@@ -1,7 +1,6 @@
 TARDIS:AddControl({
     id = "power",
     ext_func=function(self,ply)
-        local interrupted = self:GetTeleportInterrupted()
         local success, reason, arg1, arg2 = self:TogglePower()
         if success then
             TARDIS:StatusMessage(ply, "Controls.Power.Status", self:GetData("power-state"))

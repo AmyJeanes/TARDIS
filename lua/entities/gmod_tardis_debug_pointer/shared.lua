@@ -14,13 +14,13 @@ ENT.AdminOnly       = true
 -- debugging functions
 
 concommand.Add("tardis2_debug_pointer_clear", function(ply,cmd,args)
-    for k,v in pairs(ents.FindByClass("gmod_tardis_debug_pointer")) do
+    for _,v in pairs(ents.FindByClass("gmod_tardis_debug_pointer")) do
         v:Remove()
     end
 end)
 
 concommand.Add("tardis2_debug_pointer_color", function(ply,cmd,args)
-    for k,v in pairs(ents.FindByClass("gmod_tardis_debug_pointer")) do
+    for _,v in pairs(ents.FindByClass("gmod_tardis_debug_pointer")) do
         v:SetColor(Color(10,0,255))
     end
 end)
@@ -34,7 +34,7 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
     local tr = util.TraceLine({
         start = ply:EyePos(),
         endpos = ply:EyePos() + ply:EyeAngles():Forward() * 10000,
-        filter = function( ent ) if ( ent:GetClass() == "prop_physics" ) then return true end end
+        filter = function(trace_ent) if (trace_ent:GetClass() == "prop_physics") then return true end end
     })
 
     local close_pos = ply:EyePos() + ply:EyeAngles():Forward() * 40
@@ -97,6 +97,8 @@ if SERVER then
     util.AddNetworkString("TARDIS-Pointer-Debug-Update")
     util.AddNetworkString("TARDIS-Pointer-Use")
 
+    -- Dynamic read/write counts not handled by analyzer.
+    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Pointer-Debug-Update",function(len,ply)
         local pointer = net.ReadEntity()
         if not IsValid(pointer) then return end
@@ -120,23 +122,24 @@ if SERVER then
     end)
 else
     function TARDIS:ShowPointerDebugMenu(p)
+        local cmenu = g_ContextMenu --[[@as ContextMenuPanel]]
         if IsValid(p.debug_window) then
-            if not g_ContextMenu:IsVisible() then
-                g_ContextMenu:Open()
+            if not cmenu:IsVisible() then
+                cmenu:Open()
             end
             local w = p.debug_window
             w:SetPos(ScrW() * 0.25 - w:GetWide() * 0.5, ScrH() * 0.5 - w:GetTall() * 0.5)
             return
         end
 
-        local x = ScrW() * 0.2;
-        local y = ScrH() * 0.8;
+        local menu_w = ScrW() * 0.2;
+        local menu_h = ScrH() * 0.8;
 
-        g_ContextMenu:Open()
-        local frame=g_ContextMenu:Add( "DFrame" )
+        cmenu:Open()
+        local frame=cmenu:Add( "DFrame" )
         frame:SetTitle("TARDIS Pointer Debug")
         frame:SetSizable(true)
-        frame:SetSize(x + 50, y + 50)
+        frame:SetSize(menu_w + 50, menu_h + 50)
         frame:SetPos(ScrW() * 0.25 - frame:GetWide() * 0.5, ScrH() * 0.5 - frame:GetTall() * 0.5)
         frame:ShowCloseButton(true)
         frame:RequestFocus()
@@ -144,7 +147,7 @@ else
         p.debug_window = frame
 
         local pr = vgui.Create( "DProperties", frame )
-        pr:SetSize(x, y)
+        pr:SetSize(menu_w, menu_h)
         pr:Center()
 
         local ent = LocalPlayer():GetTardisData("interior")
@@ -216,16 +219,19 @@ else
             px, py, pz = (B * posr):Unpack()
 
             if x then
+                local x_precise = assert(x2)
                 x:SetValue(px)
-                x2:SetValue(px)
+                x_precise:SetValue(px)
             end
             if y then
+                local y_precise = assert(y2)
                 y:SetValue(py)
-                y2:SetValue(py)
+                y_precise:SetValue(py)
             end
             if z then
+                local z_precise = assert(z2)
                 z:SetValue(pz)
-                z2:SetValue(pz)
+                z_precise:SetValue(pz)
             end
         end
 
@@ -247,16 +253,19 @@ else
             ppvx, ppvy, ppvz = (B_inv * pos):Unpack()
 
             if xpv then
+                local xpv_precise = assert(xpv2)
                 xpv:SetValue(ppvx)
-                xpv2:SetValue(ppvx)
+                xpv_precise:SetValue(ppvx)
             end
             if ypv then
+                local ypv_precise = assert(ypv2)
                 ypv:SetValue(ppvy)
-                ypv2:SetValue(ppvy)
+                ypv_precise:SetValue(ppvy)
             end
             if zpv then
+                local zpv_precise = assert(zpv2)
                 zpv:SetValue(ppvz)
-                zpv2:SetValue(ppvz)
+                zpv_precise:SetValue(ppvz)
             end
         end
 
@@ -389,20 +398,20 @@ else
             pv_ignore_vertical_angle = (val == 1)
         end
 
-        local ap, ap2 = SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
+        SetupProperty( "Angle", "Pitch", ang_p, 360, function(val)
             ang_p = val
             UpdatePointerAng()
         end)
-        local ay, ay2 = SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
+        SetupProperty( "Angle", "Yaw", ang_y, 360, function(val)
             ang_y = val
             UpdatePointerAng()
         end)
-        local ar, ar2 = SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
+        SetupProperty( "Angle", "Roll", ang_r, 360, function(val)
             ang_r = val
             UpdatePointerAng()
         end)
 
-        local sc, sc2 = SetupProperty( "Scale", "Pointer scale", scale, 0.1, 10, function(val)
+        SetupProperty( "Scale", "Pointer scale", scale, 0.1, 10, function(val)
             scale = val
             UpdatePointerScale()
         end)

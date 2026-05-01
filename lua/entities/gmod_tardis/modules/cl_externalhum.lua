@@ -141,7 +141,7 @@ ENT:AddHook("Think", "externalhum", function(self)
             end
         end
     else
-        for k, v in pairs(self.LeakedInteriorHums) do v:Stop() end
+        for _, v in pairs(self.LeakedInteriorHums) do v:Stop() end
         self.LeakedInteriorHums = {}
     end
 end)

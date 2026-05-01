@@ -1,3 +1,6 @@
+-- E2 code is not standard Lua
+---@diagnostic disable
+
 E2Lib.RegisterExtension("tardis", true)
 
 local function getTardis(ent)

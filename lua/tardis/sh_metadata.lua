@@ -5,13 +5,20 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 function TARDIS:LoadInteriors()
     if TARDIS.InteriorsLoading then return end
 
+    ---@type table<string, table>
     TARDIS.Metadata = {}
+    ---@type table<string, table>
     TARDIS.MetadataRaw = {}
+    ---@type table<string, table>
     TARDIS.MetadataTemplates = {}
+    ---@type table<string, table>
     TARDIS.MetadataVersions = {}
+    ---@type table<string, table<string, table>>
     TARDIS.MetadataCustomVersions = {}
 
+    ---@type table<string, table>
     TARDIS.ExteriorsMetadata = {}
+    ---@type table<string, table>
     TARDIS.ExteriorsMetadataRaw = {}
     TARDIS.ExteriorCategories = {}
 
@@ -164,6 +171,7 @@ end
 
 function TARDIS:SetupMetadata(id)
     if self.Metadata[id] then return end
+    ---@type table?
     local t = self.MetadataRaw[id]
     if not t then return end
 
@@ -208,11 +216,12 @@ function TARDIS:CreateInteriorMetadata(id, ent)
 
     self:SetupMetadata(id)
 
-    if self.Metadata[id] == nil or self.Metadata[id].BaseMerged ~= true then
+    local raw = self.Metadata[id]
+    if raw == nil or raw.BaseMerged ~= true then
         return self:CreateInteriorMetadata("default", ent)
     end
 
-    local metadata = TARDIS:CopyTable(self.Metadata[id])
+    local metadata = TARDIS:CopyTable(raw)
 
     metadata = TARDIS:MergeTemplates(metadata, ent)
 

@@ -33,9 +33,13 @@ function ENT:GetThirdPersonPos(ply, ang)
 end
 
 function ENT:GetThirdPersonTrace(ply,ang)
-    local pos,ang=self:GetThirdPersonPos(ply,ang)
-    local trace=util.QuickTrace(pos,ang:Forward()*9999999999,{self,TARDIS:GetPart(self,"door")})
-    local angle=trace.HitNormal:Angle()
+    local pos,trace_ang=self:GetThirdPersonPos(ply,ang)
+    ---@type Entity[]
+    local filter={self,TARDIS:GetPart(self,"door")}
+    local trace=util.QuickTrace(pos,trace_ang:Forward()*9999999999,filter)
+    local hitNormal = trace.HitNormal
+    if not hitNormal then return trace.HitPos, Angle(trace_ang.p,trace_ang.y,0), trace.Entity end
+    local angle=hitNormal:Angle()
     angle:RotateAroundAxis(angle:Right(),-90)
     return trace.HitPos,angle,trace.Entity
 end

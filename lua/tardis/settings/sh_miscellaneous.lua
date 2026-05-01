@@ -260,7 +260,7 @@ TARDIS:AddSetting({
 
     get_values_func = function()
         local values = {}
-        for k,v in pairs(TARDIS:GetTipStyles()) do
+        for _,v in pairs(TARDIS:GetTipStyles()) do
             local style = "TipStyles."..v.style_name
             table.insert(values, {TARDIS:PhraseExists(style) and style or v.style_name, v.style_id})
         end

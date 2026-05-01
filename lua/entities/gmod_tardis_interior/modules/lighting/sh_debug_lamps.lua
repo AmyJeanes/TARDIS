@@ -25,11 +25,13 @@ if SERVER then
 
         self.debug_lamps = {}
 
-        for k,v in pairs(lamps) do
+        for _,v in pairs(lamps) do
             if v then
                 if not v.color then
                     v.color = Color(255,255,255)
                 end
+                -- MakeLamp is registered globally by the lamp STool at runtime; no stub for it.
+                ---@diagnostic disable-next-line: undefined-global
                 local lamp = MakeLamp(nil, -- creator
                     v.color.r, v.color.g, v.color.b,
                     KEY_NONE, -- toggle key
@@ -51,16 +53,16 @@ if SERVER then
                 lamp:GetPhysicsObject():EnableMotion(false)
 
                 lamp:SetUseType(SIMPLE_USE)
-                lamp.Use = function(lamp, ply)
-                    local clr = lamp:GetColor()
-                    local pos = self:WorldToLocal(lamp:GetPos())
-                    local ang = lamp:GetAngles()
+                lamp.Use = function(lamp_ent, ply)
+                    local clr = lamp_ent:GetColor()
+                    local pos = self:WorldToLocal(lamp_ent:GetPos())
+                    local ang = lamp_ent:GetAngles()
 
                     print("{\n\tcolor = Color(" .. clr.r .. ", " .. clr.g .. ", " .. clr.b .. "),")
-                    print("\ttexture = \"" .. lamp:GetFlashlightTexture() .. "\",")
-                    print("\tfov = " .. lamp:GetLightFOV() .. ",")
-                    print("\tdistance = " .. lamp:GetDistance() .. ",")
-                    print("\tbrightness = " .. lamp:GetBrightness() .. ",")
+                    print("\ttexture = \"" .. lamp_ent:GetFlashlightTexture() .. "\",")
+                    print("\tfov = " .. lamp_ent:GetLightFOV() .. ",")
+                    print("\tdistance = " .. lamp_ent:GetDistance() .. ",")
+                    print("\tbrightness = " .. lamp_ent:GetBrightness() .. ",")
                     print("\tpos = Vector(" .. pos.x .. ", " .. pos.y .. ", " .. pos.z .. "),")
                     print("\tang = Angle(" .. ang.x .. ", " .. ang.y .. ", " .. ang.z .. "),")
                     print("},")
@@ -76,7 +78,7 @@ if SERVER then
 
     ENT:AddHook("OnRemove", "debug_lamps", function(self)
         if not self.debug_lamps then return end
-        for k,v in pairs(self.debug_lamps) do
+        for _,v in pairs(self.debug_lamps) do
             if IsValid(v) then
                 v:Remove()
             end
@@ -86,7 +88,7 @@ if SERVER then
     ENT:AddHook("PowerToggled", "debug_lamps", function(self, on)
         if not self.debug_lamps then return end
 
-        for k,v in pairs(self.debug_lamps) do
+        for _,v in pairs(self.debug_lamps) do
             if IsValid(v) and v.lamp_data.nopower ~= true then
                 v:SetOn(on)
             end

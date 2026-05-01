@@ -2,14 +2,15 @@
 
 --Custom music
 
-local custom_music
-local favourite_music
+local custom_music = {}
+local favourite_music = {}
 local CUSTOM_MUSIC_FILE = "tardis/custom_music.txt"
 local FAVOURITE_MUSIC_FILE = "tardis/favourite_music.txt"
 
 function TARDIS:LoadCustomMusic()
     if file.Exists(CUSTOM_MUSIC_FILE,"DATA") then
-        custom_music = TARDIS.von.deserialize(file.Read(CUSTOM_MUSIC_FILE,"DATA"))
+        local data = TARDIS.von.deserialize(file.Read(CUSTOM_MUSIC_FILE,"DATA") or "")
+        custom_music = istable(data) and data or {}
     else
         custom_music = {}
     end
@@ -17,7 +18,8 @@ end
 
 function TARDIS:LoadFavouriteMusic()
     if file.Exists(FAVOURITE_MUSIC_FILE, "DATA") then
-        favourite_music = TARDIS.von.deserialize(file.Read(FAVOURITE_MUSIC_FILE, "DATA"))
+        local data = TARDIS.von.deserialize(file.Read(FAVOURITE_MUSIC_FILE, "DATA") or "")
+        favourite_music = istable(data) and data or {}
     else
         favourite_music = {}
     end
@@ -54,20 +56,22 @@ function TARDIS:AddCustomMusic(name, url)
         return
     end
 
-    for k,v in pairs(custom_music) do
+    for _,v in pairs(custom_music) do
         if v[1] == name then
             TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.Conflict")
             return
         end
     end
 
-    local next = table.insert(custom_music,{name, url})
+    table.insert(custom_music,{name, url})
     TARDIS:Message(LocalPlayer(), "Screens.Music.CustomAdded", name, url)
     TARDIS:SaveCustomMusic()
 end
 
 function TARDIS:RemoveCustomMusic(index)
-    TARDIS:Message(LocalPlayer(), "Screens.Music.CustomRemoved", custom_music[index][1], custom_music[index][2])
+    local removed = custom_music[index]
+    if not removed then return end
+    TARDIS:Message(LocalPlayer(), "Screens.Music.CustomRemoved", removed[1], removed[2])
     table.remove(custom_music, index)
     TARDIS:SaveCustomMusic()
 end
@@ -107,6 +111,8 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     local list_categories
     local list_songs
     local default_song_lookup = {}
+    local update_custom_songs = function() end
+    local update_favourite_songs = function() end
 
     if screen.is3D2D then
         list_categories = ListView3D:new(frame,screen,34,bgcolor)
@@ -154,7 +160,9 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     play_stop_button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     if not screen.is3D2D then
-        local el1,el2 = TARDIS:CreateOptionInterface("music-volume", TARDIS:GetSettingData("music-volume"))
+        local volume_label, volume_slider = TARDIS:CreateOptionInterface("music-volume", TARDIS:GetSettingData("music-volume"))
+        local el1 = assert(volume_label)
+        local el2 = assert(volume_slider)
         local volume_setting = vgui.Create("DPanel",panel)
         volume_setting:SetPos(gap2, 10 * gap2 + 3 * tbT)
         volume_setting:SetSize(tbW, el1:GetTall() + el2:GetTall() + 3 * gap2)
@@ -189,13 +197,14 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         local sel_cat = list_categories:GetSelectedLine()
         if not sel_cat then return end
         local cat = categories[sel_cat]
+        if not cat then return end
         local sel_song = list_songs:GetSelectedLine()
         if not sel_song then return end
         if cat.id == "favourites" then
             -- Remove from favourites
             table.remove(favourite_music, sel_song)
             TARDIS:SaveFavouriteMusic()
-            list_songs:UpdateFavouriteSongs()
+            update_favourite_songs()
             add_remove_fav_button:SetEnabled(false)
         elseif cat.id ~= "custom" then
             -- Add to favourites if not already
@@ -268,27 +277,28 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         list_categories:SelectFirstItem()
     end)
 
-    function list_songs:UpdateCustomSongs()
+    update_custom_songs = function()
         local sel = list_categories:GetSelectedLine()
         if not sel then return end
-        if categories[sel].id ~= "custom" then
+        local cat = categories[sel]
+        if not cat or cat.id ~= "custom" then
             return
         end
-        self:Clear()
+        list_songs:Clear()
         urls = {}
-        for k,v in pairs(custom_music) do
-            self:AddLine(v[1])
+        for _,v in pairs(custom_music) do
+            list_songs:AddLine(v[1])
             table.insert(urls, v[2])
         end
     end
 
-    function list_songs:UpdateFavouriteSongs()
-        self:Clear()
+    update_favourite_songs = function()
+        list_songs:Clear()
         urls = {}
         for _,id in ipairs(favourite_music) do
             local entry = default_song_lookup[id]
             if entry then
-                self:AddLine(entry.song.name)
+                list_songs:AddLine(entry.song.name)
                 table.insert(urls, "https://cdn.amyjeanes.com/tardis/"..entry.song.id..".mp3")
             end
         end
@@ -302,9 +312,12 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         local sel = list_categories:GetSelectedLine()
         if not sel then return end
         local cat = categories[sel]
+        if not cat then return end
         if cat.id == "custom" then
-            url_bar:SetText(custom_music[rowIndex][2])
-            name_bar:SetText(custom_music[rowIndex][1])
+            local song = custom_music[rowIndex]
+            if not song then return end
+            url_bar:SetText(song[2])
+            name_bar:SetText(song[1])
         end
         url = urls[rowIndex]
         if cat.id == "favourites" then
@@ -329,6 +342,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         local sel = list_categories:GetSelectedLine()
         if not sel then return end
         local cat = categories[sel]
+        if not cat then return end
         ext:PlayMusic(urls[rowIndex])
         list_songs:ClearSelection()
         add_remove_fav_button:SetEnabled(false)
@@ -342,6 +356,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         url_bar:SetText("")
         name_bar:SetText("")
         local cat = categories[rowIndex]
+        if not cat then return end
         urls = {}
         add_remove_fav_button:SetEnabled(false)
         if cat.id == "custom" then
@@ -353,7 +368,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
             add_remove_fav_button:SetEnabled(false)
             add_remove_fav_button:SetText(TARDIS:GetPhrase("Common.AddToFavourites"))
         elseif cat.id == "favourites" then
-            list_songs:UpdateFavouriteSongs()
+            update_favourite_songs()
             url_bar:SetEnabled(false)
             name_bar:SetEnabled(false)
             save_custom_button:SetEnabled(false)
@@ -385,12 +400,12 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     function name_bar:OnEnter()
         if screen.is3D2D then return end
         TARDIS:AddCustomMusic(name_bar:GetText(), url_bar:GetText())
-        list_songs:UpdateCustomSongs()
+        update_custom_songs()
     end
 
     function save_custom_button:DoClick()
         TARDIS:AddCustomMusic(name_bar:GetText(), url_bar:GetText())
-        list_songs:UpdateCustomSongs()
+        update_custom_songs()
     end
 
     function remove_custom_button:DoClick()
@@ -400,12 +415,15 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
             return
         end
 
-        Derma_Query(TARDIS:GetPhrase("Screens.Music.DeleteConfirm", custom_music[line][1]),
+        local song = custom_music[line]
+        if not song then return end
+
+        Derma_Query(TARDIS:GetPhrase("Screens.Music.DeleteConfirm", song[1]),
                     TARDIS:GetPhrase("Common.Interface"),
                     TARDIS:GetPhrase("Common.Yes"),
                     function()
                         TARDIS:RemoveCustomMusic(line)
-                        list_songs:UpdateCustomSongs()
+                        update_custom_songs()
                     end,
                     TARDIS:GetPhrase("Common.No"),
                     function()

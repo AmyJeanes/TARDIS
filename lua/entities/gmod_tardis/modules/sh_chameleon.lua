@@ -219,9 +219,9 @@ function ENT:ChangeExterior(id, animate, ply, retry)
             oldVelocity = self.phys:GetVelocity()
         end
 
-        self:SetMaterial()
+        self:SetMaterial("")
         self:SetSubMaterial()
-        for k,v in ipairs(self:GetBodyGroups()) do
+        for _,v in ipairs(self:GetBodyGroups()) do
             self:SetBodygroup(v.id, 0)
         end
         -- reset submaterials etc.
@@ -310,7 +310,7 @@ function ENT:ChangeExterior(id, animate, ply, retry)
         end
 
         -- exterior parts replacement
-        for k,v in pairs(self:GetParts()) do
+        for _,v in pairs(self:GetParts()) do
             if IsValid(v) then
                 v:Remove()
             end

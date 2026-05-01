@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - dev
       - alpha
@@ -23,15 +23,75 @@ on:
         - alpha
 
 jobs:
+  glua-check:
+    name: GLua Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          path: TARDIS
+
+      - name: Checkout Doors
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: AmyJeanes/Doors
+          ref: dev
+          path: Doors
+
+      - name: Checkout world-portals
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: AmyJeanes/world-portals
+          ref: dev
+          path: world-portals
+
+      - name: Checkout Sonic-Screwdriver
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: AmyJeanes/Sonic-Screwdriver
+          ref: dev
+          path: Sonic-Screwdriver
+
+      - name: Checkout wire
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: wiremod/wire
+          ref: master
+          path: wire
+
+      - name: Checkout GMod-MCP-Server
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: AmyJeanes/GMod-MCP-Server
+          ref: main
+          path: GMod-MCP-Server
+
+      - name: Run glua_check
+        working-directory: TARDIS
+        shell: pwsh
+        run: ./scripts/glua-check.ps1 -Sarif results.sarif
+
+      - name: Upload SARIF
+        if: always() && hashFiles('TARDIS/results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4
+        with:
+          sarif_file: TARDIS/results.sarif
+          checkout_path: ${{ github.workspace }}/TARDIS
+          category: glua_check
+
   build:
     name: Build
     runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set workshop addon id
         id: workshop_id
-        if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
         run: |
           if [[ "${{ github.event.inputs.addon }}" == "beta" || "${{ github.ref }}" == "refs/heads/dev" ]]; then
             WORKSHOP_ID=${{ vars.BETA_WORKSHOP_ID }}
@@ -44,7 +104,7 @@ jobs:
 
           echo "Publishing to workshop ID $WORKSHOP_ID"
           echo "WORKSHOP_ID=$WORKSHOP_ID" >> $GITHUB_OUTPUT
-      
+
       - uses: AmyJeanes/gmod-upload@main
         name: Publish to workshop
         with:

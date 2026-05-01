@@ -1,3 +1,6 @@
+-- Third-party library
+---@diagnostic disable
+
 --[[    vON 1.3.4
 
     Copyright 2012-2014 Alexandru-Mihai Maftei

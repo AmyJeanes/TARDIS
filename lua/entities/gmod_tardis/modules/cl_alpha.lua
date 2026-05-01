@@ -50,7 +50,7 @@ local function dopredraw(self,part)
             render.OverrideColorWriteEnable(false, false)
 
             render.OverrideColorWriteEnable(true, false)
-            for k,v in pairs(self.parts) do
+            for _,v in pairs(self.parts) do
                 if v.ExteriorPart then
                     v:DrawModel()
                 end
@@ -88,7 +88,7 @@ ENT:AddHook("AlphaTranslucentChanged", "rendergroup", function(self,transparent)
     end
     self.RenderGroup = rendergroup
     self:SetRenderMode(rendermode)
-    for k,v in pairs(self.parts) do
+    for _,v in pairs(self.parts) do
         if v.ExteriorPart then
             v.RenderGroup = rendergroup
             v:SetRenderMode(rendermode)

@@ -16,7 +16,7 @@ function ENT:InitializeTips(style_name)
     local style = TARDIS:GetTipStyle(style_name)
     local tips = {}
 
-    for k,interior_tip in ipairs(self.alltips) do
+    for _,interior_tip in ipairs(self.alltips) do
         local tip = table.Copy(style)
 
         tip.view_range_min = int_metadata.Tips.view_range_min or int_metadata.TipSettings.view_range_min
@@ -103,14 +103,14 @@ end
 ENT:AddHook("Initialize", "tips", function(self)
     self.alltips = {}
     if #self.metadata.Interior.Tips ~= 0 then
-        for inttip_id, inttip in ipairs(self.metadata.Interior.Tips) do
+        for _, inttip in ipairs(self.metadata.Interior.Tips) do
             -- Interior.Tips are deprecated; should be deleted when the extensions update and
             -- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
             table.insert(self.alltips, inttip)
         end
     end
     if #self.metadata.Interior.CustomTips ~= 0 then
-        for inttip_id, inttip in ipairs(self.metadata.Interior.CustomTips) do
+        for _, inttip in ipairs(self.metadata.Interior.CustomTips) do
             table.insert(self.alltips, inttip)
         end
     end
@@ -147,7 +147,10 @@ end)
 
 hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     local interior = TARDIS:GetInteriorEnt(LocalPlayer())
-    if not (IsValid(interior) and interior.tips and TARDIS:GetSetting("tips") and (interior:CallHook("ShouldDrawTips")~=false)) then return end
+    if not IsValid(interior) then return end
+    if not interior.tips then return end
+    if not TARDIS:GetSetting("tips") then return end
+    if interior:CallHook("ShouldDrawTips") == false then return end
 
     local selected_tip_style = TARDIS:GetSetting("tips_style")
     if interior.tip_style_name ~= selected_tip_style then
@@ -170,7 +173,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 
     local player_pos = LocalPlayer():EyePos()
     local should_randomize = (interior:CallCommonHook("RandomizeTips") == true)
-    for k,tip in ipairs(interior.tips)
+    for _,tip in ipairs(interior.tips)
     do
         local view_range_min = tip.view_range_min
         local view_range_max = tip.view_range_max
@@ -216,7 +219,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             local printtext = tip.randtext or tip.text
 
             local w, h = surface.GetTextSize( printtext )
-            local pos = pos:ToScreen()
+            local screen_pos = pos:ToScreen()
             local padding = tip.padding or 10
             local offset = tip.offset or 30
             local fr_width = tip.fr_width or 2
@@ -230,28 +233,28 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
             local trY = {}
 
             if tip.down then
-                y = pos.y + offset
+                y = screen_pos.y + offset
                 t = -1
-                trY[1] = pos.y
+                trY[1] = screen_pos.y
                 trY[2] = y - padding
                 trY[3] = y - padding
             else
-                y = pos.y - h - offset
+                y = screen_pos.y - h - offset
                 t = 1
                 trY[1] = y + h + padding
                 trY[2] = y + h + padding
-                trY[3] = pos.y
+                trY[3] = screen_pos.y
             end
             if tip.right then
-                x = pos.x + offset
+                x = screen_pos.x + offset
                 trX[2 - t] = x - (padding / 2)
                 trX[2] = x + (padding * 2)
-                trX[2 + t] = pos.x
+                trX[2 + t] = screen_pos.x
             else
-                x = pos.x - w - offset
+                x = screen_pos.x - w - offset
                 trX[2 - t] = x + w - (padding * 2)
                 trX[2] = x + w + (padding / 2)
-                trX[2 + t] = pos.x
+                trX[2 + t] = screen_pos.x
             end
 
             local verts = {}

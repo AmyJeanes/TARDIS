@@ -1,11 +1,12 @@
 -- a modified version of table.Copy() to deal with Vectors / Angles / ...
-function TARDIS:CopyTable(t)
+---@param t table
+---@param lookup_table table?
+---@return table
+function TARDIS:CopyTable(t, lookup_table)
     if not t or not istable(t) then return nil end
 
     local copy = {}
     setmetatable(copy, debug.getmetatable(t))
-
-    local lookup_table
 
     for i,v in pairs(t) do
         if istable(v) then -- also works for colors

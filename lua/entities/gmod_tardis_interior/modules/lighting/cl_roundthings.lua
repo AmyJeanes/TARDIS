@@ -9,7 +9,7 @@ if CLIENT then
         if self.metadata.Interior.RoundThings then
             self.roundthingmat=Material("sprites/light_ignorez")
             self.roundthings={}
-            for k,v in pairs(self.metadata.Interior.RoundThings) do
+            for _,v in pairs(self.metadata.Interior.RoundThings) do
                 self:AddRoundThing(v)
             end
         end

@@ -12,9 +12,9 @@ if SERVER then
         local winter = entity.metadata.Exterior.WinterSkins
         local winter_ok = TARDIS:GetSetting("winter_skins", entity)
 
-        local function cannot_use_skin(chosen_skin)
-            local is_excluded = table.HasValue(excluded, chosen_skin)
-            return is_excluded or (not winter_ok and winter and table.HasValue(winter, chosen_skin) )
+        local function cannot_use_skin(skin)
+            local is_excluded = table.HasValue(excluded, skin)
+            return is_excluded or (not winter_ok and winter and table.HasValue(winter, skin) )
         end
 
         if excluded then
@@ -48,6 +48,8 @@ if SERVER then
             trace.endpos = vStart + (vForward * 4096)
             trace.filter = ply
 
+            -- Realm-mismatch heuristic false positive: util.TraceLine is shared and we are inside if SERVER then.
+            ---@diagnostic disable-next-line: gmod-realm-mismatch-heuristic
             tr = util.TraceLine(trace)
         end
 
@@ -134,6 +136,8 @@ else -- CLIENT
         return TARDIS.MetadataRaw["base"].Exterior.Sounds[snd_name]
     end
 
+    -- Dynamic read/write counts not handled by analyzer.
+    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Spawn-Delete-Sound", function()
         local ent
         local pos

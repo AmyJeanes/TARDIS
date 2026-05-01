@@ -54,7 +54,7 @@ end
 
 function ENT:RemoveScreens()
     if self.screens3D then
-        for k,v in pairs(self.screens3D) do
+        for _,v in pairs(self.screens3D) do
             if IsValid(v) then
                 v:Remove()
             end
@@ -64,10 +64,10 @@ end
 
 function ENT:LoadScreens()
     self:RemoveScreens()
-    local screens=self.metadata.Interior.Screens
-    if screens then
+    local metadata_screens=self.metadata.Interior.Screens
+    if metadata_screens then
         self.screens3D={}
-        for k,v in pairs(screens) do
+        for k,v in pairs(metadata_screens) do
             local black = v.power_off_black
             if black == nil then
                 black = true
@@ -130,7 +130,7 @@ end
 
 ENT:AddHook("PreDrawTranslucentRenderables", "screens", function(self)
     if self.screens3D then
-        for k,v in pairs(self.screens3D) do
+        for _,v in pairs(self.screens3D) do
             local should,pos,ang = self:ShouldRenderScreen(v)
             if should then
                 local col=Color(0,0,0,0)

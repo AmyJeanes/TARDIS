@@ -7,7 +7,8 @@ on:
     paths:
     - i18n/languages/*.json
     - version.json
-    - generate-languages.ps1
+    - scripts/generate-languages.ps1
+    - scripts/generate-version.ps1
     - .github/workflows/generate-files.yml
   push:
     branches:
@@ -15,7 +16,8 @@ on:
     paths:
     - i18n/languages/*.json
     - version.json
-    - generate-languages.ps1
+    - scripts/generate-languages.ps1
+    - scripts/generate-version.ps1
     - .github/workflows/generate-files.yml
 
   workflow_dispatch:
@@ -39,13 +41,13 @@ jobs:
         if: github.event_name != 'pull_request'
 
       - name: Generate Languages
-        run: ./generate-languages.ps1
+        run: ./scripts/generate-languages.ps1
         shell: pwsh
         env:
           TARDIS_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Generate Version
-        run: ./generate-version.ps1
+        run: ./scripts/generate-version.ps1
         shell: pwsh
 
       - name: Git Auto Commit

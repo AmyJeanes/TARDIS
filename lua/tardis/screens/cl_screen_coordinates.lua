@@ -118,7 +118,7 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         if not TARDIS:GetSetting("gui_animations") then
             return "???"
         end
-        return math.random(-99999999, 99999999) * 0.0001
+        return tostring(math.random(-99999999, 99999999) * 0.0001)
     end
 
     position_panel.Think = function(self)
@@ -130,14 +130,14 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             pos_z:SetText(generate_vortex_coordinate())
         else
             local pos = ext:GetPos()
-            pos_x:SetText(math.Round(pos.x, round_digits))
-            pos_y:SetText(math.Round(pos.y, round_digits))
-            pos_z:SetText(math.Round(pos.z, round_digits))
+            pos_x:SetText(tostring(math.Round(pos.x, round_digits)))
+            pos_y:SetText(tostring(math.Round(pos.y, round_digits)))
+            pos_z:SetText(tostring(math.Round(pos.z, round_digits)))
         end
         local ang = ext:GetAngles()
-        pos_pitch:SetText(math.Round(ang.p, round_digits))
-        pos_yaw:SetText(math.Round(ang.y, round_digits))
-        pos_roll:SetText(math.Round(ang.r, round_digits))
+        pos_pitch:SetText(tostring(math.Round(ang.p, round_digits)))
+        pos_yaw:SetText(tostring(math.Round(ang.y, round_digits)))
+        pos_roll:SetText(tostring(math.Round(ang.r, round_digits)))
 
         EnsureEnabled(pos_save, not vortex)
         EnsureEnabled(pos_copy, not vortex)
@@ -248,12 +248,12 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             return
         end
 
-        dst_x:SetText(math.Round(dst_pos.x, round_digits))
-        dst_y:SetText(math.Round(dst_pos.y, round_digits))
-        dst_z:SetText(math.Round(dst_pos.z, round_digits))
-        dst_pitch:SetText(math.Round(dst_ang.p, round_digits))
-        dst_yaw:SetText(math.Round(dst_ang.y, round_digits))
-        dst_roll:SetText(math.Round(dst_ang.r, round_digits))
+        dst_x:SetText(tostring(math.Round(dst_pos.x, round_digits)))
+        dst_y:SetText(tostring(math.Round(dst_pos.y, round_digits)))
+        dst_z:SetText(tostring(math.Round(dst_pos.z, round_digits)))
+        dst_pitch:SetText(tostring(math.Round(dst_ang.p, round_digits)))
+        dst_yaw:SetText(tostring(math.Round(dst_ang.y, round_digits)))
+        dst_roll:SetText(tostring(math.Round(dst_ang.r, round_digits)))
     end
 
     dst_progress.UpdateState = function(self)
@@ -400,12 +400,12 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
 
     local function updatetextinputs(pos,ang,name)
-        pitch:SetText(ang.p or 0.0)
-        yaw:SetText(ang.y or 0.0)
-        roll:SetText(ang.r or 0.0)
-        x:SetText(pos.x or 0.0)
-        y:SetText(pos.y or 0.0)
-        z:SetText(pos.z or 0.0)
+        pitch:SetText(tostring(ang.p or 0.0))
+        yaw:SetText(tostring(ang.y or 0.0))
+        roll:SetText(tostring(ang.r or 0.0))
+        x:SetText(tostring(pos.x or 0.0))
+        y:SetText(tostring(pos.y or 0.0))
+        z:SetText(tostring(pos.z or 0.0))
         if name then namebox:SetText(name) end
     end
 
@@ -440,12 +440,13 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     local function updatelist()
         local scr
         if screen.is3D2D then
-            scr = llist:GetScroll()
+            local list3D = llist --[[@as ListView3D]]
+            scr = list3D:GetScroll()
         end
 
         llist:Clear()
         if TARDIS.Locations[map] ~= nil then
-            for k,v in pairs(TARDIS.Locations[map]) do
+            for _,v in pairs(TARDIS.Locations[map]) do
                 llist:AddLine(v.name)
             end
         end
@@ -453,7 +454,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         llist:AddLine(TARDIS:GetPhrase("Screens.Coordinates.Random"))
 
         if screen.is3D2D and scr then
-            llist:SetScroll(scr)
+            local list3D = llist --[[@as ListView3D]]
+            list3D:SetScroll(scr)
         end
     end
 
@@ -471,8 +473,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         local name,pos,ang
         if i > locations_num then
             local ground = (i == locations_num + 1)
-            local ext = LocalPlayer():GetTardisData("exterior")
-            pos = ext:GetRandomLocation(ground) or ext:GetPos()
+            local current_ext = LocalPlayer():GetTardisData("exterior")
+            pos = current_ext:GetRandomLocation(ground) or current_ext:GetPos()
             ang = {p = 0, y = 0, r = 0}
             if ground then
                 name = TARDIS:GetPhrase("Screens.Coordinates.RandomLocationGround")
@@ -546,7 +548,6 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     end
 
     function input_save:DoClick()
-        local vortex = ext:GetData("vortex", false)
         local pos, ang, name = fetchtextinputs()
 
         if name == "" then name = TARDIS:GetPhrase("Screens.Coordinates.Unnamed") end

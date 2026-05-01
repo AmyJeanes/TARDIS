@@ -6,7 +6,7 @@ if SERVER then
         local constrained = constraint.GetAllConstrainedEntities(self)
         local attached
         if constrained then
-            for k,v in pairs(constrained) do
+            for k,_ in pairs(constrained) do
                 if not (k.TardisPart or k==self) then
                     local a=k:GetColor().a
                     if not attached then attached = {} end
@@ -20,7 +20,7 @@ if SERVER then
     ENT:AddHook("StopDemat", "attached", function(self)
         local attached=self:GetData("demat-attached")
         if attached then
-            for k,v in pairs(attached) do
+            for k,_ in pairs(attached) do
                 if IsValid(k) and not IsValid(k:GetParent()) then
                     local phys=k:GetPhysicsObject()
                     if phys and IsValid(phys) then
@@ -48,7 +48,7 @@ if SERVER then
     ENT:AddHook("PreTeleportPositionChange", "attached_hoverballs", function(self, pos, ang, phys_enable)
         local attached=self:GetData("demat-attached")
         if attached then
-            for k,v in pairs(attached) do
+            for k,_ in pairs(attached) do
                 if IsValid(k) and not IsValid(k:GetParent()) then
                     k.telepos=k:GetPos()-self:GetPos()
                     if k:GetClass()=="gmod_hoverball" then -- fixes hoverballs spazzing out
@@ -63,7 +63,7 @@ if SERVER then
         local attached=self:GetData("demat-attached")
         if not attached then return end
 
-        for k,v in pairs(attached) do
+        for k,_ in pairs(attached) do
             if IsValid(k) and not IsValid(k:GetParent()) then
                 if k:IsRagdoll() then
                     for i=0,k:GetPhysicsObjectCount() do

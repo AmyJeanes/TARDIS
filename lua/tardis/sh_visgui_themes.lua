@@ -88,9 +88,9 @@ function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
         if theme[section].subfolder ~= nil then
             folder = folder..theme[section].subfolder.."/"
         end
-        local element = folder..theme[section][element]
-        if file.Exists(element, "GAME") then
-            return element
+        local element_path = folder..theme[section][element]
+        if file.Exists(element_path, "GAME") then
+            return element_path
         end
     end
     if theme.base_id ~= nil then

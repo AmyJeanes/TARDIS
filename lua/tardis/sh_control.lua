@@ -6,7 +6,6 @@ end
 
 local controls={}
 local control_moves = {}
-local controlling_via_part = false
 
 function TARDIS:AddControl(control)
     if CLIENT or (SERVER and (not control.clientonly)) then

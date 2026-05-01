@@ -70,9 +70,10 @@ function TARDIS:IsNewVersion()
 end
 
 function TARDIS:IsNewInstall()
-    return self.PreviousVersion.Major == 0
-        and self.PreviousVersion.Minor == 0
-        and self.PreviousVersion.Patch == 0
+    local previousVersion = assert(self.PreviousVersion)
+    return previousVersion.Major == 0
+        and previousVersion.Minor == 0
+        and previousVersion.Patch == 0
 end
 
 function TARDIS:GetVersionString(version)

@@ -1,5 +1,5 @@
 function TARDIS:SetExteriorCategory(ext_id, category)
-    for k,v in pairs(self.ExteriorCategories) do
+    for _,v in pairs(self.ExteriorCategories) do
         if v[ext_id] then
             v[ext_id] = nil
         end
@@ -46,7 +46,7 @@ function TARDIS:ImportExterior(int_id, import_options)
     local E = self:CopyTable(T.Exterior)
     E.ID = import_options.ext_id or int_id
     E.Base = import_options.base or "base"
-    E.Name = import_options.name or T.Name or ext_id
+    E.Name = import_options.name or T.Name or int_id
 
     if import_options.category then
         E.Category = import_options.category
@@ -92,11 +92,12 @@ end
 function TARDIS:CreateExteriorMetadata(id)
     self:SetupExteriorMetadata(id)
 
-    if self.ExteriorsMetadata[id] == nil then
+    local raw = self.ExteriorsMetadata[id]
+    if raw == nil then
         return self:CreateExteriorMetadata("default")
     end
 
-    local metadata = TARDIS:CopyTable(self.ExteriorsMetadata[id])
+    local metadata = TARDIS:CopyTable(raw)
     metadata.TextureSets = TARDIS:GetMergedTextureSets(metadata.TextureSets)
 
     return metadata

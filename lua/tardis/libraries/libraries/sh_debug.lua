@@ -72,7 +72,7 @@ local function CreateBoolDebugConVar(name, desc)
     convar_update_funcs[id] = convar_update
 end
 
-net.Receive("TARDIS_Debug_Convar", function(name, len, ply)
+net.Receive("TARDIS_Debug_Convar", function()
     local id = net.ReadString()
     if convar_update_funcs[id] then
         convar_update_funcs[id]()
@@ -102,6 +102,7 @@ end)
 TARDIS.DebugTipsFunction = function(self, ply, ...)
     local int = self.interior
 
+    ---@type Trace
     local trace = {
         start = ply:EyePos(),
         endpos = ply:EyePos() + (ply:GetAimVector() * 4096),
@@ -118,7 +119,7 @@ TARDIS.DebugTipsFunction = function(self, ply, ...)
     tip_pos.z = tip_pos.z - 1
 
     local ent = trace_res.Entity
-    local id = ent.TardisPart and ent.ID or nil
+    local id = IsValid(ent) and ent.TardisPart and ent.ID or nil
 
     local function sm(x) return math.Round(x,2) end
 
@@ -318,8 +319,7 @@ function TARDIS:Debug(...)
     if ... == nil or args == nil then
         full_text = full_text .. "<nil>"
     else
-        for k,arg in pairs(args) do
-            local text
+        for _,arg in pairs(args) do
             if istable(arg) then
                 table.insert(tables_to_print, arg)
                 full_text = full_text .. "<" .. tostring(arg) .. ">  "
@@ -336,7 +336,7 @@ function TARDIS:Debug(...)
         print(full_text)
     end
 
-    for i,v in ipairs(tables_to_print) do
+    for _,v in ipairs(tables_to_print) do
         print("\n\n" .. debug_table_prefix .. tostring(v) .. ":")
         print("―――――――――――――――――――――――――――――――――――――――――――――――――――")
         PrintTable(v, 1)

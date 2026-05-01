@@ -1,5 +1,28 @@
+---@class ListView3D
+---@field parent Panel
+---@field screen table
+---@field font string
+---@field selection_font string
+---@field pos number[]
+---@field size number[]
+---@field elem_h number
+---@field lines string[]
+---@field elements Panel[]
+---@field line_elements DLabel[]
+---@field selected_line integer?
+---@field bgcolor Color
+---@field scroll number
+---@field max_scroll number
+---@field scroll_speed number
+---@field panel DPanel
+---@field list_panel DPanel?
+---@field scroll_panel DPanel?
+---@field up_button DButton?
+---@field down_button DButton?
+---@field DoDoubleClick fun(self: ListView3D, rowIndex: integer, row: Panel)
 ListView3D = {}
 
+---@return ListView3D
 function ListView3D:new(parent,screen,elem_height,col)
     local l = {
         parent = parent,
@@ -39,7 +62,7 @@ function ListView3D:new(parent,screen,elem_height,col)
 end
 
 function ListView3D:CleanLayout()
-    for k,v in ipairs(self.elements) do
+    for _,v in ipairs(self.elements) do
         if IsValid(v) then
             v:Remove()
         end
@@ -95,7 +118,7 @@ function ListView3D:UpdateLayout()
 
         b.OnToggled = function(this, state)
             if state then
-                for k,another_line in pairs(self.line_elements) do
+                for _,another_line in pairs(self.line_elements) do
                     if another_line ~= this then
                         another_line:SetToggle(false)
                         another_line:SetFont(self.font)
@@ -237,7 +260,7 @@ function ListView3D:GetSelectedLine()
     return self.selected_line
 end
 function ListView3D:ClearSelection()
-    for k,v in pairs(self.line_elements) do
+    for _,v in pairs(self.line_elements) do
         v:SetToggle(false)
         v:SetFont(self.font)
         v.panel:SetBackgroundColor(Color(255,255,255))
@@ -247,6 +270,7 @@ end
 function ListView3D:SelectFirstItem()
     self:ClearSelection()
     local first = self.line_elements[1]
+    if not first then return end
     first:SetToggle(true)
     first:OnToggled(true)
 end
@@ -256,8 +280,11 @@ function ListView3D:GetScroll()
 end
 function ListView3D:SetScroll(s)
     self.scroll = math.Clamp(s, 0, self.max_scroll)
-    self.up_button:SetEnabled(self.scroll ~= 0)
-    self.down_button:SetEnabled(self.scroll ~= self.max_scroll)
+    local up_button = self.up_button
+    local down_button = self.down_button
+    if not up_button or not down_button then return end
+    up_button:SetEnabled(self.scroll ~= 0)
+    down_button:SetEnabled(self.scroll ~= self.max_scroll)
 end
 function ListView3D:SetScrollSpeed(s)
     self.scroll_speed = s

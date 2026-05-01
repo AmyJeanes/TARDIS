@@ -2,6 +2,7 @@
 
 TARDIS.SettingsData = TARDIS.SettingsData or {}
 
+---@type table<string, any>
 TARDIS.GlobalSettings = TARDIS.GlobalSettings or {}
 TARDIS.ClientSettings = TARDIS.ClientSettings or {}
 
@@ -131,7 +132,7 @@ function TARDIS:GetSetting(id, src, no_default)
     if IsValid(src) and not src:IsPlayer() and not src.TardisExterior then
         src = src.exterior
     end
-    if IsValid(src) and IsEntity(src) then
+    if IsValid(src) and isentity(src) then
         ply = (src:IsPlayer() and src) or src:GetCreator()
     end
 
@@ -373,6 +374,8 @@ else
         TARDIS:SendSettings()
     end)
 
+    -- Dynamic read/write counts not handled by analyzer.
+    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-ClientSettings",function(len)
         local ply=net.ReadInt(8)
         if not TARDIS.ClientSettings[ply] then TARDIS.ClientSettings[ply]={} end
@@ -403,7 +406,11 @@ else
 end
 
 function TARDIS:SendSetting(id,value,ply)
-    net.Start(SERVER and "TARDIS-Settings" or "TARDIS-ClientSettings")
+    if SERVER then
+        net.Start("TARDIS-Settings")
+    else
+        net.Start("TARDIS-ClientSettings")
+    end
         net.WriteBool(true)
         net.WriteString(id)
         net.WriteType(value)
@@ -419,7 +426,11 @@ function TARDIS:SendSetting(id,value,ply)
 end
 
 function TARDIS:SendSettings(ply)
-    net.Start(SERVER and "TARDIS-Settings" or "TARDIS-ClientSettings")
+    if SERVER then
+        net.Start("TARDIS-Settings")
+    else
+        net.Start("TARDIS-ClientSettings")
+    end
         net.WriteBool(false)
         net.WriteString(self.von.serialize(SERVER and self.GlobalSettings or self.NetworkedSettings))
     if SERVER then

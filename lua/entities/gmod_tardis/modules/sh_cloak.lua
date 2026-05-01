@@ -95,7 +95,7 @@ if SERVER then
         local should_draw = (self:CallHook("ShouldDrawShadow") ~= false)
         self:DrawShadow(should_draw)
 
-        for k,v in pairs(self.parts) do
+        for _,v in pairs(self.parts) do
             if IsValid(v) then
                 v:DrawShadow(not v.NoShadow and should_draw)
             end
@@ -153,8 +153,6 @@ else
         self:SetData("phase-highPos", pos)
         self:SetData("phase-pos", pos2)
     end)
-
-    local oldClip
 
     ENT:AddHook("ShouldDrawPhaseAnimation", "cloak", function(self)
         if self:GetData("cloak-animating",false) then

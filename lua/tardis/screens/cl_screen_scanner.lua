@@ -14,8 +14,7 @@ local uid=0
 TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, order=3}, function(self,ext,int,frame,screen)
     screen.scanner=GetRenderTarget("tardisi_scanner_screen_"..uid.."_"..screen.id,
         screen.width*screen.res,
-        screen.height*screen.res,
-        false
+        screen.height*screen.res
     )
     uid=uid+1
     screen.scannerang=Angle()

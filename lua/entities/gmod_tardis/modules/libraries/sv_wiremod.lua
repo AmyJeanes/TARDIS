@@ -2,8 +2,8 @@
 
 --Vars
 
-local inputs = inputs or {}
-local outputs = outputs or {}
+local inputs = {}
+local outputs = {}
 
 --Methods
 

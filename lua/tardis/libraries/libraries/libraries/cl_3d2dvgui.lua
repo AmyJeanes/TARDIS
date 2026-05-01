@@ -88,16 +88,12 @@ end
 local inputWindows = {}
 local usedpanel = {}
 
-local function isMouseOver(pnl)
-    return pointInsidePanel(pnl, getCursorPos())
-end
-
 local function postPanelEvent(pnl, event, ...)
     if not IsValid(pnl) or not pnl:IsVisible() or not pointInsidePanel(pnl, getCursorPos()) then return false end
 
     local handled = false
 
-    for i, child in pairs(table.Reverse(pnl:GetChildren())) do
+    for _, child in pairs(table.Reverse(pnl:GetChildren())) do
         if postPanelEvent(child, event, ...) then
             handled = true
             break
@@ -120,7 +116,7 @@ local function checkHover(pnl, x, y, found)
     end
 
     local validchild = false
-    for c, child in pairs(table.Reverse(pnl:GetChildren())) do
+    for _, child in pairs(table.Reverse(pnl:GetChildren())) do
         local check = checkHover(child, x, y, found or validchild)
 
         if check then
@@ -159,9 +155,9 @@ hook.Add("KeyPress", "VGUI3D2DMousePress", function(_, key)
                 angle = pnl.Angle
                 normal = pnl.Normal
 
-                local key = input.IsKeyDown(KEY_LSHIFT) and MOUSE_RIGHT or MOUSE_LEFT
+                local mouse_button = input.IsKeyDown(KEY_LSHIFT) and MOUSE_RIGHT or MOUSE_LEFT
 
-                postPanelEvent(pnl, "OnMousePressed", key)
+                postPanelEvent(pnl, "OnMousePressed", mouse_button)
             end
         end
     end
@@ -169,7 +165,7 @@ end)
 
 hook.Add("KeyRelease", "VGUI3D2DMouseRelease", function(_, key)
     if key == IN_USE then
-        for pnl, key in pairs(usedpanel) do
+        for pnl, used_key in pairs(usedpanel) do
             if IsValid(pnl) then
                 origin = pnl.Origin
                 scale = pnl.Scale
@@ -177,7 +173,7 @@ hook.Add("KeyRelease", "VGUI3D2DMouseRelease", function(_, key)
                 normal = pnl.Normal
 
                 if pnl["OnMouseReleased"] then
-                    pnl["OnMouseReleased"](pnl, key[1])
+                    pnl["OnMouseReleased"](pnl, used_key[1])
                 end
 
                 usedpanel[pnl] = nil
@@ -209,8 +205,9 @@ function vgui.IsPointingPanel(pnl)
     return pointInsidePanel(pnl, getCursorPos())
 end
 
-local Panel = FindMetaTable("Panel")
+local Panel = assert(FindMetaTable("Panel"))
 function Panel:Paint3D2D()
+    if not self then return end
     if not self:IsValid() then return end
 
     -- Add it to the list of windows to receive input
@@ -245,7 +242,7 @@ function Panel:Paint3D2D()
     end
 
     -- Update the hover state of controls
-    local _, tab = checkHover(self)
+    checkHover(self)
 
     -- Store the orientation of the window to calculate the position outside the render loop
     self.Origin = origin

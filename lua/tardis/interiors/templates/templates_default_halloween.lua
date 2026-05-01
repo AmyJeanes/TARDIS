@@ -75,7 +75,7 @@ local function can_be_outside(ext)
     local dooropen = ext:DoorOpen()
     local anythirdperson = false
     local anyoccupants = false
-    for k,v in pairs(ext.occupants) do
+    for k,_ in pairs(ext.occupants) do
         if k:GetTardisData("thirdperson") or k:GetTardisData("destination") then
             anythirdperson = true
             anyoccupants = true
@@ -123,11 +123,7 @@ TARDIS:AddInteriorTemplate("default_halloween", {
             func = function(ext,int,open)
                 local state = ext:GetData("halloween-state", HALLOWEEN_STATE_DISABLED)
                 if state ~= HALLOWEEN_STATE_KNOCKING then return end
-                local hasoccupants = false
-                for k,v in pairs(ext.occupants) do
-                    hasoccupants = true
-                    break
-                end
+                local hasoccupants = next(ext.occupants) ~= nil
                 local canbeoutside = can_be_outside(ext)
                 local knocked = ext:GetData("halloween-knocked", false)
                 if open and hasoccupants and knocked and canbeoutside then
@@ -180,7 +176,7 @@ TARDIS:AddInteriorTemplate("default_halloween", {
                         local maxs = int:LocalToWorld(Vector(854.176, -669.703, 223.044))
 
                         local occupantsinbox = false
-                        for k,v in pairs(ext.occupants) do
+                        for k,_ in pairs(ext.occupants) do
                             local pos = k:GetPos()
                             if pos.x >= mins.x and pos.x <= maxs.x
                             and pos.y >= mins.y and pos.y <= maxs.y
@@ -220,7 +216,7 @@ TARDIS:AddInteriorTemplate("default_halloween", {
                     if not loopsound then
                         local nextsoundtime = ext:GetData("halloween-nextcorridorsound", 0)
                         if CurTime() - nextsoundtime > 0 then
-                            local sound = HALLOWEEN_NON_LOOPED_SOUNDS[math.random(1,#HALLOWEEN_NON_LOOPED_SOUNDS)]
+                            local sound = assert(HALLOWEEN_NON_LOOPED_SOUNDS[math.random(1,#HALLOWEEN_NON_LOOPED_SOUNDS)])
                             local soundduration = SoundDuration(sound[1])
                             debug_print("Playing non-looped corridor sound: " .. sound[1])
                             ext:SendMessage("halloween-corridorsound", {sound[1], sound[2]})
@@ -257,7 +253,7 @@ TARDIS:AddInteriorTemplate("default_halloween", {
                         if CurTime() - warningnextcheck > 0 then
                             local pos = int:LocalToWorld(Vector(0,0,225))
                             local allinconsoleroom = true
-                            for k,v in pairs(ext.occupants) do
+                            for k,_ in pairs(ext.occupants) do
                                 local dist = k:GetPos():Distance(pos)
                                 if dist > 450 then
                                     allinconsoleroom = false

@@ -4,7 +4,7 @@ local search_radius = 2048
 local explode_radius = 300
 
 local function TimeDistortionsPresent(pos, outside, int_radius)
-    for i,v in ipairs(ents.FindInSphere(pos, search_radius)) do
+    for _,v in ipairs(ents.FindInSphere(pos, search_radius)) do
         if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
             if outside then
                 if v:GetPos():Distance(pos) <= v:GetRadius() then
@@ -24,7 +24,7 @@ local function DistortionsInside(ent)
     if size.Min and size.Max then
         local min = ent.interior:LocalToWorld(size.Min)
         local max = ent.interior:LocalToWorld(size.Max)
-        for i,v in ipairs(ents.FindInBox(min, max)) do
+        for _,v in ipairs(ents.FindInBox(min, max)) do
             if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
                 return true
             end
@@ -51,7 +51,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ForceDematStart", "time_distortion_generators_outside", function(self)
-        for i,v in ipairs(ents.FindInSphere(self:GetPos(), explode_radius)) do
+        for _,v in ipairs(ents.FindInSphere(self:GetPos(), explode_radius)) do
             if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
                 v:Break()
             end

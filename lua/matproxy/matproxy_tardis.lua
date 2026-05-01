@@ -44,7 +44,7 @@ matproxy.Add({
         self.FrameDurations = {}
         self.FrameNumbers = {}
 
-        for k,v in pairs(self.Textures) do
+        for k,_ in pairs(self.Textures) do
             local animate = (self.FrameRates[k] and self.FrameRates[k] > 0)
             self.AnimateTextures[k] = animate
             if animate then
@@ -193,7 +193,7 @@ matproxy.Add({
         end
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
-                local col = ent.metadata.Interior.MatProxy.Color1
+                local col = ent.metadata.Interior.MatProxy.Color1 --[[@as Color]]
                 col = Color(col.r, col.g, col.b):ToVector()
                 mat:SetVector(self.ResultTo, col)
             end
@@ -217,7 +217,7 @@ matproxy.Add({
         end
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
-                local col = ent.metadata.Interior.MatProxy.Color2
+                local col = ent.metadata.Interior.MatProxy.Color2 --[[@as Color]]
                 col = Color(col.r, col.g, col.b):ToVector()
                 mat:SetVector(self.ResultTo, col)
             end
@@ -241,7 +241,7 @@ matproxy.Add({
         end
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
-                local col = ent.metadata.Interior.MatProxy.Color3
+                local col = ent.metadata.Interior.MatProxy.Color3 --[[@as Color]]
                 col = Color(col.r, col.g, col.b):ToVector()
                 mat:SetVector(self.ResultTo, col)
             end
@@ -331,6 +331,7 @@ matproxy.Add({
         if not IsValid(ent) then return end
         if ent.TardisPart and ent.InteriorPart then
             local ext = ent.exterior
+            if not IsValid(ext) then return end
             local vortexcol = vortexfallbackcol
             if ext.metadata.Interior.MatProxy and ext.metadata.Interior.MatProxy.VortexColor then -- Making sure a vortex colour is set in the first place since people tend to re-use door on multiple tardises
                 vortexcol = ext.metadata.Interior.MatProxy.VortexColor

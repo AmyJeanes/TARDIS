@@ -56,7 +56,7 @@ TARDIS.StateUpdateHooks = {
 }
 
 -- Adding the hooks
-for hook_name, hook_val in pairs(TARDIS.StateUpdateHooks) do
+for hook_name, _ in pairs(TARDIS.StateUpdateHooks) do
   ENT:AddHook(hook_name, "state_update", function(self)
     self:UpdateState()
   end)

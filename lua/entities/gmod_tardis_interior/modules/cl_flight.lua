@@ -10,7 +10,6 @@ end)
 function ENT:ChooseFlightSound()
     local sounds_int = self.metadata.Interior.Sounds
     local sounds_ext = self.metadata.Exterior.Sounds
-    local ext = self.exterior
     local current_sound
 
     if self:GetData("broken_flight") then

@@ -41,7 +41,6 @@ function ENT:SetPhyslock(on)
     end
 
     local phys = self:GetPhysicsObject()
-    local vel = phys:GetVelocity():Length()
     if on then
         self:ExplodeIfFast()
     end

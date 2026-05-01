@@ -54,7 +54,7 @@ if CLIENT then
         self:InitLampData(lmp.off_warn)
 
         if not lmp.states then return end
-        for k,v in pairs(lmp.states) do
+        for _,v in pairs(lmp.states) do
             self:InitLampData(v)
         end
     end
@@ -127,15 +127,16 @@ if CLIENT then
         if TARDIS.debug_lamps_enabled then return end
         if not self.lamps_data then return end
 
-        self.lamps = {}
+        local lamps = {}
+        self.lamps = lamps
         for k,v in pairs(self.lamps_data) do
-            self.lamps[k] = self:CreateLamp(SelectLampTable(self, v))
+            lamps[k] = self:CreateLamp(SelectLampTable(self, v))
         end
     end
 
     function ENT:RemoveLamps()
         if not self.lamps then return end
-        for k,v in pairs(self.lamps) do
+        for _,v in pairs(self.lamps) do
             if IsValid(v) then
                 v:Remove()
             end
@@ -174,7 +175,7 @@ if CLIENT then
         if not TARDIS:GetSetting("lamps-enabled") then return end
         if not self.lamps then return end
 
-        for k,v in pairs(self.lamps) do
+        for _,v in pairs(self.lamps) do
             if IsValid(v) then
                 v:Update()
             end
@@ -186,7 +187,7 @@ if CLIENT then
         if not TARDIS:GetSetting("lamps-enabled") then return end
         if not self.lamps_data then return end
 
-        for k,v in pairs(self.lamps_data) do
+        for _,v in pairs(self.lamps_data) do
             local data = SelectLampTable(self, v)
             if not data then return end
             if data.sprite then

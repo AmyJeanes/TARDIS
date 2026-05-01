@@ -127,11 +127,12 @@ TARDIS:AddKeyBind("destination-snaptofloor",{
             local prop = self:GetData("destinationprop")
             if IsValid(prop) then
                 local pos, ang
+                local should_glue = false
                 if TARDIS:IsBindDown("destination-boost") then
                     pos,ang = self:GetDestinationPropTrace(ply,Angle(90,0,0))
                 else
                     local prevpos = self:GetData("destination_snaptofloor_lastpos")
-                    local should_glue = (prevpos == prop:GetPos())
+                    should_glue = (prevpos == prop:GetPos())
 
                     pos, ang = self:GetGroundedPos(prop:GetPos(), should_glue)
                 end
@@ -171,7 +172,7 @@ TARDIS:AddKeyBind("destination-find-random",{
                 prop:SetPos(pos)
                 prop:SetAngles(ang)
 
-                self:SetData("destination_snaptofloor_lastpos", grounded and pos)
+                self:SetData("destination_snaptofloor_lastpos", pos)
             end
         end
     end,
@@ -209,7 +210,7 @@ TARDIS:AddKeyBind("destination-chameleon",{
                 ang = prop:GetAngles()
             end
 
-            local ext, ext_id = table.Random(TARDIS:GetExteriors())
+            local _, ext_id = table.Random(TARDIS:GetExteriors())
 
             self:CreateDestinationProp(ext_id)
             self:SetData("destination_chameleon", ext_id)
@@ -362,10 +363,10 @@ else
     function ENT:GetDestinationPropPos(ply, pos, ang)
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
-        local pos=prop:LocalToWorld(Vector(0,0,60))
+        local trace_pos=prop:LocalToWorld(Vector(0,0,60))
         local tr = util.TraceLine({
-            start=pos,
-            endpos=pos-(ang:Forward()*ply:GetTardisData("destinationdist",defaultdist)),
+            start=trace_pos,
+            endpos=trace_pos-(ang:Forward()*ply:GetTardisData("destinationdist",defaultdist)),
             mask=MASK_NPCWORLDSTATIC,
             ignoreworld=self:GetData("vortex")
         })
@@ -374,9 +375,15 @@ else
 
     function ENT:GetDestinationPropTrace(ply,ang)
         local prop = self:GetData("destinationprop")
-        local pos,ang=self:GetDestinationPropPos(ply,nil,ang)
-        local trace=util.QuickTrace(pos,ang:Forward()*TRACE_DISTANCE,{self,TARDIS:GetPart(self,"door"),prop})
-        local angle=trace.HitNormal:Angle()
+        if not IsValid(prop) then return end
+        local trace_pos,trace_ang=self:GetDestinationPropPos(ply,nil,ang)
+        if not trace_pos or not trace_ang then return end
+        ---@type Entity[]
+        local filter={self,TARDIS:GetPart(self,"door"),prop}
+        local trace=util.QuickTrace(trace_pos,trace_ang:Forward()*TRACE_DISTANCE,filter)
+        local hitNormal = trace.HitNormal
+        if not hitNormal then return trace.HitPos, trace_ang end
+        local angle=hitNormal:Angle()
         angle:RotateAroundAxis(angle:Right(),-90)
         return trace.HitPos,angle
     end
@@ -396,7 +403,7 @@ else
         prop:Spawn()
         local groups = ent:GetBodyGroups()
         if groups then
-            for k,v in pairs(groups) do
+            for _,v in pairs(groups) do
                 prop:SetBodygroup(v.id, v.num)
             end
         end
@@ -415,6 +422,7 @@ else
         end
 
         local prop = setup(self, (md and md.Model))
+        if not IsValid(prop) then return end
 
         if md and md.Portal and md.Parts and md.Parts["door"] then
             local d = md.Parts["door"]
@@ -463,7 +471,7 @@ else
     function ENT:RemoveDestinationProp()
         local prop = self:GetData("destinationprop")
         if IsValid(prop) then
-            for k,v in pairs(prop:GetChildren()) do
+            for _,v in pairs(prop:GetChildren()) do
                 if IsValid(v) then
                     v:Remove()
                 end
@@ -543,14 +551,14 @@ else
                     rt = rt + Angle(0,angforce*-1*dt,0)
                 end
 
-                local fwd = TARDIS:IsBindDown("destination-forward")
+                local forward_pressed = TARDIS:IsBindDown("destination-forward")
                 local back = TARDIS:IsBindDown("destination-backward")
 
-                if fwd or back then
+                if forward_pressed or back then
                     if not self:GetData("destination_rotate_key") then
                         local ang = prop:GetAngles()
 
-                        local k = fwd and 1 or ((ang.y % 45) == 0) and -1 or 0
+                        local k = forward_pressed and 1 or ((ang.y % 45) == 0) and -1 or 0
 
                         if ang:Up() == Vector(0,0,1) then
                             prop:SetAngles(Angle(ang.x, ang.y + 45 * k - (ang.y % 45), ang.z))
@@ -655,7 +663,7 @@ function ENT:GetDestinationAng(auto)
 end
 
 function ENT:DestinationTraceDown(point, vertical_offset)
-    local vertical_offset = vertical_offset or 50
+    vertical_offset = vertical_offset or 50
 
     local filter = function(ent)
         if ent:IsNPC() or ent:IsPlayer() then return false end
@@ -674,7 +682,7 @@ local function GenerateTracePoints(self, yaw)
     local trace_offsets = { Vector(0,0,0), }
 
     local xmin, ymin, zmin = self:OBBMins():Unpack()
-    local xmax, ymax, zmax = self:OBBMaxs():Unpack()
+    local xmax, ymax = self:OBBMaxs():Unpack()
 
     -- add points on the border rectangle
 
@@ -683,7 +691,7 @@ local function GenerateTracePoints(self, yaw)
     table.insert(trace_offsets, Vector(xmin, ymax, zmin))
     table.insert(trace_offsets, Vector(xmax, ymin, zmin))
 
-    for i,v in ipairs(trace_offsets) do
+    for _,v in ipairs(trace_offsets) do
         v:Rotate(yaw)
     end
 
@@ -703,6 +711,10 @@ local function GenerateTracePoints(self, yaw)
     return trace_offsets
 end
 
+---@param p1 Vector
+---@param p2 Vector
+---@param p3 Vector
+---@return Vector
 local function GetPlaneNormal(p1, p2, p3)
     local d1 = p1 - p2
     local d2 = p1 - p3
@@ -713,6 +725,10 @@ local function GetPlaneNormal(p1, p2, p3)
     return normal:GetNormalized()
 end
 
+---@param points Vector[]
+---@return Vector? a
+---@return Vector? b
+---@return Vector? c
 local function SelectPlaneDefiningPoints(points)
     local a,b = points[1], points[2]
 
@@ -729,8 +745,8 @@ local function SelectPlaneDefiningPoints(points)
             table.insert(todelete, i)
         end
     end
-    table.sort(todelete, function(a,b) return a > b end)
-    for i,c in ipairs(todelete) do
+    table.sort(todelete, function(left_index,right_index) return left_index > right_index end)
+    for _,c in ipairs(todelete) do
         table.remove(points, c)
     end
 
@@ -754,12 +770,13 @@ function ENT:GetGroundedPos(point, get_angle)
     local prop = self:GetData("destinationprop")
     local initial_yaw = Angle(0, IsValid(prop) and prop:GetAngles().y or self:GetAngles().y, 0)
 
+    ---@type Vector[]
     local traces = {}
     table.insert(traces, self:DestinationTraceDownHit(point))
 
     -- a number of point quick-traces is more precise than TraceEntityHull or TraceEntity since they don't take rotation into account
 
-    for k,offset in ipairs(GenerateTracePoints(self,initial_yaw)) do
+    for _,offset in ipairs(GenerateTracePoints(self,initial_yaw)) do
         table.insert(traces, self:DestinationTraceDownHit(point + offset))
     end
 
@@ -773,37 +790,39 @@ function ENT:GetGroundedPos(point, get_angle)
     end
 
     local a,b,c = SelectPlaneDefiningPoints(traces)
-    if a == nil then
+    if not a or not b or not c then
         return pos, initial_yaw
     end
 
     local cur_normal = GetPlaneNormal(a,b,c)
+    local best_c = c
 
     -- looking for the highest selected plane with the first two points
-    for j,c2 in ipairs(traces) do
+    for _,c2 in ipairs(traces) do
         local n = GetPlaneNormal(a, b, c2)
         if n.z > cur_normal.z then
-            c = c2
+            best_c = c2
             cur_normal = n
         end
     end
 
-    local ca = c - a
-    local cb = c - b
+    local ca = best_c - a
+    local cb = best_c - b
 
     if TRACE_DEBUG then
         -- Debugging code, might be useful in the future
-        for k,v in ipairs(traces) do
-            if not v:IsEqualTol(a, 0.0001) and not v:IsEqualTol(b, 0.0001) and not v:IsEqualTol(c, 0.0001) then
+        for _,v in ipairs(traces) do
+            if not v:IsEqualTol(a, 0.0001) and not v:IsEqualTol(b, 0.0001) and not v:IsEqualTol(best_c, 0.0001) then
                 RunConsoleCommand("tardis2_debug_pointer", "worldpos", v.x, v.y, v.z)
             end
         end
         RunConsoleCommand("tardis2_debug_pointer_color")
         RunConsoleCommand("tardis2_debug_pointer", "worldpos", a.x, a.y, a.z)
         RunConsoleCommand("tardis2_debug_pointer", "worldpos", b.x, b.y, b.z)
-        RunConsoleCommand("tardis2_debug_pointer", "worldpos", c.x, c.y, c.z)
+        RunConsoleCommand("tardis2_debug_pointer", "worldpos", best_c.x, best_c.y, best_c.z)
     end
 
+    ---@type Vector -- ca/cb are inferred as `unknown` because the analyzer drops Vector's @operator sub after narrowing through Vector?
     local normal = ca:Cross(cb):GetNormalized()
 
     if normal.z < 0 then
@@ -854,12 +873,10 @@ function ENT:FindPosInBox(p1, p2)
         return
     end
 
+    ---@type Trace
     local td = {}
-    local tdret = {}
-    td.output = tdret
+    ---@type Trace
     local td3d = {}
-    local td3dret = {}
-    td3d.output = td3dret
     td3d.mask = MASK_NPCWORLDSTATIC
     -- skycampos has to be networked as it is inaccessible clientside
     local skycampos = self:GetData("skycampos")
@@ -867,9 +884,8 @@ function ENT:FindPosInBox(p1, p2)
     if isskycam then
         td3d.endpos = skycampos
     end
+    ---@type Trace
     local td3dtop = {}
-    local td3dtopret = {}
-    td3dtop.output = td3dtopret
     td3dtop.mask = MASK_NPCWORLDSTATIC
 
     local inskybox = false
@@ -941,7 +957,7 @@ function ENT:GetRandomLocation(grounded)
 
     if #locations < 1 then return pos end
 
-    local newpos = locations[math.random(#locations)]
+    local newpos = assert(locations[math.random(#locations)])
     local z_size = self:OBBMaxs().z - self:OBBMins().z + 50
 
     -- we gotta make sure the TARDIS fits

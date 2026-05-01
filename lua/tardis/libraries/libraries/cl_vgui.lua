@@ -44,7 +44,7 @@ end
 vgui.Register( "DTextEntry3D2D", tbl, "DTextEntry" )
 
 local dmodel=vgui.GetControlTable("DModelPanel")
-local tbl={}
+local dmodel_tbl={}
 
 local function ensure_rt(self, w, h)
     w = math.max(math.floor(w or 0), 1)
@@ -68,7 +68,7 @@ local function ensure_rt(self, w, h)
     self.rtmat:SetTexture("$basetexture", self.rt)
 end
 
-tbl.Init = function(self,...)
+dmodel_tbl.Init = function(self,...)
     dmodel.Init(self,...)
     self.rt = nil
     self.rtmat = nil
@@ -76,7 +76,7 @@ tbl.Init = function(self,...)
     self.rt_h = 0
 end
 
-function tbl:DrawModel()
+function dmodel_tbl:DrawModel()
     local ret = self:PreDrawModel(self.Entity)
     if ret ~= false then
         self.Entity:DrawModel()
@@ -84,7 +84,7 @@ function tbl:DrawModel()
     end
 end
 
-function tbl:Paint( w, h )
+function dmodel_tbl:Paint( w, h )
     if not IsValid( self.Entity ) then return end
 
     ensure_rt(self, w, h)
@@ -119,7 +119,7 @@ function tbl:Paint( w, h )
                 for i = 0, 6 do
                     local col = self.DirectionalLight[ i ]
                     if ( col ) then
-                        render.SetModelLighting( i, col.r / 255, col.g / 255, col.b / 255 )
+                        render.SetModelLighting( i --[[@as BOX]], col.r / 255, col.g / 255, col.b / 255 )
                     end
                 end
 
@@ -143,7 +143,7 @@ function tbl:Paint( w, h )
     self.LastPaint = RealTime()
 end
 
-function tbl:OnRemove()
+function dmodel_tbl:OnRemove()
     if dmodel.OnRemove then
         dmodel.OnRemove(self)
     end
@@ -151,4 +151,4 @@ function tbl:OnRemove()
     self.rtmat = nil
 end
 
-vgui.Register( "DModelPanel3D2D", tbl, "DModelPanel" )
+vgui.Register( "DModelPanel3D2D", dmodel_tbl, "DModelPanel" )

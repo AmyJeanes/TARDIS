@@ -31,7 +31,7 @@ end
 
 function SWEP:Initialize()
     self:SetWeaponHoldType(self.HoldType)
-    self.Weapon:DrawShadow(false)
+    self:DrawShadow(false)
 end
 
 

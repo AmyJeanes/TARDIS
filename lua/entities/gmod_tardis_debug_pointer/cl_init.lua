@@ -13,7 +13,6 @@ function ENT:Draw()
     if self:GetDrawAABox() then
         local other = self:GetOther()
         if not IsValid(other) then return end
-        local mins, maxs = self:GetRenderBounds()
         render.DrawWireframeBox(self:GetPos(), angle_zero, vector_origin, other:GetPos() - self:GetPos(), Color(255, 0, 0), true)
     end
 end

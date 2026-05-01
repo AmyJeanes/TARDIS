@@ -4,15 +4,30 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Install Tools",
+            "type": "shell",
+            "command": "pwsh -File \"${workspaceFolder}/scripts/install-tools.ps1\"",
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
             "label": "Generate Languages",
             "type": "shell",
-            "command": "pwsh -File \"${workspaceFolder}/generate-languages.ps1\"",
+            "command": "pwsh -File \"${workspaceFolder}/scripts/generate-languages.ps1\"",
             "problemMatcher": []
         },
         {
             "label": "Generate Version",
             "type": "shell",
-            "command": "pwsh -File \"${workspaceFolder}/generate-version.ps1\"",
+            "command": "pwsh -File \"${workspaceFolder}/scripts/generate-version.ps1\"",
             "problemMatcher": []
         }
     ]

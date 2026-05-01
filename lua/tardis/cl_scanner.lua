@@ -7,7 +7,7 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
         local scanners = {}
         local screens=TARDIS:ScreenActive("Scanner")
         if screens then
-            for k,v in pairs(screens) do
+            for _,v in pairs(screens) do
                 table.insert(scanners, {rt=v.scanner, ang=v.scannerang, fov=v.scannerfov, width=v.width*v.res, height=v.height*v.res})
             end
         end
@@ -15,14 +15,14 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
             local enabled = int:CallHook("ShouldDrawScanners")~=false
             if enabled then
                 for k,v in pairs(int.scanners) do
-                    local enabled = int:CallHook("ShouldDrawScanner", k)~=false
-                    if enabled then
+                    local scanner_enabled = int:CallHook("ShouldDrawScanner", k)~=false
+                    if scanner_enabled then
                         table.insert(scanners, {rt=v.rt, ang=v.ang, fov=v.fov, width=v.width, height=v.height})
                     end
                 end
             end
         end
-        for k,v in pairs(scanners) do
+        for _,v in pairs(scanners) do
             render.PushRenderTarget( v.rt )
                 render.Clear( 0, 0, 0, 255, true, true )
 

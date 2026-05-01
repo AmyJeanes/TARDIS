@@ -109,7 +109,7 @@ function TARDIS:ScreenActive(name)
     local t={}
     if IsValid(int) then
         if int.screens3D then
-            for k,v in pairs(int.screens3D) do
+            for _,v in pairs(int.screens3D) do
                 if IsValid(v) and IsValid(v.curscreen) and v.frame:IsVisible() and v.curscreen._name==name then
                     table.insert(t,v)
                 end
@@ -129,7 +129,7 @@ function TARDIS:GetScreens()
     if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
     local tab = {}
 
-    for k,v in pairs(self.screenpop.screens) do
+    for _,v in pairs(self.screenpop.screens) do
         tab[v.name] = v
     end
 
@@ -282,10 +282,10 @@ function TARDIS:HUDScreen(window)
     screen:SetSize(screen.width,screen.height)
     screen:SetPos(2,25)
     self:LoadScreenUI(screen)
-    local x,y=screen:GetSize()
-    screen:SetSize(x-screen.gap2,y-screen.gap2)
-    local x,y=screen:GetSize()
-    frame:SetSize(x+4,y+27)
+    local screen_w,screen_h=screen:GetSize()
+    screen:SetSize(screen_w-screen.gap2,screen_h-screen.gap2)
+    screen_w,screen_h=screen:GetSize()
+    frame:SetSize(screen_w+4,screen_h+27)
     frame:Center()
     self.screenpop=screen
 
@@ -401,7 +401,7 @@ function TARDIS:LoadScreenUI(screen)
 
         local left_arrow, right_arrow
 
-        local left_arrow = TardisScreenButton:new(titlebar,screen)
+        left_arrow = TardisScreenButton:new(titlebar,screen)
         left_arrow:SetID("left_arrow")
         left_arrow:SetFrameType(0, 1)
         left_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
@@ -411,7 +411,7 @@ function TARDIS:LoadScreenUI(screen)
         left_arrow:SetClickTime(0.1)
         screen.left_arrow = left_arrow
 
-        local right_arrow = TardisScreenButton:new(titlebar,screen)
+        right_arrow = TardisScreenButton:new(titlebar,screen)
         right_arrow:SetID("right_arrow")
         right_arrow:SetFrameType(0, 1)
         right_arrow:SetSize(titlebar.button_size * 2, titlebar.button_size)
@@ -488,21 +488,21 @@ function TARDIS:LoadScreenUI(screen)
         if not ((v[1].intonly and (not IsValid(int)))
             or (v[1].menu==false and (not (IsValid(ext)))))
         then
-            local frame = vgui.Create("DPanel",main)
-            frame:SetVisible(false)
-            frame:SetSize(main:GetSize())
-            frame:SetPos(0,0)
-            frame._name=k
-            frame._text=v[1].text or k
-            frame._loaded=false
-            table.insert(screen.screens,{name=k,frame=frame,options=v[1],func=v[2]})
+            local screen_frame = vgui.Create("DPanel",main)
+            screen_frame:SetVisible(false)
+            screen_frame:SetSize(main:GetSize())
+            screen_frame:SetPos(0,0)
+            screen_frame._name=k
+            screen_frame._text=v[1].text or k
+            screen_frame._loaded=false
+            table.insert(screen.screens,{name=k,frame=screen_frame,options=v[1],func=v[2]})
         end
     end
     table.SortByMember(screen.screens,"name",true)
 
     self:LoadButtons(screen, mmenu, function(parent)
         local buttons={}
-        for k,v in ipairs(screen.screens) do
+        for _,v in ipairs(screen.screens) do
             local button = vgui.Create("DButton")
             button:SetText(v.options and v.options.id)
             button:SetFont(TARDIS:GetScreenFont(screen, "Default"))
@@ -541,7 +541,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 
         local layout = HexagonalLayout:new(frame, layout_rows, 0.2)
 
-        for k,v in ipairs(screen.screens) do
+        for _,v in ipairs(screen.screens) do
             local button = TardisScreenButton:new(frame,screen)
             button:SetID(v.options and v.options.id or v.name)
             button:SetFrameType(0, 1)
@@ -565,7 +565,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         end
 
         if IsValid(screen.ext) then
-            for k,control in pairs(TARDIS:GetControls()) do
+            for _,control in pairs(TARDIS:GetControls()) do
                 local options = control.screen_button
                 if options and options.mmenu and not (screen.is3D2D and options.popup_only) then
                     local button = TardisScreenButton:new(frame, screen)
@@ -638,7 +638,8 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         screen.RestoreHexLayout()
     else
         local pages={}
-        local page,spacew,spaceh
+        local page
+        local spacew,spaceh = 0,0
         local function newpage()
             page=vgui.Create("DPanel",frame)
             if #pages~=0 then
@@ -652,13 +653,13 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
             table.insert(pages,page)
         end
         local function movebutton(button)
-            local x,y=button:GetSize()
             local w=page:GetWide()-spacew
             local h=page:GetTall()-spaceh
             spacew=page:GetWide()-w-button:GetWide()-screen.gap
             if spacew < 0 then
                 h=h+button:GetTall()+screen.gap
-                spaceh=page:GetTall()-h
+                -- analyzer widens this to number? (screen.gap is `any`, propagating up the chain); cast keeps spaceh's type stable
+                spaceh=(page:GetTall()-h) --[[@as number]]
                 spacew=page:GetWide()-screen.gap
                 w=page:GetWide()-spacew
                 spacew=page:GetWide()-w-button:GetWide()-screen.gap
@@ -673,7 +674,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         newpage()
 
         local buttons=func(frame)
-        for k,v in ipairs(buttons) do
+        for _,v in ipairs(buttons) do
             v:SetParent(page)
             v:SetSize(page:GetWide()*0.318,page:GetTall()*0.295)
             v:SetPos(movebutton(v))
@@ -738,7 +739,9 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 end
 
 function TARDIS:LoadScreen(id, options)
-    local screen = vgui.Create("DPanel")
+    ---@class TardisScreen : DPanel
+    ---@field frame DPanel
+    local screen = vgui.Create("DPanel") --[[@as TardisScreen]]
     screen.id=id
     screen.is3D2D=true
     local maxWidth = math.min(ScrW(), 1000)
@@ -761,10 +764,10 @@ function TARDIS:LoadScreen(id, options)
     screen:SetPos(0, 0)
     screen:SetSize(screen.width, screen.height)
     screen:SetPaintedManually(true) -- change to false to debug screen sizes in 2D
-    screen:SetDrawBackground(true)
+    screen:SetPaintBackground(true)
     screen:SetBackgroundColor(Color(0,0,0,0))
 
-    local main=self:LoadScreenUI(screen)
+    self:LoadScreenUI(screen)
     local frame=screen.frame
     frame:SetVisible(true)
     frame:SetPos(screen.gap,screen.gap)
@@ -773,8 +776,6 @@ function TARDIS:LoadScreen(id, options)
     screen.Think = function(self)
         local shouldDraw = not (self.int:CallHook("ShouldNotDrawScreen", self.id) or false)
         local blackScreen = self.int:CallHook("ShouldDrawBlackScreen", self.id) or false
-        local scr_on = self.int:GetData("screens_on", false)
-        local pwr_on = self.ext:GetData("power-state", false)
         if self.draw ~= shouldDraw or self.black ~= blackScreen then
             self.frame:SetVisible(shouldDraw and not blackScreen)
             if shouldDraw or (blackScreen and self.power_off_black) then
