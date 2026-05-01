@@ -98,9 +98,10 @@ if ($currentMark -ne $GluaApiVersion) {
     Set-Content -Path $GluaApiMark -Value $GluaApiVersion
 }
 
-# Mirror binaries to .tools/bin/ for PATH consumers (the LSP looks up glua_ls
-# by name). Versioned dirs stay around so switching versions is just a path
-# change, not a re-download.
+# Mirror binaries to .tools/bin/ — scripts/glua-check.ps1 invokes glua_check
+# from here, and the glua-lsp Claude Code plugin's shim resolves glua_ls
+# from each project's .tools/bin/ at LSP launch. Versioned dirs stay around
+# so switching versions is just a path change, not a re-download.
 New-Item -ItemType Directory -Force -Path $BinDir | Out-Null
 Copy-Item $gluaCheckExe (Join-Path $BinDir "glua_check$ExeExt") -Force
 Copy-Item $gluaLsExe    (Join-Path $BinDir "glua_ls$ExeExt"   ) -Force
@@ -110,5 +111,3 @@ Write-Host 'Tools ready:'
 Write-Host "  glua_check $GluaLsVersion  -> $gluaCheckExe"
 Write-Host "  glua_ls    $GluaLsVersion  -> $gluaLsExe"
 Write-Host "  glua-api   $GluaApiVersion -> $GluaApiDir"
-Write-Host ''
-Write-Host "For LSP support add this directory to PATH (one-time): $BinDir"

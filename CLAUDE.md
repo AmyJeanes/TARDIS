@@ -89,7 +89,7 @@ In a fresh clone, run it once before touching `.lua` files:
 pwsh -File scripts/install-tools.ps1
 ```
 
-It is idempotent — re-running is a no-op when the pinned versions are already present, so it's also the recovery path when LSP diagnostics look wrong. After running it the first time, add `.tools/bin/` to the PATH used by Claude Code (so the LSP can find `glua_ls`), then ask the user to run `/reload-plugins`.
+It is idempotent — re-running is a no-op when the pinned versions are already present, so it's also the recovery path when LSP diagnostics look wrong. The `glua-lsp` Claude Code plugin auto-resolves `glua_ls` from this project's `.tools/bin/` at LSP launch (no PATH plumbing needed); after a fresh install just `/reload-plugins`.
 
 To bump a version: edit the `$GluaLsVersion` / `$GluaApiVersion` constants in `scripts/install-tools.ps1`, commit, and CI + every fresh clone picks it up. Drift between local and CI is no longer possible.
 
