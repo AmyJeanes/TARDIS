@@ -9,6 +9,7 @@
             "../Doors",
             "../world-portals",
             "../Sonic-Screwdriver",
+            "../GMod-MCP-Server",
             "../wire/lua/wire"
         ],
         "ignoreGlobs": [

@@ -63,6 +63,13 @@ jobs:
           ref: master
           path: wire
 
+      - name: Checkout GMod-MCP-Server
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: AmyJeanes/GMod-MCP-Server
+          ref: dev
+          path: GMod-MCP-Server
+
       - name: Run glua_check
         working-directory: TARDIS
         shell: pwsh
