@@ -143,9 +143,43 @@ function TARDIS:ValidateMetadata(t)
     end
 end
 
+function TARDIS:SetupFalseWorlds(int_id)
+    if not (wp and wp.addfalseworld) then return end
+
+    local t = self.MetadataRaw[int_id]
+    if not (t and t.Interior) then return end
+
+    local locals = t.Interior.FalseWorlds
+    if locals then
+        for k, world in pairs(locals) do
+            local fw_id = "tardis_" .. tostring(int_id) .. "_" .. tostring(k)
+            local copy = table.Copy(world)
+            copy.ID = fw_id
+            wp.addfalseworld(copy)
+        end
+    end
+
+    if t.Interior.FalseWorldWindows then
+        for _, entry in pairs(t.Interior.FalseWorldWindows) do
+            local name = entry.falseworld
+            if name and locals and locals[name] then
+                entry.falseworld = "tardis_" .. tostring(int_id) .. "_" .. tostring(name)
+            end
+        end
+    end
+end
+
+-- wp may not have loaded yet during interior metadata load, so setup all false worlds after world init
+hook.Add("InitPostEntity", "TARDIS_FalseWorlds", function()
+    if not (wp and wp.addfalseworld) then return end
+    for int_id in pairs(TARDIS.MetadataRaw) do
+        TARDIS:SetupFalseWorlds(int_id)
+    end
+end)
+
 function TARDIS:AddInterior(t)
     t = table.Copy(t)
-    
+
     local id = t.ID
 
     self.MetadataRaw[id] = t
@@ -163,6 +197,7 @@ function TARDIS:AddInterior(t)
     self:AddSpawnmenuInterior(id)
     self:SetupTemplateUpdates(id)
     self:SetupCustomSettings(id)
+    self:SetupFalseWorlds(id)
 
     if self.ImportedExteriors and self.ImportedExteriors[id] then
         self:ImportExterior(id, self.ImportedExteriors[id])

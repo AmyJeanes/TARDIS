@@ -68,8 +68,7 @@ function ENT:Initialize()
         self.Fallback=self.metadata.Interior.Fallback
         self.Portal=self.metadata.Interior.Portal
         self.CustomPortals=self.metadata.Interior.CustomPortals
-        self.FalseWorlds=self.metadata.Interior.FalseWorlds
-        self.FalseWorldPortals=self.metadata.Interior.FalseWorldPortals
+        self.FalseWorldWindows=self.metadata.Interior.FalseWorldWindows
         if self.metadata.Interior.ExitBox then
             self.ExitBox=self.metadata.Interior.ExitBox
         else
