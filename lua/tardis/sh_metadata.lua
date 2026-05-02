@@ -154,7 +154,7 @@ function TARDIS:SetupFalseWorlds(int_id)
         for k, world in pairs(locals) do
             local fw_id = "tardis_" .. tostring(int_id) .. "_" .. tostring(k)
             local copy = table.Copy(world)
-            copy.ID = fw_id
+            copy.id = fw_id
             wp.addfalseworld(copy)
         end
     end
