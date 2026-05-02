@@ -39,6 +39,12 @@ else
         end
     end)
 
+    ENT:AddHook("Cordon", "portals", function(self, class, ent)
+        if ent == self.exterior and IsValid(ent.insideof) then
+            return false
+        end
+    end)
+
     -- Smoothly closes door (if open) as player reaches render limit
     ENT:AddHook("Think", "portals", function(self)
         local ext=self.exterior
