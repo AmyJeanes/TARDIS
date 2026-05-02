@@ -100,9 +100,10 @@ The `glua-lsp:install-glua-ls` skill covers the same recovery flow if symptoms a
 `glua_ls` only analyzes files as they are opened/edited. To audit the whole repo at once, use `scripts/glua-check.ps1` — it installs the pinned tooling on demand (no-op when present) and runs `glua_check --warnings-as-errors` against the repo. CI calls the same script.
 
 ```bash
-pwsh -File scripts/glua-check.ps1                 # whole repo
-pwsh -File scripts/glua-check.ps1 lua/tardis/parts # scoped path
+pwsh -File scripts/glua-check.ps1
 ```
+
+`glua_check` only accepts a workspace root, not file/path filters, so the script always scans the whole repo.
 
 Useful when a fix has rippled across the codebase or when picking up the project to find latent issues the LSP hasn't surfaced yet.
 
