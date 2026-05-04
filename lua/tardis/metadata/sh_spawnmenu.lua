@@ -473,20 +473,24 @@ function TARDIS:AddSpawnmenuInterior(id)
         try_int_icon("tardis/interiors/" .. t.ID .. ".vtf")
         try_int_icon("tardis/interiors/" .. t.ID .. ".jpg")
         try_int_icon("tardis/interiors/" .. t.ID .. ".png")
-        try_int_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
 
+        -- support original top level icons for backwards compatibility
         try_icon("tardis/" .. t.ID .. ".vmt")
         try_icon("tardis/" .. t.ID .. ".vtf")
         try_icon("tardis/" .. t.ID .. ".png")
         try_icon("tardis/" .. t.ID .. ".jpg")
-        try_icon("tardis/default/" .. t.ID .. ".jpg")
+
+        -- new location for spawn icons
+        try_icon("tardis/spawnicons/" .. t.ID .. ".vmt")
+        try_icon("tardis/spawnicons/" .. t.ID .. ".vtf")
+        try_icon("tardis/spawnicons/" .. t.ID .. ".png")
+        try_icon("tardis/spawnicons/" .. t.ID .. ".jpg")
 
         -- trying interior icons if we haven't found one for exterior mode
         try_icon("tardis/interiors/" .. t.ID .. ".vmt")
         try_icon("tardis/interiors/" .. t.ID .. ".vtf")
         try_icon("tardis/interiors/" .. t.ID .. ".png")
         try_icon("tardis/interiors/" .. t.ID .. ".jpg")
-        try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
 
         try_icon("gmod_tardis.vmt")
     end
