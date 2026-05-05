@@ -1,28 +1,6 @@
 local SETTING_SECTION = "Misc"
 
 TARDIS:AddSetting({
-    id="notification_type",
-    type="list",
-    value=3,
-    sort=false,
-    get_values_func = function()
-        local prefix = "Settings.Sections.Misc.NotificationType.Types."
-        return {
-            { prefix.."Disabled", 0 },
-            { prefix.."ConsoleLog", 1 },
-            { prefix.."Chat", 2 },
-            { prefix.."Inbuilt", 3 },
-        }
-    end,
-
-    class="networked",
-
-    option=true,
-    section=SETTING_SECTION,
-    name="NotificationType",
-})
-
-TARDIS:AddSetting({
     id="events",
     type="list",
     value=1,
@@ -54,18 +32,6 @@ TARDIS:AddButtonOption({
 
     section=SETTING_SECTION,
     name="Events.SkipCurrent",
-})
-
-TARDIS:AddSetting({
-    id="spawnmenu_interior_icons",
-    type="bool",
-    value=false,
-
-    class="local",
-
-    option=true,
-    section=SETTING_SECTION,
-    name="SpawnmenuInteriorIcons",
 })
 
 TARDIS:AddSetting({
@@ -102,18 +68,6 @@ TARDIS:AddSetting({
     option=true,
     section=SETTING_SECTION,
     name="DoorCloseOnLock",
-})
-
-TARDIS:AddSetting({
-    id="show_release_notes",
-    type="bool",
-    value=true,
-
-    class="local",
-
-    option = true,
-    section = SETTING_SECTION,
-    name = "ShowReleaseNotes",
 })
 
 --------------------------------------------------------------------------------
@@ -225,57 +179,6 @@ TARDIS:AddSetting({
 })
 
 --------------------------------------------------------------------------------
--- Tips
-
-TARDIS:AddSetting({
-    id="tips",
-    type="bool",
-    value=true,
-
-    class="local",
-
-    option=true,
-    section=SETTING_SECTION,
-    subsection="Tips",
-    name="Enabled",
-})
-
-TARDIS:AddSetting({
-    id="tips_show_all",
-    type="bool",
-    value=false,
-
-    class="local",
-
-    option=true,
-    section=SETTING_SECTION,
-    subsection="Tips",
-    name="ShowAll",
-})
-
-TARDIS:AddSetting({
-    id="tips_style",
-    type="list",
-    value="default",
-
-    get_values_func = function()
-        local values = {}
-        for _,v in pairs(TARDIS:GetTipStyles()) do
-            local style = "TipStyles."..v.style_name
-            table.insert(values, {TARDIS:PhraseExists(style) and style or v.style_name, v.style_id})
-        end
-        return values
-    end,
-
-    class="local",
-
-    option=true,
-    section=SETTING_SECTION,
-    subsection="Tips",
-    name="Style",
-})
-
---------------------------------------------------------------------------------
 -- Spawning the TARDIS
 
 TARDIS:AddSetting({
@@ -356,27 +259,3 @@ TARDIS:AddSetting({
     name="UseEnhancedDoorCollision",
 })
 
---------------------------------------------------------------------------------
--- Language
-
-TARDIS:AddSetting({
-    id = "language",
-    type = "list",
-    value = "default",
-
-    get_values_func = function()
-        local values = {
-            {TARDIS:GetPhrase("Settings.Sections.Misc.Language.Default"), "default"},
-        }
-        for k,v in pairs(TARDIS:GetLanguages()) do
-            table.insert(values, {v.Name, k})
-        end
-        return values
-    end,
-
-    class="local",
-
-    option = true,
-    section = SETTING_SECTION,
-    name = "Language",
-})

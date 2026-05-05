@@ -1,28 +1,3 @@
-function TARDIS:GetExteriorIcon(id)
-
-    local icon = nil
-
-    local function try_ext_icon(filename)
-        if icon ~= nil then return end
-        if file.Exists("materials/vgui/entities/tardis/exteriors/" .. filename, "GAME") then
-            icon = "vgui/entities/tardis/exteriors/" .. filename
-        end
-    end
-
-    try_ext_icon("" .. id .. ".vmt")
-    try_ext_icon("" .. id .. ".vtf")
-    try_ext_icon("" .. id .. ".png")
-    try_ext_icon("" .. id .. ".jpg")
-
-    -- we don't have default icons in the main addon, but I want them supported for the future
-    try_ext_icon("default/" .. id .. ".vmt")
-    try_ext_icon("default/" .. id .. ".vtf")
-    try_ext_icon("default/" .. id .. ".png")
-    try_ext_icon("default/" .. id .. ".jpg")
-
-    return icon
-end
-
 TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=false, order=4, popuponly=false}, function(self,ext,int,frame,screen)
     local frW = frame:GetWide()
     local frT = frame:GetTall()
@@ -145,7 +120,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
     local function select_exterior(id)
         change_id = id
-        local icon = TARDIS:GetExteriorIcon(id)
+        local icon = TARDIS:GetExteriorIcon(id) or TARDIS:GetMissingIcon(TARDIS.IconCategory.Exterior)
         local ext_data = TARDIS:CreateExteriorMetadata(id)
 
         if not TARDIS:GetSetting("gui_chameleon_3d_preview") then

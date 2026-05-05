@@ -54,3 +54,14 @@ TARDIS:AddSetting({
 
     option = false,
 })
+
+-- Icon pack config
+TARDIS:AddSetting({
+    id = "icon_pack_config",
+    type = "table",
+    value = { packs = {} },
+
+    class = "local",
+
+    option = false,
+})

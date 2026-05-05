@@ -10,14 +10,6 @@ list.Set( "ContentCategoryIcons", "#TARDIS.Spawnmenu.CategoryTools", "vgui/tardi
 
 if CLIENT then
 
-    -- this option would be very useful for developers but noone else
-    CreateClientConVar("tardis2_spawnmenu_copy_id", "0", true, false, "TARDIS - show 'copy id' option in the spawnmenu")
-    TARDIS.spawnmenu_copy_id = GetConVar("tardis2_spawnmenu_copy_id"):GetBool()
-
-    hook.Add("OnSpawnMenuOpen", "tardis-spawnmenu-copy-id-setting", function()
-        TARDIS.spawnmenu_copy_id = GetConVar("tardis2_spawnmenu_copy_id"):GetBool()
-    end)
-
     function TARDIS:SelectForRedecoration(id)
         TARDIS:SetSetting("redecorate-interior", id)
         local current_tardis = LocalPlayer():GetTardisData("exterior")
@@ -39,13 +31,6 @@ if CLIENT then
     end
 
     function TARDIS.Spawnmenu.AddSingleVersion(dmenu, id)
-        if TARDIS.spawnmenu_copy_id then
-            local copy = dmenu:AddOption("#spawnmenu.menu.copy", function()
-                SetClipboardText(id)
-            end)
-            copy:SetIcon("icon16/page_copy.png")
-        end
-
         local spawn = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.Spawn"), function()
             TARDIS:SpawnByID(id)
         end)
@@ -63,6 +48,11 @@ if CLIENT then
             RunConsoleCommand( "tardis2_selected_interior", id)
         end)
         spawn_toolgun:SetIcon("icon16/brick_add.png")
+
+        local copy = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.CopyID"), function()
+            SetClipboardText(id)
+        end)
+        copy:SetIcon("icon16/page_copy.png")
     end
 
     function TARDIS.Spawnmenu.AddDoubleVersion(dmenu, classic_doors_id, double_doors_id)
@@ -270,32 +260,81 @@ if CLIENT then
 
     end
 
-    function TARDIS.Spawnmenu.UpdateIconMaterial(container, update_current)
-        local setting = TARDIS:GetSetting("spawnmenu_interior_icons")
+    local MODE = TARDIS.SpawnmenuIconMode
 
-        if setting ~= container.interior_icons_applied then
+    -- Primary face: what shows when not hovered.
+    -- "Only" modes are strict — they fall back straight to the matching
+    -- missing icon without trying the other type. Hover modes fall through
+    -- to the other type first, since both faces are part of the experience,
+    -- and only resort to the missing icon when neither real icon exists.
+    local function get_primary(v, mode)
+        if mode == MODE.InteriorOnly then
+            return v.interior_icon or v.missing_interior
+        end
+        if mode == MODE.SpawniconOnly then
+            return v.spawn_icon or v.missing_spawn
+        end
+        if mode == MODE.SpawniconOnHover then
+            return v.interior_icon or v.spawn_icon or v.missing_interior
+        end
+        -- InteriorOnHover (default)
+        return v.spawn_icon or v.interior_icon or v.missing_spawn
+    end
+
+    -- Hover face: only the icon type the mode swaps to, no fallback. If that
+    -- icon doesn't exist for this entity, hover does nothing (caller treats
+    -- nil as "leave material alone").
+    local function get_hover(v, mode)
+        if mode == MODE.InteriorOnHover then return v.interior_icon end
+        if mode == MODE.SpawniconOnHover then return v.spawn_icon end
+        return nil
+    end
+
+    function TARDIS.Spawnmenu.UpdateIconMaterial(container, update_current)
+        local mode = TARDIS:GetSetting("spawnmenu_icon_mode")
+        local pack = TARDIS:GetSetting("icon_pack_config")
+
+        if pack ~= container.iconpack_applied then
+            for _,v in pairs(container.tardis_icons) do
+                if v.is_tardis_icon then
+                    local id = v.original_spawnname
+                    v.spawn_icon = TARDIS:GetSpawnIcon(id)
+                    v.interior_icon = TARDIS:GetInteriorIcon(id)
+                    v.missing_spawn = TARDIS:GetMissingIcon(TARDIS.IconCategory.Spawnicon)
+                    v.missing_interior = TARDIS:GetMissingIcon(TARDIS.IconCategory.Interior)
+                end
+            end
+            container.iconpack_applied = pack
+            container.iconmode_applied = nil
+        end
+
+        if mode ~= container.iconmode_applied then
 
             for _,v in pairs(container.tardis_icons) do
                 if v.is_tardis_icon then
-                    v:SetMaterial( (setting and v.interior_material) or v.original_material )
+                    v:SetMaterial(get_primary(v, mode))
                 end
             end
 
-            container.interior_icons_applied = setting
+            container.iconmode_applied = mode
+            container.hovered = nil
         end
 
-        if setting then return end
+        if mode == MODE.InteriorOnly or mode == MODE.SpawniconOnly then return end
 
         local hovered = vgui.GetHoveredPanel()
         if hovered == container.hovered and not update_current then return end
 
         if container.hovered then
-            container.hovered:SetMaterial(container.hovered.original_material)
+            container.hovered:SetMaterial(get_primary(container.hovered, mode))
         end
 
-        if hovered and hovered.is_tardis_icon and hovered.interior_material then
+        local hover_mat = hovered and hovered.is_tardis_icon and get_hover(hovered, mode) or nil
+        if hover_mat then
             container.hovered = hovered
-            hovered:SetMaterial(hovered.interior_material)
+            hovered:SetMaterial(hover_mat)
+        else
+            container.hovered = nil
         end
     end
 
@@ -371,9 +410,13 @@ if CLIENT then
         icon:SetColor(Color(205, 92, 92, 255))
 
         icon.is_tardis_icon = true
-        icon.original_material = obj.material
         icon.original_spawnname = obj.spawnname
-        icon.interior_material = TARDIS.InteriorIcons[obj.spawnname]
+        -- These get re-resolved by UpdateIconMaterial; populate now for the
+        -- first frame so the icon doesn't pop in.
+        icon.spawn_icon = TARDIS:GetSpawnIcon(obj.spawnname)
+        icon.interior_icon = TARDIS.InteriorIcons[obj.spawnname]
+        icon.missing_spawn = TARDIS:GetMissingIcon(TARDIS.IconCategory.Spawnicon)
+        icon.missing_interior = TARDIS:GetMissingIcon(TARDIS.IconCategory.Interior)
 
         icon.DoClick = function()
             TARDIS.Spawnmenu.DoClickIconMenu(container, obj, icon)
@@ -416,6 +459,13 @@ if CLIENT then
             TARDIS:AddSpawnmenuInterior(k)
         end
     end)
+
+    hook.Add("TARDIS_SettingChanged", "tardis-spawnmenu-iconpack", function(id)
+        if id ~= "icon_pack_config" and id ~= "spawnmenu_icon_mode" then return end
+        for k,_ in pairs(TARDIS:GetInteriors()) do
+            TARDIS:AddSpawnmenuInterior(k)
+        end
+    end)
 end
 
 TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
@@ -453,42 +503,8 @@ function TARDIS:AddSpawnmenuInterior(id)
             ent.PrintName = "  " .. ent.PrintName -- move to the top
         end
 
-        local function try_icon(filename)
-            if ent.IconOverride ~= nil then return end
-            if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
-                ent.IconOverride="vgui/entities/" .. filename
-            end
-        end
-
-        local function try_int_icon(filename)
-            if TARDIS.InteriorIcons[t.ID] ~= nil then return end
-            if file.Exists("materials/vgui/entities/" .. filename, "GAME") then
-                TARDIS.InteriorIcons[t.ID] = "vgui/entities/" .. filename
-            end
-        end
-
-        TARDIS.InteriorIcons[t.ID] = nil
-
-        try_int_icon("tardis/interiors/" .. t.ID .. ".vmt")
-        try_int_icon("tardis/interiors/" .. t.ID .. ".vtf")
-        try_int_icon("tardis/interiors/" .. t.ID .. ".jpg")
-        try_int_icon("tardis/interiors/" .. t.ID .. ".png")
-        try_int_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
-
-        try_icon("tardis/" .. t.ID .. ".vmt")
-        try_icon("tardis/" .. t.ID .. ".vtf")
-        try_icon("tardis/" .. t.ID .. ".png")
-        try_icon("tardis/" .. t.ID .. ".jpg")
-        try_icon("tardis/default/" .. t.ID .. ".jpg")
-
-        -- trying interior icons if we haven't found one for exterior mode
-        try_icon("tardis/interiors/" .. t.ID .. ".vmt")
-        try_icon("tardis/interiors/" .. t.ID .. ".vtf")
-        try_icon("tardis/interiors/" .. t.ID .. ".png")
-        try_icon("tardis/interiors/" .. t.ID .. ".jpg")
-        try_icon("tardis/interiors/default/" .. t.ID .. ".jpg")
-
-        try_icon("gmod_tardis.vmt")
+        TARDIS.InteriorIcons[t.ID] = TARDIS:GetInteriorIcon(t.ID)
+        ent.IconOverride = TARDIS:GetSpawnIcon(t.ID) or TARDIS.InteriorIcons[t.ID] or TARDIS:GetMissingIcon(TARDIS.IconCategory.Spawnicon)
     end
 
     ent.ScriptedEntityType="tardis"
