@@ -319,11 +319,15 @@ function TARDIS:CustomizeIconPack()
         local text_w = POPUP_W - PAD_X * 2
         local total_lines = 0
         for paragraph in (help_text .. "\n"):gmatch("([^\n]*)\n") do
-            if paragraph == "" then
+            -- gmatch's iterator only yields non-nil while the loop runs, but
+            -- the analyzer types it as `string?` and doesn't narrow through
+            -- the equality check. Re-bind to a non-nil local for the body.
+            local para = paragraph or ""
+            if para == "" then
                 total_lines = total_lines + 1
             else
                 local current_line = ""
-                for word in paragraph:gmatch("%S+") do
+                for word in para:gmatch("%S+") do
                     local candidate = current_line == "" and word or (current_line .. " " .. word)
                     local w = surface.GetTextSize(candidate)
                     if w > text_w and current_line ~= "" then
