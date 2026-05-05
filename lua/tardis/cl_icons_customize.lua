@@ -229,6 +229,8 @@ function TARDIS:CustomizeIconPack()
     frame:SetMinHeight(500)
 
     local sidebar_w = 280
+    local sidebar_min_w = 200
+    local grid_min_w = 220
     local pad = 8
     local tab_h = 28
 
@@ -246,11 +248,42 @@ function TARDIS:CustomizeIconPack()
     local sidebar = vgui.Create("DPanel", body)
     sidebar:Dock(RIGHT)
     sidebar:SetWide(sidebar_w)
-    sidebar:DockMargin(pad, 0, 0, 0)
+    sidebar:DockMargin(0, 4, 0, 0)
     sidebar.Paint = function(self, w, h)
         derma.SkinHook("Paint", "Panel", self, w, h)
     end
     clear_on_blank_click(sidebar)
+
+    -- Drag handle in the gap between grid and sidebar — same visual width as
+    -- the previous fixed gap, but mouse-sensitive so users can resize the split.
+    local splitter = vgui.Create("DPanel", body)
+    splitter:Dock(RIGHT)
+    splitter:SetWide(pad)
+    splitter:DockMargin(0, 4, 0, 0)
+    splitter:SetCursor("sizewe")
+    splitter.Paint = function() end
+    local split_drag ---@type {x: integer, w: integer}?
+    splitter.OnMousePressed = function(self, mc)
+        if mc ~= MOUSE_LEFT then return end
+        split_drag = { x = gui.MouseX(), w = sidebar:GetWide() }
+        self:MouseCapture(true)
+    end
+    splitter.OnMouseReleased = function(self, mc)
+        if mc ~= MOUSE_LEFT or not split_drag then return end
+        split_drag = nil
+        self:MouseCapture(false)
+    end
+    splitter.Think = function()
+        local drag = split_drag
+        if not drag then return end
+        local dx = gui.MouseX() - drag.x
+        local max_w = math.max(sidebar_min_w, body:GetWide() - grid_min_w - pad)
+        local new_w = math.Clamp(drag.w - dx, sidebar_min_w, max_w)
+        if sidebar:GetWide() ~= new_w then
+            sidebar:SetWide(new_w)
+            body:InvalidateLayout(true)
+        end
+    end
 
     local grid_panel = vgui.Create("DScrollPanel", body)
     grid_panel:Dock(FILL)
@@ -268,16 +301,15 @@ function TARDIS:CustomizeIconPack()
 
     -- Tabs
     local tab_buttons = {}
-    local tab_x = 4
+    local tab_button_order = {}
     for _, tab in ipairs(TABS) do
         local btn = vgui.Create("DButton", tab_bar)
         btn:SetText(TARDIS:GetPhrase(tab.phrase))
         btn:SizeToContentsX(20)
         btn:SetTall(tab_h)
-        btn:SetPos(tab_x, 0)
-        tab_x = tab_x + btn:GetWide() + 4
         btn.DoClick = function() set_active_tab(tab) end
         tab_buttons[tab.id] = btn
+        table.insert(tab_button_order, btn)
     end
 
     -- "How to use" help button — top-right of the tab bar.
@@ -285,20 +317,28 @@ function TARDIS:CustomizeIconPack()
     help_btn:SetText(TARDIS:GetPhrase("IconPacks.Customize.HowToUse"))
     help_btn:SizeToContentsX(20)
     help_btn:SetTall(tab_h)
-    help_btn.PerformLayout = function(self)
-        self:SetPos(tab_bar:GetWide() - self:GetWide() - 4, 0)
-    end
 
     -- Dirty/unsaved-changes indicator — sits to the left of the help button.
     local dirty_label = vgui.Create("DLabel", tab_bar)
     dirty_label:SetTall(tab_h)
     dirty_label:SetFont("DermaDefaultBold")
-    dirty_label:SetTextColor(Color(170, 80, 80, 255))
+    dirty_label:SetTextColor(Color(218, 130, 30, 255))
     dirty_label:SetText("")
     dirty_label:SetContentAlignment(5)
-    dirty_label.PerformLayout = function(self)
-        self:SizeToContentsX()
-        self:SetPos(tab_bar:GetWide() - 4 - help_btn:GetWide() - 8 - self:GetWide(), 0)
+
+    -- Single layout pass for the whole tab bar — keeps tabs, dirty label, and
+    -- help button on a shared baseline regardless of how their individual
+    -- PerformLayouts would otherwise interleave.
+    tab_bar.PerformLayout = function(self, w, h)
+        local btn_y = math.floor((h - tab_h) / 2)
+        local x = 4
+        for _, btn in ipairs(tab_button_order) do
+            btn:SetPos(x, btn_y)
+            x = x + btn:GetWide() + 4
+        end
+        help_btn:SetPos(w - help_btn:GetWide() - 4, btn_y)
+        dirty_label:SizeToContentsX()
+        dirty_label:SetPos(w - 4 - help_btn:GetWide() - 8 - dirty_label:GetWide(), btn_y)
     end
     help_btn.DoClick = function()
         local POPUP_W = 480
@@ -356,7 +396,7 @@ function TARDIS:CustomizeIconPack()
         text:SetText(help_text)
         text:SetWrap(true)
         text:SetContentAlignment(7) -- top-left
-        text:SetDark(true)
+        text:SetBright(true)
 
         local workshop_btn = vgui.Create("DButton", f)
         workshop_btn:Dock(TOP)
@@ -387,7 +427,7 @@ function TARDIS:CustomizeIconPack()
     local reset_btn = vgui.Create("DButton", sidebar)
     reset_btn:Dock(BOTTOM)
     reset_btn:SetTall(28)
-    reset_btn:DockMargin(0, 4, 0, 0)
+    reset_btn:DockMargin(4, 4, 4, 4)
     reset_btn:SetText(TARDIS:GetPhrase("IconPacks.Customize.Reset"))
     reset_btn.DoClick = function()
         working_config = clone_config(TARDIS:GetDefaultIconPackConfig())
@@ -400,6 +440,7 @@ function TARDIS:CustomizeIconPack()
     local save_row = vgui.Create("DPanel", sidebar)
     save_row:Dock(BOTTOM)
     save_row:SetTall(40)
+    save_row:DockMargin(4, 0, 4, 0)
     save_row.Paint = function() end
 
     local undo_btn = vgui.Create("DButton", save_row)
@@ -483,7 +524,7 @@ function TARDIS:CustomizeIconPack()
         local dirty = is_dirty()
         frame:SetTitle(dirty and (title_base .. " *") or title_base)
         dirty_label:SetText(dirty and TARDIS:GetPhrase("Common.UnsavedChanges") or "")
-        dirty_label:InvalidateLayout(true)
+        tab_bar:InvalidateLayout(true)
         undo_btn:SetEnabled(dirty)
     end
 
@@ -525,7 +566,7 @@ function TARDIS:CustomizeIconPack()
                 cell:SetCursor("hand")
                 cell:SetTooltip(pack_display_name(pack))
                 cell.Paint = function(self, w, h)
-                    surface.SetDrawColor(255, 255, 255, 20)
+                    surface.SetDrawColor(0, 0, 0, 25)
                     surface.DrawRect(0, 0, w, h)
 
                     local pad_x = 4
@@ -700,9 +741,9 @@ function TARDIS:CustomizeIconPack()
             row:Droppable("tardis_iconpack")
             row:SetCursor("sizeall")
             row.Paint = function(_, w, h)
-                -- Very subtle lightening so the row picks up the sidebar's theme
-                -- color almost transparently — borders do the heavy lifting.
-                surface.SetDrawColor(255, 255, 255, 20)
+                -- Subtle darkening reads as a recessed row on both light and
+                -- dark skins; a "lighten" overlay washes out on light themes.
+                surface.SetDrawColor(0, 0, 0, 25)
                 surface.DrawRect(0, 0, w, h)
                 if entry.id == selected_pack_id then
                     surface.SetDrawColor(70, 130, 200, 200)
@@ -763,7 +804,7 @@ function TARDIS:CustomizeIconPack()
             number_label.display_num = index
             number_label.Paint = function(self, w, h)
                 draw.SimpleText("#" .. self.display_num, "DermaDefaultBold", w / 2, h / 2 - 1,
-                    Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    self:GetSkin().Colours.Label.Dark, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
             row.number_label = number_label
 
@@ -825,11 +866,22 @@ function TARDIS:CustomizeIconPack()
                 end
             end
 
+            local pack_name = pack_display_name(pack)
             local label = vgui.Create("DLabel", row)
             label:Dock(FILL)
             label:DockMargin(2, 0, 0, 0)
-            label:SetText(pack_display_name(pack))
+            label:SetText(pack_name)
             label:SetDark(true)
+            label:SetMouseInputEnabled(true)
+            label:SetCursor("sizeall")
+            label.OnMousePressed = function(_, mc)
+                row:OnMousePressed(mc)
+            end
+            label.PerformLayout = function(self, w, h)
+                surface.SetFont(self:GetFont())
+                local tw = surface.GetTextSize(pack_name)
+                self:SetTooltip(tw > w and pack_name or nil)
+            end
             end
         end
     end
