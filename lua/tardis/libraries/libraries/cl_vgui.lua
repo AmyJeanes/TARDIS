@@ -29,9 +29,9 @@ local function RequestInput( pnl )
     end
 end
 
-local old=vgui.GetControlTable("DTextEntry")
 local tbl={}
 tbl.Init = function(self,...)
+    local old = vgui.GetControlTable("DTextEntry")
     old.Init(self,...)
     self.OldOnMousePressed = self.OnMousePressed
     self.OnMousePressed = function(self,key)
@@ -43,7 +43,6 @@ tbl.Init = function(self,...)
 end
 vgui.Register( "DTextEntry3D2D", tbl, "DTextEntry" )
 
-local dmodel=vgui.GetControlTable("DModelPanel")
 local dmodel_tbl={}
 
 local function ensure_rt(self, w, h)
@@ -69,6 +68,7 @@ local function ensure_rt(self, w, h)
 end
 
 dmodel_tbl.Init = function(self,...)
+    local dmodel = vgui.GetControlTable("DModelPanel")
     dmodel.Init(self,...)
     self.rt = nil
     self.rtmat = nil
@@ -144,7 +144,8 @@ function dmodel_tbl:Paint( w, h )
 end
 
 function dmodel_tbl:OnRemove()
-    if dmodel.OnRemove then
+    local dmodel = vgui.GetControlTable("DModelPanel")
+    if dmodel and dmodel.OnRemove then
         dmodel.OnRemove(self)
     end
     self.rt = nil
