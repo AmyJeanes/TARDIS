@@ -2,3 +2,4 @@ lua/.vscode/settings.json
 Hooks and descriptions.txt
 .tools/
 .claude/settings.local.json
+.claude/scheduled_tasks.lock

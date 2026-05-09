@@ -177,9 +177,18 @@ else
     end)
 
     ENT:AddHook("ShouldNotRenderPortal","vortex",function(self,parent,portal,exit)
-        if self:GetData("vortex") and (TARDIS:GetExteriorEnt()~=self or (not self:IsVortexEnabled())) then
-            return true, self~=parent
-        end
+        if not self:GetData("vortex") then return end
+
+        if TARDIS:GetExteriorEnt()==self and self:IsVortexEnabled() then return end
+
+        if not (IsValid(self.interior) and self.interior.portals) then return end
+        
+        local is_int_portal = portal==self.interior.portals.interior
+        local is_ext_portal = portal==self.interior.portals.exterior
+        if not (is_int_portal or is_ext_portal) then return end
+
+        -- render black portal from inside, but render invisible from outside so players not inside can't see it
+        return true, is_int_portal
     end)
 
     ENT:AddHook("StopDemat","vortex",function(self)
