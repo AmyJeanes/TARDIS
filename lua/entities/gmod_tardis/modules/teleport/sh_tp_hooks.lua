@@ -25,20 +25,8 @@ if SERVER then
         end
     end)
 
-    ENT:AddHook("CanPlayerEnter","teleport",function(self)
-        if self:GetData("teleport") or self:GetData("vortex") then
-            return false, true
-        end
-    end)
-
     ENT:AddHook("CanPlayerEnterDoor","teleport",function(self)
         if (self:GetData("teleport") or self:GetData("vortex")) then
-            return false
-        end
-    end)
-
-    ENT:AddHook("CanPlayerExit","teleport",function(self)
-        if self:GetData("teleport") or self:GetData("vortex") then
             return false
         end
     end)
@@ -117,4 +105,20 @@ else
         end
     end)
 end
+
+-- CanPlayerEnter/Exit must register on both realms so world-portals'
+-- predicted player teleport (SetupMove on the client) can veto via the
+-- ShouldTeleportPortal chain. Both predicates only read networked GetData,
+-- so they're realm-safe.
+ENT:AddHook("CanPlayerEnter","teleport",function(self)
+    if self:GetData("teleport") or self:GetData("vortex") then
+        return false, true
+    end
+end)
+
+ENT:AddHook("CanPlayerExit","teleport",function(self)
+    if self:GetData("teleport") or self:GetData("vortex") then
+        return false
+    end
+end)
 

@@ -1,18 +1,20 @@
 -- Handles portals for rendering, thanks to bliptec (http://facepunch.com/member.php?u=238641) for being a babe
 
-if SERVER then
-    ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
-        if (not self.exterior:DoorOpen() and portal==self.portals.interior) or (ent.TardisPart and not ent.AllowThroughPortals) then
+-- Shared so world-portals' predicted player teleport can also veto.
+-- DoorOpen, GetCustomLink, GetPart, GetOn all read networked state.
+ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
+    if (not self.exterior:DoorOpen() and portal==self.portals.interior) or (ent.TardisPart and not ent.AllowThroughPortals) then
+        return false
+    end
+    if portal:GetCustomLink() then
+        local part = self:GetPart(portal:GetCustomLink())
+        if IsValid(part) and part:GetOn()==false then
             return false
         end
-        if portal:GetCustomLink() then
-            local part = self:GetPart(portal:GetCustomLink())
-            if IsValid(part) and part:GetOn()==false then
-                return false
-            end
-        end
-    end)
-else
+    end
+end)
+
+if CLIENT then
     ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
         local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
         if dont==nil then

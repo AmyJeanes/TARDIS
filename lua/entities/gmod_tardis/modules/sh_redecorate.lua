@@ -209,12 +209,6 @@ if SERVER then
 
     end)
 
-    ENT:AddHook("ShouldTeleportPortal", "redecorate", function(self,portal,ent)
-        if self:GetData("redecorate") or ent == self:GetData("redecorate_next") then
-            return false
-        end
-    end)
-
     ENT:AddHook("RepairCancelled", "redecorate", function(self,portal,ent)
         if self:GetData("redecorate") then
             self:SetData("redecorate", false)
@@ -255,3 +249,12 @@ else -- CLIENT
         TARDIS:SetSetting("redecorate-interior", false)
     end)
 end
+
+-- Shared so world-portals' predicted player teleport can also veto via
+-- ShouldTeleportPortal. Both predicates read networked GetData so it's
+-- realm-safe.
+ENT:AddHook("ShouldTeleportPortal", "redecorate", function(self,portal,ent)
+    if self:GetData("redecorate") or ent == self:GetData("redecorate_next") then
+        return false
+    end
+end)

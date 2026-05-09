@@ -1,12 +1,14 @@
 -- Portals
 
-if SERVER then
-    ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
-        if not self:DoorOpen() or (ent.TardisPart and not ent.AllowThroughPortals) then
-            return false
-        end
-    end)
-else
+-- Shared so world-portals' predicted player teleport can also veto.
+-- DoorOpen() is networked; the TardisPart check is structural.
+ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
+    if not self:DoorOpen() or (ent.TardisPart and not ent.AllowThroughPortals) then
+        return false
+    end
+end)
+
+if CLIENT then
     ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
         local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
         if dont==nil then
