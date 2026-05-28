@@ -42,22 +42,23 @@ else
     -- Smoothly closes door (if open) as player reaches render limit
     ENT:AddHook("Think", "portals", function(self)
         local ext=self.exterior
-        if IsValid(ext) then
-            if ext:GetData("doorstate",false) then
-                local dist=GetViewEntity():GetPos():Distance(ext:GetPos())
-                local closedist=TARDIS:GetSetting("portals-closedist")
-                local length=250
-                local startdist=closedist-length
-                if dist>=startdist and dist<=closedist then
-                    ext.DoorOverride=1-(dist-startdist)/length
-                elseif dist>closedist and ext.DoorOverride~=0 and (not IsValid(LocalPlayer():GetTardisData("exterior"))) then
-                    ext.DoorOverride=0
-                elseif dist<startdist and ext.DoorOverride~=nil then
-                    ext.DoorOverride=nil
-                end
-            elseif ext.DoorOverride then
-                ext.DoorOverride = nil
-            end
+        if not IsValid(ext) then return end
+
+        if LocalPlayer():GetTardisData("exterior")==ext or not ext:GetData("doorstate",false) then
+            if ext.DoorOverride~=nil then ext.DoorOverride=nil end
+            return
+        end
+
+        local dist=GetViewEntity():GetPos():Distance(ext:GetPos())
+        local closedist=TARDIS:GetSetting("portals-closedist")
+        local length=250
+        local startdist=closedist-length
+        if dist>=startdist and dist<=closedist then
+            ext.DoorOverride=1-(dist-startdist)/length
+        elseif dist>closedist and ext.DoorOverride~=0 then
+            ext.DoorOverride=0
+        elseif dist<startdist and ext.DoorOverride~=nil then
+            ext.DoorOverride=nil
         end
     end)
 end
