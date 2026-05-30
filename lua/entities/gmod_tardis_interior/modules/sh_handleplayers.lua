@@ -43,3 +43,16 @@ else
         end
     end)
 end
+
+-- Exclude the interior door part from the stuck test on both realms, so Doors'
+-- GetStuckTrace builds identical filter membership client- and server-side and
+-- the predicted unstick lands in the same place. Shared (registered on both
+-- realms); the part is networked, IsValid guards the brief pre-spawn window.
+-- Returns a list, not a veto, so it must be the only StuckFilter consumer that
+-- returns non-nil (CallHook short-circuits on the first non-nil result). The
+-- server still appends this part to stuckfilter in parts/door.lua; a duplicate
+-- in a trace filter is a harmless no-op.
+ENT:AddHook("StuckFilter", "tardis-door", function(self)
+    local door = self:GetPart("door")
+    if IsValid(door) then return { door } end
+end)
