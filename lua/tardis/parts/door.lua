@@ -61,6 +61,16 @@ function PART:Initialize()
     else
         self.DoorPos=0
         self.DoorTarget=0
+
+        -- door open animation may go beyond render bounds of the model
+        -- increase bounds by the maximum distance the door can move
+        -- calculated by the width of the door (y axis)
+        local mins, maxs = self:OBBMins(), self:OBBMaxs()
+        local reach = maxs.y - mins.y
+        self:SetRenderBounds(
+            Vector(mins.x - reach, mins.y - reach, mins.z),
+            Vector(maxs.x + reach, maxs.y + reach, maxs.z)
+        )
     end
 end
 
