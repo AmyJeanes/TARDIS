@@ -168,8 +168,7 @@ else
             end
 
             -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-            self.DoorPos = self.exterior.DoorOverride or
-                math.Approach(self.DoorPos, self.DoorTarget, FrameTime() * (1 / animtime))
+            self.DoorPos = math.Approach(self.DoorPos, self.DoorTarget, FrameTime() * (1 / animtime))
 
             -- for extension tweaks
             if self.ExtOnlyAnimation
@@ -182,16 +181,19 @@ else
             self:SetPoseParameter("switch", self.DoorPos)
             self:InvalidateBoneCache()
 
+            local interior = self.exterior.interior
+            if IsValid(interior) and not self.ExtOnlyAnimation then
+                local intdoor = interior:GetPart("door")
+                if IsValid(intdoor) then
+                    intdoor:SetPoseParameter("switch", self.DoorPos)
+                    intdoor:InvalidateBoneCache()
+                end
+            end
+
             if self.use_enhanced_door_collision then
                 local pos,ang=LocalToWorld(self.posoffset,self.angoffset,self.portal_pos,self.portal_ang)
                 self:SetPos(self.parent:LocalToWorld(pos))
                 self:SetAngles(self.parent:LocalToWorldAngles(ang))
-            end
-        elseif self.InteriorPart then -- copy exterior, no need to redo the calculation
-            local door=self.exterior:GetPart("door")
-            if IsValid(door) and not door.ExtOnlyAnimation then
-                self:SetPoseParameter("switch", door.DoorPos)
-                self:InvalidateBoneCache()
             end
         end
     end

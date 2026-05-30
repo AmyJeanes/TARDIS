@@ -20,7 +20,7 @@ if CLIENT then
         local insidePortalView = wp.IsRenderingPortalView()
         if dont then
             return false, black
-        elseif (not (self.DoorOpen and self:DoorOpen(true) and (insidePortalView or origin:Distance(self:GetPos())<TARDIS:GetSetting("portals-closedist")))) then
+        elseif (not (self.DoorOpen and self:DoorOpen(true) and (insidePortalView or origin:Distance(self:GetPos())<TARDIS:GetSetting("portals-closedist") or self.DoorOverride~=nil))) then
             return false
         elseif (not TARDIS:GetSetting("portals-enabled")) then
             return false, true

@@ -49,8 +49,7 @@ else
             or self.exterior.metadata.Exterior.DoorAnimationTime
 
         -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-        self.IntDoorPos = self.exterior.IntDoorOverride or
-            math.Approach(self.IntDoorPos, self.IntDoorTarget, FrameTime() * (1 / animtime))
+        self.IntDoorPos = math.Approach(self.IntDoorPos, self.IntDoorTarget, FrameTime() * (1 / animtime))
 
         self:SetPoseParameter("switch", self.IntDoorPos)
         self:InvalidateBoneCache()
