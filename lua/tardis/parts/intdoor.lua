@@ -48,14 +48,9 @@ else
         local animtime = self.exterior.metadata.Interior.IntDoorAnimationTime
             or self.exterior.metadata.Exterior.DoorAnimationTime
 
-        -- Always ease toward IntDoorTarget (which already folds in IntDoorOverride,
-        -- set above). Never hard-set IntDoorPos straight from the override: mirrors
-        -- the door part fix -- hard-setting renders any single-frame override spike
-        -- (e.g. from a high-ping predicted exit) as an instant snap instead of a
-        -- smooth move. IntDoorOverride currently has no writer, so this is parity
-        -- with door.lua / future-proofing rather than a live bug on this part.
         -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-        self.IntDoorPos = math.Approach(self.IntDoorPos, self.IntDoorTarget, FrameTime() * (1 / animtime))
+        self.IntDoorPos = self.exterior.IntDoorOverride or
+            math.Approach(self.IntDoorPos, self.IntDoorTarget, FrameTime() * (1 / animtime))
 
         self:SetPoseParameter("switch", self.IntDoorPos)
         self:InvalidateBoneCache()

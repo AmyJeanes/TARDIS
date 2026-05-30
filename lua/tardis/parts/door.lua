@@ -167,17 +167,9 @@ else
                 self.DoorTarget=self.exterior.DoorOverride or (self:GetData("doorstatereal",false) and 1 or 0)
             end
 
-            -- Always ease toward DoorTarget (which already folds in DoorOverride,
-            -- set above). Never hard-set DoorPos straight from the override: at
-            -- high ping the predicted exit makes the portal-distance override
-            -- spike to 0 for a frame or two before the player's networked
-            -- position catches up, and hard-setting renders that as an instant
-            -- snap-shut. Easing absorbs such single-frame spikes (the door moves
-            -- only FrameTime/DoorAnimationTime per frame -- a few percent of
-            -- travel -- so a stray frame or two is imperceptible) while still
-            -- tracking the genuine walk-away close, which ramps far slower.
             -- Have to spam it otherwise it glitches out (http://facepunch.com/showthread.php?t=1414695)
-            self.DoorPos = math.Approach(self.DoorPos, self.DoorTarget, FrameTime() * (1 / animtime))
+            self.DoorPos = self.exterior.DoorOverride or
+                math.Approach(self.DoorPos, self.DoorTarget, FrameTime() * (1 / animtime))
 
             -- for extension tweaks
             if self.ExtOnlyAnimation
@@ -190,32 +182,18 @@ else
             self:SetPoseParameter("switch", self.DoorPos)
             self:InvalidateBoneCache()
 
-            -- Drive the interior door's pose from here rather than from its own
-            -- Think. The interior door is an InteriorPart, so it stops thinking
-            -- the instant the predicted exit clears the player's tardis data
-            -- (ShouldThink gating) -- which would freeze it mid-animation while
-            -- this exterior door (which always thinks) keeps moving, so the two
-            -- visibly diverge through the portal. Pushing the pose from the
-            -- always-thinking exterior part keeps them in lockstep. ExtOnlyAnimation
-            -- means "exterior animates alone", so skip the sync while it's set.
-            local interior = self.exterior.interior
-            if IsValid(interior) and not self.ExtOnlyAnimation then
-                local intdoor = interior:GetPart("door")
-                if IsValid(intdoor) then
-                    intdoor:SetPoseParameter("switch", self.DoorPos)
-                    intdoor:InvalidateBoneCache()
-                end
-            end
-
             if self.use_enhanced_door_collision then
                 local pos,ang=LocalToWorld(self.posoffset,self.angoffset,self.portal_pos,self.portal_ang)
                 self:SetPos(self.parent:LocalToWorld(pos))
                 self:SetAngles(self.parent:LocalToWorldAngles(ang))
             end
+        elseif self.InteriorPart then -- copy exterior, no need to redo the calculation
+            local door=self.exterior:GetPart("door")
+            if IsValid(door) and not door.ExtOnlyAnimation then
+                self:SetPoseParameter("switch", door.DoorPos)
+                self:InvalidateBoneCache()
+            end
         end
-        -- InteriorPart needs no Think of its own: the exterior door part drives
-        -- the interior door's pose every frame (see above), so it stays in sync
-        -- even while the interior has stopped thinking during a predicted exit.
     end
 end
 
