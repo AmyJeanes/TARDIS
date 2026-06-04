@@ -23,6 +23,15 @@
 ---@return DebugInfo
 function debug.getinfo(funcOrStackLevel, fields, _function) end
 
+-- glua-api-snippets types ColorAlpha's return as `table`, but at runtime it
+-- returns a Color (Color(col.r, col.g, col.b, alpha)), so values flowing into
+-- Color-typed params (draw.*, render.*) warn. Re-declaring the function doesn't
+-- override the library's return type (the stub wins), but adding a Color-returning
+-- overload does — same trick as table.insert below.
+---@diagnostic disable-next-line: duplicate-set-field
+---@overload fun(color: Color, alpha: number): Color
+function _G.ColorAlpha(color, alpha) end
+
 -- glua-api-snippets only declares the 3-arg signature of table.insert; without
 -- a 2-arg overload, the analyzer flags every `table.insert(t, value)` call as
 -- passing a non-number where it expects `position`. Re-declare with both forms.
