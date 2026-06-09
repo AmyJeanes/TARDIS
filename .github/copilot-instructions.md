@@ -24,5 +24,6 @@ When making changes to language strings:
 When contributing:
 1. Keep changes minimal and focused on the task at hand.
 2. Maintain the code style of the project.
-3. Document only particularly complex / non-obvious code.
+3. Document only particularly complex / non-obvious code: a few lines at most, the *why* not the *what*, biased toward cutting. Keep comments self-contained (no pointers to external docs or fragile cross-file references) and don't explain code by what it replaced.
 4. Use Lua syntax only, no "Garry Lua" e.g. "//" comments or the "continue" keyword.
+5. Keep comments ASCII: write arrows as the two-character `->`, never the Unicode arrow glyph. For a dash use a single spaced hyphen ` - `, never a double `--` (reads as a second comment marker) or an em-dash.
