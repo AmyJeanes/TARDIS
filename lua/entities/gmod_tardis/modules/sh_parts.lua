@@ -18,6 +18,12 @@ function ENT:GetParts()
     return self.parts
 end
 
+ENT:AddHook("SetupOwner", "parts", function(self, ply)
+    for _, part in pairs(self:GetParts() or {}) do
+        Doors:SetupOwner(part, ply)
+    end
+end)
+
 if SERVER then
     function ENT:SetPartInvisible(id, invisible, nofade)
         local invisible_parts = self:GetData("invisible_int_parts", {})
