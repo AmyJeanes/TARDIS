@@ -85,3 +85,16 @@ ENT:AddHook("TraceFilterPortal", "portals", function(self,portal)
         return self:GetPart(portal:GetCustomLink())
     end
 end)
+
+-- The solids a transiting prop may phase: the interior model only if metadata opts in
+-- (Interior.PortalNoCollide=true), plus any parts flagged PortalNoCollide.
+ENT:AddHook("NoCollidePortal", "parts", function(self)
+    local list = {}
+    if self.metadata.Interior.PortalNoCollide == true and IsValid(self:GetPhysicsObject()) then
+        list[#list+1] = self
+    end
+    for _, part in pairs(self:GetParts() or {}) do
+        if IsValid(part) and part.PortalNoCollide then list[#list+1] = part end
+    end
+    return list
+end)

@@ -45,3 +45,16 @@ ENT:AddHook("ShouldVortexIgnoreZ", "portals", function(self)
         return true
     end
 end)
+
+-- The solids a transiting prop may phase: the exterior shell itself unless metadata
+-- opts it out (Exterior.PortalNoCollide=false), plus any parts flagged PortalNoCollide.
+ENT:AddHook("NoCollidePortal", "parts", function(self)
+    local list = {}
+    if self.metadata.Exterior.PortalNoCollide ~= false and IsValid(self:GetPhysicsObject()) then
+        list[#list+1] = self
+    end
+    for _, part in pairs(self:GetParts() or {}) do
+        if IsValid(part) and part.PortalNoCollide then list[#list+1] = part end
+    end
+    return list
+end)

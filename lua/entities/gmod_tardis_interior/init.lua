@@ -69,12 +69,6 @@ function ENT:Initialize()
         self.Portal=self.metadata.Interior.Portal
         self.CustomPortals=self.metadata.Interior.CustomPortals
         self.FalseWorldWindows=self.metadata.Interior.FalseWorldWindows
-        -- world-portals opt-in: per-interior override of whether transiting props
-        -- phase the interior model. nil keeps the class default; set
-        -- Interior.PortalNoCollide=true in metadata to phase an interior's model.
-        if self.metadata.Interior.PortalNoCollide ~= nil then
-            self.PortalNoCollide=self.metadata.Interior.PortalNoCollide
-        end
         if self.metadata.Interior.ExitBox then
             self.ExitBox=self.metadata.Interior.ExitBox
         else

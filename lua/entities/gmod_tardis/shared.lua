@@ -13,12 +13,6 @@ ENT.Category="Doctor Who - TARDIS"
 ENT.TardisExterior=true
 ENT.Interior="gmod_tardis_interior"
 
--- world-portals opt-in: a transiting prop phases the exterior shell (the box it's
--- mounted on) to get out, so the shell opts in. DEFAULT true; override per-exterior
--- with Exterior.PortalNoCollide in metadata. The interior model defaults the other
--- way (solid) so props rest on it instead of falling through.
-ENT.PortalNoCollide=true
-
 if TARDIS_OVERRIDES and TARDIS_OVERRIDES.MainCategory then
     ENT.Category = TARDIS_OVERRIDES.MainCategory
 end
