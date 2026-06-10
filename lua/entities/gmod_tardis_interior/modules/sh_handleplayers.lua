@@ -39,11 +39,10 @@ else
     end)
 end
 
--- Exclude the interior door part from the stuck test on both realms so Doors'
--- GetStuckTrace builds identical filter membership client- and server-side (the
--- predicted unstick must land in the same place). Returns a list, not a veto, so
--- it must be the only StuckFilter consumer returning non-nil - CallHook stops at
--- the first.
+-- Exclude the interior door part from Doors' stuck trace - a player landing in the
+-- doorway shouldn't read as stuck against it. Shared so server and predicting client
+-- build the same filter (the predicted unstick must land identically). A list, not a
+-- veto, so it must be the only StuckFilter consumer returning non-nil (CallHook stops first).
 ENT:AddHook("StuckFilter", "tardis-door", function(self)
     local door = self:GetPart("door")
     if IsValid(door) then return { door } end
