@@ -7,9 +7,6 @@ PART.AutoSetup = true
 PART.AutoPosition = false
 PART.ClientThinkOverride = true
 PART.Collision = true
--- world-portals opt-in: a prop transiting the portal must phase the door (it sits in
--- the doorway). Only affects ARMED (transiting) props, so the door still collides
--- normally otherwise.
 PART.PortalNoCollide = true
 PART.NoStrictUse = true
 PART.ShouldTakeDamage = true
