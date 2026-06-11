@@ -46,10 +46,9 @@ if CLIENT then
         local ext=self.exterior
         if not IsValid(ext) then return end
 
-        -- Also exempt when the player is inside a TARDIS nested in us (self.contains holds
-        -- their box) - else stepping into the inner one auto-closes our door from the huge
-        -- world-space distance to our exterior. Mirrors ShouldDraw/ShouldThink's exemption.
-        if LocalPlayer():GetTardisData("exterior")==ext or self.contains[LocalPlayer().door] or not ext:GetData("doorstate",false) then
+        -- Keep the door open while the player is inside us, or inside a TARDIS nested in
+        -- us at any depth - else the huge world-space distance to our exterior auto-closes it.
+        if self:LocalPlayerInside() or not ext:GetData("doorstate",false) then
             if ext.DoorOverride~=nil then ext.DoorOverride=nil end
             return
         end

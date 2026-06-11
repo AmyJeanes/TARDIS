@@ -13,15 +13,11 @@ if SERVER then
     end)
 else
     ENT:AddHook("ShouldDraw", "players", function(self)
-        if ((not (LocalPlayer():GetTardisData("interior")==self)) or (LocalPlayer():GetTardisData("outside") and (self.props[self.exterior]==nil))) and not wp.drawing and not self.contains[LocalPlayer().door] then
-            return false
-        end
-    end)
-    ENT:AddHook("ShouldThink", "players", function(self)
-        -- Keep thinking while the player is inside a TARDIS nested in us (self.contains
-        -- holds their box), else our parts freeze the instant they step into the inner
-        -- one - console stops, screens go dead. Mirrors ShouldDraw's contains exemption.
-        if not (LocalPlayer():GetTardisData("interior")==self or self.contains[LocalPlayer().door]) then
+        -- Doors' base ShouldDraw already hides us when the player is outside us (at any
+        -- depth). The case left to us: directly inside but looking out the door - hide the
+        -- shell so the doorway shows the world, unless our exterior is cordoned as a prop.
+        if wp.drawing then return end
+        if LocalPlayer().doori == self and LocalPlayer():GetTardisData("outside") and self.props[self.exterior] == nil then
             return false
         end
     end)
