@@ -8,7 +8,8 @@ local T = {
             ang=Angle(0,0,0),
             width=25,
             height=87,
-            thickness = 25,
+            depth = 25,
+            faceoffset = -5,
             inverted = true,
         },
         Fallback={
@@ -73,7 +74,8 @@ T = {
             ang=Angle(0,0,0),
             width=40,
             height=92,
-            thickness = 25,
+            depth = 25,
+            faceoffset = -5,
             inverted = true,
         },
         Fallback={
@@ -140,7 +142,8 @@ T = {
             ang=Angle(0,0,0),
             width=40,
             height=96,
-            thickness = 25,
+            depth = 25,
+            faceoffset = -5,
             inverted = true,
         },
         Fallback={
@@ -205,7 +208,8 @@ T = {
             ang=Angle(0,0,0),
             width=26,
             height=87,
-            thickness = 25,
+            depth = 25,
+            faceoffset = -5,
             inverted = true,
         },
         Fallback={

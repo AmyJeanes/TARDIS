@@ -22,7 +22,8 @@ local E = {
         ang = Angle(-3.3871641602623e-10, -1.7075475398087e-06, 8.3376339166108e-10),
         width = 45,
         height = 92,
-        thickness = 42,
+        depth = 42,
+        faceoffset = -5,
         inverted = true,
     },
 

@@ -250,7 +250,16 @@ function ENT:ChangeExterior(id, animate, ply, retry)
             extportal:SetAngles(self:LocalToWorldAngles(portal_md.ang))
             extportal:SetWidth(portal_md.width)
             extportal:SetHeight(portal_md.height)
-            extportal:SetThickness(portal_md.thickness or 0)
+            -- The exterior portal is reused across chameleon changes, so clear the unused 3D field
+            -- (Depth wins over Thickness when set) and reset FaceOffset, else a previous exterior leaks.
+            if portal_md.depth then
+                extportal:SetDepth(portal_md.depth)
+                extportal:SetThickness(0)
+            else
+                extportal:SetThickness(portal_md.thickness or 0)
+                extportal:SetDepth(0)
+            end
+            extportal:SetFaceOffset(portal_md.faceoffset or 0)
             extportal:SetInverted(portal_md.inverted)
             extportal:SetModel(portal_md.model)
             extportal:SetModelPos(portal_md.model_offset.pos)
