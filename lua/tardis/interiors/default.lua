@@ -86,7 +86,7 @@ T.Interior = {
         ang = Angle(-0, 0, 0),
         width = 50,
         height = 92,
-        thickness = -5,
+        depth = 5,
     },
 
     Fallback={
@@ -928,7 +928,7 @@ T.Interior = {
         ang = Angle(-0, 0, 0),
         width = 73.255813953488,
         height = 103.48837209302,
-        thickness = -5,
+        depth = 5,
     },
 
     Parts = {
