@@ -1,7 +1,6 @@
 -- Handles portals for rendering, thanks to bliptec (http://facepunch.com/member.php?u=238641) for being a babe
 
 -- Shared so world-portals' predicted player teleport can also veto.
--- DoorOpen, GetCustomLink, GetPart, GetOn all read networked state.
 ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
     if (not self.exterior:DoorOpen() and portal==self.portals.interior) or (ent.TardisPart and not ent.AllowThroughPortals) then
         return false
@@ -94,8 +93,11 @@ ENT:AddHook("TraceFilterPortal", "portals", function(self,portal)
     end
 end)
 
--- The solids a transiting prop may phase: the interior model only if metadata opts in
--- (Interior.PortalNoCollide=true), plus any parts flagged PortalNoCollide.
+-- The solids a prop transiting our portal may phase through, fed to world-portals' pass-
+-- through no-collide so a big prop doesn't jam crossing the doorway. It's opt-in: anything
+-- left off stays solid (a missed one just jams the prop, never voids it), so we list only
+-- what should give way - the interior model where metadata opts in (Interior.PortalNoCollide,
+-- off by default so you can still stand on the floor), plus any parts flagged PortalNoCollide.
 ENT:AddHook("NoCollidePortal", "parts", function(self)
     local list = {}
     if self.metadata.Interior.PortalNoCollide == true and IsValid(self:GetPhysicsObject()) then

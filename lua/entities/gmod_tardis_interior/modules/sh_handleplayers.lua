@@ -14,8 +14,8 @@ if SERVER then
 else
     ENT:AddHook("ShouldDraw", "players", function(self)
         -- Doors' base ShouldDraw already hides us when the player is outside us (at any
-        -- depth). The case left to us: directly inside but looking out the door - hide the
-        -- shell so the doorway shows the world, unless our exterior is cordoned as a prop.
+        -- depth). The case left to us: inside but in TARDIS' outside-door view - hide our
+        -- interior so the doorway shows the world, unless our exterior is cordoned as a prop.
         if wp.drawing then return end
         if LocalPlayer().doori == self and LocalPlayer():GetTardisData("outside") and self.props[self.exterior] == nil then
             return false
@@ -36,8 +36,8 @@ else
         if not (self.portals and portal == self.portals.interior) then return end
         -- Self-nested (our exterior parked inside us): crossing the interior door keeps
         -- us inside, so keep our tardis-data. Clearing it desyncs from the server (which
-        -- never exits us) and trips ShouldThink/"in the TARDIS" checks - frozen scanner,
-        -- menu error. Mirrors the Doors predict handler's ExteriorIsNested early-return.
+        -- never exits us) and trips ShouldThink/"in the TARDIS" checks. Mirrors the Doors
+        -- predict handler's ExteriorIsNested early-return.
         if self:ExteriorIsNested() then return end
         ent:ClearTardisData()
         -- If we emerged inside another TARDIS interior (a TARDIS parked in another's
