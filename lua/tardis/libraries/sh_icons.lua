@@ -1,5 +1,10 @@
 -- Icons
 
+if SERVER then
+    TARDIS:LoadFolder("iconpacks", true, true)
+    return
+end
+
 TARDIS.iconpacks = TARDIS.iconpacks or {}
 
 TARDIS.IconCategory = {

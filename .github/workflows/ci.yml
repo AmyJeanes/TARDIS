@@ -31,40 +31,40 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           path: TARDIS
 
       - name: Checkout Doors
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: AmyJeanes/Doors
           ref: dev
           path: Doors
 
       - name: Checkout world-portals
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: AmyJeanes/world-portals
           ref: dev
           path: world-portals
 
       - name: Checkout Sonic-Screwdriver
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: AmyJeanes/Sonic-Screwdriver
           ref: dev
           path: Sonic-Screwdriver
 
       - name: Checkout wire
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: wiremod/wire
           ref: master
           path: wire
 
       - name: Checkout GMod-MCP-Server
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           repository: AmyJeanes/GMod-MCP-Server
           ref: main
@@ -77,7 +77,7 @@ jobs:
 
       - name: Upload SARIF
         if: always() && hashFiles('TARDIS/results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
         with:
           sarif_file: TARDIS/results.sarif
           checkout_path: ${{ github.workspace }}/TARDIS
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/dev", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Set workshop addon id
         id: workshop_id
@@ -105,7 +105,7 @@ jobs:
           echo "Publishing to workshop ID $WORKSHOP_ID"
           echo "WORKSHOP_ID=$WORKSHOP_ID" >> $GITHUB_OUTPUT
 
-      - uses: AmyJeanes/gmod-upload@main
+      - uses: AmyJeanes/gmod-upload@c660f7674019f7f19246ab87b69124d209f74665 # main
         name: Publish to workshop
         with:
           id: ${{ steps.workshop_id.outputs.WORKSHOP_ID }}
