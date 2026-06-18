@@ -255,6 +255,7 @@ function TARDIS:HUDScreen(window)
     self.screen_in_context_menu = (window ~= nil)
 
     local screen = vgui.Create("DPanel",frame)
+    ---@diagnostic disable-next-line: assign-type-mismatch
     screen.id="pop"
     screen.width=700
     screen.height=425
