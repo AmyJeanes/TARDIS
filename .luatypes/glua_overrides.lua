@@ -1,11 +1,35 @@
 ---@meta
 
--- glua-api-snippets types Trace.mask as the MASK enum union, but the MASK_*
--- constants are plain integers at runtime, so `Trace.mask = MASK_NPCWORLDSTATIC`
--- warns as assign-type-mismatch. Widen the field to accept integer; keep it
--- optional (?) so Trace literals that omit mask don't trip missing-fields.
----@class Trace
----@field mask integer?
+-- glua-api-snippets types enum-parameter functions (Panel:Dock, SetCollisionGroup,
+-- GetRenderTargetEx, ...) and the Trace.mask field with strict literal-union aliases
+-- (DOCK, COLLISION_GROUP, MASK, ...) but types the matching constants as plain `integer`,
+-- so passing them trips param-type-mismatch / assign-type-mismatch. Re-type each constant
+-- we use as its alias so call sites match. Add a line here when a new strictly-typed enum
+-- constant gets used - the LSP flags it the moment it does.
+---@type DOCK
+FILL = 1
+---@type DOCK
+LEFT = 2
+---@type DOCK
+RIGHT = 3
+---@type DOCK
+TOP = 4
+---@type DOCK
+BOTTOM = 5
+---@type COLLISION_GROUP
+COLLISION_GROUP_NONE = 0
+---@type COLLISION_GROUP
+COLLISION_GROUP_IN_VEHICLE = 10
+---@type DMG
+DMG_BLAST = 64
+---@type MASK
+MASK_NPCWORLDSTATIC = 131083
+---@type RT_SIZE
+RT_SIZE_LITERAL = 8
+---@type MATERIAL_RT_DEPTH
+MATERIAL_RT_DEPTH_SEPARATE = 1
+---@type CREATERENDERTARGETFLAGS
+CREATERENDERTARGETFLAGS_UNFILTERABLE_OK = 4
 
 -- glua-api-snippets types debug.getinfo's first param as `function`, but the
 -- runtime accepts a stack-level number too (and that's how TARDIS uses it).

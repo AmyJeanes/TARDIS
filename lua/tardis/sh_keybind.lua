@@ -174,6 +174,7 @@ else
         end
     end)
 
+    ---@type table<string, any>
     TARDIS.bindkeys=TARDIS.bindkeys or {}
     TARDIS.binds=TARDIS.binds or {}
 

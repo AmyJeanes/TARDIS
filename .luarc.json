@@ -6,8 +6,7 @@
         "disable": [
             "need-check-nil",
             "unchecked-nil-access",
-            "undefined-field",
-            "param-type-mismatch"
+            "undefined-field"
         ]
     },
     "workspace": {

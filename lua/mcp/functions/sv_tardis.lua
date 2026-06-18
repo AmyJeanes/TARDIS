@@ -37,6 +37,7 @@ local function resolvePlayer(steamid)
     return players[1]
 end
 
+---@return number[]? values, string? err
 local function parseTriple(t, label)
     if type(t) ~= "table" or #t ~= 3 then
         return nil, "`" .. label .. "` must be a 3-element array"
@@ -46,7 +47,7 @@ local function parseTriple(t, label)
             return nil, "`" .. label .. "[" .. i .. "]` must be a number"
         end
     end
-    return t[1], t[2], t[3]
+    return { t[1], t[2], t[3] }
 end
 
 local function vec3(v) return { v.x, v.y, v.z } end
@@ -143,9 +144,9 @@ MCP:AddFunction({
 
         local pos
         if args.pos then
-            local x, y, z = parseTriple(args.pos, "pos")
-            if not x then return { ok = false, error = y } end
-            pos = Vector(x, y, z)
+            local coords, posErr = parseTriple(args.pos, "pos")
+            if not coords then return { ok = false, error = posErr } end
+            pos = Vector(coords[1], coords[2], coords[3])
         end
 
         local ent = TARDIS:SpawnTARDIS(ply, { metadataID = args.interior, pos = pos })
@@ -182,14 +183,14 @@ MCP:AddFunction({
 
         local pos, ang
         if args.pos then
-            local x, y, z = parseTriple(args.pos, "pos")
-            if not x then return { ok = false, error = y } end
-            pos = Vector(x, y, z)
+            local coords, posErr = parseTriple(args.pos, "pos")
+            if not coords then return { ok = false, error = posErr } end
+            pos = Vector(coords[1], coords[2], coords[3])
         end
         if args.ang then
-            local p, yaw, r = parseTriple(args.ang, "ang")
-            if not p then return { ok = false, error = yaw } end
-            ang = Angle(p, yaw, r)
+            local angles, angErr = parseTriple(args.ang, "ang")
+            if not angles then return { ok = false, error = angErr } end
+            ang = Angle(angles[1], angles[2], angles[3])
         end
 
         ent:Demat(pos, ang)
