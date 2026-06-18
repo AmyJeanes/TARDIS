@@ -1,19 +1,11 @@
 ---@meta
 
--- glua-api-snippets declares enum aliases (MASK, COLLISION_GROUP, _USE, etc.) as
--- string-literal unions for autocomplete, but the corresponding MASK_*, COLLISION_GROUP_*,
--- *_USE constants are plain integers at runtime. Re-declare the aliases as `integer` so
--- assignments like `Trace.mask = MASK_NPCWORLDSTATIC` type-check.
-
----@alias MASK integer
----@alias COLLISION_GROUP integer
----@alias _USE integer
----@alias DMG integer
----@alias RT_SIZE integer
----@alias MATERIAL_RT_DEPTH integer
----@alias CREATERENDERTARGETFLAGS integer
----@alias BOX integer
----@alias DOCK integer
+-- glua-api-snippets types Trace.mask as the MASK enum union, but the MASK_*
+-- constants are plain integers at runtime, so `Trace.mask = MASK_NPCWORLDSTATIC`
+-- warns as assign-type-mismatch. Widen the field to accept integer; keep it
+-- optional (?) so Trace literals that omit mask don't trip missing-fields.
+---@class Trace
+---@field mask integer?
 
 -- glua-api-snippets types debug.getinfo's first param as `function`, but the
 -- runtime accepts a stack-level number too (and that's how TARDIS uses it).

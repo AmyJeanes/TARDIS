@@ -110,7 +110,14 @@ Useful when a fix has rippled across the codebase or when picking up the project
 
 #### Removing `---@diagnostic disable` rules from `.luarc.json`
 
-The current block — `need-check-nil`, `unchecked-nil-access`, `undefined-field`, `param-type-mismatch`, `assign-type-mismatch` — was re-added wholesale on the glua_ls 1.0.15 → 1.0.27 bump: 1.0.20+'s flow-based nil analysis and stricter inference flood ~400 false positives on TARDIS's dynamic `self` dispatch, runtime-set entity fields, and integer-enum usage (zero real bugs). Whittle it back down per the guidance below as `Pollux12/gmod-glua-ls` fixes the false positives.
+The block was re-added wholesale on the glua_ls 1.0.15 → 1.0.27 bump: 1.0.20+'s flow-based nil analysis and stricter inference flood ~400 false positives on TARDIS's dynamic `self` dispatch, runtime-set entity fields, and integer-enum usage (zero real bugs). Whittle it back down per the guidance below as `Pollux12/gmod-glua-ls` fixes the false positives.
+
+Per-rule status after a full triage of every diagnostic:
+
+- `assign-type-mismatch` — **enabled.** 5 false positives, all fixed: 4 `Trace.mask = MASK_*` cleared by widening the field in `.luatypes/glua_overrides.lua` (the older `---@alias MASK integer` no longer overrides the stub's union on 1.0.27), 1 `screen.id` marker via a one-line `disable-next-line`.
+- `param-type-mismatch` — **disabled.** 42 warnings, all false positives, zero real bugs: 38 integer-enum (`DOCK`/`MASK`/`COLLISION_GROUP`/`DMG`/render-target enums) where both central fixes are dead on 1.0.27 (alias re-declaration AND `@overload` widening), plus 4 inference quirks (`parseTriple` data-or-error returns, a `pairs()` key). Re-enable only once upstream restores enum-alias overriding.
+- `undefined-field` — **disabled.** 84 false positives: metatable-OOP `self` dispatch (`cl_hexagonal_layout`), runtime-set entity fields, custom panel fields, real GMod methods on under-typed vars, dynamic-key tables. A repo-wide bug-hunt for never-assigned/non-method fields found no real typos. Clearing it needs the speculative class annotations warned against below.
+- `unchecked-nil-access` (133) / `need-check-nil` (188 hints) — **disabled.** The bulk of the flood: locals from the nullable entity-lookup helpers used in validity-guaranteed contexts, and field accesses the analyzer won't narrow. Making the helpers non-nullable would be wrong (they genuinely return nil). No clean source-side fix without pervasive local-extraction refactors.
 
 When enabling a previously-disabled rule, prefer source-side type annotations over per-callsite asserts or `---@cast` directives — annotations propagate automatically; callsite workarounds need to be repeated everywhere.
 

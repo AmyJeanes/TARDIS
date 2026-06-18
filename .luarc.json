@@ -7,8 +7,7 @@
             "need-check-nil",
             "unchecked-nil-access",
             "undefined-field",
-            "param-type-mismatch",
-            "assign-type-mismatch"
+            "param-type-mismatch"
         ]
     },
     "workspace": {
