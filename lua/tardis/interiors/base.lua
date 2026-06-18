@@ -51,7 +51,6 @@ T.Interior = {
         nopowerbrightness = 0.05, --Interior brightness with no power. Should always be darker than basebrightness.
         transitionspeed = 1, --Speed of the light transition.
     },
-    ScreenDistance = 500,
     ScreensEnabled = true
 }
 T.Exterior = {

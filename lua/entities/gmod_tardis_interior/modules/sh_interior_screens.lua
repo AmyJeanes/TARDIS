@@ -113,16 +113,11 @@ end)
 
 -- Thanks world-portals
 function ENT:ShouldRenderScreen(screen)
-    -- The render-view origin: during a portal render this is the transformed camera, so a
-    -- screen viewed through a portal (a TARDIS nested in another) measures its distance and
-    -- behind-test correctly instead of from the real player eye in a far-off skybox.
+    if self:CallHook("ShouldDraw") == false then return false end
+
     local camOrigin = EyePos()
     local pos = self:LocalToWorld(screen.pos3D)
     local ang = self:LocalToWorldAngles(screen.ang3D)
-    local distance = camOrigin:Distance(pos)
-    local disappearDist = self.metadata.Interior.ScreenDistance
-
-    if not (disappearDist <= 0) and distance > disappearDist then return false end
 
     --don't render if the view is behind the portal
     local behind = TARDIS:IsBehind( camOrigin, pos, ang:Up() )
