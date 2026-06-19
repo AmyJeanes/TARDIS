@@ -43,6 +43,7 @@ if SERVER then
         self.binds[id]=nil
     end
 else
+    ---@type table<integer, table>
     local keys = {
         [KEY_NONE]={n=""},
         [KEY_0]={n="0"},

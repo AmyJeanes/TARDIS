@@ -56,6 +56,7 @@ function ListView3D:new(parent,screen,elem_height,col)
     setmetatable(l,self)
     self.__index = self
 
+    ---@cast l ListView3D
     l:UpdateLayout()
 
     return l

@@ -14,6 +14,7 @@ local function clone_missing(missing)
     return out
 end
 
+---@return table<string, table>
 local function clone_config(config)
     local out = {}
     for key, value in pairs(config) do

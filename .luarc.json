@@ -5,8 +5,7 @@
     "diagnostics": {
         "disable": [
             "need-check-nil",
-            "unchecked-nil-access",
-            "undefined-field"
+            "unchecked-nil-access"
         ]
     },
     "workspace": {

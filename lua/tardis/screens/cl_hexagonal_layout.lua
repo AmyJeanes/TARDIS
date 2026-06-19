@@ -1,7 +1,20 @@
+---@class HexagonalLayout
+---@field screen DPanel
+---@field screen_width number
+---@field screen_height number
+---@field n_rows integer
+---@field n_cols integer
+---@field gap_scale number
+---@field button_side_length number
+---@field dh number
+---@field dw number
+---@field button_size number[]
+---@field buttons table
 HexagonalLayout = {}
 
 local v3 = math.sqrt(3) -- sqrt(3)
 
+---@return HexagonalLayout
 function HexagonalLayout:new(screen, n_rows, gap_scale)
     local layout = {}
 

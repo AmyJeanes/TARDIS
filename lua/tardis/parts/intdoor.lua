@@ -1,3 +1,4 @@
+---@class part_intdoor : gmod_tardis_part
 local PART={}
 PART.ID = "intdoor"
 PART.Name = "Interior Doors"

@@ -1,6 +1,6 @@
 -- Vortex
 
-local PART={}
+local PART = TARDIS:NewPart()
 PART.ID = "vortex"
 PART.Name = "Vortex"
 PART.Model = "models/doctorwho1200/toyota/2013timevortex.mdl"

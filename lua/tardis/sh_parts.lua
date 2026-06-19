@@ -1,5 +1,70 @@
 -- Parts
 
+---@class gmod_tardis_part
+---@field ID string?
+---@field Name string?
+---@field Model string?
+---@field AutoSetup boolean?
+---@field AutoPosition boolean?
+---@field Collision boolean?
+---@field CollisionUse boolean?
+---@field PortalNoCollide boolean?
+---@field NoStrictUse boolean?
+---@field ShouldTakeDamage boolean?
+---@field BypassIsomorphic boolean?
+---@field Motion boolean?
+---@field StartFrozen boolean?
+---@field ResetPositionOnUse boolean?
+---@field UnfreezeHint boolean?
+---@field EnabledOnStart boolean?
+---@field PowerOffUse boolean?
+---@field HasUse boolean?
+---@field HasUseBasic boolean?
+---@field Animate boolean?
+---@field AnimateSpeed number?
+---@field AnimateOptions table?
+---@field ExtraAnimations table?
+---@field animation table?
+---@field Sound string?
+---@field SoundOn string?
+---@field SoundOff string?
+---@field SoundNoPower string|false|nil
+---@field SoundOnNoPower string?
+---@field SoundOffNoPower string?
+---@field SoundLoop string?
+---@field SoundLoopVolume number?
+---@field SoundStop string?
+---@field SoundPos Vector?
+---@field PowerOffSound boolean?
+---@field ClientThinkOverride boolean?
+---@field ClientDrawOverride boolean?
+---@field ShouldDrawOverride boolean?
+---@field Translucent boolean?
+---@field CustomAlpha boolean?
+---@field NoShadow boolean?
+---@field NoShadowCopy boolean?
+---@field NoCloak boolean?
+---@field NoDraw boolean?
+---@field InvisibleFade boolean?
+---@field InvisibleCollision boolean?
+---@field FadeSpeed number?
+---@field Scale number?
+---@field InteriorPart boolean?
+---@field ExteriorPart boolean?
+---@field AllowThroughPortals boolean?
+---@field DrawThroughPortal boolean?
+-- Injected by the part system at setup:
+---@field exterior gmod_tardis
+---@field interior gmod_tardis_interior
+---@field Control string
+---@field pos Vector
+---@field ang Angle
+---@field static boolean?
+-- Non-engine hooks (Initialize/Think/Use/Draw/OnRemove come from Entity):
+---@field UseBasic fun(self: gmod_tardis_part, activator: Player)?
+---@field PreDraw fun(self: gmod_tardis_part)?
+---@field PostDraw fun(self: gmod_tardis_part)?
+
 if SERVER then
     util.AddNetworkString("TARDIS-SetupPart")
 end
@@ -425,6 +490,12 @@ local parts={}
 ---@return Entity
 function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
+end
+
+-- Functionally identical to PART = {} but gives proper type checking for parts
+---@return gmod_tardis_part
+function TARDIS:NewPart()
+    return {}
 end
 
 function TARDIS:GetParts(ent)

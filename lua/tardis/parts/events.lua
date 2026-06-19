@@ -1,6 +1,6 @@
 -- Events
 
-local PART={}
+local PART = TARDIS:NewPart()
 PART.ID = "pumpkin"
 PART.AutoSetup = true
 PART.Collision = true

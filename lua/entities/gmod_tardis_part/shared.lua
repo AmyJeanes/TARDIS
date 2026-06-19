@@ -1,3 +1,4 @@
+-- Fields are declared on the matching ---@class block in sh_parts.lua
 ---@class gmod_tardis_part : Entity
 
 ENT.Type = "anim"

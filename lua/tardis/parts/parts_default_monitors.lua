@@ -1,6 +1,7 @@
 local HIDE_COLLISIONS = true
 -- Default monitors
 ---@class part_default_monitors : gmod_tardis_part
+---@field MonitorID string?
 local PART = {}
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
@@ -562,7 +563,7 @@ end
 
 local function Setup_Hitbox_Parts(MonitorID)
     -- Default monitor hitboxes
-    PART = {}
+    PART = {} --[[@as part_default_monitors]]
     PART.MonitorID = MonitorID
     PART.AutoSetup = true
     PART.Collision = false
@@ -627,7 +628,7 @@ Setup_Hitbox_Parts("default_monitor_2")
 -- Rotor ring
 
 -- Default rotor ring
-PART = {}
+PART = {} --[[@as part_default_monitors]]
 PART.ID = "default_rotor_ring"
 PART.Model = "models/molda/toyota_int/rotor_ring.mdl"
 PART.AutoSetup = true

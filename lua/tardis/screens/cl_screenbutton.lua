@@ -60,6 +60,7 @@ function TardisScreenButton:new(parent,screen)
     sb.pos = {0, 0}
     sb.size = {10, 10}
 
+    ---@type TardisScreenButtonMove
     sb.moving = {}
     sb.moving.now = false
 

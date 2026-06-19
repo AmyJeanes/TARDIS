@@ -1,3 +1,4 @@
+---@type table<string, table>
 local tip_styles={}
 
 function TARDIS:AddTipStyle(style)
