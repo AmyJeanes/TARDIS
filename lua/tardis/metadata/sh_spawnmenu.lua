@@ -124,7 +124,10 @@ if CLIENT then
                 if compare_func then
                     checked = compare_func(value, v[1])
                 end
-                v[2]:SetChecked(checked)
+                local btn = v[2]
+                if btn then
+                    btn:SetChecked(checked)
+                end
             end
         end
 

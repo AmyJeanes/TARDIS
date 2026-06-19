@@ -17,7 +17,7 @@ function TARDIS:CreateOptionInterface(id, data)
 
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
-        elem.OnChange = function(self, val)
+        function elem:OnChange(val)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
         end

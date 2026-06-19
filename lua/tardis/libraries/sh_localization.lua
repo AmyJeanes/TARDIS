@@ -1,6 +1,7 @@
 -- Localization
 TARDIS.Languages = TARDIS.Languages or {}
 TARDIS.LanguageExtensions = TARDIS.LanguageExtensions or {}
+---@type table<string, table<string, string>>
 TARDIS.LanguageCache = TARDIS.LanguageCache or {}
 TARDIS.CurrentLanguage = TARDIS.CurrentLanguage
 TARDIS.DefaultLanguage = "en"
@@ -9,7 +10,8 @@ function TARDIS:GetPhrase(phrase, ...)
     if not phrase then
         return ""
     end
-    local str = self.LanguageCache[self.CurrentLanguage][phrase]
+    local cache = self.LanguageCache[self.CurrentLanguage]
+    local str = cache[phrase]
     if not str then
         if ... then
             return self:FormatString(phrase, ...)
@@ -25,21 +27,24 @@ end
 
 function TARDIS:FormatString(str, ...)
     local args = {...}
+    local cache = self.LanguageCache[self.CurrentLanguage]
     for k, v in ipairs(args) do
-        args[k] = self.LanguageCache[self.CurrentLanguage][v] or v
+        args[k] = cache[v] or v
     end
     return string.format(str, unpack(args))
 end
 
 function TARDIS:PhraseExists(phrase)
-    return self.LanguageCache[self.CurrentLanguage][phrase] ~= nil
+    local cache = self.LanguageCache[self.CurrentLanguage]
+    return cache[phrase] ~= nil
 end
 
 function TARDIS:GetPhraseIfExists(phrase, ...)
     if not phrase then
         return nil
     end
-    local str = self.LanguageCache[self.CurrentLanguage][phrase]
+    local cache = self.LanguageCache[self.CurrentLanguage]
+    local str = cache[phrase]
     if not str then
         return nil
     end
@@ -73,8 +78,9 @@ function TARDIS:AddLanguageExtension(t)
     local langExtension = {}
     langExtension.Phrases = t.Phrases
 
-    self.LanguageExtensions[t.Extends] = self.LanguageExtensions[t.Extends] or {}
-    self.LanguageExtensions[t.Extends][t.Code] = langExtension
+    local extensions = self.LanguageExtensions[t.Extends] or {}
+    self.LanguageExtensions[t.Extends] = extensions
+    extensions[t.Code] = langExtension
 
     if self.Languages[t.Extends] then
         self:CompileLanguage(t.Extends)

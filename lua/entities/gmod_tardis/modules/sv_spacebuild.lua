@@ -9,12 +9,13 @@ ENT:AddHook("Initialize", "spacebuild", function(self)
 end)
 
 ENT:AddHook("FloatToggled", "spacebuild", function(self, on)
-    if not (self:GetData("spacebuild", false) and self.environment) then
+    local environment = self.environment
+    if not (self:GetData("spacebuild", false) and environment) then
         return
     end
 
     if not on then
         self.gravity = nil
-        self.environment:UpdateGravity(self)
+        environment:UpdateGravity(self)
     end
 end)

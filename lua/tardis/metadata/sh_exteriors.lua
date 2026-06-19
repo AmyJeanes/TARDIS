@@ -4,8 +4,9 @@ function TARDIS:SetExteriorCategory(ext_id, category)
             v[ext_id] = nil
         end
     end
-    self.ExteriorCategories[category] = self.ExteriorCategories[category] or {}
-    self.ExteriorCategories[category][ext_id] = true
+    local cat = self.ExteriorCategories[category] or {}
+    self.ExteriorCategories[category] = cat
+    cat[ext_id] = true
 end
 
 function TARDIS:ClearExteriorMetadata(id)
@@ -15,6 +16,12 @@ function TARDIS:ClearExteriorMetadata(id)
             self:ClearExteriorMetadata(k)
         end
     end
+end
+
+-- Functionally identical to E = {} but gives proper type checking for exteriors
+---@return tardis_exterior_metadata
+function TARDIS:NewExterior()
+    return {}
 end
 
 function TARDIS:AddExterior(t)
@@ -89,6 +96,7 @@ function TARDIS:SetupExteriorMetadata(id)
     self.ExteriorsMetadata[id] = self:MergeExteriorMetadata(m_base, t)
 end
 
+---@return tardis_exterior_metadata
 function TARDIS:CreateExteriorMetadata(id)
     self:SetupExteriorMetadata(id)
 

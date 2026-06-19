@@ -1,4 +1,4 @@
----@type table<string, table>
+---@type table<string, tardis_tip>
 local tip_styles={}
 
 function TARDIS:AddTipStyle(style)
@@ -15,6 +15,7 @@ function TARDIS:GetTipStyles()
     return tip_styles
 end
 
+---@return tardis_tip
 function TARDIS:GetTipStyle(id)
     if tip_styles[id] then
         return tip_styles[id]

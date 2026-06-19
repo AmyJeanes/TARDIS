@@ -30,10 +30,12 @@ if CLIENT then
 
         if TARDIS:GetSetting("cloistersound") and TARDIS:GetSetting("sound") then
             if shouldon and (not shouldoff) then
-                if not self.CloisterLoop then
-                    self.CloisterLoop = CreateSound(self, sound)
+                local loop = self.CloisterLoop
+                if not loop then
+                    loop = CreateSound(self, sound)
+                    self.CloisterLoop = loop
                 end
-                self.CloisterLoop:Play()
+                loop:Play()
             elseif self.CloisterLoop then
                 self.CloisterLoop:Stop()
                 self.CloisterLoop = nil

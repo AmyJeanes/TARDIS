@@ -60,9 +60,10 @@ ENT:AddHook("PlayerExit", "externalhum", function(self)
         local vol = snd.volume or 1
         local vol_with_ratio = vol * ratio
         local final_vol = vol_with_ratio * vol_setting
-        if self.LeakedInteriorHums[k] then
-            self.LeakedInteriorHums[k]:ChangeVolume(vol_with_ratio, 0)
-            self.LeakedInteriorHums[k]:ChangeVolume(final_vol, 0.3)
+        local hum = self.LeakedInteriorHums[k]
+        if hum then
+            hum:ChangeVolume(vol_with_ratio, 0)
+            hum:ChangeVolume(final_vol, 0.3)
         end
     end
 end)
@@ -77,9 +78,10 @@ end)
     local ratio = self.InteriorToExteriorRatio or 1.0
 
     for k, snd in pairs(sounds) do
-        if self.LeakedInteriorHums[k] then
+        local hum = self.LeakedInteriorHums[k]
+        if hum then
             local final_vol = (snd.volume or 1) * vol_setting * ratio
-            self.LeakedInteriorHums[k]:ChangeVolume(final_vol, 0)
+            hum:ChangeVolume(final_vol, 0)
         end
     end
 end)

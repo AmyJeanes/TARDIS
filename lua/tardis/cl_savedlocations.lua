@@ -1,3 +1,4 @@
+---@type table<string, table[]>
 TARDIS.Locations = TARDIS.Locations or {}
 
 local LOCATIONS_FILE = "tardis/locations.txt"

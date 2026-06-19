@@ -214,23 +214,29 @@ else -- CLIENT
             local setting = TARDIS:GetSetting("teleport_warning_infinite", self)
             local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop
             if setting and sound then
-                if not self.interior.dematfailsound then
-                    self.interior.dematfailsound = CreateSound(self.interior, sound)
-                    self.interior.dematfailsound:SetSoundLevel(90)
+                local snd = self.interior.dematfailsound
+                if not snd then
+                    snd = CreateSound(self.interior, sound)
+                    self.interior.dematfailsound = snd
+                    snd:SetSoundLevel(90)
                 end
-                if not self.interior.dematfailsound:IsPlaying() then
-                    self.interior.dematfailsound:Play()
+                if not snd:IsPlaying() then
+                    snd:Play()
                 end
             end
-        elseif self.interior.dematfailsound then
-            self.interior.dematfailsound:Stop()
-            self.interior.dematfailsound = nil
+        else
+            local snd = self.interior.dematfailsound
+            if snd then
+                snd:Stop()
+                self.interior.dematfailsound = nil
+            end
         end
     end)
 
     ENT:AddHook("DematFailStopped", "failing-demat", function(self)
-        if self.interior.dematfailsound then
-            self.interior.dematfailsound:Stop()
+        local snd = self.interior.dematfailsound
+        if snd then
+            snd:Stop()
             self.interior.dematfailsound = nil
             local power = self:GetPower()
             local teleport = self:GetData("teleport", false)
@@ -242,8 +248,9 @@ else -- CLIENT
     end)
 
     ENT:AddHook("OnRemove", "failing-demat", function(self)
-        if self.interior.dematfailsound then
-            self.interior.dematfailsound:Stop()
+        local snd = self.interior.dematfailsound
+        if snd then
+            snd:Stop()
             self.interior.dematfailsound = nil
         end
     end)

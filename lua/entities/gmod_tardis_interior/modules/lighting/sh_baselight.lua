@@ -35,6 +35,7 @@ if SERVER then
         self:SetData("interior_custom_base_light_brightness", brightness, true)
     end
 else
+    ---@return Vector
     function ENT:GetBaseLightColorVector()
         return self:GetData("interior_base_light_color_vec", TARDIS.color_white_vector)
     end
@@ -80,7 +81,7 @@ else
 
         local prevcolvec = self:GetData("interior_base_light_previous_color_vec", currentcolvec)
         local fraction = self:GetData("interior_base_light_transition_fraction", 0)
-        fraction = math.min(fraction + (FrameTime() * self.metadata.Interior.LightOverride.transitionspeed), 1)
+        fraction = math.min(fraction + (FrameTime() * lo.transitionspeed), 1)
         
         local colvec = LerpVector(fraction, prevcolvec, targetcolvec)
         

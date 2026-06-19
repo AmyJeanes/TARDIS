@@ -13,7 +13,8 @@ local function ParseLightTable(lt, interior, default_falloff)
         lt.warncolor = nil
     end
 
-    lt.warn_color = lt.warn_color or lt.color
+    local warn_color = lt.warn_color or lt.color
+    lt.warn_color = warn_color
     lt.warn_pos = lt.warn_pos or lt.pos
     lt.warn_brightness = lt.warn_brightness or lt.brightness
     lt.warn_falloff = lt.warn_falloff or lt.falloff
@@ -35,7 +36,7 @@ local function ParseLightTable(lt, interior, default_falloff)
     lt.color_vec = lt.color:ToVector() * lt.brightness
     lt.pos_global = interior:LocalToWorld(lt.pos)
 
-    lt.warn_color_vec = lt.warn_color:ToVector() * lt.warn_brightness
+    lt.warn_color_vec = warn_color:ToVector() * lt.warn_brightness
     lt.warn_pos_global = interior:LocalToWorld(lt.warn_pos)
 
     if lt.nopower then

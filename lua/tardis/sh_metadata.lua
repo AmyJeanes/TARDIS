@@ -2,21 +2,273 @@
 
 CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - selected interior to spawn when not using the spawnmenu")
 
+---@class tardis_metadata
+---@field Interior tardis_interior_metadata
+---@field Exterior tardis_exterior_metadata
+---@field ExteriorOriginal tardis_exterior_metadata?
+---@field ID string
+---@field Name string?
+---@field Base string|boolean
+---@field BaseMerged boolean?
+---@field Templates table?
+---@field TemplatesMergeOrder table?
+---@field Timings tardis_timings?
+---@field Versions table?
+---@field IsVersionOf string?
+---@field CustomHooks table?
+---@field CustomControls table?
+---@field CustomSettings table?
+---@field SyncExteriorBodygroupToDoors boolean?
+---@field EnableClassicDoors boolean?
+---@field Hidden boolean?
+
+---@class tardis_interior_metadata
+---@field Model string?
+---@field ExitDistance number?
+---@field Size tardis_box
+---@field Portal tardis_portal
+---@field Fallback tardis_fallback
+---@field Sounds tardis_interior_sound_metadata
+---@field IdleSound table?
+---@field Tips table
+---@field CustomTips table
+---@field PartTips table
+---@field TipSettings tardis_tip_settings
+---@field LightOverride tardis_light_override
+---@field Light tardis_light?
+---@field Lights table?
+---@field ScreensEnabled boolean?
+---@field Screens table?
+---@field Parts table<string, table|false>
+---@field Controls table?
+---@field TextureSets table
+---@field CustomPortals table?
+---@field FalseWorlds table?
+---@field FalseWorldWindows table?
+---@field ExitBox tardis_box?
+---@field UI_Theme string?
+---@field MatProxy table?
+---@field FloorLevel number?
+---@field IntDoorAnimationTime number?
+---@field CustomHooks table?
+---@field RequireLightOverride boolean?
+---@field RequireHighModelDetail boolean?
+---@field BreakdownEffectPos Vector?
+---@field Sequences table?
+---@field PortalNoCollide boolean?
+---@field RoundThings table?
+---@field Scanners table?
+---@field Lamps table?
+---@field Seats table?
+
+---@class tardis_exterior_metadata
+---@field Model string?
+---@field Mass number?
+---@field ExcludedSkins table?
+---@field WinterSkins table?
+---@field DoorAnimationTime number?
+---@field ScannerOffset Vector?
+---@field PhaseMaterial string?
+---@field Portal tardis_portal
+---@field Fallback tardis_fallback
+---@field Light tardis_light
+---@field ProjectedLight tardis_projected_light
+---@field Sounds tardis_exterior_sound_metadata
+---@field Chameleon tardis_chameleon
+---@field LockedDoor tardis_locked_door
+---@field Parts table<string, table|false>
+---@field Controls table?
+---@field Teleport tardis_teleport
+---@field TextureSets table
+---@field CustomHooks table?
+---@field UseLegacyDoors boolean?
+---@field PortalNoCollide boolean?
+---@field ID string?
+---@field Base string|boolean|nil
+---@field Name string?
+---@field Category string?
+
+---@class tardis_portal
+---@field pos Vector
+---@field ang Angle
+---@field width number
+---@field height number
+---@field model string?
+---@field model_offset table
+---@field thickness number?
+---@field inverted boolean?
+
+---@class tardis_box
+---@field Min Vector
+---@field Max Vector
+
+---@class tardis_fallback
+---@field pos Vector
+---@field ang Angle
+
+---@class tardis_light
+---@field enabled boolean?
+---@field pos Vector?
+---@field color Color?
+---@field dynamicpos Vector?
+---@field dynamicbrightness number?
+---@field dynamicsize number?
+---@field NoLO tardis_light?
+---@field NoExtra tardis_light?
+---@field NoExtraNoLO tardis_light?
+
+---@class tardis_light_override
+---@field basebrightness number?
+---@field nopowerbrightness number?
+---@field transitionspeed number?
+---@field basebrightnessRGB Vector|table|nil
+
+---@class tardis_projected_light
+---@field brightness number?
+---@field farz number?
+---@field offset Vector?
+---@field texture string?
+---@field baselightmix number?
+---@field color Color?
+---@field warncolor Color?
+---@field vertfov number?
+---@field horizfov number?
+
+---@class tardis_chameleon
+---@field AnimTime number?
+---@field Enable boolean?
+
+---@class tardis_locked_door
+---@field AnimPos number?
+---@field AnimTime number?
+
+---@class tardis_tip_settings
+---@field style string?
+---@field view_range_min number?
+---@field view_range_max number?
+---@field TextOverrides table?
+
+---@class tardis_timings
+---@field DematAbortState number?
+---@field DematFail number?
+---@field MatFail number?
+---@field TakeOffState number?
+---@field ParkingState number?
+
+---@class tardis_teleport
+---@field SequenceSpeed number|table
+---@field SequenceSpeedWarning number|table
+---@field SequenceSpeedFast number|table
+---@field SequenceSpeedHads number|table
+---@field SequenceSpeedWarnFast number|table
+---@field DematInterruptSpeed number?
+---@field PrematDelayFast number?
+---@field PrematDelay number?
+---@field DematSequence table
+---@field MatSequence table
+---@field HadsDematSequence table
+---@field DematSequenceSaved table?
+---@field MatSequenceSaved table?
+---@field HadsDematSequenceSaved table?
+---@field DematSequenceDelays table?
+---@field DematFastSequenceDelays table?
+---@field DematHadsSequenceDelays table?
+---@field MatSequenceDelays table?
+---@field MatFastSequenceDelays table?
+
+---@class tardis_interior_sound_metadata
+---@field Damage tardis_sound_damage
+---@field Teleport tardis_sound_teleport
+---@field Power tardis_sound_power
+---@field SequenceOK string?
+---@field SequenceFail string?
+---@field Cloister string?
+---@field Lock string?
+---@field Unlock string?
+---@field Idle table?
+---@field Hum string?
+
+---@class tardis_exterior_sound_metadata
+---@field Teleport tardis_sound_teleport
+---@field Door tardis_sound_door
+---@field RepairFinish string?
+---@field RepairLoop string?
+---@field Lock string?
+---@field Unlock string?
+---@field Spawn string?
+---@field Delete string?
+---@field FlightLoop string?
+---@field FlightLoopDamaged string?
+---@field FlightLoopBroken string?
+---@field FlightLand string?
+---@field FlightFall string?
+---@field BrokenFlightTurn table?
+---@field BrokenFlightExplosion string?
+---@field BrokenFlightEnable string?
+---@field BrokenFlightDisable string?
+---@field Cloak string?
+---@field CloakOff string?
+---@field Chameleon string?
+---@field Hum table?
+
+---@class tardis_sound_damage
+---@field Crash string?
+---@field BigCrash string?
+---@field Explosion string?
+---@field Death string?
+---@field Artron string?
+
+---@class tardis_sound_door
+---@field enabled boolean?
+---@field open string?
+---@field close string?
+---@field locked string?
+
+---@class tardis_sound_power
+---@field On string?
+---@field Off string?
+
+---@class tardis_sound_teleport
+---@field demat string?
+---@field demat_damaged string?
+---@field demat_fast string?
+---@field demat_hads string?
+---@field demat_fail string?
+---@field demat_fail_loop string?
+---@field demat_fail_loop_stop string?
+---@field mat string?
+---@field mat_damaged string?
+---@field mat_fail string?
+---@field mat_fast string?
+---@field mat_damaged_fast string?
+---@field fullflight string?
+---@field fullflight_damaged string?
+---@field interrupt string?
+
+---@class tardis_versions
+---@field main table
+---@field other table
+---@field custom table
+---@field list_all table
+---@field list_original table
+---@field allow_custom boolean?
+---@field randomize_custom boolean?
+
 function TARDIS:LoadInteriors()
     if TARDIS.InteriorsLoading then return end
 
-    ---@type table<string, table>
+    ---@type table<string, tardis_metadata>
     TARDIS.Metadata = {}
-    ---@type table<string, table>
+    ---@type table<string, tardis_metadata>
     TARDIS.MetadataRaw = {}
-    ---@type table<string, table>
+    ---@type table<string, tardis_metadata>
     TARDIS.MetadataTemplates = {}
-    ---@type table<string, table>
+    ---@type table<string, tardis_versions>
     TARDIS.MetadataVersions = {}
     ---@type table<string, table<string, table>>
     TARDIS.MetadataCustomVersions = {}
 
-    ---@type table<string, table>
+    ---@type table<string, tardis_exterior_metadata>
     TARDIS.ExteriorsMetadata = {}
     ---@type table<string, table>
     TARDIS.ExteriorsMetadataRaw = {}
@@ -74,8 +326,10 @@ function TARDIS:PostMergeExteriorMetadata(ext_m)
     end
 end
 
+---@return tardis_metadata
 function TARDIS:MergeMetadata(base, t)
-    local copy=table.Copy(base)
+    ---@type tardis_metadata
+    local copy=table.Copy(base) -- table.Copy returns a bare table, dropping the class
     self:PreMergeExteriorMetadata(t.Exterior)
     table.Merge(copy,t)
     self:PostMergeExteriorMetadata(copy.Exterior)
@@ -177,6 +431,12 @@ hook.Add("InitPostEntity", "TARDIS_FalseWorlds", function()
     end
 end)
 
+-- Functionally identical to T = {} but gives proper type checking for interiors
+---@return tardis_metadata
+function TARDIS:NewInterior()
+    return {}
+end
+
 function TARDIS:AddInterior(t)
     t = table.Copy(t)
 
@@ -226,6 +486,7 @@ function TARDIS:SetupMetadata(id)
     self.Metadata[id].Versions = nil -- we don't want those mixing up anywhere
 end
 
+---@return tardis_metadata
 function TARDIS:CreateInteriorMetadata(id, ent)
     if ent then
         if ent.TardisExterior and ent.interior and ent.interior.metadata then

@@ -324,8 +324,10 @@ else
 
         local ep_category = pr:GetCategory(exit_point_category)
 
-        ep_category.Container:SetVisible(false)
-        ep_category.Expand:SetExpanded(false)
+        local container = ep_category.Container
+        if container then container:SetVisible(false) end
+        local expand = ep_category.Expand
+        if expand then expand:SetExpanded(false) end
         ep_category:InvalidateLayout()
 
         local reset = pr:CreateRow( "Actions", "Reset" )

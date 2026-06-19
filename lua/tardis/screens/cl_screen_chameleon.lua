@@ -134,8 +134,11 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
             preview:SetVisible(false)
             if ext_data then
                 local basemodel = ext_data.Model
-                local doormodel = ext_data.Parts.door.model or ext_data.Parts.door.Model
-                local doorpos = (ext_data.Portal.pos + ext_data.Parts.door.posoffset)
+                local doorpart = ext_data.Parts.door
+                -- assume the door part is enabled as it is required for the exterior to be valid
+                ---@cast doorpart table
+                local doormodel = doorpart.model or doorpart.Model
+                local doorpos = (ext_data.Portal.pos + doorpart.posoffset)
                 local textures
                 if ext_data.TextureSets then
                     textures = ext_data.TextureSets.normal

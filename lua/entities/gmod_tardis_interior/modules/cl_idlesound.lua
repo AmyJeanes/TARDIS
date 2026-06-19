@@ -21,9 +21,10 @@ ENT:AddHook("PlayerEnter", "idlesound", function(self)
     for k, snd in pairs(sounds) do
         local vol = snd.volume or 1
         local final_vol = vol * vol_setting
-        if self.idlesounds[k] then
-            self.idlesounds[k]:ChangeVolume(final_vol, 0)
-            self.idlesounds[k]:ChangeVolume(vol, 0.3)
+        local idlesnd = self.idlesounds[k]
+        if idlesnd then
+            idlesnd:ChangeVolume(final_vol, 0)
+            idlesnd:ChangeVolume(vol, 0.3)
         end
     end
 end)

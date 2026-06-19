@@ -181,10 +181,13 @@ else
 
         if TARDIS:GetExteriorEnt()==self and self:IsVortexEnabled() then return end
 
-        if not (IsValid(self.interior) and self.interior.portals) then return end
-        
-        local is_int_portal = portal==self.interior.portals.interior
-        local is_ext_portal = portal==self.interior.portals.exterior
+        local interior = self.interior
+        if not IsValid(interior) then return end
+        local portals = interior.portals
+        if not portals then return end
+
+        local is_int_portal = portal==portals.interior
+        local is_ext_portal = portal==portals.exterior
         if not (is_int_portal or is_ext_portal) then return end
 
         -- render black portal from inside, but render invisible from outside so players not inside can't see it

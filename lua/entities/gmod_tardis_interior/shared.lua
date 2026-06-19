@@ -5,6 +5,9 @@
 ---@field timers table<string, table>
 ---@field roundthings table<integer, integer>
 ---@field owner Player?
+---@field metadata tardis_metadata
+---@field exterior gmod_tardis
+---@field tips tardis_tip[]
 
 ENT.Base="gmod_door_interior"
 ENT.TardisInterior=true
@@ -15,6 +18,7 @@ local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only 
 local hooks={}
 
 -- Hook system for modules
+---@param func fun(self: gmod_tardis_interior, ...)
 function ENT:AddHook(name,id,func)
     if not (hooks[name]) then hooks[name]={} end
     if hooks[name][id] then error("Duplicate hook ID '"..id.."' for '"..name.."' hook",2) end

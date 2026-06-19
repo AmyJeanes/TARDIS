@@ -82,7 +82,8 @@ if SERVER then
                     TARDIS:Message(a, "Parts.Door.Locked")
                     self.exterior:SendMessage("lockattempted", {a})
                 end
-                self:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
+                local door_sounds = self.exterior.metadata.Exterior.Sounds.Door
+                self:EmitSound(door_sounds.locked)
                 local otherdoor
                 if self.ExteriorPart and IsValid(self.interior) then
                     otherdoor = self.interior:GetPart("door")
@@ -90,7 +91,7 @@ if SERVER then
                     otherdoor = self.exterior:GetPart("door")
                 end
                 if IsValid(otherdoor) then
-                    otherdoor:EmitSound(self.exterior.metadata.Exterior.Sounds.Door.locked)
+                    otherdoor:EmitSound(door_sounds.locked)
                 end
             end
         else

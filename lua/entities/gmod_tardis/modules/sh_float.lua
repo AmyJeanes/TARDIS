@@ -124,22 +124,22 @@ if SERVER then
 
                 local force=1
                 local rforce=2
-                if TARDIS:IsBindDown(self.pilot,"float-boost") then
+                if TARDIS:IsBindDown(p,"float-boost") then
                     force=force*2.5
                     rforce=rforce*2.5
                 end
-                if TARDIS:IsBindDown(self.pilot,"float-forward") then
+                if TARDIS:IsBindDown(p,"float-forward") then
                     local vec=Vector(0,force,0)
                     vec:Rotate(ang)
                     ph:AddAngleVelocity(vec)
                 end
-                if TARDIS:IsBindDown(self.pilot,"float-backward") then
+                if TARDIS:IsBindDown(p,"float-backward") then
                     local vec=Vector(0,-force,0)
                     vec:Rotate(ang)
                     ph:AddAngleVelocity(vec)
                 end
-                if TARDIS:IsBindDown(self.pilot,"float-right") then
-                    if TARDIS:IsBindDown(self.pilot,"float-rotate") then
+                if TARDIS:IsBindDown(p,"float-right") then
+                    if TARDIS:IsBindDown(p,"float-rotate") then
                         local vec=Vector(0,0,-rforce)
                         vec:Rotate(ang)
                         ph:AddAngleVelocity(vec)
@@ -149,8 +149,8 @@ if SERVER then
                         ph:AddAngleVelocity(vec)
                     end
                 end
-                if TARDIS:IsBindDown(self.pilot,"float-left") then
-                    if TARDIS:IsBindDown(self.pilot,"float-rotate") then
+                if TARDIS:IsBindDown(p,"float-left") then
+                    if TARDIS:IsBindDown(p,"float-rotate") then
                         local vec=Vector(0,0,rforce)
                         vec:Rotate(ang)
                         ph:AddAngleVelocity(vec)
@@ -161,7 +161,7 @@ if SERVER then
                     end
                 end
 
-                if TARDIS:IsBindDown(self.pilot,"float-brake") then
+                if TARDIS:IsBindDown(p,"float-brake") then
                     ph:AddAngleVelocity(ph:GetAngleVelocity()*-0.05)
                 end
             end

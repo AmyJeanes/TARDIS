@@ -67,8 +67,8 @@ local function get_ent_size(ent)
 end
 
 if SERVER then
-    ---@param ent Entity
-    ---@param ply Player?
+    ---@param ent? Entity
+    ---@param ply? Player
     function ENT:SetTracking(ent, ply)
         if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
@@ -153,7 +153,7 @@ if SERVER then
             self:SetData("tracking-offset-yaw", offsetYaw)
             self:SetData("tracking-ent-size", entSize)
             self:SetData("tracking-ent",ent,true)
-            if ent.TardisExterior then
+            if IsValid(ent) and ent.TardisExterior then
                 ent:SetData("tracking-tracked-by", self)
             end
             self:SetTrackRotationAuto()
@@ -466,7 +466,10 @@ if SERVER then
             ph:AddAngleVelocity(Vector(0,0,-ph:GetAngleVelocity().z*0.3*phm))
 
             if TRACKING_DEBUG then
-                self.trackingdebugprop:SetAngles(Angle(0,targetang,0))
+                local debugprop = self.trackingdebugprop
+                if IsValid(debugprop) then
+                    debugprop:SetAngles(Angle(0,targetang,0))
+                end
             end
         end
     end)

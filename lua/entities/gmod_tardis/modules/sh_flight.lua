@@ -405,7 +405,7 @@ if SERVER then
                         local lastmsg = self.bad_flight_boost_msg
                         if lastmsg == nil or (lastmsg ~= nil and CurTime() - lastmsg > 5.5) then
                             self.bad_flight_boost_msg = CurTime()
-                            TARDIS:ErrorMessage(self.pilot, "Flight.DoorOpenNoBoost")
+                            TARDIS:ErrorMessage(p, "Flight.DoorOpenNoBoost")
                         end
                     else
                         if self.bad_flight_boost_msg ~= nil then

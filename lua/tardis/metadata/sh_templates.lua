@@ -1,5 +1,7 @@
+---@param template tardis_metadata
 function TARDIS:AddInteriorPartsOffset(template, offset)
-    local moved = table.Copy(template)
+    ---@type tardis_metadata
+    local moved = table.Copy(template) -- table.Copy returns a bare table, dropping the class
 
     if istable(moved.Interior.Parts) then
         for _,v in pairs(moved.Interior.Parts) do
@@ -39,8 +41,10 @@ function TARDIS:AddInteriorPartsOffset(template, offset)
     return moved
 end
 
+---@param template tardis_metadata
 function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
-    local rotated = table.Copy(template)
+    ---@type tardis_metadata
+    local rotated = table.Copy(template) -- table.Copy returns a bare table, dropping the class
 
     if istable(rotated.Interior.Parts) then
         for _,v in pairs(rotated.Interior.Parts) do
@@ -94,8 +98,9 @@ function TARDIS:SetupTemplateUpdates(id)
 
     for template_id, template in pairs(t.Templates) do
         if template then
-            self.IntUpdatesPerTemplate[template_id] = self.IntUpdatesPerTemplate[template_id] or {}
-            self.IntUpdatesPerTemplate[template_id][id] = true
+            local upd = self.IntUpdatesPerTemplate[template_id] or {}
+            self.IntUpdatesPerTemplate[template_id] = upd
+            upd[id] = true
         end
     end
 end
@@ -123,9 +128,9 @@ function TARDIS:HandleMissingTemplate(template_id, id, template)
     end
 end
 
----@param metadata table
+---@param metadata tardis_metadata
 ---@param ent Entity?
----@return table
+---@return tardis_metadata
 function TARDIS:MergeTemplates(metadata, ent)
     if not metadata.Templates then
         return metadata

@@ -466,10 +466,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
     updatelist()
 
     function llist:OnRowSelected(i,row)
-        local locations_num = 0
-        if TARDIS.Locations[map] ~= nil then
-            locations_num = #TARDIS.Locations[map]
-        end
+        local locations = TARDIS.Locations[map]
+        local locations_num = locations and #locations or 0
         local name,pos,ang
         if i > locations_num then
             local ground = (i == locations_num + 1)
@@ -482,9 +480,10 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
                 name = TARDIS:GetPhrase("Screens.Coordinates.RandomLocation")
             end
         else
-            pos = TARDIS.Locations[map][i].pos
-            ang = TARDIS.Locations[map][i].ang
-            name = TARDIS.Locations[map][i].name
+            local loc = locations[i]
+            pos = loc.pos
+            ang = loc.ang
+            name = loc.name
         end
         updatetextinputs(pos,ang,name)
     end

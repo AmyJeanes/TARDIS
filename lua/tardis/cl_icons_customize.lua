@@ -330,7 +330,7 @@ function TARDIS:CustomizeIconPack()
     -- Single layout pass for the whole tab bar — keeps tabs, dirty label, and
     -- help button on a shared baseline regardless of how their individual
     -- PerformLayouts would otherwise interleave.
-    tab_bar.PerformLayout = function(self, w, h)
+    function tab_bar:PerformLayout(w, h)
         local btn_y = math.floor((h - tab_h) / 2)
         local x = 4
         for _, btn in ipairs(tab_button_order) do
@@ -517,7 +517,7 @@ function TARDIS:CustomizeIconPack()
     missing_grid:SetSpaceY(4)
     clear_on_blank_click(missing_grid)
 
-    list_wrapper.PerformLayout = function(self, w, h)
+    function list_wrapper:PerformLayout(w, h)
         order_section:SetTall(math.floor((h - SECTION_GAP) / 2))
     end
 
@@ -817,7 +817,7 @@ function TARDIS:CustomizeIconPack()
 
             local check = vgui.Create("DCheckBox", check_wrap)
             check:SetSize(14, 14)
-            check_wrap.PerformLayout = function(self, w, h)
+            function check_wrap:PerformLayout(w, h)
                 check:SetPos((w - 14) / 2, (h - 14) / 2 + 1)
             end
             check:SetChecked(entry.enabled)
@@ -878,7 +878,7 @@ function TARDIS:CustomizeIconPack()
             label.OnMousePressed = function(_, mc)
                 row:OnMousePressed(mc)
             end
-            label.PerformLayout = function(self, w, h)
+            function label:PerformLayout(w, h)
                 surface.SetFont(self:GetFont())
                 local tw = surface.GetTextSize(pack_name)
                 self:SetTooltip(tw > w and pack_name or nil)

@@ -179,8 +179,11 @@ function TARDIS:SwitchScreen(screen,newscreen)
     frame:SetVisible(true)
 
     screen.curscreen=frame
-    screen.pagename:SetText(TARDIS:GetPhrase(frame._text))
-    screen.pagename:DoLayout()
+    local pagename = screen.pagename
+    if pagename then
+        pagename:SetText(TARDIS:GetPhrase(frame._text))
+        pagename:DoLayout()
+    end
     if IsValid(screen.mmenu) then
         screen.mmenu:SetVisible(false)
     end
@@ -638,6 +641,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
         end
         screen.RestoreHexLayout()
     else
+        ---@type Panel[]
         local pages={}
         local page
         local spacew,spaceh = 0,0
@@ -775,8 +779,10 @@ function TARDIS:LoadScreen(id, options)
     frame:SetAlpha(230)
 
     screen.Think = function(self)
-        local shouldDraw = not (self.int:CallHook("ShouldNotDrawScreen", self.id) or false)
-        local blackScreen = self.int:CallHook("ShouldDrawBlackScreen", self.id) or false
+        local int = self.int
+        if not IsValid(int) then return end
+        local shouldDraw = not (int:CallHook("ShouldNotDrawScreen", self.id) or false)
+        local blackScreen = int:CallHook("ShouldDrawBlackScreen", self.id) or false
         if self.draw ~= shouldDraw or self.black ~= blackScreen then
             self.frame:SetVisible(shouldDraw and not blackScreen)
             if shouldDraw or (blackScreen and self.power_off_black) then

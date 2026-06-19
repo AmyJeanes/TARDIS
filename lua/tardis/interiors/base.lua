@@ -1,6 +1,6 @@
 -- Base
 
-local T = {}
+local T = TARDIS:NewInterior()
 T.Base = true
 T.BaseMerged = true
 T.Name = "Base"

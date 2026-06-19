@@ -32,7 +32,8 @@ end
 local tbl={}
 tbl.Init = function(self,...)
     local old = vgui.GetControlTable("DTextEntry")
-    old.Init(self,...)
+    local oldInit = old and old.Init
+    if oldInit then oldInit(self,...) end
     self.OldOnMousePressed = self.OnMousePressed
     self.OnMousePressed = function(self,key)
         if self.is3D2D and self:IsEnabled() then
@@ -69,7 +70,8 @@ end
 
 dmodel_tbl.Init = function(self,...)
     local dmodel = vgui.GetControlTable("DModelPanel")
-    dmodel.Init(self,...)
+    local dmodelInit = dmodel and dmodel.Init
+    if dmodelInit then dmodelInit(self,...) end
     self.rt = nil
     self.rtmat = nil
     self.rt_w = 0

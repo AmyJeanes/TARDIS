@@ -5,6 +5,7 @@
 ---@field timers table<string, table>
 ---@field metadataID string
 ---@field effect_pos Vector
+---@field metadata tardis_metadata
 
 ENT.Base="gmod_door_exterior"
 ENT.Spawnable=false
@@ -23,6 +24,7 @@ local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only 
 local hooks={}
 
 -- Hook system for modules
+---@param func fun(self: gmod_tardis, ...)
 function ENT:AddHook(name,id,func)
     if not (hooks[name]) then hooks[name]={} end
     if hooks[name][id] then error("Duplicate hook ID '"..id.."' for '"..name.."' hook",2) end

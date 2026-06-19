@@ -56,6 +56,8 @@
 -- Injected by the part system at setup:
 ---@field exterior gmod_tardis
 ---@field interior gmod_tardis_interior
+---@field parent gmod_tardis|gmod_tardis_interior
+---@field o tardis_part_original
 ---@field Control string
 ---@field pos Vector
 ---@field ang Angle
@@ -207,6 +209,7 @@ function TARDIS.InitAnimation(self, anim)
     return a
 end
 
+---@param self gmod_tardis_part
 function TARDIS.ProcessAnimation(self, a)
 
     if a.type == "travel" then
@@ -281,9 +284,18 @@ function TARDIS.ProcessAnimation(self, a)
     end
 end
 
+-- the original SENT methods saved by SetupOverrides before they are wrapped
+---@class tardis_part_original
+---@field Initialize fun(self: gmod_tardis_part)
+---@field Think fun(self: gmod_tardis_part)
+---@field Draw fun(self: gmod_tardis_part, flags?: number)
+---@field Use fun(self: gmod_tardis_part, activator: Entity, caller?: Entity, useType?: number, value?: number)
+
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
-    ["Initialize"]={function(self)
+    ["Initialize"]={
+        ---@param self gmod_tardis_part
+        function(self)
         if CLIENT then
             if self.Animate then
                 self.AnimateOptions = self.AnimateOptions or {}
@@ -367,7 +379,9 @@ local overrides={
             end
         end
     end, CLIENT},
-    ["Use"]={function(self,a,...)
+    ["Use"]={
+        ---@param self gmod_tardis_part
+        function(self,a,...)
         if SERVER and TARDIS.debug_tips and self.InteriorPart then
             return TARDIS.DebugTipsFunction(self, a, ...)
         end
@@ -609,13 +623,14 @@ local function AutoSetup(self,e,id)
     e:SetSolid( SOLID_VPHYSICS )
     e:SetRenderMode( RENDERMODE_NORMAL )
     e:SetUseType( SIMPLE_USE )
-    e.phys = e:GetPhysicsObject()
-    if e.phys:IsValid() then
+    local phys = e:GetPhysicsObject()
+    e.phys = phys
+    if phys:IsValid() then
         if e.Motion and not e.StartFrozen then
-            e.phys:EnableMotion(true)
-            e.phys:Wake()
+            phys:EnableMotion(true)
+            phys:Wake()
         else
-            e.phys:EnableMotion(false)
+            phys:EnableMotion(false)
         end
     end
     if not e.Collision then

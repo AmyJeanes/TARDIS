@@ -123,7 +123,10 @@ function ListView3D:UpdateLayout()
                     if another_line ~= this then
                         another_line:SetToggle(false)
                         another_line:SetFont(self.font)
-                        another_line.panel:SetBackgroundColor(Color(255,255,255))
+                        local panel = another_line.panel
+                        if panel then
+                            panel:SetBackgroundColor(Color(255,255,255))
+                        end
                     end
                 end
                 self.selected_line = this.index
@@ -264,7 +267,10 @@ function ListView3D:ClearSelection()
     for _,v in pairs(self.line_elements) do
         v:SetToggle(false)
         v:SetFont(self.font)
-        v.panel:SetBackgroundColor(Color(255,255,255))
+        local panel = v.panel
+        if panel then
+            panel:SetBackgroundColor(Color(255,255,255))
+        end
     end
     self.selected_line = nil
 end

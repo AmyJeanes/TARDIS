@@ -42,12 +42,12 @@ function TARDIS:ChangeKeyBind(id,data,callback)
         input.StartKeyTrapping()
         s:SetText("[".. TARDIS:GetPhrase("Binds.AnyKey").. "]")
     end
-    keybutton.Think = function(s)
-        if s.keytrap then
+    function keybutton:Think()
+        if self.keytrap then
             local key=input.CheckKeyTrapping()
             if key then
-                s.key=key
-                s:Update()
+                self.key=key
+                self:Update()
             end
         end
     end

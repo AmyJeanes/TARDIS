@@ -4,8 +4,7 @@
     },
     "diagnostics": {
         "disable": [
-            "need-check-nil",
-            "unchecked-nil-access"
+            "need-check-nil"
         ]
     },
     "workspace": {

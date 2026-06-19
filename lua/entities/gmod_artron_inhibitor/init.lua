@@ -175,7 +175,10 @@ function ENT:Think()
 
         for _,ent in ipairs(TARDIS:GetInteriorEnts()) do
             if ent:GetPos():Distance(self:GetPos()) <= self.Radius then
-                ent.exterior:AddArtron(-2)
+                -- ipairs drops gmod_tardis_interior's exterior field override, so re-assert it
+                ---@type gmod_tardis
+                local ext = ent.exterior
+                ext:AddArtron(-2)
             end
         end
     end

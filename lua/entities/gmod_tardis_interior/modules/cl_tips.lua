@@ -1,5 +1,36 @@
 -- Tips
 
+---@class tardis_tip
+---@field text string?
+---@field colors tardis_tip_colors
+---@field control string?
+---@field part string?
+---@field pos Vector?
+---@field font string?
+---@field padding number?
+---@field offset number?
+---@field fr_width number?
+---@field down boolean?
+---@field right boolean?
+---@field randtext string?
+---@field highlighted boolean?
+---@field view_range_min number?
+---@field view_range_max number?
+---@field style_id string?
+---@field style_name string?
+---@field SetHighlight fun(self: tardis_tip, on: boolean)
+---@field GetHighlight fun(self: tardis_tip): boolean
+
+---@class tardis_tip_colors
+---@field normal tardis_tip_colorset
+---@field current tardis_tip_colorset
+---@field highlighted tardis_tip_colorset?
+
+---@class tardis_tip_colorset
+---@field background Color
+---@field frame Color
+---@field text Color
+
 function ENT:InitializeTips(style_name)
     local int_metadata = self.metadata.Interior
     local text_overrides = int_metadata.TipSettings.TextOverrides
@@ -17,7 +48,7 @@ function ENT:InitializeTips(style_name)
     local tips = {}
 
     for _,interior_tip in ipairs(self.alltips) do
-        local tip = table.Copy(style)
+        local tip = TARDIS:CopyTable(style)
 
         tip.view_range_min = int_metadata.Tips.view_range_min or int_metadata.TipSettings.view_range_min
         tip.view_range_max = int_metadata.Tips.view_range_max or int_metadata.TipSettings.view_range_max
@@ -202,7 +233,11 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
                 alpha = (tip.colors.current.background.a) * normalised
             end
 
+            -- ColorAlpha is stubbed to return table, not Color, so :Unpack() reads as a nil method
+            -- here; assert Color. (text_color needs no assert - it is only passed as a draw arg.)
+            ---@type Color
             local background_color = ColorAlpha(tip.colors.current.background, alpha)
+            ---@type Color
             local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
             local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
