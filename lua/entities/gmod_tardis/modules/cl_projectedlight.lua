@@ -18,18 +18,19 @@ function ENT:PickProjectedLightColor()
     local warning = self:GetData("warning",false)
 
     local pl = self.metadata.Exterior.ProjectedLight
-    local ld = self.interior.light_data
-    local int_color_data = ld and ld.main or self.metadata.Interior.Light
+    local interior = self.interior
+    local ld = IsValid(interior) and interior.light_data
+    local int_color_data = (ld and ld.main) or self.metadata.Interior.Light
     local pickedcolor
 
-    if warning then
+    if warning and int_color_data then
         pickedcolor = pl.warncolor or int_color_data.warn_color
     end
 
-    pickedcolor = pickedcolor or pl.color or int_color_data.color
+    pickedcolor = pickedcolor or pl.color or (int_color_data and int_color_data.color)
 
-    if pl.baselightmix > 0 and IsValid(self.interior) then
-        local int_base_light_color = self.interior:GetBaseLightColor()
+    if pickedcolor and pl.baselightmix > 0 and IsValid(interior) then
+        local int_base_light_color = interior:GetBaseLightColor()
 
         local mix = pl.baselightmix
         pickedcolor = Color(

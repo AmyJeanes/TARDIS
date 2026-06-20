@@ -1,5 +1,6 @@
 -- Button Options
 
+---@type table<string, tardis_setting>
 TARDIS.ButtonOptions = TARDIS.ButtonOptions or {}
 
 function TARDIS:GetButtonOptions()

@@ -135,10 +135,11 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
             if ext_data then
                 local basemodel = ext_data.Model
                 local doorpart = ext_data.Parts.door
-                -- assume the door part is enabled as it is required for the exterior to be valid
-                ---@cast doorpart table
+                -- the door part is required for a valid exterior, so it is never `false`;
+                -- the shaped cast types the fields we read off it
+                ---@cast doorpart { model: string?, Model: string?, posoffset: Vector? }
                 local doormodel = doorpart.model or doorpart.Model
-                local doorpos = (ext_data.Portal.pos + doorpart.posoffset)
+                local doorpos = ext_data.Portal.pos + (doorpart.posoffset or Vector(0,0,0))
                 local textures
                 if ext_data.TextureSets then
                     textures = ext_data.TextureSets.normal
@@ -168,20 +169,24 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                 end
 
                 if doormodel then
-                    if preview3D.door then
-                        preview3D.door:SetModel(doormodel)
+                    local door = preview3D.door
+                    if IsValid(door) then
+                        door:SetModel(doormodel)
                     else
-                        preview3D.door = ClientsideModel(doormodel)
-                        preview3D.door:SetNoDraw(true)
+                        door = ClientsideModel(doormodel)
+                        preview3D.door = door
+                        if IsValid(door) then door:SetNoDraw(true) end
                     end
-                    for i,_ in ipairs(preview3D.door:GetMaterials()) do
-                        preview3D.door:SetSubMaterial(i-1)
-                    end
-                    if textures then
-                        local prefix = textures.prefix or ""
-                        for _,v in ipairs(textures) do
-                            if v[1] == "door" then
-                                preview3D.door:SetSubMaterial(v[2],prefix .. v[3])
+                    if IsValid(door) then
+                        for i,_ in ipairs(door:GetMaterials()) do
+                            door:SetSubMaterial(i-1)
+                        end
+                        if textures then
+                            local prefix = textures.prefix or ""
+                            for _,v in ipairs(textures) do
+                                if v[1] == "door" then
+                                    door:SetSubMaterial(v[2],prefix .. v[3])
+                                end
                             end
                         end
                     end

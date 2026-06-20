@@ -3,9 +3,7 @@
         "version": "LuaJIT"
     },
     "diagnostics": {
-        "disable": [
-            "need-check-nil"
-        ]
+        "disable": []
     },
     "workspace": {
         "library": [

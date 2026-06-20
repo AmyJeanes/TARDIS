@@ -405,7 +405,7 @@ local overrides={
             end
         else
             if allowed~=false then
-                if self.HasUseBasic then
+                if self.HasUseBasic and self.UseBasic then
                     self.UseBasic(self,a,...)
                 end
                 local blockuse=false

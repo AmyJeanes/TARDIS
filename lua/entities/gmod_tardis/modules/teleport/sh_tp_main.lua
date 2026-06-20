@@ -103,7 +103,9 @@ if SERVER then
             self:SetData("force-demat", true, true)
             self:SetData("force-demat-time", CurTime(), true)
             self:Explode(30)
-            self.interior:Explode(20)
+            if IsValid(self.interior) then
+                self.interior:Explode(20)
+            end
         end
 
         pos = pos or self:GetDestinationPos(true)
@@ -304,20 +306,20 @@ else
             end
 
             local sound_demat_hads_ext = ext.demat_hads
-            local sound_demat_hads_int = int.demat_hads or ext.demat_hads
+            local sound_demat_hads_int = int.demat_hads or sound_demat_hads_ext
 
             local pos = data[1]
 
             if LocalPlayer():GetTardisData("exterior")==self then
                 if self:GetFastRemat() then
-                    if shouldPlayInterior then
+                    if shouldPlayInterior and IsValid(self.interior) then
                         self.interior:EmitSound(sound_fullflight_int)
                     end
                     if shouldPlayExterior then
                         self:EmitSound(sound_fullflight_ext)
                     end
                 else
-                    if shouldPlayInterior then
+                    if shouldPlayInterior and IsValid(self.interior) then
                         if self:GetData("hads-demat") then
                             self.interior:EmitSound(sound_demat_hads_int)
                         else
@@ -370,14 +372,14 @@ else
                     if shouldPlayExterior then
                         self:EmitSound(ext.mat_damaged)
                     end
-                    if shouldPlayInterior then
+                    if shouldPlayInterior and IsValid(self.interior) then
                         self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
                     end
                 else
                     if shouldPlayExterior then
                         self:EmitSound(ext.mat)
                     end
-                    if shouldPlayInterior then
+                    if shouldPlayInterior and IsValid(self.interior) then
                         self.interior:EmitSound(int.mat or ext.mat)
                     end
                 end

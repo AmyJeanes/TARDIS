@@ -48,6 +48,7 @@ end
 
 ENT:AddHook("CanStartControlSequence", "conditions", function(self,id)
     local cseqs = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
+    if not cseqs then return end
     local seq = cseqs[id]
     if not seq then return end
     if not seq.Condition then return end
@@ -87,6 +88,7 @@ if SERVER then
             end
         elseif active==true then
             local curseq = self:GetData("cseq-curseq","none")
+            if not step then return end
 
             if sequences[curseq].Controls[step] == id then
                 self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
@@ -122,6 +124,7 @@ if SERVER then
 
     function ENT:TerminateSequence()
         local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
+        if not sequences then return end
         local curseq = self:GetData("cseq-curseq","none")
         for _,v in pairs(sequences[curseq].Controls) do
             local p = TARDIS:GetPart(self,v)

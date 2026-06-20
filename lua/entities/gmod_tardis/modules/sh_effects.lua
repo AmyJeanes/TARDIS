@@ -141,14 +141,17 @@ else -- CLIENT
         return math.random(-x, x)
     end
 
+    ---@param self gmod_tardis
     local function get_effect_pos(self)
-        local console = self.interior:GetPart("console")
+        local interior = self.interior
+        if not IsValid(interior) then return end
+        local console = interior:GetPart("console")
         if self.metadata.Interior.BreakdownEffectPos then
-            self.effect_pos = self.interior:GetPos() + self.metadata.Interior.BreakdownEffectPos
+            self.effect_pos = interior:GetPos() + self.metadata.Interior.BreakdownEffectPos
         elseif console and IsValid(console) then
             self.effect_pos = console:GetPos() + Vector(0, 0, 50)
         else
-            self.effect_pos = self.interior:GetPos() + Vector(0, 0, 50)
+            self.effect_pos = interior:GetPos() + Vector(0, 0, 50)
         end
     end
 

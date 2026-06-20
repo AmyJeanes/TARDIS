@@ -1,5 +1,19 @@
 -- Settings
 
+---@class tardis_setting
+---@field id string
+---@field name string
+---@field type string?
+---@field value any
+---@field section string?
+---@field subsection string?
+---@field option boolean?
+---@field class string?
+---@field convar table?
+---@field min number?
+---@field max number?
+
+---@type table<string, tardis_setting>
 TARDIS.SettingsData = TARDIS.SettingsData or {}
 
 ---@type table<string, any>

@@ -30,7 +30,7 @@ end)
 
 if SERVER then
     function ENT:SetPartInvisible(id, invisible, nofade)
-        local invisible_parts = self:GetData("invisible_int_parts", {})
+        local invisible_parts = self:GetData("invisible_int_parts") or {}
         invisible_parts[id] = {
             invisible = invisible or false,
             nofade = nofade or false

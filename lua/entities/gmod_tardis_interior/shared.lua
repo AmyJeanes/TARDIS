@@ -8,6 +8,9 @@
 ---@field metadata tardis_metadata
 ---@field exterior gmod_tardis
 ---@field tips tardis_tip[]
+---@field idlesounds table<any, CSoundPatch>
+---@field dematfailsound CSoundPatch?
+---@field spacebuild_env sb_resource_environment?
 
 ENT.Base="gmod_door_interior"
 ENT.TardisInterior=true

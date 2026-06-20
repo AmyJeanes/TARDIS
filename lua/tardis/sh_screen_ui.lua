@@ -1,5 +1,62 @@
 -- Adds screens
 
+---@class tardis_screen_frame : DPanel
+---@field _name string
+---@field _text string?
+---@field _loaded boolean?
+---@field OnCloseScreen (fun(self: tardis_screen_frame): boolean?)?
+---@field left_arrow_func function?
+---@field right_arrow_func function?
+
+---@class tardis_screen_backstack_entry
+---@field f Panel
+---@field f2 Panel
+---@field oldname string
+
+---@class tardis_screen_entry
+---@field name string
+---@field frame tardis_screen_frame
+---@field options table
+---@field func function
+---@field id string?
+
+-- The screen "object" — a DPanel with the TARDIS UI/render state tacked on. Built
+-- incrementally across HUDScreen/LoadScreen/LoadScreenUI and used by every screen
+-- definition (`function(self, ext, int, frame, screen)`). Popup-only and 3D-only
+-- fields are optional.
+---@class TardisScreen : DPanel
+---@field id string
+---@field width number
+---@field height number
+---@field res number
+---@field resscale number
+---@field crosshair number
+---@field gap number
+---@field gap2 number
+---@field gui_rows number?
+---@field scannerang Angle?
+---@field scannerfov number?
+---@field scanner ITexture?
+---@field ext gmod_tardis?
+---@field int gmod_tardis_interior?
+---@field frame tardis_screen_frame
+---@field main Panel
+---@field mmenu Panel
+---@field titlebar Panel
+---@field pagename Panel
+---@field backbutton TardisScreenButton|DButton
+---@field menubutton TardisScreenButton|DButton
+---@field left_arrow TardisScreenButton
+---@field right_arrow TardisScreenButton
+---@field curscreen tardis_screen_frame?
+---@field backstack tardis_screen_backstack_entry[]
+---@field screens tardis_screen_entry[]
+---@field is3D2D boolean?
+---@field power_off_black boolean?
+---@field pos3D Vector?
+---@field ang3D Angle?
+---@field RestoreHexLayout function
+
 function TARDIS:PopToScreen(name, ply)
     if SERVER then
         if IsValid(ply) and ply:IsPlayer() then
@@ -28,6 +85,7 @@ end
 
 TARDIS.fonts = {}
 TARDIS.fontcache = {}
+---@param screen TardisScreen
 function TARDIS:GetScreenFont(screen, name)
     local scale = screen.res * screen.resscale
     if not self.fontcache[scale] then self.fontcache[scale] = {} end
@@ -94,6 +152,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
 })
 
 local screens={}
+---@param func fun(self, ext, int, frame, screen: TardisScreen)
 function TARDIS:AddScreen(name,options,func)
     if options.id == nil then options.id = name end
     screens[name]={options,func}
@@ -143,9 +202,11 @@ function TARDIS:GetScreenByName(name)
     return screen
 end
 
+---@param screen TardisScreen
 function TARDIS:RefreshArrowFunctions(screen)
     if TARDIS:GetSetting("gui_old") then return end
     local frame = screen.curscreen
+    if not IsValid(frame) then return end
 
     if frame.left_arrow_func or frame.right_arrow_func then
         screen.left_arrow.DoClick = frame.left_arrow_func
@@ -160,6 +221,7 @@ function TARDIS:RefreshArrowFunctions(screen)
     end
 end
 
+---@param screen TardisScreen
 function TARDIS:SwitchScreen(screen,newscreen)
     if not newscreen then return false end
     local frame = newscreen.frame
@@ -196,6 +258,7 @@ net.Receive("TARDIS-PopToScreen", function(len)
     TARDIS:PopToScreen(name)
 end)
 
+---@param screen TardisScreen
 function TARDIS:PopScreen(screen,all)
     if #screen.backstack>0 then
         local info=screen.backstack[#screen.backstack]
@@ -257,8 +320,7 @@ function TARDIS:HUDScreen(window)
     self.screenpopframe=frame
     self.screen_in_context_menu = (window ~= nil)
 
-    local screen = vgui.Create("DPanel",frame)
-    ---@diagnostic disable-next-line: assign-type-mismatch
+    local screen = vgui.Create("DPanel",frame) --[[@as TardisScreen]]
     screen.id="pop"
     screen.width=700
     screen.height=425
@@ -305,6 +367,7 @@ concommand.Add("tardis2_toggleui", function()
     TARDIS:HUDScreen()
 end)
 
+---@param screen TardisScreen
 function TARDIS:LoadScreenUI(screen)
     local theme = TARDIS:GetScreenGUITheme(screen)
     local background_img = TARDIS:GetGUIThemeElement(theme, "backgrounds", "main")
@@ -489,6 +552,7 @@ function TARDIS:LoadScreenUI(screen)
     local ext=screen.ext
     local int=screen.int
     for k,v in pairs(screens) do
+        ---@cast v { [1]: table, [2]: function } -- glua_ls reads loop-var indices as nilable
         if not ((v[1].intonly and (not IsValid(int)))
             or (v[1].menu==false and (not (IsValid(ext)))))
         then
@@ -530,6 +594,7 @@ function TARDIS:LoadScreenUI(screen)
     return main
 end
 
+---@param screen TardisScreen
 function TARDIS:LoadButtons(screen, frame, func, isvgui)
     if isvgui ~= nil and isvgui then
         local layout_rows
@@ -744,8 +809,6 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
 end
 
 function TARDIS:LoadScreen(id, options)
-    ---@class TardisScreen : DPanel
-    ---@field frame DPanel
     local screen = vgui.Create("DPanel") --[[@as TardisScreen]]
     screen.id=id
     screen.is3D2D=true

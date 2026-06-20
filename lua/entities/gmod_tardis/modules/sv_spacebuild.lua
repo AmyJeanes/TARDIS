@@ -10,7 +10,7 @@ end)
 
 ENT:AddHook("FloatToggled", "spacebuild", function(self, on)
     local environment = self.environment
-    if not (self:GetData("spacebuild", false) and environment) then
+    if not self:GetData("spacebuild", false) or not environment then
         return
     end
 

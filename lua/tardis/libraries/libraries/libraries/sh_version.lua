@@ -1,5 +1,10 @@
 -- Version
 
+---@class tardis_version
+---@field Major number
+---@field Minor number
+---@field Patch number
+
 TARDIS.Migrations = TARDIS.Migrations or {}
 
 local function get_version_from_string(str)
@@ -12,6 +17,7 @@ local function get_version_from_string(str)
     }
 end
 
+---@return tardis_version
 local function get_version_from_file(versionFile)
     local version, success
     if file.Exists(versionFile, "DATA") then
@@ -36,9 +42,12 @@ end
 local VERSION_FILE = "tardis/version" .. (SERVER and "_sv" or "_cl") .. ".txt"
 local VERSION_LAST_USED_FILE = "tardis/version_lastused" .. (SERVER and "_sv" or "_cl") .. ".txt"
 
+---@type tardis_version
 TARDIS.PreviousVersion = TARDIS.PreviousVersion or get_version_from_file(VERSION_FILE)
+---@type tardis_version
 TARDIS.LastUsedVersion = TARDIS.LastUsedVersion or get_version_from_file(VERSION_LAST_USED_FILE)
 
+---@return tardis_version
 function TARDIS:GetVersion()
     return self.Version
 end
@@ -70,10 +79,9 @@ function TARDIS:IsNewVersion()
 end
 
 function TARDIS:IsNewInstall()
-    local previousVersion = assert(self.PreviousVersion)
-    return previousVersion.Major == 0
-        and previousVersion.Minor == 0
-        and previousVersion.Patch == 0
+    return self.PreviousVersion.Major == 0
+        and self.PreviousVersion.Minor == 0
+        and self.PreviousVersion.Patch == 0
 end
 
 function TARDIS:GetVersionString(version)

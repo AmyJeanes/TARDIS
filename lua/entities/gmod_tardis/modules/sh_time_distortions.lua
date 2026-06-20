@@ -18,12 +18,15 @@ local function TimeDistortionsPresent(pos, outside, int_radius)
     return false
 end
 
+---@param ent gmod_tardis
 local function DistortionsInside(ent)
-    if not IsValid(ent) or not IsValid(ent.interior) then return end
-    local size = ent.interior.metadata.Interior.Size
+    if not IsValid(ent) then return end
+    local interior = ent.interior
+    if not IsValid(interior) then return end
+    local size = interior.metadata.Interior.Size
     if size.Min and size.Max then
-        local min = ent.interior:LocalToWorld(size.Min)
-        local max = ent.interior:LocalToWorld(size.Max)
+        local min = interior:LocalToWorld(size.Min)
+        local max = interior:LocalToWorld(size.Max)
         for _,v in ipairs(ents.FindInBox(min, max)) do
             if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
                 return true
@@ -31,8 +34,8 @@ local function DistortionsInside(ent)
         end
         return false
     end
-    local center,radius = ent.interior:GetSphere()
-    return TimeDistortionsPresent(ent.interior:LocalToWorld(center), false, radius)
+    local center,radius = interior:GetSphere()
+    return TimeDistortionsPresent(interior:LocalToWorld(center), false, radius)
 end
 
 local function DistortionsOutside(ent)

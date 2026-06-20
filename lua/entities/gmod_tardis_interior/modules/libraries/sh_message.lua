@@ -27,7 +27,9 @@ function ENT:SendMessage(name,data,ply)
     end
 end
 
+---@type table<string, function>
 local messagehandlers={}
+---@param func fun(self: gmod_tardis_interior, data: any, ply: Player)
 function ENT:OnMessage(name,func)
     messagehandlers[name]=func
 end

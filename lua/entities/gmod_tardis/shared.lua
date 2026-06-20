@@ -6,6 +6,11 @@
 ---@field metadataID string
 ---@field effect_pos Vector
 ---@field metadata tardis_metadata
+---@field interior gmod_tardis_interior?
+---@field pilot Player?
+---@field LeakedInteriorHums table<any, CSoundPatch>
+---@field environment sb_resource_environment?
+---@field environment_old sb_resource_environment?
 
 ENT.Base="gmod_door_exterior"
 ENT.Spawnable=false
@@ -47,7 +52,7 @@ function ENT:ListHooks(listInteriorHooks)
     for h in pairs(hooks) do
         print(h)
     end
-    if listInteriorHooks then self.interior:ListHooks() end
+    if listInteriorHooks and IsValid(self.interior) then self.interior:ListHooks() end
 end
 
 function ENT:CallCommonHook(name, ...)

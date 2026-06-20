@@ -652,7 +652,7 @@ function TARDIS:CustomizeIconPack()
         -- drop location.
         list_inner.preview_target = nil
         list_inner.preview_dragged = nil
-        list_inner.Think = function(self)
+        function list_inner:Think()
             local dragging = dragndrop.IsDragging()
             local dragged = (dragging and IsValid(pressed_row) and pressed_row.pack_index) and pressed_row or nil
             local viewport_h = pack_list_panel:GetTall()

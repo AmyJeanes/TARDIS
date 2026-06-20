@@ -103,11 +103,15 @@ if SERVER then
         if not self:GetData("teleport-interrupted", false) then return end
 
         self:Explode()
-        self.interior:Explode(20)
+        if IsValid(self.interior) then
+            self.interior:Explode(20)
+        end
 
         self:Timer("interrupt_teleport", 1, function()
             self:Explode()
-            self.interior:Explode(20)
+            if IsValid(self.interior) then
+                self.interior:Explode(20)
+            end
         end)
 
         self:SetData("teleport-interrupted", false, true)
@@ -125,17 +129,20 @@ else
         self:StopSound(ext.fullflight)
         self:StopSound(ext.fullflight_damaged)
 
-        self.interior:StopSound(int.demat_damaged or ext.demat_damaged)
-        self.interior:StopSound(int.demat or ext.demat)
-        self.interior:StopSound(int.demat_fail or ext.demat_fail)
-        self.interior:StopSound(int.mat_damaged or ext.mat_damaged)
-        self.interior:StopSound(int.mat or ext.mat)
-        self.interior:StopSound(int.fullflight or ext.fullflight)
-        self.interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
+        local interior = self.interior
+        if not IsValid(interior) then return end
 
-        if self.interior.dematfailsound then
-            self.interior.dematfailsound:Stop()
-            self.interior.dematfailsound = nil
+        interior:StopSound(int.demat_damaged or ext.demat_damaged)
+        interior:StopSound(int.demat or ext.demat)
+        interior:StopSound(int.demat_fail or ext.demat_fail)
+        interior:StopSound(int.mat_damaged or ext.mat_damaged)
+        interior:StopSound(int.mat or ext.mat)
+        interior:StopSound(int.fullflight or ext.fullflight)
+        interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
+
+        if interior.dematfailsound then
+            interior.dematfailsound:Stop()
+            interior.dematfailsound = nil
         end
     end
 
@@ -145,7 +152,10 @@ else
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
             self:EmitSound(ext.interrupt)
-            self.interior:EmitSound(int.interrupt or ext.interrupt)
+            local interior = self.interior
+            if IsValid(interior) then
+                interior:EmitSound(int.interrupt or ext.interrupt)
+            end
         end
     end)
 end

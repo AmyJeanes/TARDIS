@@ -161,6 +161,7 @@ function ENT:Think()
         
         local int
         for _,ent in ipairs(TARDIS:GetInteriorEnts()) do
+            ---@cast ent gmod_tardis_interior -- glua_ls reads ipairs loop-var fields as nilable
             local size = ent.metadata.Interior.Size
             if size.Min and size.Max then
                 local min = ent:LocalToWorld(size.Min)

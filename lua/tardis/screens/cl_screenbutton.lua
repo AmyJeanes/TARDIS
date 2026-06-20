@@ -23,6 +23,7 @@
 ---@field id string?
 ---@field order integer?
 ---@field ThinkInternal fun()
+---@field DoClick function?
 TardisScreenButton = {}
 
 ---@return TardisScreenButton
@@ -89,7 +90,8 @@ function TardisScreenButton:new(parent,screen)
         end
 
         if sb.moving.now then
-            sb.moving.move()
+            local move = sb.moving.move
+            if move then move() end
             sb.icon:SetColor(Color(255, 255, 255, sb.transparency))
             sb.frame:SetColor(Color(255, 255, 255, sb.transparency))
             sb.label:SetColor(Color(0, 0, 0, sb.transparency))

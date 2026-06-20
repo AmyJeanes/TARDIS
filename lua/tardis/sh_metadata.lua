@@ -12,7 +12,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field BaseMerged boolean?
 ---@field Templates table?
 ---@field TemplatesMergeOrder table?
----@field Timings tardis_timings?
+---@field Timings tardis_timings
 ---@field Versions table?
 ---@field IsVersionOf string?
 ---@field CustomHooks table?
@@ -66,7 +66,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Mass number?
 ---@field ExcludedSkins table?
 ---@field WinterSkins table?
----@field DoorAnimationTime number?
+---@field DoorAnimationTime number
 ---@field ScannerOffset Vector?
 ---@field PhaseMaterial string?
 ---@field Portal tardis_portal
@@ -112,7 +112,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field color Color?
 ---@field dynamicpos Vector?
 ---@field dynamicbrightness number?
----@field dynamicsize number?
+---@field dynamicsize number
 ---@field NoLO tardis_light?
 ---@field NoExtra tardis_light?
 ---@field NoExtraNoLO tardis_light?
@@ -120,7 +120,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_light_override
 ---@field basebrightness number?
 ---@field nopowerbrightness number?
----@field transitionspeed number?
+---@field transitionspeed number
 ---@field basebrightnessRGB Vector|table|nil
 
 ---@class tardis_projected_light
@@ -128,32 +128,32 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field farz number?
 ---@field offset Vector?
 ---@field texture string?
----@field baselightmix number?
+---@field baselightmix number
 ---@field color Color?
 ---@field warncolor Color?
 ---@field vertfov number?
 ---@field horizfov number?
 
 ---@class tardis_chameleon
----@field AnimTime number?
+---@field AnimTime number
 ---@field Enable boolean?
 
 ---@class tardis_locked_door
----@field AnimPos number?
----@field AnimTime number?
+---@field AnimPos number
+---@field AnimTime number
 
 ---@class tardis_tip_settings
 ---@field style string?
----@field view_range_min number?
----@field view_range_max number?
+---@field view_range_min number
+---@field view_range_max number
 ---@field TextOverrides table?
 
 ---@class tardis_timings
----@field DematAbortState number?
----@field DematFail number?
----@field MatFail number?
----@field TakeOffState number?
----@field ParkingState number?
+---@field DematAbortState number
+---@field DematFail number
+---@field MatFail number
+---@field TakeOffState number
+---@field ParkingState number
 
 ---@class tardis_teleport
 ---@field SequenceSpeed number|table
@@ -161,12 +161,12 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field SequenceSpeedFast number|table
 ---@field SequenceSpeedHads number|table
 ---@field SequenceSpeedWarnFast number|table
----@field DematInterruptSpeed number?
----@field PrematDelayFast number?
----@field PrematDelay number?
----@field DematSequence table
----@field MatSequence table
----@field HadsDematSequence table
+---@field DematInterruptSpeed number
+---@field PrematDelayFast number
+---@field PrematDelay number
+---@field DematSequence number[]
+---@field MatSequence number[]
+---@field HadsDematSequence number[]
 ---@field DematSequenceSaved table?
 ---@field MatSequenceSaved table?
 ---@field HadsDematSequenceSaved table?

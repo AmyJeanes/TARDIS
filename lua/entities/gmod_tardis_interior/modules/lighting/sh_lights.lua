@@ -98,6 +98,7 @@ if CLIENT then
 
         local int_metadata = self.metadata.Interior
         local light = int_metadata.Light
+        if not light then return end
         local lights = int_metadata.Lights
 
         local light_alt

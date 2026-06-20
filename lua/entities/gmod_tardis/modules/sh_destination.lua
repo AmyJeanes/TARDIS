@@ -957,11 +957,11 @@ function ENT:GetRandomLocation(grounded)
 
     if #locations < 1 then return pos end
 
-    local newpos = assert(locations[math.random(#locations)])
+    local loc = assert(locations[math.random(#locations)])
     local z_size = self:OBBMaxs().z - self:OBBMins().z + 50
 
     -- we gotta make sure the TARDIS fits
-    newpos = self:FindPosInBox(Vector(pos.x,pos.y,newpos.z - z_size), Vector(pos.x,pos.y,newpos.z + z_size))
+    local newpos = self:FindPosInBox(Vector(pos.x,pos.y,loc.z - z_size), Vector(pos.x,pos.y,loc.z + z_size))
 
     if newpos then
         pos = self:GetGroundedPos(newpos)

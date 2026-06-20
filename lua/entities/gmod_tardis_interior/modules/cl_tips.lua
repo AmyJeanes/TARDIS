@@ -14,8 +14,8 @@
 ---@field right boolean?
 ---@field randtext string?
 ---@field highlighted boolean?
----@field view_range_min number?
----@field view_range_max number?
+---@field view_range_min number
+---@field view_range_max number
 ---@field style_id string?
 ---@field style_name string?
 ---@field SetHighlight fun(self: tardis_tip, on: boolean)
@@ -206,13 +206,14 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
     local should_randomize = (interior:CallCommonHook("RandomizeTips") == true)
     for _,tip in ipairs(interior.tips)
     do
+        ---@cast tip tardis_tip -- glua_ls reads ipairs loop-var fields as nilable
         local view_range_min = tip.view_range_min
         local view_range_max = tip.view_range_max
 
         local cseq_canstart = cseq_enabled and interior:CallHook("CanStartControlSequence",tip.part)~=false
 
         if not cseq_active then
-            tip:SetHighlight(cseq_enabled and cseq_sequences[tip.part] ~= nil and cseq_canstart)
+            tip:SetHighlight(cseq_enabled and cseq_sequences ~= nil and cseq_sequences[tip.part] ~= nil and cseq_canstart)
         else
             tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
         end

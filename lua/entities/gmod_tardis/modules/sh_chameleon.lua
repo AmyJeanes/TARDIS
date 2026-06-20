@@ -52,7 +52,9 @@ else
 
         if TARDIS:GetSetting("sound") and csound then
             self:EmitSound(csound)
-            self.interior:EmitSound(csound_int)
+            if IsValid(self.interior) then
+                self.interior:EmitSound(csound_int)
+            end
         end
 
         local delay = self.metadata.Exterior.Chameleon.AnimTime / 2

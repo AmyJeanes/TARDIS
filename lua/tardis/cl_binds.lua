@@ -67,7 +67,12 @@ function TARDIS:ChangeKeyBind(id,data,callback)
     reset:SetText(TARDIS:GetPhrase("Common.Reset"))
     reset:SetSize(frame:GetWide()*0.2, 40)
     reset:SetPos(frame:GetWide()-reset:GetWide()-10,frame:GetTall()-reset:GetTall()-10)
-    reset.DoClick = function() keybutton.key=TARDIS:GetBind(id).key keybutton:Update() end
+    reset.DoClick = function()
+        local bind = TARDIS:GetBind(id)
+        if not bind then return end
+        keybutton.key = bind.key
+        keybutton:Update()
+    end
 end
 
 function TARDIS:CreateBindOptionInterface(id, data)

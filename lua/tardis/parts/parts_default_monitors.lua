@@ -153,7 +153,7 @@ end
 
 local function trace_monitor_pos(ply, part)
     local ang_y, down_pos = trace_console_angle(part.interior, ply)
-    if not ang_y then return end
+    if not ang_y or not down_pos then return end
 
     local rotation = math.Clamp((ang_y - part:GetAngles().y) % 360 / 360, 0, 1)
     local down = 1 - (down_pos - 140) / 25

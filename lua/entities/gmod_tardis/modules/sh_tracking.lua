@@ -73,8 +73,7 @@ if SERVER then
         if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = wasTrackingEnt ~= nil
-        local isTracking = IsValid(ent)
-        if not isTracking then
+        if not IsValid(ent) then
             self:SetData("tracking-ent",nil,true)
             self:SetData("tracking-offset-pos", nil)
             self:SetData("tracking-offset-yaw", nil)
@@ -92,14 +91,14 @@ if SERVER then
                 self.trackingdebugprop:Remove()
             end
 
-            if wasTracking ~= isTracking then
-                TARDIS:StatusMessage(ply, "Controls.Tracking.Status", isTracking)
+            if wasTracking then
+                TARDIS:StatusMessage(ply, "Controls.Tracking.Status", false)
             end
             return true
         end
 
         if ent.TardisPart and ent.ExteriorPart then
-            ent = ent.exterior
+            ent = ent.exterior --[[@as Entity]]
         end
 
         local entSize = get_ent_size(ent)
@@ -154,6 +153,7 @@ if SERVER then
             self:SetData("tracking-ent-size", entSize)
             self:SetData("tracking-ent",ent,true)
             if IsValid(ent) and ent.TardisExterior then
+                ---@cast ent gmod_tardis
                 ent:SetData("tracking-tracked-by", self)
             end
             self:SetTrackRotationAuto()
@@ -172,8 +172,8 @@ if SERVER then
             TARDIS:Message(ply, "Controls.Tracking.SameTarget")
         end
 
-        if wasTracking ~= isTracking then
-            TARDIS:StatusMessage(ply, "Controls.Tracking.Status", isTracking)
+        if not wasTracking then
+            TARDIS:StatusMessage(ply, "Controls.Tracking.Status", true)
             if ply == self:GetData("pilot") then
                 self:SendMessage("tracking-rotationhint", nil, ply)
             end

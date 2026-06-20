@@ -6,7 +6,7 @@ ENT:AddHook("PostInitialize", "spacebuild", function(self)
     end
 
     local center, radius = self:GetSphere()
-    self.spacebuild_env = ents.Create("base_cube_environment")
+    self.spacebuild_env = ents.Create("base_cube_environment") --[[@as sb_resource_environment]]
     self.spacebuild_env:SetModel("models/props_lab/huladoll.mdl")
     self.spacebuild_env:SetPos(self:LocalToWorld(center))
     self.spacebuild_env:SetAngles(self:GetAngles())
@@ -14,7 +14,6 @@ ENT:AddHook("PostInitialize", "spacebuild", function(self)
     self.spacebuild_env:Spawn()
     self.spacebuild_env:Activate()
 
-    ---@diagnostic disable-next-line: undefined-field -- CreateEnvironment is a Spacebuild SENT method; addon isn't in workspace.library
     self.spacebuild_env:CreateEnvironment(self, radius)
 
     -- override functions on the cube environment to the simpler base ones
@@ -28,12 +27,15 @@ ENT:AddHook("PostInitialize", "spacebuild", function(self)
 end)
 
 function ENT:UpdateSpacebuildEnvironment()
-    if not IsValid(self.spacebuild_env) then
+    local sb_env = self.spacebuild_env
+    if not IsValid(sb_env) then
         return
     end
 
+    local ext_env = self.exterior.environment
+
     local gravity, atmosphere, pressure, temperature, o2per, co2per, nper, hper, emptyper
-    if self:GetPower() or (not self.exterior.environment) then
+    if self:GetPower() or (not ext_env) then
         -- earth-like atmosphere
         gravity = 1
         atmosphere = 1
@@ -44,9 +46,9 @@ function ENT:UpdateSpacebuildEnvironment()
         nper = 78
         hper = 0.55
         emptyper = 0
-    elseif self.exterior.environment.sbenvironment then
+    elseif ext_env.sbenvironment then
         -- spacebuild bug: the GetX functions do not work on all environments so we have to get them directly
-        local sbenv = self.exterior.environment.sbenvironment
+        local sbenv = ext_env.sbenvironment
         gravity = sbenv.gravity
         atmosphere = sbenv.atmosphere
         pressure = sbenv.pressure
@@ -62,29 +64,34 @@ function ENT:UpdateSpacebuildEnvironment()
         end
     else
         -- if there is no sbenvironment then we can use the GetX functions
-        local env = self.exterior.environment
-        gravity = env:GetGravity()
-        atmosphere = env:GetAtmosphere()
-        pressure = env:GetPressure()
-        temperature = env:GetTemperature()
-        o2per = env:GetO2Percentage()
-        co2per = env:GetCO2Percentage()
-        nper = env:GetNPercentage()
-        hper = env:GetHPercentage()
-        emptyper = env:GetEmptyAirPercentage()
+        gravity = ext_env:GetGravity()
+        atmosphere = ext_env:GetAtmosphere()
+        pressure = ext_env:GetPressure()
+        temperature = ext_env:GetTemperature()
+        o2per = ext_env:GetO2Percentage()
+        co2per = ext_env:GetCO2Percentage()
+        nper = ext_env:GetNPercentage()
+        hper = ext_env:GetHPercentage()
+        emptyper = ext_env:GetEmptyAirPercentage()
     end
 
-    self.spacebuild_env:UpdateEnvironment(nil, gravity, atmosphere, pressure, temperature, o2per, co2per, nper, hper)
-    self.spacebuild_env.sbenvironment.atmosphere = atmosphere -- spacebuild bug: this value is not actually updated by UpdateEnvironment
+    sb_env:UpdateEnvironment(nil, gravity, atmosphere, pressure, temperature, o2per, co2per, nper, hper)
+    local sbenv = sb_env.sbenvironment
+    if sbenv then
+        sbenv.atmosphere = atmosphere -- spacebuild bug: this value is not actually updated by UpdateEnvironment
+    end
 end
 
 function ENT:UpdateSpacebuildEnvironmentAir()
-    if not IsValid(self.spacebuild_env) then
+    local sb_env = self.spacebuild_env
+    if not IsValid(sb_env) then
         return
     end
 
-    local volume = self.spacebuild_env:GetVolume() / 1000
-    local intenv = self.spacebuild_env.sbenvironment
+    local intenv = sb_env.sbenvironment
+    if not intenv then return end
+
+    local volume = sb_env:GetVolume() / 1000
     intenv.air.o2 = math.Round(intenv.air.o2per * 5 * volume * intenv.atmosphere)
     intenv.air.co2 = math.Round(intenv.air.co2per * 5 * volume * intenv.atmosphere)
     intenv.air.n = math.Round(intenv.air.nper * 5 * volume * intenv.atmosphere)

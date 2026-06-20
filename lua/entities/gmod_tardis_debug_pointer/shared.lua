@@ -417,11 +417,12 @@ else
         end)
 
         function pr:Think()
-            if not IsValid(p) then
+            local pointer = p
+            if not IsValid(pointer) then
                 frame:Close()
                 return
             end
-            if pr.p_pos ~= p:GetPos() or pr.p_ang ~= p:GetAngles() then
+            if pr.p_pos ~= pointer:GetPos() or pr.p_ang ~= pointer:GetAngles() then
                 RefreshRealCoords()
             end
             if pr.eyeang ~= LocalPlayer():EyeAngles() then

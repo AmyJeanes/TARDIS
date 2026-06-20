@@ -112,12 +112,17 @@ ENT:AddHook("OnRemove", "screens", function(self)
 end)
 
 -- Thanks world-portals
+---@param screen TardisScreen
 function ENT:ShouldRenderScreen(screen)
     if self:CallHook("ShouldDraw") == false then return false end
 
+    local pos3D = screen.pos3D
+    local ang3D = screen.ang3D
+    if not pos3D or not ang3D then return false end
+
     local camOrigin = EyePos()
-    local pos = self:LocalToWorld(screen.pos3D)
-    local ang = self:LocalToWorldAngles(screen.ang3D)
+    local pos = self:LocalToWorld(pos3D)
+    local ang = self:LocalToWorldAngles(ang3D)
 
     --don't render if the view is behind the portal
     local behind = TARDIS:IsBehind( camOrigin, pos, ang:Up() )
