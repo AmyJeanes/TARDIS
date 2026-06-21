@@ -5,6 +5,13 @@ if SERVER then
     return
 end
 
+---@class tardis_icon_pack
+---@field ID string
+---@field Folder string?
+---@field Name string
+---@field IsBase true?
+
+---@type table<string, tardis_icon_pack>
 TARDIS.iconpacks = TARDIS.iconpacks or {}
 
 TARDIS.IconCategory = {
@@ -123,39 +130,48 @@ function TARDIS:RebuildIconPackIndex(pack_id)
     end
 end
 
+---@return table<string, tardis_icon_pack>
 function TARDIS:GetIconPacks()
     return self.iconpacks
 end
 
+---@return tardis_icon_pack?
 function TARDIS:GetIconPack(id)
     return self.iconpacks[id]
 end
 
-function TARDIS:AddIconPack(t)
-    t = table.Copy(t)
+-- Functionally identical to {} but gives proper type checking for icon packs
+---@return tardis_icon_pack
+function TARDIS:NewIconPack()
+    return {}
+end
 
-    if not t.ID then
+function TARDIS:AddIconPack(t)
+    ---@type tardis_icon_pack
+    local pack = table.Copy(t)
+
+    if not pack.ID then
         ErrorNoHalt("TARDIS: Icon pack missing ID\n")
         return
     end
 
-    if t.ID ~= string.lower(t.ID) then
-        ErrorNoHalt("TARDIS: Icon pack ID '"..t.ID.."' must be lowercase\n")
+    if pack.ID ~= string.lower(pack.ID) then
+        ErrorNoHalt("TARDIS: Icon pack ID '"..pack.ID.."' must be lowercase\n")
         return
     end
 
-    if t.IsBase then
-        ErrorNoHalt("TARDIS: Icon pack '"..t.ID.."' must not set IsBase (reserved for internal use)\n")
+    if pack.IsBase then
+        ErrorNoHalt("TARDIS: Icon pack '"..pack.ID.."' must not set IsBase (reserved for internal use)\n")
         return
     end
 
-    if not t.Folder then
-        ErrorNoHalt("TARDIS: Icon pack '"..t.ID.."' missing Folder\n")
+    if not pack.Folder then
+        ErrorNoHalt("TARDIS: Icon pack '"..pack.ID.."' missing Folder\n")
         return
     end
 
-    self.iconpacks[t.ID] = t
-    self:RebuildIconPackIndex(t.ID)
+    self.iconpacks[pack.ID] = pack
+    self:RebuildIconPackIndex(pack.ID)
 end
 
 function TARDIS:PackHasCategory(pack, category)

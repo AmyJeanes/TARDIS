@@ -90,19 +90,22 @@ if SERVER then
             local curseq = self:GetData("cseq-curseq","none")
             if not step then return end
 
-            if sequences[curseq].Controls[step] == id then
+            local seq = sequences[curseq]
+            if not seq then return end
+
+            if seq.Controls[step] == id then
                 self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
                 self:SetData("cseq-step", step + 1, true)
-                if step == #sequences[curseq].Controls then
-                    sequences[curseq].OnFinish(self, a, step, part)
+                if step == #seq.Controls then
+                    seq.OnFinish(self, a, step, part)
                     self:TerminateSequence()
                     return
                 end
             else
                 if id == "console" or id == "door" then return end
                 self:EmitSound(self.metadata.Interior.Sounds.SequenceFail)
-                if sequences[curseq].OnFail then
-                    sequences[curseq].OnFail(self, a, step, part)
+                if seq.OnFail then
+                    seq.OnFail(self, a, step, part)
                 end
                 self:TerminateSequence()
                 return
@@ -126,7 +129,9 @@ if SERVER then
         local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
         if not sequences then return end
         local curseq = self:GetData("cseq-curseq","none")
-        for _,v in pairs(sequences[curseq].Controls) do
+        local seq = sequences[curseq]
+        if not seq then return end
+        for _,v in pairs(seq.Controls) do
             local p = TARDIS:GetPart(self,v)
             p.InSequence = nil
         end

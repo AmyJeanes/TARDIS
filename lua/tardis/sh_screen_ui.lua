@@ -16,9 +16,17 @@
 ---@class tardis_screen_entry
 ---@field name string
 ---@field frame tardis_screen_frame
----@field options table
+---@field options tardis_screen_options
 ---@field func function
 ---@field id string?
+
+---@class tardis_screen_options
+---@field id string?
+---@field text string?
+---@field menu boolean?
+---@field order number?
+---@field popuponly boolean?
+---@field intonly boolean?
 
 -- The screen "object" — a DPanel with the TARDIS UI/render state tacked on. Built
 -- incrementally across HUDScreen/LoadScreen/LoadScreenUI and used by every screen
@@ -151,6 +159,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
     exterior=true
 })
 
+---@type table<string, {[1]: tardis_screen_options, [2]: function}>
 local screens={}
 ---@param func fun(self, ext, int, frame, screen: TardisScreen)
 function TARDIS:AddScreen(name,options,func)
@@ -552,7 +561,7 @@ function TARDIS:LoadScreenUI(screen)
     local ext=screen.ext
     local int=screen.int
     for k,v in pairs(screens) do
-        ---@cast v { [1]: table, [2]: function } -- glua_ls reads loop-var indices as nilable
+        ---@cast v { [1]: tardis_screen_options, [2]: function } -- glua_ls reads loop-var indices as nilable
         if not ((v[1].intonly and (not IsValid(int)))
             or (v[1].menu==false and (not (IsValid(ext)))))
         then

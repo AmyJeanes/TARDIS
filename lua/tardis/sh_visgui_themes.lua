@@ -1,11 +1,31 @@
+---@class tardis_gui_theme
+---@field id string
+---@field name string
+---@field base_id string?
+---@field bgcolor Color?
+---@field folder string?
+---@field frames table<string, string>?
+---@field backgrounds table<string, string>?
+---@field text_icons_off table<string, string>?
+---@field text_icons_on table<string, string>?
+
+---@type table<string, tardis_gui_theme>
 TARDIS.gui_themes={}
 
 local theme_basefolder = "materials/vgui/tardis-themes/"
 
+-- Functionally identical to {} but gives proper type checking for GUI themes
+---@return tardis_gui_theme
+function TARDIS:NewGUITheme()
+    return {}
+end
+
 function TARDIS:AddGUITheme(theme)
-    self.gui_themes[theme.id] = table.Copy(theme)
+    ---@type tardis_gui_theme
+    local copy = table.Copy(theme)
+    self.gui_themes[theme.id] = copy
     if theme.folder ~= nil then
-        self.gui_themes[theme.id].folder = theme_basefolder .. theme.folder .. "/"
+        copy.folder = theme_basefolder .. theme.folder .. "/"
     end
 end
 
@@ -43,10 +63,12 @@ function TARDIS:GetScreenGUIColor(screen, theme)
     return Color(0,0,0,255)
 end
 
+---@return table<string, tardis_gui_theme>
 function TARDIS:GetGUIThemes()
     return self.gui_themes
 end
 
+---@return tardis_gui_theme?
 function TARDIS:GetGUITheme(id)
     return self.gui_themes[id]
 end

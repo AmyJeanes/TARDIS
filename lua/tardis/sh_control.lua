@@ -4,11 +4,44 @@ if SERVER then
     util.AddNetworkString("TARDIS-Control")
 end
 
+---@class tardis_control
+---@field id string
+---@field ext_func (fun(self: gmod_tardis, ply: Player, part: gmod_tardis_part?, complete: fun(ent: gmod_tardis)): boolean?)?
+---@field int_func (fun(self: gmod_tardis_interior, ply: Player, part: gmod_tardis_part?, complete: fun(ent: gmod_tardis_interior)): boolean?)?
+---@field serveronly boolean?
+---@field clientonly boolean?
+---@field power_independent boolean
+---@field bypass_isomorphic boolean?
+---@field bypass_console_toggle boolean?
+---@field tip_text string?
+---@field moves table<string, true|fun(self: gmod_tardis, part: gmod_tardis_part, ...): boolean?>?
+---@field screen_button tardis_screen_button|false?
+
+---@class tardis_screen_button
+---@field mmenu boolean?
+---@field virt_console boolean?
+---@field popup_only boolean?
+---@field id string?
+---@field toggle boolean?
+---@field frame_type integer[]?
+---@field text string?
+---@field pressed_state_data string|string[]?
+---@field pressed_state_from_interior boolean?
+---@field order integer?
+
+---@type table<string, tardis_control>
 local controls={}
 local control_moves = {}
 
+-- Functionally identical to {} but gives proper type checking for controls
+---@return tardis_control
+function TARDIS:NewControl()
+    return {}
+end
+
 function TARDIS:AddControl(control)
     if CLIENT or (SERVER and (not control.clientonly)) then
+        ---@type tardis_control
         local copy = table.Copy(control)
         controls[control.id] = copy
         TARDIS:RegisterControlMoves(copy)
@@ -55,6 +88,7 @@ function TARDIS:GetControls()
     return controls
 end
 
+---@return tardis_control?
 function TARDIS:GetControl(id, ent)
     if ent and ent.metadata.CustomControls and ent.metadata.CustomControls[id] then
         return ent.metadata.CustomControls[id]
