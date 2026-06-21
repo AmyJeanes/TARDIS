@@ -97,11 +97,22 @@ ENT:AddHook("PostDrawPart", "customlighting", postdraw_o)
 ENT:AddHook("PreDrawCordonProp", "customlighting", predraw_o)
 ENT:AddHook("PostDrawCordonProp", "customlighting", postdraw_o)
 
+-- Player rendering hooks can be affected by other addons, so if another addon
+-- blocks PreDraw then PostDraw will not fire and the lighting will remain
+-- suppressed. We partially avoid this with players by using the Doors addon
+-- hooks for Pre/PostDrawPlayer to resolve the issue internally for when we
+-- block player draws e.g. in the sky, but other addons could break this.
+-- 
+-- A potential fix is to call its own hook inside the Pre hooks to see what the
+-- final result is and then call interior hooks, but it will double fire all the
+-- Pre hooks and could cause other issues, so for now leaving it as is as seems to
+-- be working fine in practice. Can revisit if it becomes a problem in the future.
+
+ENT:AddHook("PreDrawPlayer", "customlighting", predraw_o)
+ENT:AddHook("PostDrawPlayer", "customlighting", postdraw_o)
+
 hook.Add("PreDrawViewModel", "tardis-customlighting", function(vm, ply) predraw_ply(ply, vm) end)
 hook.Add("PostDrawViewModel", "tardis-customlighting", function(_, ply) postdraw_ply(ply) end)
 
 hook.Add("PreDrawPlayerHands", "tardis-customlighting", function(hands, _, ply) predraw_ply(ply, hands) end)
 hook.Add("PostDrawPlayerHands", "tardis-customlighting", function(_, _, ply) postdraw_ply(ply) end)
-
-hook.Add("PrePlayerDraw", "tardis-customlighting", function(ply) predraw_ply(ply, ply) end)
-hook.Add("PostPlayerDraw", "tardis-customlighting", function(ply) postdraw_ply(ply) end)
