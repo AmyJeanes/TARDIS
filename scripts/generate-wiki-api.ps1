@@ -91,9 +91,24 @@ function Parse-Annotations([string]$root) {
         $lines = Get-Content -LiteralPath $file.FullName
         $current = $null          # class currently collecting fields
         $pendingReturn = $null    # '---@return X' on the previous line (for ctor detection)
+        $docBuffer = @()          # consecutive '--- ...' doc lines for the class below
 
         foreach ($line in $lines) {
             $trim = $line.Trim()
+
+            # '--- ...' doc-comment lines (not '---@', not '----') accumulate as the
+            # description of the ---@class directly below them - the standard EmmyLua
+            # mechanism, so glua_ls also shows them on hover.
+            if ($trim -match '^---(?![@-])\s?(.*)$') {
+                $d = $matches[1].Trim()
+                if ($d) { $docBuffer += $d }
+                continue
+            }
+            # Any other line ends the run; only a ---@class on the very next line
+            # should consume the docs, so snapshot and reset here (a blank line in
+            # between therefore detaches them, matching EmmyLua).
+            $pendingDoc = $docBuffer
+            $docBuffer = @()
 
             # Constructor: '---@return X' immediately above 'function TARDIS:NewX('
             if ($trim -match '^function\s+TARDIS:(New[A-Za-z0-9_]+)\s*\(' -and $pendingReturn) {
@@ -103,11 +118,13 @@ function Parse-Annotations([string]$root) {
             if ($trim -match '^---@class\s+([A-Za-z0-9_]+)\s*(?::\s*(.+?))?\s*$') {
                 $name = $matches[1]
                 $parent = if ($matches[2]) { $matches[2].Trim() } else { $null }
+                $blurb = if ($pendingDoc.Count) { $pendingDoc -join ' ' } else { $null }
                 if ($classes.Contains($name)) {
                     $current = $classes[$name]
                     if (-not $current.Parent -and $parent) { $current.Parent = $parent }
+                    if (-not $current.Blurb -and $blurb) { $current.Blurb = $blurb }
                 } else {
-                    $current = @{ Name = $name; Parent = $parent; Blurb = $null; Fields = @() }
+                    $current = @{ Name = $name; Parent = $parent; Blurb = $blurb; Fields = @() }
                     $classes[$name] = $current
                 }
                 $current.PendingGroup = $null
@@ -247,9 +264,9 @@ function Render-Class($cls, [string]$thisPage) {
     [void]$sb.AppendLine()
 
     $notes = @()
+    if ($cls.Blurb)  { $notes += $cls.Blurb }
     if ($ctors.ContainsKey($cls.Name)) { $notes += "Create with ``$($ctors[$cls.Name])``." }
     if ($cls.Parent) { $notes += "Extends ``$($cls.Parent)``." }
-    if ($cls.Blurb)  { $notes += $cls.Blurb }
     foreach ($n in $notes) { [void]$sb.AppendLine($n); [void]$sb.AppendLine() }
 
     $tableOpen = $false
