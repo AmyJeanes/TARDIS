@@ -51,7 +51,8 @@ T.Interior = {
         nopowerbrightness = 0.05, --Interior brightness with no power. Should always be darker than basebrightness.
         transitionspeed = 1, --Speed of the light transition.
     },
-    ScreensEnabled = true
+    ScreensEnabled = true,
+    UseFullName = true -- Use TARDIS (Name) instead of Name for undo text and killfeed.
 }
 T.Exterior = {
     Model = "models/drmatt/tardis/exterior/exterior.mdl",

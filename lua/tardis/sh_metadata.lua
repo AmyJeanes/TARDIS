@@ -38,6 +38,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Light tardis_light?
 ---@field Lights table?
 ---@field ScreensEnabled boolean?
+---@field UseFullName boolean
 ---@field Screens table?
 ---@field Parts table<string, table|false>
 ---@field Controls table?
@@ -539,6 +540,16 @@ end
 
 function TARDIS:GetInterior(id)
     return self.Metadata[id] or self.MetadataRaw[id]
+end
+
+---@param metadata tardis_metadata
+---@return string
+function TARDIS:GetTARDISName(metadata)
+    local namekey = metadata.Name
+    if not namekey then return TARDIS:GetPhrase("Common.TARDIS") end
+    local name = TARDIS:GetPhrase(namekey)
+    if metadata.Interior and metadata.Interior.UseFullName == false then return name end
+    return TARDIS:GetPhrase("Common.TARDIS") .. " (" .. name .. ")"
 end
 
 TARDIS:LoadInteriors()

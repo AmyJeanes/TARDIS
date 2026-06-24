@@ -59,6 +59,7 @@ if SERVER then
         if not SpawnFunction then
             return
         end
+        ---@cast entity gmod_tardis
         local entity = SpawnFunction(sent, ply, tr, entityName, customData)
 
         if IsValid(entity) and IsValid(ply) then
@@ -67,9 +68,9 @@ if SERVER then
 
         ClassName = nil
 
-        local printName = TARDIS:GetPhrase("Common.TARDIS").." ("..TARDIS:GetPhrase(interior.Name)..")"
-
         if not IsValid(entity) then return end
+
+        local printName = TARDIS:GetTARDISName(entity.metadata)
 
         if IsValid(ply) then
             gamemode.Call("PlayerSpawnedSENT", ply, entity)
