@@ -100,8 +100,10 @@ if SERVER then
     -- Dynamic read/write counts not handled by analyzer.
     ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Pointer-Debug-Update",function(len,ply)
+        if not ply:IsAdmin() then return end
+
         local pointer = net.ReadEntity()
-        if not IsValid(pointer) then return end
+        if not IsValid(pointer) or pointer:GetClass() ~= "gmod_tardis_debug_pointer" then return end
 
         local update_type = net.ReadString()
 
@@ -116,8 +118,10 @@ if SERVER then
     end)
 
     net.Receive("TARDIS-Pointer-Use",function(len,ply)
+        if not ply:IsAdmin() then return end
+
         local pointer = net.ReadEntity()
-        if not IsValid(pointer) then return end
+        if not IsValid(pointer) or pointer:GetClass() ~= "gmod_tardis_debug_pointer" then return end
         pointer:Use(ply,ply)
     end)
 else
