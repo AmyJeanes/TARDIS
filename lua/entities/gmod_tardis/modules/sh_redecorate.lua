@@ -107,7 +107,7 @@ if SERVER then
         if not IsValid(parent) then return end
 
         parent:ForcePlayerDrop()
-        self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+        self:SetCollisionGroup(self:TeleportCollisionGroup(parent:GetPos()))
         self:SetPos(parent:GetPos())
         self:SetAngles(parent:GetAngles())
         parent:SetParent(self)

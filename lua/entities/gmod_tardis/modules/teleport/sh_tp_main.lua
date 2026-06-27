@@ -77,6 +77,18 @@ if SERVER then
         return true
     end
 
+    -- Makes sure the TARDIS doesn't fall through interiors when demat/matting
+    ---@param pos Vector
+    ---@return COLLISION_GROUP
+    function ENT:TeleportCollisionGroup(pos)
+        for interior in pairs(Doors:GetInteriors()) do
+            if IsValid(interior) and interior:PositionInside(pos) then
+                return COLLISION_GROUP_DEBRIS
+            end
+        end
+        return COLLISION_GROUP_WORLD
+    end
+
     function ENT:Demat(pos, ang, callback, force)
 
         if pos and ang then
@@ -119,7 +131,7 @@ if SERVER then
         self:SetStepDelay()
         self:SetData("teleport",true)
         self:SetData("teleport-interrupt-fade", nil, true)
-        self:SetCollisionGroup( COLLISION_GROUP_WORLD )
+        self:SetCollisionGroup( self:TeleportCollisionGroup(self:GetPos()) )
         self:SetData("demat-startpos",self:GetPos())
         self:SetData("demat-startang",self:GetAngles())
 
@@ -194,6 +206,7 @@ if SERVER then
                 end
                 self:SetData("prevortex-flight",nil)
                 self:SetSolid(SOLID_VPHYSICS)
+                self:SetCollisionGroup(self:TeleportCollisionGroup(pos))
                 self:CallHook("MatStart")
                 self:ChangePosition(pos, ang, true)
                 self:SetData("demat-startpos",nil)
