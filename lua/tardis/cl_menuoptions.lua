@@ -191,12 +191,12 @@ hook.Add("PopulateToolMenu", "TARDIS2-PopulateToolMenu", function()
         local keybinds={}
         local bind_sections={}
         for k,v in pairs(TARDIS:GetBinds()) do
-            table.insert(keybinds,{k,v})
+            table.insert(keybinds,{id=k, data=v})
             if v.section and not table.HasValue(bind_sections,v.section) then
                 table.insert(bind_sections,v.section)
             end
         end
-        table.SortByMember(keybinds,1,true)
+        table.SortByMember(keybinds,"id",true)
         table.SortByMember(bind_sections,1,true)
 
         for _,v in ipairs(bind_sections) do
