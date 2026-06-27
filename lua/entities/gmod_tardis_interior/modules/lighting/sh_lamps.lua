@@ -76,7 +76,6 @@ if CLIENT then
     ENT:AddHook("Initialize", "lamps", function(self)
         self:LoadLamps()
         self:CreateLamps()
-        self:RunLampUpdate()
     end)
 
     function ENT:CreateLamp(lmp)
@@ -127,11 +126,13 @@ if CLIENT then
         if TARDIS.debug_lamps_enabled then return end
         if not self.lamps_data then return end
 
+        self:RemoveLamps() -- drop existing projected textures first, else they leak until GC (double-bright flash)
         local lamps = {}
         self.lamps = lamps
         for k,v in pairs(self.lamps_data) do
             lamps[k] = self:CreateLamp(SelectLampTable(self, v))
         end
+        self:RunLampUpdate()
     end
 
     function ENT:RemoveLamps()
@@ -144,18 +145,11 @@ if CLIENT then
         self.lamps = nil
     end
 
-    local function ReplaceLamps(self)
-        if not TARDIS:GetSetting("lamps-enabled") then return end
-        self:RemoveLamps()
-        self:CreateLamps()
-        self:RunLampUpdate()
-    end
+    ENT:AddHook("LightStateChanged", "lamps", function(self) self:CreateLamps() end)
 
-    ENT:AddHook("LightStateChanged", "lamps", ReplaceLamps)
+    ENT:AddHook("PowerToggled", "lamps", function(self) self:CreateLamps() end)
 
-    ENT:AddHook("PowerToggled", "lamps", ReplaceLamps)
-
-    ENT:AddHook("WarningToggled", "lamps", ReplaceLamps)
+    ENT:AddHook("WarningToggled", "lamps", function(self) self:CreateLamps() end)
 
 
     function ENT:RunLampUpdate()
@@ -218,7 +212,6 @@ if CLIENT then
 
         if val and self.lamps == nil then
             self:CreateLamps()
-            self:RunLampUpdate()
         elseif not val and self.lamps then
             self:RemoveLamps()
         end

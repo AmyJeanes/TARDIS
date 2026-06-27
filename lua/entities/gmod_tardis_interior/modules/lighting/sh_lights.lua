@@ -243,7 +243,9 @@ end
 if CLIENT then
     ENT:AddHook("SlowThink", "lights", function(self)
         local pos = self:GetPos()
-        if self.lights_lastpos == pos then return end
+        -- interior position can slightly shift if physics is awakened so only
+        -- reload lights if the position has changed significantly for perf
+        if self.lights_lastpos and self.lights_lastpos:DistToSqr(pos) < 1 then return end
         if self.lights_lastpos ~= nil then
             self:LoadLights()
             self:LoadLamps()
