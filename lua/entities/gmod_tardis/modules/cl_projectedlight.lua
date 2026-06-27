@@ -53,6 +53,20 @@ function ENT:PickProjectedLightDistance()
     return override and TARDIS:GetSetting("extprojlight-distance") or self.metadata.Exterior.ProjectedLight.farz
 end
 
+-- Portals can block rendering of projected lights behind them, so we set the near-Z
+-- to just in front of the back portal wall, so the light remains visible.
+function ENT:PickProjectedLightNearZ()
+    local portal = IsValid(self.interior) and self.interior.portals.exterior
+    if not IsValid(portal) then return 1 end
+    local rmin, rmax = portal.RenderMin, portal.RenderMax
+    if not (rmin and rmax) then return 1 end
+    local origin = self:LocalToWorld(self.metadata.Exterior.ProjectedLight.offset)
+    local wall = portal:LocalToWorld(Vector(math.min(rmin.x, rmax.x), 0, 0))
+    local behind = (wall - origin):Dot(self:GetForward())
+    if behind <= 0 then return 1 end
+    return behind + 2
+end
+
 function ENT:CreateProjectedLight()
     if self.projectedlight then return end
     local pl = ProjectedTexture()
@@ -60,6 +74,7 @@ function ENT:CreateProjectedLight()
     pl:SetVerticalFOV(self.metadata.Exterior.ProjectedLight.vertfov or self.metadata.Exterior.Portal.height)
     pl:SetHorizontalFOV(self.metadata.Exterior.ProjectedLight.horizfov or self.metadata.Exterior.Portal.width+10)
     pl:SetEnableShadows(true)
+    pl:SetNearZ(self:PickProjectedLightNearZ())
     self.projectedlight = pl
 end
 
