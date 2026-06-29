@@ -21,7 +21,14 @@ else
             return false
         end
     end)
+    
     ENT:AddHook("ShouldDrawPlayer", "players", function(self, ply, localply)
+        if localply:GetTardisData("outside") then
+            return false
+        end
+    end)
+
+    ENT:AddHook("ShouldDrawCordonProp", "outside", function(self, prop, localply)
         if localply:GetTardisData("outside") then
             return false
         end
