@@ -58,7 +58,6 @@
 ---@field ShadowLocalPos Vector?
 ---@field ShadowLocalAng Angle?
 ---@field LastShadowTarget Vector?
--- Injected by the part system at setup:
 ---@field exterior gmod_tardis
 ---@field interior gmod_tardis_interior
 ---@field parent gmod_tardis|gmod_tardis_interior
@@ -67,7 +66,6 @@
 ---@field pos Vector
 ---@field ang Angle
 ---@field static boolean?
--- Non-engine hooks (Initialize/Think/Use/Draw/OnRemove come from Entity):
 ---@field UseBasic fun(self: gmod_tardis_part, activator: Player)?
 ---@field PreDraw fun(self: gmod_tardis_part)?
 ---@field PostDraw fun(self: gmod_tardis_part)?
@@ -289,7 +287,7 @@ function TARDIS.ProcessAnimation(self, a)
     end
 end
 
--- the original SENT methods saved by SetupOverrides before they are wrapped
+--- The original SENT methods, saved by SetupOverrides before they are wrapped.
 ---@class tardis_part_original
 ---@field Initialize fun(self: gmod_tardis_part)
 ---@field Think fun(self: gmod_tardis_part)

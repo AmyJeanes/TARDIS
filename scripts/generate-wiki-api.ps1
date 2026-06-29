@@ -3,14 +3,18 @@
     Generates the API type-reference wiki pages from the TARDIS source annotations.
 
 .DESCRIPTION
-    Parses the ---@class / ---@field annotations on the extension content-authoring
+    Runs emmylua_doc_cli (the same EmmyLua engine as glua_ls) over the source to
+    parse the ---@class / ---@field annotations on the extension content-authoring
     definition tables (interiors, exteriors, parts, controls, sequences, settings,
-    tips, icon packs, GUI themes, screens) and emits one markdown page per category
-    into the TARDIS.wiki repo. The pages are a pure projection of the source
-    annotations - including the trailing description text on each ---@field - so they
-    stay in sync once the descriptions pass lands. Re-run to update.
+    tips, icon packs, GUI themes, screens) into a JSON type model, then emits one
+    markdown page per category into the TARDIS.wiki repo. The pages are a pure
+    projection of the source annotations - including the trailing description text
+    on each ---@field - so they stay in sync once the descriptions pass lands.
+    Field types are rendered exactly as the analyzer resolves them, so they match
+    editor hover. Re-run to update.
 
-    These pages complement, not replace, the hand-written tutorial pages.
+    These pages complement, not replace, the hand-written tutorial pages. The
+    "Create with TARDIS:NewX()" note lives in each page's hand-written intro.
 
 .PARAMETER WikiPath
     Path to the TARDIS.wiki clone. Defaults to the sibling ../TARDIS.wiki.
@@ -55,132 +59,67 @@ $Categories = @(
     @{ Title = "Screens Reference";           File = "Screens-Reference";           Roots = @("tardis_screen_options") }
 )
 
-# --- Annotation parser -------------------------------------------------------
+# --- Annotation parser (emmylua_doc_cli) -------------------------------------
+# The ---@class / ---@field type model is produced by emmylua_doc_cli, so the
+# wiki types are exactly what the analyzer resolves (matching editor hover) and
+# there is no hand-rolled type parsing here - we just post-process its JSON into
+# the small shape the renderer consumes.
 
-# Split "<type> <description>" where the type may contain spaces inside (), <>,
-# [] or {}. The type ends at the first whitespace seen at bracket-depth 0 - except
-# a space right after a ':' at depth 0, which is a fun(...): rettype separator.
-function Split-FieldType([string]$rest) {
-    $depth = 0
-    $lastNonSpace = ''
-    for ($i = 0; $i -lt $rest.Length; $i++) {
-        $c = $rest[$i]
-        if ($c -eq '(' -or $c -eq '[' -or $c -eq '{' -or $c -eq '<') { $depth++; $lastNonSpace = $c }
-        elseif ($c -eq ')' -or $c -eq ']' -or $c -eq '}' -or $c -eq '>') { $depth--; $lastNonSpace = $c }
-        elseif ($c -eq ' ' -or $c -eq "`t") {
-            if ($depth -le 0 -and $lastNonSpace -ne ':') {
-                return @{ Type = $rest.Substring(0, $i).Trim(); Desc = $rest.Substring($i).Trim() }
-            }
-        }
-        else { $lastNonSpace = $c }
+function Resolve-DocCli {
+    $exe = if ($IsWindows -or ($null -eq $IsWindows -and $env:OS -eq 'Windows_NT')) { 'emmylua_doc_cli.exe' } else { 'emmylua_doc_cli' }
+    $path = Join-Path $RepoRoot ".tools/bin/$exe"
+    if (-not (Test-Path $path)) {
+        throw "emmylua_doc_cli not found at $path - run scripts/install-tools.ps1 first."
     }
-    return @{ Type = $rest.Trim(); Desc = "" }
+    return $path
 }
 
-# Parse every .lua file, returning:
-#   Classes : ordered hashtable name -> @{ Name; Parent; Blurb; Fields = @(@{Name;Type;Optional;Desc;Group}) }
-#   Ctors   : className -> "TARDIS:NewX()"
+# Parse every annotation via emmylua_doc_cli, returning:
+#   Classes : ordered hashtable name -> @{ Name; Parent; Blurb; Fields = @(@{Name;Type;Optional;Desc}) }
 function Parse-Annotations([string]$root) {
-    $classes = [ordered]@{}
-    $ctors   = @{}
+    $docCli = Resolve-DocCli
 
-    $files = Get-ChildItem -Path $root -Recurse -Filter *.lua -File |
-        Where-Object { $_.FullName -notmatch '\\gmod_wire_expression2\\' }
-
-    foreach ($file in $files) {
-        $lines = Get-Content -LiteralPath $file.FullName
-        $current = $null          # class currently collecting fields
-        $pendingReturn = $null    # '---@return X' on the previous line (for ctor detection)
-        $docBuffer = @()          # consecutive '--- ...' doc lines for the class below
-
-        foreach ($line in $lines) {
-            $trim = $line.Trim()
-
-            # '--- ...' doc-comment lines (not '---@', not '----') accumulate as the
-            # description of the ---@class directly below them - the standard EmmyLua
-            # mechanism, so glua_ls also shows them on hover.
-            if ($trim -match '^---(?![@-])\s?(.*)$') {
-                $d = $matches[1].Trim()
-                if ($d) { $docBuffer += $d }
-                continue
-            }
-            # Any other line ends the run; only a ---@class on the very next line
-            # should consume the docs, so snapshot and reset here (a blank line in
-            # between therefore detaches them, matching EmmyLua).
-            $pendingDoc = $docBuffer
-            $docBuffer = @()
-
-            # Constructor: '---@return X' immediately above 'function TARDIS:NewX('
-            if ($trim -match '^function\s+TARDIS:(New[A-Za-z0-9_]+)\s*\(' -and $pendingReturn) {
-                $ctors[$pendingReturn] = "TARDIS:$($matches[1])()"
-            }
-
-            if ($trim -match '^---@class\s+([A-Za-z0-9_]+)\s*(?::\s*(.+?))?\s*$') {
-                $name = $matches[1]
-                $parent = if ($matches[2]) { $matches[2].Trim() } else { $null }
-                $blurb = if ($pendingDoc.Count) { $pendingDoc -join ' ' } else { $null }
-                if ($classes.Contains($name)) {
-                    $current = $classes[$name]
-                    if (-not $current.Parent -and $parent) { $current.Parent = $parent }
-                    if (-not $current.Blurb -and $blurb) { $current.Blurb = $blurb }
-                } else {
-                    $current = @{ Name = $name; Parent = $parent; Blurb = $blurb; Fields = @() }
-                    $classes[$name] = $current
-                }
-                $current.PendingGroup = $null
-                $pendingReturn = $null
-                continue
-            }
-
-            # Index signature: ---@field [keytype] valuetype - a dynamic-key entry.
-            if ($current -and $trim -match '^---@field\s+\[([^\]]+)\]\s+(.+)$') {
-                $split = Split-FieldType $matches[2]
-                $current.Fields += @{
-                    Name = "[$($matches[1].Trim())]"; Type = $split.Type; Optional = $true
-                    Desc = $split.Desc; Group = $current.PendingGroup
-                }
-                $current.PendingGroup = $null
-                $pendingReturn = $null
-                continue
-            }
-
-            if ($current -and $trim -match '^---@field\s+([A-Za-z0-9_]+\??)\s+(.+)$') {
-                $fname = $matches[1]
-                $opt = $false
-                if ($fname.EndsWith('?')) { $fname = $fname.TrimEnd('?'); $opt = $true }
-                $split = Split-FieldType $matches[2]
-                if ($split.Type.EndsWith('?')) { $opt = $true }
-                $current.Fields += @{
-                    Name = $fname; Type = $split.Type; Optional = $opt
-                    Desc = $split.Desc; Group = $current.PendingGroup
-                }
-                $current.PendingGroup = $null
-                $pendingReturn = $null
-                continue
-            }
-
-            # A plain '-- ...' line inside a class block becomes a group caption
-            # for the fields that follow.
-            if ($current -and $trim -match '^--\s?(?!\[)(?!-@)(.*)$' -and $trim -notmatch '^---@') {
-                $text = $matches[1].Trim()
-                if ($text) { $current.PendingGroup = $text }
-                continue
-            }
-
-            # End of an annotation block.
-            $current = $null
-            $pendingReturn = if ($trim -match '^---@return\s+([A-Za-z0-9_]+)') { $matches[1] } else { $null }
-        }
+    # emmylua_doc_cli requires the JSON output path to end in .json (a .tmp path errors).
+    $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("tardis-wiki-api-" + [guid]::NewGuid().ToString('N') + ".json")
+    try {
+        & $docCli $root -f json -o $tmp --exclude '**/gmod_wire_expression2/**' | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "emmylua_doc_cli failed (exit $LASTEXITCODE)." }
+        $doc = (Get-Content -LiteralPath $tmp -Raw -Encoding utf8) | ConvertFrom-Json
+    } finally {
+        Remove-Item $tmp -Force -ErrorAction SilentlyContinue
     }
 
-    return @{ Classes = $classes; Ctors = $ctors }
+    $classes = [ordered]@{}
+    foreach ($t in $doc.types) {
+        if ($t.type -ne 'class') { continue }
+        $name = $t.name
+        if ($classes.Contains($name)) { continue }   # emmylua already merges same-name decls
+
+        $parent = if ($t.bases -and $t.bases.Count -gt 0) { $t.bases -join ', ' } else { $null }
+        $blurb  = if ($t.description) { ($t.description -replace '\r?\n', ' ').Trim() } else { $null }
+        if (-not $blurb) { $blurb = $null }
+
+        $fields = @()
+        foreach ($m in $t.members) {
+            if ($m.type -ne 'field') { continue }
+            $fname = $m.name
+            $ftype = if ($m.typ) { $m.typ } else { '' }
+            # emmylua encodes optionality as a trailing '?'; index signatures ([k]) are always optional.
+            $optional = $ftype.EndsWith('?') -or $fname.StartsWith('[')
+            $desc = if ($m.description) { ($m.description -replace '\r?\n', ' ').Trim() } else { '' }
+            $fields += @{ Name = $fname; Type = $ftype; Optional = $optional; Desc = $desc }
+        }
+
+        $classes[$name] = @{ Name = $name; Parent = $parent; Blurb = $blurb; Fields = $fields }
+    }
+
+    return @{ Classes = $classes }
 }
 
 # --- Ownership ---------------------------------------------------------------
 
 $parsed  = Parse-Annotations $LuaRoot
 $classes = $parsed.Classes
-$ctors   = $parsed.Ctors
 
 $rootSet = @{}
 foreach ($cat in $Categories) { foreach ($r in $cat.Roots) { $rootSet[$r] = $true } }
@@ -265,28 +204,17 @@ function Render-Class($cls, [string]$thisPage) {
 
     $notes = @()
     if ($cls.Blurb)  { $notes += $cls.Blurb }
-    if ($ctors.ContainsKey($cls.Name)) { $notes += "Create with ``$($ctors[$cls.Name])``." }
     if ($cls.Parent) { $notes += "Extends ``$($cls.Parent)``." }
     foreach ($n in $notes) { [void]$sb.AppendLine($n); [void]$sb.AppendLine() }
 
-    $tableOpen = $false
-    $lastGroup = $null
-    foreach ($f in $cls.Fields) {
-        if ($f.Group -and $f.Group -ne $lastGroup) {
-            if ($tableOpen) { [void]$sb.AppendLine() }
-            [void]$sb.AppendLine("**$($f.Group)**")
-            [void]$sb.AppendLine()
-            $tableOpen = $false
-            $lastGroup = $f.Group
+    if ($cls.Fields.Count -gt 0) {
+        [void]$sb.AppendLine("| Field | Type | Required | Description |")
+        [void]$sb.AppendLine("|-|-|-|-|")
+        foreach ($f in $cls.Fields) {
+            $req = if ($f.Optional) { "" } else { "yes" }
+            $typeCell = Render-Type $f.Type $thisPage
+            [void]$sb.AppendLine("| ``$($f.Name)`` | $typeCell | $req | $(Format-Cell $f.Desc) |")
         }
-        if (-not $tableOpen) {
-            [void]$sb.AppendLine("| Field | Type | Required | Description |")
-            [void]$sb.AppendLine("|-|-|-|-|")
-            $tableOpen = $true
-        }
-        $req = if ($f.Optional) { "" } else { "yes" }
-        $typeCell = Render-Type $f.Type $thisPage
-        [void]$sb.AppendLine("| ``$($f.Name)`` | $typeCell | $req | $(Format-Cell $f.Desc) |")
     }
     [void]$sb.AppendLine()
     return $sb.ToString()

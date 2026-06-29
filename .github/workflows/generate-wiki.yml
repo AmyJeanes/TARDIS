@@ -28,6 +28,10 @@ jobs:
       - name: Clone wiki
         run: git clone "https://x-access-token:${{ secrets.TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
 
+      - name: Install tooling
+        run: ./scripts/install-tools.ps1
+        shell: pwsh
+
       - name: Generate wiki pages
         run: ./scripts/generate-wiki-api.ps1 -WikiPath wiki
         shell: pwsh

@@ -18,6 +18,11 @@ $GluaLsVersion  = '1.0.27'
 # Releases: https://github.com/luttje/glua-api-snippets/releases
 # renovate: datasource=github-releases depName=luttje/glua-api-snippets versioning=loose
 $GluaApiVersion = '2026-05-29_06-23-16'
+# emmylua_doc_cli drives scripts/generate-wiki-api.ps1 - it parses the ---@class /
+# ---@field annotations into a JSON type model (same EmmyLua engine as glua_ls).
+# Releases: https://github.com/EmmyLuaLs/emmylua-analyzer-rust/releases
+# renovate: datasource=github-releases depName=EmmyLuaLs/emmylua-analyzer-rust
+$EmmyDocVersion = '0.23.2'
 
 # Paths ----------------------------------------------------------------------
 $Root         = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
@@ -25,6 +30,7 @@ $ToolsRoot    = Join-Path $Root '.tools'
 $BinDir       = Join-Path $ToolsRoot 'bin'
 $GluaCheckDir = Join-Path $ToolsRoot "glua-check/$GluaLsVersion"
 $GluaLsDir    = Join-Path $ToolsRoot "glua-ls/$GluaLsVersion"
+$EmmyDocDir   = Join-Path $ToolsRoot "emmylua-doc-cli/$EmmyDocVersion"
 $GluaApiDir   = Join-Path $ToolsRoot 'glua-api'
 $GluaApiMark  = Join-Path $GluaApiDir '.version'
 
@@ -64,16 +70,18 @@ function Install-Archive {
 
 function Install-Binary {
     param(
-        [Parameter(Mandatory)] [string] $Name,        # 'glua_check' | 'glua_ls'
-        [Parameter(Mandatory)] [string] $Dest         # versioned dir
+        [Parameter(Mandatory)] [string] $Name,        # 'glua_check' | 'glua_ls' | 'emmylua_doc_cli'
+        [Parameter(Mandatory)] [string] $Dest,        # versioned dir
+        [Parameter(Mandatory)] [string] $Repo,        # 'owner/repo'
+        [Parameter(Mandatory)] [string] $Version
     )
     $exe = Join-Path $Dest "$Name$ExeExt"
     if (Test-Path $exe) { return $exe }
 
-    Write-Host "Installing $Name $GluaLsVersion -> $Dest"
+    Write-Host "Installing $Name $Version -> $Dest"
     $assetExt = if ($Platform -eq 'win32-x64') { 'zip' } else { 'tar.gz' }
     $asset    = "$Name-$Platform.$assetExt"
-    $url      = "https://github.com/Pollux12/gmod-glua-ls/releases/download/$GluaLsVersion/$asset"
+    $url      = "https://github.com/$Repo/releases/download/$Version/$asset"
     Install-Archive -Url $url -Dest $Dest
 
     if (-not (Test-Path $exe)) { throw "$Name binary missing after extraction: $exe" }
@@ -82,8 +90,11 @@ function Install-Binary {
 }
 
 # glua_check + glua_ls -------------------------------------------------------
-$gluaCheckExe = Install-Binary -Name 'glua_check' -Dest $GluaCheckDir
-$gluaLsExe    = Install-Binary -Name 'glua_ls'    -Dest $GluaLsDir
+$gluaCheckExe = Install-Binary -Name 'glua_check' -Dest $GluaCheckDir -Repo 'Pollux12/gmod-glua-ls' -Version $GluaLsVersion
+$gluaLsExe    = Install-Binary -Name 'glua_ls'    -Dest $GluaLsDir    -Repo 'Pollux12/gmod-glua-ls' -Version $GluaLsVersion
+
+# emmylua_doc_cli (vanilla EmmyLua engine, used only by generate-wiki-api.ps1)
+$emmyDocExe   = Install-Binary -Name 'emmylua_doc_cli' -Dest $EmmyDocDir -Repo 'EmmyLuaLs/emmylua-analyzer-rust' -Version $EmmyDocVersion
 
 # glua-api stubs -------------------------------------------------------------
 # .luarc.json points at .tools/glua-api directly, so the working dir IS the
@@ -156,8 +167,20 @@ if ($currentMark -ne $GluaLsVersion -or -not (Test-Path $gluaCheckBin) -or -not 
     Set-Content -Path $BinMark -Value $GluaLsVersion
 }
 
+# emmylua_doc_cli mirror - a one-shot CLI (not held open like the LSP server),
+# so a plain copy is safe; its own marker tracks the independent version.
+$emmyDocBin  = Join-Path $BinDir "emmylua_doc_cli$ExeExt"
+$emmyDocMark = Join-Path $BinDir '.emmydoc-version'
+$curEmmyMark = if (Test-Path $emmyDocMark) { (Get-Content $emmyDocMark -Raw).Trim() } else { '' }
+if ($curEmmyMark -ne $EmmyDocVersion -or -not (Test-Path $emmyDocBin)) {
+    New-Item -ItemType Directory -Force -Path $BinDir | Out-Null
+    Copy-Item $emmyDocExe $emmyDocBin -Force
+    Set-Content -Path $emmyDocMark -Value $EmmyDocVersion
+}
+
 Write-Host ''
 Write-Host 'Tools ready:'
-Write-Host "  glua_check $GluaLsVersion  -> $gluaCheckExe"
-Write-Host "  glua_ls    $GluaLsVersion  -> $gluaLsExe"
-Write-Host "  glua-api   $GluaApiVersion -> $GluaApiDir"
+Write-Host "  glua_check      $GluaLsVersion  -> $gluaCheckExe"
+Write-Host "  glua_ls         $GluaLsVersion  -> $gluaLsExe"
+Write-Host "  emmylua_doc_cli $EmmyDocVersion -> $emmyDocExe"
+Write-Host "  glua-api        $GluaApiVersion -> $GluaApiDir"
