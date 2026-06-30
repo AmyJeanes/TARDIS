@@ -8,7 +8,8 @@ if SERVER then
         end
     end
 
-    local function delay(callback,state) -- Ensures callback is always called async
+    local function delay(callback,state) -- Ensures callback (if given) is called async
+        if not callback then return end
         timer.Simple(0,function()
             callback(state)
         end)
@@ -68,7 +69,7 @@ if SERVER then
     function ENT:CloseDoor(callback)
         if self:GetData("doorstate",false) ~= self:GetData("doorstatereal",false) then
             local callbacks=self:GetData("doorchangecallback")
-            callbacks[callback]=true
+            if callback then callbacks[callback]=true end
             return true
         elseif not self:GetData("doorstate",false) then
             delay(callback,false)
