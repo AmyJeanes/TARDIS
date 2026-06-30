@@ -23,6 +23,14 @@ $GluaApiVersion = '2026-05-29_06-23-16'
 # Releases: https://github.com/EmmyLuaLs/emmylua-analyzer-rust/releases
 # renovate: datasource=github-releases depName=EmmyLuaLs/emmylua-analyzer-rust
 $EmmyDocVersion = '0.23.2'
+# MoonSharp (pure-C# Lua interpreter) drives scripts/lua-harness/* - it runs the
+# addon's content-definition Lua under a GMod stub environment to extract runtime
+# defaults for the wiki. Shipped as a NuGet package; we load the netstandard DLL
+# straight into PowerShell 7's .NET runtime, so no native binary is needed and it
+# runs identically on Windows and the Linux CI runner.
+# Releases: https://www.nuget.org/packages/MoonSharp
+# renovate: datasource=nuget depName=MoonSharp
+$MoonSharpVersion = '2.0.0'
 
 # Paths ----------------------------------------------------------------------
 $Root         = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
@@ -31,6 +39,7 @@ $BinDir       = Join-Path $ToolsRoot 'bin'
 $GluaCheckDir = Join-Path $ToolsRoot "glua-check/$GluaLsVersion"
 $GluaLsDir    = Join-Path $ToolsRoot "glua-ls/$GluaLsVersion"
 $EmmyDocDir   = Join-Path $ToolsRoot "emmylua-doc-cli/$EmmyDocVersion"
+$MoonSharpDir = Join-Path $ToolsRoot "moonsharp/$MoonSharpVersion"
 $GluaApiDir   = Join-Path $ToolsRoot 'glua-api'
 $GluaApiMark  = Join-Path $GluaApiDir '.version'
 
@@ -95,6 +104,28 @@ $gluaLsExe    = Install-Binary -Name 'glua_ls'    -Dest $GluaLsDir    -Repo 'Pol
 
 # emmylua_doc_cli (vanilla EmmyLua engine, used only by generate-wiki-api.ps1)
 $emmyDocExe   = Install-Binary -Name 'emmylua_doc_cli' -Dest $EmmyDocDir -Repo 'EmmyLuaLs/emmylua-analyzer-rust' -Version $EmmyDocVersion
+
+# MoonSharp - a .nupkg (zip) rather than a per-platform binary, so a dedicated
+# fetch: download, extract, lift out the netstandard1.6 assembly. PowerShell 7's
+# runtime loads netstandard1.6, so the one DLL serves Windows and Linux alike.
+$moonSharpDll = Join-Path $MoonSharpDir 'MoonSharp.Interpreter.dll'
+if (-not (Test-Path $moonSharpDll)) {
+    Write-Host "Installing MoonSharp $MoonSharpVersion -> $MoonSharpDir"
+    New-Item -ItemType Directory -Force -Path $MoonSharpDir | Out-Null
+    $tmp     = New-TemporaryFile
+    $extract = Join-Path ([System.IO.Path]::GetTempPath()) ("moonsharp-" + [guid]::NewGuid().ToString('N'))
+    try {
+        $url = "https://api.nuget.org/v3-flatcontainer/moonsharp/$MoonSharpVersion/moonsharp.$MoonSharpVersion.nupkg"
+        Write-Host "  downloading $url"
+        Invoke-WebRequest -Uri $url -OutFile $tmp.FullName
+        Expand-Archive -Path $tmp.FullName -DestinationPath $extract -Force
+        Copy-Item (Join-Path $extract 'lib/netstandard1.6/MoonSharp.Interpreter.dll') $moonSharpDll -Force
+    } finally {
+        Remove-Item $tmp.FullName -Force -ErrorAction SilentlyContinue
+        Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    if (-not (Test-Path $moonSharpDll)) { throw "MoonSharp DLL missing after extraction: $moonSharpDll" }
+}
 
 # glua-api stubs -------------------------------------------------------------
 # .luarc.json points at .tools/glua-api directly, so the working dir IS the
@@ -178,9 +209,20 @@ if ($curEmmyMark -ne $EmmyDocVersion -or -not (Test-Path $emmyDocBin)) {
     Set-Content -Path $emmyDocMark -Value $EmmyDocVersion
 }
 
+# MoonSharp mirror - the harness loads it from a stable, version-agnostic path.
+$moonSharpBin  = Join-Path $BinDir 'MoonSharp.Interpreter.dll'
+$moonSharpMark = Join-Path $BinDir '.moonsharp-version'
+$curMsMark     = if (Test-Path $moonSharpMark) { (Get-Content $moonSharpMark -Raw).Trim() } else { '' }
+if ($curMsMark -ne $MoonSharpVersion -or -not (Test-Path $moonSharpBin)) {
+    New-Item -ItemType Directory -Force -Path $BinDir | Out-Null
+    Copy-Item $moonSharpDll $moonSharpBin -Force
+    Set-Content -Path $moonSharpMark -Value $MoonSharpVersion
+}
+
 Write-Host ''
 Write-Host 'Tools ready:'
 Write-Host "  glua_check      $GluaLsVersion  -> $gluaCheckExe"
 Write-Host "  glua_ls         $GluaLsVersion  -> $gluaLsExe"
 Write-Host "  emmylua_doc_cli $EmmyDocVersion -> $emmyDocExe"
+Write-Host "  MoonSharp       $MoonSharpVersion       -> $moonSharpDll"
 Write-Host "  glua-api        $GluaApiVersion -> $GluaApiDir"
