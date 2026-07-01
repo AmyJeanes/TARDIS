@@ -26,8 +26,8 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Model string?
 ---@field ExitDistance number?
 ---@field Size tardis_box
----@field Portal tardis_portal
----@field Fallback tardis_fallback
+---@field Portal tardis_interior_portal
+---@field Fallback tardis_interior_fallback
 ---@field Sounds tardis_interior_sound_metadata
 ---@field IdleSound table?
 ---@field Tips table
@@ -35,7 +35,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field PartTips table
 ---@field TipSettings tardis_tip_settings
 ---@field LightOverride tardis_light_override
----@field Light tardis_light?
+---@field Light tardis_interior_light?
 ---@field Lights table?
 ---@field ScreensEnabled boolean?
 ---@field UseFullName boolean
@@ -70,9 +70,9 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field DoorAnimationTime number
 ---@field ScannerOffset Vector
 ---@field PhaseMaterial string?
----@field Portal tardis_portal
----@field Fallback tardis_fallback
----@field Light tardis_light
+---@field Portal tardis_exterior_portal
+---@field Fallback tardis_exterior_fallback
+---@field Light tardis_exterior_light
 ---@field ProjectedLight tardis_projected_light
 ---@field Sounds tardis_exterior_sound_metadata
 ---@field Chameleon tardis_chameleon
@@ -89,7 +89,15 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Name string?
 ---@field Category string?
 
----@class tardis_portal
+---@class tardis_interior_portal
+---@field pos Vector
+---@field ang Angle
+---@field width number
+---@field height number
+---@field thickness number?
+---@field inverted boolean?
+
+---@class tardis_exterior_portal
 ---@field pos Vector
 ---@field ang Angle
 ---@field width number
@@ -103,20 +111,47 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Min Vector
 ---@field Max Vector
 
----@class tardis_fallback
+---@class tardis_interior_fallback
 ---@field pos Vector
 ---@field ang Angle
 
----@class tardis_light
+---@class tardis_exterior_fallback
+---@field pos Vector
+---@field ang Angle
+
+---@class tardis_exterior_light
 ---@field enabled boolean?
 ---@field pos Vector?
 ---@field color Color?
 ---@field dynamicpos Vector?
 ---@field dynamicbrightness number?
 ---@field dynamicsize number
----@field NoLO tardis_light?
----@field NoExtra tardis_light?
----@field NoExtraNoLO tardis_light?
+
+---@class tardis_interior_light_state
+---@field enabled boolean?
+---@field color Color?
+---@field pos Vector?
+---@field brightness number?
+---@field falloff number?
+---@field warn_color Color?
+---@field warn_pos Vector?
+---@field warn_brightness number?
+---@field warn_falloff number?
+---@field nopower boolean?
+---@field off_color Color?
+---@field off_pos Vector?
+---@field off_brightness number?
+---@field off_falloff number?
+---@field off_warn_color Color?
+---@field off_warn_pos Vector?
+---@field off_warn_brightness number?
+---@field off_warn_falloff number?
+---@field states table?
+
+---@class tardis_interior_light : tardis_interior_light_state
+---@field NoLO tardis_interior_light_state?
+---@field NoExtra tardis_interior_light_state?
+---@field NoExtraNoLO tardis_interior_light_state?
 
 ---@class tardis_light_override
 ---@field basebrightness number?
@@ -179,7 +214,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 
 ---@class tardis_interior_sound_metadata
 ---@field Damage tardis_sound_damage
----@field Teleport tardis_sound_teleport
+---@field Teleport tardis_interior_sound_teleport
 ---@field Power tardis_sound_power
 ---@field SequenceOK string?
 ---@field SequenceFail string?
@@ -190,7 +225,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Hum string?
 
 ---@class tardis_exterior_sound_metadata
----@field Teleport tardis_sound_teleport
+---@field Teleport tardis_exterior_sound_teleport
 ---@field Door tardis_sound_door
 ---@field RepairFinish string?
 ---@field RepairLoop string?
@@ -229,7 +264,24 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field On string?
 ---@field Off string?
 
----@class tardis_sound_teleport
+---@class tardis_interior_sound_teleport
+---@field demat string?
+---@field demat_damaged string?
+---@field demat_fast string?
+---@field demat_hads string?
+---@field demat_fail string?
+---@field demat_fail_loop string?
+---@field demat_fail_loop_stop string?
+---@field mat string?
+---@field mat_damaged string?
+---@field mat_fail string?
+---@field mat_fast string?
+---@field mat_damaged_fast string?
+---@field fullflight string?
+---@field fullflight_damaged string?
+---@field interrupt string?
+
+---@class tardis_exterior_sound_teleport
 ---@field demat string?
 ---@field demat_damaged string?
 ---@field demat_fast string?

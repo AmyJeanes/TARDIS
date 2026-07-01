@@ -34,15 +34,6 @@ jobs:
         run: ./scripts/install-tools.ps1
         shell: pwsh
 
-      # Placeholder: proves the headless content-loading harness runs on the
-      # Linux runner (MoonSharp under pwsh) and loads the whole addon without
-      # crashing, printing a census of what registered. This will grow into the
-      # source of runtime data (metadata defaults, ...) the wiki generator
-      # consumes; for now it just exercises and reports.
-      - name: Load addon headless (harness smoke test)
-        run: ./scripts/lua-harness/run-harness.ps1 -Realm server
-        shell: pwsh
-
       - name: Generate wiki pages
         run: ./scripts/generate-wiki-api.ps1 -WikiPath wiki
         shell: pwsh

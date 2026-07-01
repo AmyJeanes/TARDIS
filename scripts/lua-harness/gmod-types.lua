@@ -116,3 +116,13 @@ function TypeID() return 0 end
 function Lerp(t, a, b) return a + (b - a) * t end
 function LerpVector(t, a, b) return newvector(Lerp(t, a.x, b.x), Lerp(t, a.y, b.y), Lerp(t, a.z, b.z)) end
 function LerpAngle(t, a, b) return newangle(Lerp(t, a.p, b.p), Lerp(t, a.y, b.y), Lerp(t, a.r, b.r)) end
+
+-- These metatables carry a permissive __index (any missing key returns a
+-- function), so duck-typing a captured value (IsColor's r/g/b check) misfires.
+-- Expose them by identity so the defaults extractor can tell the types apart.
+__HARNESS.meta = {
+    vector = vector_meta,
+    angle = angle_meta,
+    color = color_meta,
+    material = material_meta,
+}

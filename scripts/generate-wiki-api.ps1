@@ -33,6 +33,8 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $LuaRoot  = Join-Path $RepoRoot "lua"
 
+. (Join-Path $PSScriptRoot "lua-harness/harness.ps1")
+
 if (-not $WikiPath) {
     $WikiPath = Join-Path (Split-Path -Parent $RepoRoot) "TARDIS.wiki"
 }
@@ -116,10 +118,69 @@ function Parse-Annotations([string]$root) {
     return @{ Classes = $classes }
 }
 
+# --- Base defaults (from the headless harness) -------------------------------
+# The "Default" column shows the value a content author inherits when they omit
+# a field. Those defaults are assigned in Lua at load time (base.lua), invisible
+# to the static analyzer, so we load the addon headless in-process (see
+# lua-harness/harness.ps1) and walk base's interior/exterior metadata straight
+# out of the interpreter. Vector/Angle/Color become {__type='literal'} markers,
+# rendered verbatim.
+
+function Get-BaseDefaults {
+    $lua  = New-AddonHarness -Realm server   # loads MoonSharp before the type ref below
+    $meta = Get-HarnessMeta $lua
+    $base = $lua.Globals.Get('TARDIS').Table.Get('MetadataRaw').Table.Get('base')
+    if ($base.Type -ne [MoonSharp.Interpreter.DataType]::Table) { throw "base interior metadata not found" }
+    return [pscustomobject]@{
+        tardis_metadata          = ConvertFrom-LuaValue $base $meta
+        tardis_exterior_metadata = ConvertFrom-LuaValue ($base.Table.Get('Exterior')) $meta
+    }
+}
+
+function Test-JsonObject($v) { return $v -is [System.Management.Automation.PSCustomObject] }
+function Test-LiteralDefault($v) { return (Test-JsonObject $v) -and ($null -ne $v.PSObject.Properties['__type']) }
+function Test-PlainObject($v) { return (Test-JsonObject $v) -and (-not (Test-LiteralDefault $v)) }
+function Test-StrongDefault($v) { return (Test-PlainObject $v) -and (($v.PSObject.Properties | Measure-Object).Count -gt 0) }
+
+# The default subtree for a field's class - only a plain nested object (a struct
+# we expand as its own class) qualifies; scalars/literals/arrays don't recurse.
+function Get-ChildDefault($parentSub, [string]$field) {
+    if ($null -eq $parentSub) { return $null }
+    $p = $parentSub.PSObject.Properties[$field]
+    if ($p -and (Test-PlainObject $p.Value)) { return $p.Value }
+    return $null
+}
+
+# A class is shared across pages (tardis_portal in both Interior and Exterior),
+# so record the first non-empty subtree it is reached by - an empty {} (e.g. the
+# interior's blank Sounds.Teleport) yields to a populated one.
+function Set-DefaultsFor([hashtable]$map, [string]$name, $sub) {
+    if ($null -eq $sub) { return }
+    if (-not $map.ContainsKey($name)) { $map[$name] = $sub; return }
+    if ((-not (Test-StrongDefault $map[$name])) -and (Test-StrongDefault $sub)) { $map[$name] = $sub }
+}
+
+# Identity/plumbing fields whose base value (base is itself the "base" interior)
+# is not a default a child inherits - excluded so they read as Required instead.
+$IdentityFields = @{ 'tardis_metadata' = @('ID', 'Name', 'Base', 'BaseMerged') }
+
+function Get-FieldDefault([hashtable]$map, [string]$class, [string]$field) {
+    $ex = $IdentityFields[$class]
+    if ($ex -and ($ex -contains $field)) { return @{ Has = $false } }
+    $sub = $map[$class]
+    if ($null -eq $sub) { return @{ Has = $false } }
+    $p = $sub.PSObject.Properties[$field]
+    if (-not $p -or $null -eq $p.Value) { return @{ Has = $false } }
+    return @{ Has = $true; Value = $p.Value }
+}
+
 # --- Ownership ---------------------------------------------------------------
 
 $parsed  = Parse-Annotations $LuaRoot
 $classes = $parsed.Classes
+
+$defaults    = Get-BaseDefaults
+$defaultsFor = @{}   # className -> default subtree (a parsed-JSON object)
 
 $rootSet = @{}
 foreach ($cat in $Categories) { foreach ($r in $cat.Roots) { $rootSet[$r] = $true } }
@@ -148,6 +209,8 @@ foreach ($cat in $Categories) {
         if (-not $classes.Contains($r)) { Write-Warning "Root class '$r' not found in source"; continue }
         $owner[$r] = $cat.File
         [void]$pageList[$cat.File].Add($r)
+        $rootDefault = $defaults.PSObject.Properties[$r]
+        if ($rootDefault) { Set-DefaultsFor $defaultsFor $r $rootDefault.Value }
     }
 }
 
@@ -159,12 +222,33 @@ foreach ($cat in $Categories) {
 
     while ($queue.Count -gt 0) {
         $cname = $queue.Dequeue()
+        $parentSub = $defaultsFor[$cname]
         foreach ($f in $classes[$cname].Fields) {
+            $childSub = Get-ChildDefault $parentSub $f.Name
             foreach ($ref in (Get-Refs $f.Type)) {
+                # Record defaults even for already-owned refs so a class the
+                # interior reached empty can be filled from the exterior.
+                Set-DefaultsFor $defaultsFor $ref $childSub
                 if ($owner.ContainsKey($ref)) { continue }  # owned elsewhere -> will link
                 $owner[$ref] = $page
                 [void]$pageList[$page].Add($ref)
                 if (-not $seen.ContainsKey($ref)) { $queue.Enqueue($ref); $seen[$ref] = $true }
+            }
+        }
+    }
+}
+
+# Reverse of the type links: for each class, the rendered classes that reference
+# it through a field (a "Used in" backlink). Built in page order for stable
+# output; self-references are skipped (the field is already in the class table).
+$usedBy = @{}
+foreach ($cat in $Categories) {
+    foreach ($cname in $pageList[$cat.File]) {
+        foreach ($f in $classes[$cname].Fields) {
+            foreach ($ref in (Get-Refs $f.Type)) {
+                if ($ref -eq $cname -or -not $owner.ContainsKey($ref)) { continue }
+                if (-not $usedBy.ContainsKey($ref)) { $usedBy[$ref] = New-Object System.Collections.Generic.List[string] }
+                if (-not $usedBy[$ref].Contains($cname)) { [void]$usedBy[$ref].Add($cname) }
             }
         }
     }
@@ -179,53 +263,156 @@ function Format-Cell([string]$s) {
     return $s.Replace('|', '\|')
 }
 
+# Link a documentable class name to its section (same page -> bare anchor).
+function Get-ClassLink([string]$name, [string]$label, [string]$thisPage) {
+    if ((Is-Documentable $name) -and $owner.ContainsKey($name)) {
+        $anchor = Get-Anchor $name
+        $target = if ($owner[$name] -eq $thisPage) { "#$anchor" } else { "$($owner[$name])#$anchor" }
+        return "[$label]($target)"
+    }
+    return $label
+}
+
+# Render the Default cell for a field. Scalars and Vector/Angle/Color literals
+# show their value; a field that holds a sub-table shows `{...}` (linked to the
+# nested type when documented) and a list shows `[...]`; anything base doesn't
+# set shows "-", so every cell is populated.
+function Render-DefaultCell($default, $f, [string]$thisPage) {
+    if (-not $default.Has) { return "-" }
+    $value = $default.Value
+    if ($value -is [bool]) { return "``" + ($value.ToString().ToLower()) + "``" }
+    if ($value -is [string]) { return "``" + (Format-Cell ('"' + $value + '"')) + "``" }
+    if ($value -is [ValueType]) { return "``$value``" }   # numbers
+    if (Test-LiteralDefault $value) { return "``" + (Format-Cell $value.text) + "``" }
+    if ($value -is [Array]) {
+        # A pure-number array (a sequence) is shown inline; other lists collapse.
+        if ($value.Count -gt 0 -and (@($value | Where-Object { $_ -isnot [ValueType] }).Count -eq 0)) {
+            return "``[" + ($value -join ', ') + "]``"
+        }
+        return "``[...]``"
+    }
+    if (Test-PlainObject $value) {
+        return Get-ClassLink ($f.Type.TrimEnd('?')) '`{...}`' $thisPage
+    }
+    return "-"
+}
+
 # Render a type as a (possibly linked) code span. Links only when the whole type
 # is a single documentable class; compound types render as a plain code span.
 function Render-Type([string]$type, [string]$thisPage) {
-    $display = Format-Cell $type
-    $stripped = $type.TrimEnd('?')
-    if ((Is-Documentable $stripped) -and $owner.ContainsKey($stripped)) {
-        $anchor = Get-Anchor $stripped
-        $target = if ($owner[$stripped] -eq $thisPage) { "#$anchor" } else { "$($owner[$stripped])#$anchor" }
-        return "[``$display``]($target)"
+    return Get-ClassLink ($type.TrimEnd('?')) ("``" + (Format-Cell $type) + "``") $thisPage
+}
+
+# The "Extends" note. A documented parent (another wiki class) is linked; an
+# external parent (Entity) stays a plain code span.
+function Render-Extends([string]$parents, [string]$thisPage) {
+    $rendered = foreach ($p in ($parents -split ',\s*')) { Get-ClassLink $p "``$p``" $thisPage }
+    return "Extends " + ($rendered -join ', ') + "."
+}
+
+# The "Used in" backlink - the classes that reference this one through a field.
+function Render-UsedBy([string]$name, [string]$thisPage) {
+    if (-not $usedBy.ContainsKey($name)) { return "" }
+    $links = foreach ($o in $usedBy[$name]) { Get-ClassLink $o "``$o``" $thisPage }
+    return "Used in " + ($links -join ', ') + "."
+}
+
+# The first parent that is a documented wiki class (so its fields can be shown
+# inline), or $null - external parents like Entity don't qualify.
+function Get-DocumentedParent($cls) {
+    if (-not $cls.Parent) { return $null }
+    foreach ($p in ($cls.Parent -split ',\s*')) {
+        if ((Is-Documentable $p) -and $owner.ContainsKey($p)) { return $p }
     }
-    return "``$display``"
+    return $null
 }
 
 $BeginMarker = '<!-- BEGIN GENERATED API REFERENCE -->'
 $EndMarker   = '<!-- END GENERATED API REFERENCE -->'
 $GenNote     = '<!-- Generated by scripts/generate-wiki-api.ps1 from the source ---@class / ---@field annotations. Do not edit between these markers; re-run the script to update. -->'
 
-function Render-Class($cls, [string]$thisPage) {
-    $anchor = Get-Anchor $cls.Name
+# A field is Required only when the type is non-optional AND base provides no
+# default to fall back on (so e.g. ExitDistance, which base sets, is not).
+function Test-FieldRequired($f, $default) {
+    return (-not $f.Optional) -and (-not $default.Has)
+}
+
+# A field table. Defaults are looked up under $defaultClass - for inherited
+# fields shown on a derived class, that is the derived class (an author sets them
+# on its instance), so the default reflects the context they appear in.
+function Render-FieldTable([string]$defaultClass, $fields, [string]$thisPage, [bool]$withDefault) {
+    if ($fields.Count -eq 0) { return "" }
+    $sb = New-Object System.Text.StringBuilder
+    if ($withDefault) {
+        [void]$sb.AppendLine("| Field | Type | Required | Default | Description |")
+        [void]$sb.AppendLine("|-|-|-|-|-|")
+    } else {
+        [void]$sb.AppendLine("| Field | Type | Required | Description |")
+        [void]$sb.AppendLine("|-|-|-|-|")
+    }
+    foreach ($f in $fields) {
+        $default = Get-FieldDefault $defaultsFor $defaultClass $f.Name
+        $req = if (Test-FieldRequired $f $default) { "Yes" } else { "No" }
+        $typeCell = Render-Type $f.Type $thisPage
+        if ($withDefault) {
+            $defCell = Render-DefaultCell $default $f $thisPage
+            [void]$sb.AppendLine("| ``$($f.Name)`` | $typeCell | $req | $defCell | $(Format-Cell $f.Desc) |")
+        } else {
+            [void]$sb.AppendLine("| ``$($f.Name)`` | $typeCell | $req | $(Format-Cell $f.Desc) |")
+        }
+    }
+    return $sb.ToString()
+}
+
+function Render-Class($cls, [string]$thisPage, [bool]$withDefault) {
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.AppendLine("## ``$($cls.Name)``")
     [void]$sb.AppendLine()
 
     $notes = @()
     if ($cls.Blurb)  { $notes += $cls.Blurb }
-    if ($cls.Parent) { $notes += "Extends ``$($cls.Parent)``." }
+    if ($cls.Parent) { $notes += (Render-Extends $cls.Parent $thisPage) }
+    $usedNote = Render-UsedBy $cls.Name $thisPage
+    if ($usedNote) { $notes += $usedNote }
     foreach ($n in $notes) { [void]$sb.AppendLine($n); [void]$sb.AppendLine() }
 
-    if ($cls.Fields.Count -gt 0) {
-        [void]$sb.AppendLine("| Field | Type | Required | Description |")
-        [void]$sb.AppendLine("|-|-|-|-|")
-        foreach ($f in $cls.Fields) {
-            $req = if ($f.Optional) { "" } else { "yes" }
-            $typeCell = Render-Type $f.Type $thisPage
-            [void]$sb.AppendLine("| ``$($f.Name)`` | $typeCell | $req | $(Format-Cell $f.Desc) |")
-        }
+    [void]$sb.Append((Render-FieldTable $cls.Name $cls.Fields $thisPage $withDefault))
+
+    # Inline each documented ancestor's fields, so the entry is self-contained
+    # without following the "Extends" link. Defaults use this class as context.
+    $ancestor = Get-DocumentedParent $cls
+    while ($ancestor) {
+        $acls = $classes[$ancestor]
+        $ancLink = Get-ClassLink $ancestor "``$ancestor``" $thisPage
+        [void]$sb.AppendLine()
+        [void]$sb.AppendLine("Inherited from ${ancLink}:")
+        [void]$sb.AppendLine()
+        [void]$sb.Append((Render-FieldTable $cls.Name $acls.Fields $thisPage $withDefault))
+        $ancestor = Get-DocumentedParent $acls
     }
+
     [void]$sb.AppendLine()
     return $sb.ToString()
+}
+
+# A page carries a Default column only if at least one field on it has a captured
+# default, so pages without any (parts, controls, ...) stay 3-column.
+function Test-PageHasDefaults($cat) {
+    foreach ($n in $pageList[$cat.File]) {
+        foreach ($f in $classes[$n].Fields) {
+            if ((Get-FieldDefault $defaultsFor $n $f.Name).Has) { return $true }
+        }
+    }
+    return $false
 }
 
 # The generated table block for one category page (classes only - the intro above
 # the markers is hand-written and preserved).
 function Build-CategoryBlock($cat) {
+    $withDefault = Test-PageHasDefaults $cat
     $sb = New-Object System.Text.StringBuilder
     foreach ($n in $pageList[$cat.File]) {
-        [void]$sb.Append((Render-Class $classes[$n] $cat.File))
+        [void]$sb.Append((Render-Class $classes[$n] $cat.File $withDefault))
     }
     return $sb.ToString().TrimEnd()
 }
