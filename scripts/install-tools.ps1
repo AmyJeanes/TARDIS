@@ -17,7 +17,7 @@ $ErrorActionPreference = 'Stop'
 $GluaLsVersion  = '1.0.27'
 # Releases: https://github.com/luttje/glua-api-snippets/releases
 # renovate: datasource=github-releases depName=luttje/glua-api-snippets versioning=loose
-$GluaApiVersion = '2026-05-29_06-23-16'
+$GluaApiVersion = '2026-06-28_08-26-18'
 # emmylua_doc_cli drives scripts/generate-wiki-api.ps1 - it parses the ---@class /
 # ---@field annotations into a JSON type model (same EmmyLua engine as glua_ls).
 # Releases: https://github.com/EmmyLuaLs/emmylua-analyzer-rust/releases
