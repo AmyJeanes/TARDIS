@@ -127,13 +127,22 @@ function Parse-Annotations([string]$root) {
 # rendered verbatim.
 
 function Get-BaseDefaults {
-    $lua  = New-AddonHarness -Realm server   # loads MoonSharp before the type ref below
-    $meta = Get-HarnessMeta $lua
-    $base = $lua.Globals.Get('TARDIS').Table.Get('MetadataRaw').Table.Get('base')
-    if ($base.Type -ne [MoonSharp.Interpreter.DataType]::Table) { throw "base interior metadata not found" }
+    $lua    = New-AddonHarness -Realm server   # loads MoonSharp before the type ref below
+    $meta   = Get-HarnessMeta $lua
+    $tardis = $lua.Globals.Get('TARDIS').Table
+    $Table  = [MoonSharp.Interpreter.DataType]::Table
+
+    $base = $tardis.Get('MetadataRaw').Table.Get('base')
+    if ($base.Type -ne $Table) { throw "base interior metadata not found" }
+
+    # The "base" GUI theme is the root every visgui theme inherits from via base_id.
+    $guiBase    = $tardis.Get('gui_themes').Table.Get('base')
+    $guiDefault = if ($guiBase.Type -eq $Table) { ConvertFrom-LuaValue $guiBase $meta } else { $null }
+
     return [pscustomobject]@{
         tardis_metadata          = ConvertFrom-LuaValue $base $meta
         tardis_exterior_metadata = ConvertFrom-LuaValue ($base.Table.Get('Exterior')) $meta
+        tardis_gui_theme         = $guiDefault
     }
 }
 
@@ -160,9 +169,14 @@ function Set-DefaultsFor([hashtable]$map, [string]$name, $sub) {
     if ((-not (Test-StrongDefault $map[$name])) -and (Test-StrongDefault $sub)) { $map[$name] = $sub }
 }
 
-# Identity/plumbing fields whose base value (base is itself the "base" interior)
-# is not a default a child inherits - excluded so they read as Required instead.
-$IdentityFields = @{ 'tardis_metadata' = @('ID', 'Name', 'Base', 'BaseMerged') }
+# Identity/plumbing fields whose base value (base is itself the "base" interior /
+# the "base" GUI theme) is not a default a child inherits - excluded so they read
+# as Required instead. For gui themes, folder is rewritten per-theme at load time,
+# so base's own path is not a meaningful default either.
+$IdentityFields = @{
+    'tardis_metadata'  = @('ID', 'Name', 'Base', 'BaseMerged')
+    'tardis_gui_theme' = @('id', 'name', 'folder')
+}
 
 function Get-FieldDefault([hashtable]$map, [string]$class, [string]$field) {
     $ex = $IdentityFields[$class]
@@ -258,6 +272,10 @@ foreach ($cat in $Categories) {
 
 function Get-Anchor([string]$name) { return $name.ToLower() }
 
+# The anchor GitHub derives for a field's "#### `<field>` default" expansion heading
+# (backticks dropped, lowercased, spaces to hyphens), used to link the summary cell.
+function Get-DefaultAnchor([string]$fieldName) { return $fieldName.ToLower() + '-default' }
+
 function Format-Cell([string]$s) {
     if (-not $s) { return "" }
     return $s.Replace('|', '\|')
@@ -284,17 +302,81 @@ function Render-DefaultCell($default, $f, [string]$thisPage) {
     if ($value -is [string]) { return "``" + (Format-Cell ('"' + $value + '"')) + "``" }
     if ($value -is [ValueType]) { return "``$value``" }   # numbers
     if (Test-LiteralDefault $value) { return "``" + (Format-Cell $value.text) + "``" }
+
+    # A non-documented table/list is summarised here and expanded below the table;
+    # link the `{...}` / `[...]` summary down to that expansion.
+    if ($null -ne (Get-ExpandableDefault $default $f)) {
+        $label = if ($value -is [Array]) { '`[...]`' } else { '`{...}`' }
+        return "[$label](#$(Get-DefaultAnchor $f.Name))"
+    }
+
     if ($value -is [Array]) {
-        # A pure-number array (a sequence) is shown inline; other lists collapse.
-        if ($value.Count -gt 0 -and (@($value | Where-Object { $_ -isnot [ValueType] }).Count -eq 0)) {
+        if ($value.Count -eq 0) { return "``[]``" }
+        # A pure-number array (a sequence) is shown inline.
+        if ((@($value | Where-Object { $_ -isnot [ValueType] }).Count) -eq 0) {
             return "``[" + ($value -join ', ') + "]``"
         }
         return "``[...]``"
     }
     if (Test-PlainObject $value) {
+        if ((@($value.PSObject.Properties).Count) -eq 0) { return "``{}``" }
+        # A documented struct links to its own section.
         return Get-ClassLink ($f.Type.TrimEnd('?')) '`{...}`' $thisPage
     }
     return "-"
+}
+
+# Pretty-print a captured default as a Lua table literal for the expansion blocks
+# under the field table. Scalars and Vector/Angle/Color literals render inline;
+# tables recurse with 4-space indent so a `{...}` cell can be shown whole.
+function Format-LuaScalar($v) {
+    if ($v -is [bool])      { return $v.ToString().ToLower() }
+    if ($v -is [string])    { return '"' + ($v -replace '\\', '\\' -replace '"', '\"') + '"' }
+    if ($v -is [ValueType]) { return (Format-LuaNum ([double]$v)) }
+    if (Test-LiteralDefault $v) { return $v.text }
+    return $null
+}
+
+function Format-LuaLiteral($v, [int]$depth) {
+    $scalar = Format-LuaScalar $v
+    if ($null -ne $scalar) { return $scalar }
+    $pad  = '    ' * $depth
+    $pad1 = '    ' * ($depth + 1)
+    if ($v -is [Array]) {
+        if ($v.Count -eq 0) { return '{}' }
+        $lines = foreach ($item in $v) { $pad1 + (Format-LuaLiteral $item ($depth + 1)) + ',' }
+        return "{`n" + ($lines -join "`n") + "`n$pad}"
+    }
+    if (Test-PlainObject $v) {
+        $props = @($v.PSObject.Properties)
+        if ($props.Count -eq 0) { return '{}' }
+        $lines = foreach ($p in ($props | Sort-Object Name)) {
+            $key = if ($p.Name -match '^[A-Za-z_]\w*$') { $p.Name } else { '["' + $p.Name + '"]' }
+            $pad1 + $key + ' = ' + (Format-LuaLiteral $p.Value ($depth + 1)) + ','
+        }
+        return "{`n" + ($lines -join "`n") + "`n$pad}"
+    }
+    return 'nil'
+}
+
+# The value to expand in full below the table, or $null if the Default cell already
+# shows it whole. Only non-empty plain tables (not a documented struct, which links
+# to its own section) and non-empty non-numeric lists qualify.
+function Get-ExpandableDefault($default, $f) {
+    if (-not $default.Has) { return $null }
+    $v = $default.Value
+    if (Test-LiteralDefault $v) { return $null }
+    if ($v -is [Array]) {
+        if ($v.Count -eq 0) { return $null }
+        if ((@($v | Where-Object { $_ -isnot [ValueType] }).Count) -eq 0) { return $null }  # pure number list, shown inline
+        return $v
+    }
+    if (Test-PlainObject $v) {
+        if ((@($v.PSObject.Properties).Count) -eq 0) { return $null }
+        if (Is-Documentable ($f.Type.TrimEnd('?'))) { return $null }
+        return $v
+    }
+    return $null
 }
 
 # Render a type as a (possibly linked) code span. Links only when the whole type
@@ -389,6 +471,30 @@ function Render-Class($cls, [string]$thisPage, [bool]$withDefault) {
         [void]$sb.AppendLine()
         [void]$sb.Append((Render-FieldTable $cls.Name $acls.Fields $thisPage $withDefault))
         $ancestor = Get-DocumentedParent $acls
+    }
+
+    # Below the table(s), expand each non-documented table default in full - the
+    # Default column can only summarise those as `{...}` / `[...]`. Own fields first,
+    # then inherited; each name expanded once.
+    if ($withDefault) {
+        $seen = @{}
+        $anc  = $cls
+        while ($anc) {
+            foreach ($f in $anc.Fields) {
+                if ($seen.ContainsKey($f.Name)) { continue }
+                $seen[$f.Name] = $true
+                $val = Get-ExpandableDefault (Get-FieldDefault $defaultsFor $cls.Name $f.Name) $f
+                if ($null -eq $val) { continue }
+                [void]$sb.AppendLine()
+                [void]$sb.AppendLine("#### ``$($f.Name)`` default")
+                [void]$sb.AppendLine()
+                [void]$sb.AppendLine('```lua')
+                [void]$sb.AppendLine((Format-LuaLiteral $val 0))
+                [void]$sb.AppendLine('```')
+            }
+            $p = Get-DocumentedParent $anc
+            $anc = if ($p) { $classes[$p] } else { $null }
+        }
     }
 
     [void]$sb.AppendLine()
