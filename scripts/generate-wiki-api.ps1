@@ -268,6 +268,13 @@ foreach ($cat in $Categories) {
     }
 }
 
+# A class referenced by 2+ distinct other classes is "shared": if its base default
+# differs by usage, its own section drops the Default column and each usage lists
+# its own default instead. Counting distinct referencing classes (via usedBy, which
+# dedupes) not field sites, so a class reached twice from one parent - e.g. Exterior
+# and ExteriorOriginal on tardis_metadata - is not mistaken for shared.
+function Test-SharedClass([string]$name) { return $usedBy.ContainsKey($name) -and $usedBy[$name].Count -ge 2 }
+
 # --- Rendering ---------------------------------------------------------------
 
 function Get-Anchor([string]$name) { return $name.ToLower() }
@@ -373,16 +380,44 @@ function Get-ExpandableDefault($default, $f) {
     }
     if (Test-PlainObject $v) {
         if ((@($v.PSObject.Properties).Count) -eq 0) { return $null }
-        if (Is-Documentable ($f.Type.TrimEnd('?'))) { return $null }
+        $ftype = $f.Type.TrimEnd('?')
+        if (Is-Documentable $ftype) {
+            # A non-shared struct links to its own section (which shows its single
+            # usage's defaults); a shared struct's section has no defaults, so this
+            # usage's default is shown inline instead.
+            if (Test-SharedClass $ftype) { return $v }
+            return $null
+        }
         return $v
     }
     return $null
 }
 
-# Render a type as a (possibly linked) code span. Links only when the whole type
-# is a single documentable class; compound types render as a plain code span.
+# Render a type as a (possibly linked) code span. A type that is exactly one
+# documentable class links clean (keeping any trailing `?`); a compound type has
+# each embedded documentable class token linked and the rest kept as code spans
+# (markdown can't put a link inside a single code span, so it is emitted in pieces).
 function Render-Type([string]$type, [string]$thisPage) {
-    return Get-ClassLink ($type.TrimEnd('?')) ("``" + (Format-Cell $type) + "``") $thisPage
+    $stripped = $type.TrimEnd('?')
+    if ((Is-Documentable $stripped) -and $owner.ContainsKey($stripped)) {
+        return Get-ClassLink $stripped ("``" + (Format-Cell $type) + "``") $thisPage
+    }
+    $sb  = New-Object System.Text.StringBuilder
+    $pos = 0
+    foreach ($m in [regex]::Matches($type, '[A-Za-z_][A-Za-z0-9_]*')) {
+        $name = $m.Value
+        if (-not ((Is-Documentable $name) -and $owner.ContainsKey($name))) { continue }
+        if ($m.Index -gt $pos) {
+            [void]$sb.Append("``" + (Format-Cell $type.Substring($pos, $m.Index - $pos)) + "``")
+        }
+        [void]$sb.Append((Get-ClassLink $name "``$name``" $thisPage))
+        $pos = $m.Index + $m.Length
+    }
+    if ($pos -eq 0) { return "``" + (Format-Cell $type) + "``" }   # no linkable class token
+    if ($pos -lt $type.Length) {
+        [void]$sb.Append("``" + (Format-Cell $type.Substring($pos)) + "``")
+    }
+    return $sb.ToString()
 }
 
 # The "Extends" note. A documented parent (another wiki class) is linked; an
@@ -446,19 +481,36 @@ function Render-FieldTable([string]$defaultClass, $fields, [string]$thisPage, [b
     return $sb.ToString()
 }
 
+# True if any of the class's own fields has a captured default under its own
+# context - lets a shared class skip the drop-defaults treatment when it has no
+# (potentially misleading) default to move to the usage sites anyway.
+function Test-ClassHasOwnDefault($cls) {
+    foreach ($f in $cls.Fields) {
+        if ((Get-FieldDefault $defaultsFor $cls.Name $f.Name).Has) { return $true }
+    }
+    return $false
+}
+
 function Render-Class($cls, [string]$thisPage, [bool]$withDefault) {
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.AppendLine("## ``$($cls.Name)``")
     [void]$sb.AppendLine()
+
+    # A shared class (reached by 2+ fields) whose base default is non-empty would
+    # show one usage's values as if canonical; drop its Default column and let each
+    # usage list its own default instead.
+    $shared       = $withDefault -and (Test-SharedClass $cls.Name) -and (Test-ClassHasOwnDefault $cls)
+    $tableDefault = $withDefault -and (-not $shared)
 
     $notes = @()
     if ($cls.Blurb)  { $notes += $cls.Blurb }
     if ($cls.Parent) { $notes += (Render-Extends $cls.Parent $thisPage) }
     $usedNote = Render-UsedBy $cls.Name $thisPage
     if ($usedNote) { $notes += $usedNote }
+    if ($shared) { $notes += "Used in multiple places with different defaults, so its default values are listed at each usage rather than here." }
     foreach ($n in $notes) { [void]$sb.AppendLine($n); [void]$sb.AppendLine() }
 
-    [void]$sb.Append((Render-FieldTable $cls.Name $cls.Fields $thisPage $withDefault))
+    [void]$sb.Append((Render-FieldTable $cls.Name $cls.Fields $thisPage $tableDefault))
 
     # Inline each documented ancestor's fields, so the entry is self-contained
     # without following the "Extends" link. Defaults use this class as context.
@@ -469,14 +521,14 @@ function Render-Class($cls, [string]$thisPage, [bool]$withDefault) {
         [void]$sb.AppendLine()
         [void]$sb.AppendLine("Inherited from ${ancLink}:")
         [void]$sb.AppendLine()
-        [void]$sb.Append((Render-FieldTable $cls.Name $acls.Fields $thisPage $withDefault))
+        [void]$sb.Append((Render-FieldTable $cls.Name $acls.Fields $thisPage $tableDefault))
         $ancestor = Get-DocumentedParent $acls
     }
 
-    # Below the table(s), expand each non-documented table default in full - the
-    # Default column can only summarise those as `{...}` / `[...]`. Own fields first,
-    # then inherited; each name expanded once.
-    if ($withDefault) {
+    # Below the table(s), expand each non-documented table default (and each shared-
+    # struct field's per-usage default) in full - the Default column can only
+    # summarise those as `{...}` / `[...]`. Own fields first, then inherited.
+    if ($tableDefault) {
         $seen = @{}
         $anc  = $cls
         while ($anc) {
