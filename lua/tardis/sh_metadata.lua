@@ -10,14 +10,14 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Name string?
 ---@field Base string|boolean
 ---@field BaseMerged boolean?
----@field Templates table?
----@field TemplatesMergeOrder table?
+---@field Templates table<string, tardis_interior_template>?
+---@field TemplatesMergeOrder string[]?
 ---@field Timings tardis_timings
----@field Versions table?
+---@field Versions tardis_versions?
 ---@field IsVersionOf string?
----@field CustomHooks table?
----@field CustomControls table?
----@field CustomSettings table?
+---@field CustomHooks table<string, tardis_custom_hook>?
+---@field CustomControls table<string, tardis_custom_control>?
+---@field CustomSettings table<string, tardis_custom_setting>?
 ---@field SyncExteriorBodygroupToDoors boolean?
 ---@field EnableClassicDoors boolean?
 ---@field Hidden boolean?
@@ -29,44 +29,44 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Portal tardis_interior_portal
 ---@field Fallback tardis_interior_fallback
 ---@field Sounds tardis_interior_sound_metadata
----@field IdleSound table?
----@field Tips table
----@field CustomTips table
----@field PartTips table
+---@field IdleSound tardis_sound_entry[]?
+---@field Tips table[]?
+---@field CustomTips tardis_custom_tip[]?
+---@field PartTips table<string, tardis_part_tip>?
 ---@field TipSettings tardis_tip_settings
 ---@field LightOverride tardis_light_override
 ---@field Light tardis_interior_light?
----@field Lights table?
+---@field Lights table<string, tardis_interior_light_state>?
 ---@field ScreensEnabled boolean?
 ---@field UseFullName boolean
----@field Screens table?
+---@field Screens tardis_screen[]?
 ---@field Parts table<string, table|false>
----@field Controls table?
----@field TextureSets table
----@field CustomPortals table?
----@field FalseWorlds table?
----@field FalseWorldWindows table?
+---@field Controls table<string, string>?
+---@field TextureSets table<string, tardis_texture_set>
+---@field CustomPortals table[]?
+---@field FalseWorlds table<string, table>?
+---@field FalseWorldWindows { falseworld: string }[]?
 ---@field ExitBox tardis_box?
 ---@field UI_Theme string?
----@field MatProxy table?
+---@field MatProxy tardis_matproxy?
 ---@field FloorLevel number?
 ---@field IntDoorAnimationTime number?
----@field CustomHooks table?
+---@field CustomHooks { [1]: string|table<string, boolean>, [2]: function }[]?
 ---@field RequireLightOverride boolean?
 ---@field RequireHighModelDetail boolean?
 ---@field BreakdownEffectPos Vector?
----@field Sequences table?
+---@field Sequences string?
 ---@field PortalNoCollide boolean?
----@field RoundThings table?
----@field Scanners table?
----@field Lamps table?
----@field Seats table?
+---@field RoundThings Vector[]?
+---@field Scanners tardis_scanner[]?
+---@field Lamps tardis_lamp[]?
+---@field Seats tardis_seat[]?
 
 ---@class tardis_exterior_metadata
 ---@field Model string?
 ---@field Mass number?
----@field ExcludedSkins table?
----@field WinterSkins table?
+---@field ExcludedSkins integer[]?
+---@field WinterSkins integer[]?
 ---@field DoorAnimationTime number
 ---@field ScannerOffset Vector
 ---@field PhaseMaterial string?
@@ -78,10 +78,10 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Chameleon tardis_chameleon
 ---@field LockedDoor tardis_locked_door
 ---@field Parts table<string, table|false>
----@field Controls table?
+---@field Controls table<string, string>?
 ---@field Teleport tardis_teleport
----@field TextureSets table
----@field CustomHooks table?
+---@field TextureSets table<string, tardis_texture_set>
+---@field CustomHooks { [1]: string|table<string, boolean>, [2]: function }[]?
 ---@field UseLegacyDoors boolean?
 ---@field PortalNoCollide boolean?
 ---@field ID string?
@@ -103,7 +103,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field width number
 ---@field height number
 ---@field model string?
----@field model_offset table
+---@field model_offset tardis_model_offset
 ---@field thickness number?
 ---@field inverted boolean?
 
@@ -146,7 +146,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field off_warn_pos Vector?
 ---@field off_warn_brightness number?
 ---@field off_warn_falloff number?
----@field states table?
+---@field states table<string, tardis_interior_light_state>?
 
 ---@class tardis_interior_light : tardis_interior_light_state
 ---@field NoLO tardis_interior_light_state?
@@ -182,7 +182,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field style string?
 ---@field view_range_min number
 ---@field view_range_max number
----@field TextOverrides table?
+---@field TextOverrides table<string, string>?
 
 ---@class tardis_timings
 ---@field DematAbortState number
@@ -203,14 +203,14 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field DematSequence number[]
 ---@field MatSequence number[]
 ---@field HadsDematSequence number[]
----@field DematSequenceSaved table?
----@field MatSequenceSaved table?
----@field HadsDematSequenceSaved table?
----@field DematSequenceDelays table?
----@field DematFastSequenceDelays table?
----@field DematHadsSequenceDelays table?
----@field MatSequenceDelays table?
----@field MatFastSequenceDelays table?
+---@field DematSequenceSaved number[]?
+---@field MatSequenceSaved number[]?
+---@field HadsDematSequenceSaved number[]?
+---@field DematSequenceDelays number[]?
+---@field DematFastSequenceDelays number[]?
+---@field DematHadsSequenceDelays number[]?
+---@field MatSequenceDelays number[]?
+---@field MatFastSequenceDelays number[]?
 
 ---@class tardis_interior_sound_metadata
 ---@field Damage tardis_sound_damage
@@ -221,7 +221,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Cloister string?
 ---@field Lock string?
 ---@field Unlock string?
----@field Idle table?
+---@field Idle tardis_sound_entry[]?
 ---@field Hum string?
 
 ---@class tardis_exterior_sound_metadata
@@ -238,14 +238,14 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field FlightLoopBroken string?
 ---@field FlightLand string?
 ---@field FlightFall string?
----@field BrokenFlightTurn table?
+---@field BrokenFlightTurn string[]?
 ---@field BrokenFlightExplosion string?
 ---@field BrokenFlightEnable string?
 ---@field BrokenFlightDisable string?
 ---@field Cloak string?
 ---@field CloakOff string?
 ---@field Chameleon string?
----@field Hum table?
+---@field Hum tardis_sound_entry?
 
 ---@class tardis_sound_damage
 ---@field Crash string?
@@ -299,13 +299,99 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field interrupt string?
 
 ---@class tardis_versions
----@field main table
----@field other table
----@field custom table
----@field list_all table
----@field list_original table
+---@field main { id: string }?
+---@field other { id: string, name: string }[]?
+---@field randomize boolean?
+---@field custom table<string, table>?
+---@field list_all table?
+---@field list_original table?
 ---@field allow_custom boolean?
 ---@field randomize_custom boolean?
+
+---@class tardis_model_offset
+---@field pos Vector
+---@field ang Angle
+
+---@class tardis_sound_entry
+---@field path string
+---@field volume number?
+
+---@class tardis_matproxy
+---@field Color1 Color
+---@field Color2 Color
+---@field Color3 Color
+---@field VortexColor Color?
+
+---@class tardis_seat
+---@field pos Vector
+---@field ang Angle
+
+---@class tardis_screen
+---@field pos Vector
+---@field ang Angle
+---@field width number
+---@field height number
+---@field gui_rows number?
+---@field power_off_black boolean?
+
+---@class tardis_scanner
+---@field part string?
+---@field mat string
+---@field width number
+---@field height number
+---@field ang Angle
+---@field fov number
+
+---@class tardis_custom_tip
+---@field pos Vector
+---@field right boolean?
+---@field down boolean?
+---@field part string?
+
+---@class tardis_part_tip
+---@field pos Vector?
+---@field right boolean?
+---@field down boolean?
+
+---@class tardis_lamp
+---@field pos Vector
+---@field color Color
+---@field texture string?
+---@field fov number?
+---@field distance number?
+---@field brightness number?
+---@field ang Angle?
+---@field shadows boolean?
+---@field states table<string, tardis_lamp>?
+---@field warn tardis_lamp?
+---@field off tardis_lamp?
+---@field off_warn tardis_lamp?
+
+---@class tardis_interior_template
+---@field override boolean?
+---@field condition function
+
+---@class tardis_custom_control
+---@field int_func function
+---@field power_independent boolean?
+---@field screen_button boolean?
+---@field tip_text string?
+
+---@class tardis_custom_setting
+---@field text string?
+---@field value_type string?
+---@field value any
+---@field options table<string, string>?
+
+---@class tardis_custom_hook
+---@field inthooks table<string, boolean>?
+---@field exthooks table<string, boolean>?
+---@field func function
+
+---@class tardis_texture_set
+---@field prefix string?
+---@field base string?
+---@field [integer] { [1]: string, [2]: integer, [3]: string }
 
 function TARDIS:LoadInteriors()
     if TARDIS.InteriorsLoading then return end

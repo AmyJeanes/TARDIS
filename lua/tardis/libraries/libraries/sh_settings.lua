@@ -9,9 +9,14 @@
 ---@field subsection string?
 ---@field option boolean?
 ---@field class string?
----@field convar table?
+---@field convar tardis_setting_convar?
 ---@field min number?
 ---@field max number?
+
+---@class tardis_setting_convar
+---@field name string
+---@field flags table
+---@field desc string?
 
 ---@type table<string, tardis_setting>
 TARDIS.SettingsData = TARDIS.SettingsData or {}

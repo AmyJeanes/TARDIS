@@ -22,9 +22,9 @@
 ---@field HasUseBasic boolean?
 ---@field Animate boolean?
 ---@field AnimateSpeed number?
----@field AnimateOptions table?
----@field ExtraAnimations table?
----@field animation table?
+---@field AnimateOptions tardis_part_animation?
+---@field ExtraAnimations table<string, tardis_part_animation>?
+---@field animation tardis_part_animation_state?
 ---@field Sound string?
 ---@field SoundOn string?
 ---@field SoundOff string?
@@ -69,6 +69,36 @@
 ---@field UseBasic fun(self: gmod_tardis_part, activator: Player)?
 ---@field PreDraw fun(self: gmod_tardis_part)?
 ---@field PostDraw fun(self: gmod_tardis_part)?
+
+---@class tardis_part_animation
+---@field Type string?
+---@field MaxPos number?
+---@field MinPos number?
+---@field StartPos number?
+---@field Speed number?
+---@field PoseParameter string?
+---@field StopAnywhere boolean?
+---@field NoDirectionChange boolean?
+---@field NoPowerFreeze boolean?
+---@field ReturnAfterStop boolean?
+---@field SpeedOverrideFunc function?
+---@field ConditionFunc function?
+---@field CustomAnimationFunc function?
+
+---@class tardis_part_animation_state
+---@field type string
+---@field max number
+---@field min number
+---@field pos number
+---@field speed number
+---@field pose_param string
+---@field stop_anywhere boolean?
+---@field constant_dir boolean?
+---@field no_power boolean?
+---@field should_return boolean?
+---@field speed_override_func function?
+---@field condition_func function?
+---@field custom_func function?
 
 if SERVER then
     util.AddNetworkString("TARDIS-SetupPart")
