@@ -16,8 +16,7 @@
             "../wire/lua/wire"
         ],
         "ignoreGlobs": [
-            ".tools/*.zip",
-            "scripts/lua-harness/**"
+            ".tools/*.zip"
         ]
     }
 }

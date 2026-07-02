@@ -7,7 +7,7 @@ on:
     paths:
     - lua/**
     - scripts/generate-wiki-api.ps1
-    - scripts/lua-harness/**
+    - scripts/bootstrap.ps1
     - scripts/install-tools.ps1
     - .github/workflows/generate-wiki.yml
 
@@ -24,6 +24,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          path: TARDIS
+
+      - name: Checkout gmod-addon-tools
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/gmod-addon-tools
+          # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
+          ref: v0.1.0
+          path: gmod-addon-tools
 
       # The wiki is a separate git repo (<repo>.wiki.git). The default GITHUB_TOKEN
       # cannot push to it, so authenticate the clone with the PAT instead.
@@ -31,11 +41,13 @@ jobs:
         run: git clone "https://x-access-token:${{ secrets.TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
 
       - name: Install tooling
+        working-directory: TARDIS
         run: ./scripts/install-tools.ps1
         shell: pwsh
 
       - name: Generate wiki pages
-        run: ./scripts/generate-wiki-api.ps1 -WikiPath wiki
+        working-directory: TARDIS
+        run: ./scripts/generate-wiki-api.ps1 -WikiPath ../wiki
         shell: pwsh
 
       - name: Commit and push
