@@ -10,7 +10,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Name string?
 ---@field Base string|boolean
 ---@field BaseMerged boolean?
----@field Templates table<string, tardis_interior_template>?
+---@field Templates table<string, tardis_interior_template|false>?
 ---@field TemplatesMergeOrder string[]?
 ---@field Timings tardis_timings
 ---@field Versions tardis_versions?
@@ -298,9 +298,15 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field fullflight_damaged string?
 ---@field interrupt string?
 
+---@class tardis_version_entry
+---@field id string
+---@field name string?
+---@field classic_doors_id string?
+---@field double_doors_id string?
+
 ---@class tardis_versions
----@field main { id: string }?
----@field other { id: string, name: string }[]?
+---@field main tardis_version_entry?
+---@field other tardis_version_entry[]?
 ---@field randomize boolean?
 ---@field custom table<string, table>?
 ---@field list_all table?
@@ -369,7 +375,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 
 ---@class tardis_interior_template
 ---@field override boolean?
----@field condition function
+---@field condition function?
 
 ---@class tardis_custom_control
 ---@field int_func function
