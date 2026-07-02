@@ -275,6 +275,39 @@ foreach ($cat in $Categories) {
 # and ExteriorOriginal on tardis_metadata - is not mistaken for shared.
 function Test-SharedClass([string]$name) { return $usedBy.ContainsKey($name) -and $usedBy[$name].Count -ge 2 }
 
+# GMod built-in types -> their facepunch wiki URL, harvested from the glua-api
+# stubs so the Type cells can link Vector/Color/Entity/LocalLight/... out to the
+# GMod reference. Prefers the stub's own [View wiki] link; otherwise derives it
+# (structures.lua members live under /gmod/Structures/, the rest at /gmod/<Name>).
+function Build-GmodWikiMap {
+    # Case-sensitive: type names are case-sensitive, and a default (case-insensitive)
+    # hashtable would link identifiers like the param name `ent` to the `ENT` struct.
+    $map = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::Ordinal)
+    $stubDir = Join-Path $RepoRoot ".tools/glua-api"
+    if (-not (Test-Path $stubDir)) { return $map }
+    foreach ($file in Get-ChildItem -LiteralPath $stubDir -Filter *.lua -File) {
+        $isStruct = ($file.Name -eq 'structures.lua')
+        $lines = [System.IO.File]::ReadAllLines($file.FullName)
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            $m = [regex]::Match($lines[$i], '^---@class\s+([A-Za-z_][A-Za-z0-9_]*)')
+            if (-not $m.Success) { continue }
+            $name = $m.Groups[1].Value
+            if ($map.ContainsKey($name)) { continue }
+            $url = $null
+            for ($j = $i - 1; $j -ge 0 -and $lines[$j].StartsWith('---'); $j--) {
+                $u = [regex]::Match($lines[$j], '\[View wiki\]\((https://wiki\.facepunch\.com/gmod/[^)]+)\)')
+                if ($u.Success) { $url = $u.Groups[1].Value; break }
+            }
+            if (-not $url) {
+                $url = if ($isStruct) { "https://wiki.facepunch.com/gmod/Structures/$name" } else { "https://wiki.facepunch.com/gmod/$name" }
+            }
+            $map[$name] = $url
+        }
+    }
+    return $map
+}
+$GmodWiki = Build-GmodWikiMap
+
 # --- Rendering ---------------------------------------------------------------
 
 function Get-Anchor([string]$name) { return $name.ToLower() }
@@ -296,6 +329,18 @@ function Get-ClassLink([string]$name, [string]$label, [string]$thisPage) {
         return "[$label]($target)"
     }
     return $label
+}
+
+# Link one type token to its wiki section (documented tardis class) or to the GMod
+# reference (built-in type), or $null if it is neither (sibling-addon type, etc.).
+function Get-TokenLink([string]$name, [string]$thisPage) {
+    if ((Is-Documentable $name) -and $owner.ContainsKey($name)) {
+        return Get-ClassLink $name "``$name``" $thisPage
+    }
+    if ($GmodWiki.ContainsKey($name)) {
+        return "[``$name``]($($GmodWiki[$name]))"
+    }
+    return $null
 }
 
 # Render the Default cell for a field. Scalars and Vector/Angle/Color literals
@@ -399,21 +444,27 @@ function Get-ExpandableDefault($default, $f) {
 # (markdown can't put a link inside a single code span, so it is emitted in pieces).
 function Render-Type([string]$type, [string]$thisPage) {
     $stripped = $type.TrimEnd('?')
+    # Whole type is a single linkable class / GMod type -> one clean whole-cell link.
     if ((Is-Documentable $stripped) -and $owner.ContainsKey($stripped)) {
         return Get-ClassLink $stripped ("``" + (Format-Cell $type) + "``") $thisPage
     }
+    if ($GmodWiki.ContainsKey($stripped)) {
+        return "[``" + (Format-Cell $type) + "``]($($GmodWiki[$stripped]))"
+    }
+    # Compound type: link each embedded tardis-class or GMod token, keeping the rest
+    # as code spans (markdown can't put a link inside a single code span).
     $sb  = New-Object System.Text.StringBuilder
     $pos = 0
     foreach ($m in [regex]::Matches($type, '[A-Za-z_][A-Za-z0-9_]*')) {
-        $name = $m.Value
-        if (-not ((Is-Documentable $name) -and $owner.ContainsKey($name))) { continue }
+        $link = Get-TokenLink $m.Value $thisPage
+        if (-not $link) { continue }
         if ($m.Index -gt $pos) {
             [void]$sb.Append("``" + (Format-Cell $type.Substring($pos, $m.Index - $pos)) + "``")
         }
-        [void]$sb.Append((Get-ClassLink $name "``$name``" $thisPage))
+        [void]$sb.Append($link)
         $pos = $m.Index + $m.Length
     }
-    if ($pos -eq 0) { return "``" + (Format-Cell $type) + "``" }   # no linkable class token
+    if ($pos -eq 0) { return "``" + (Format-Cell $type) + "``" }   # nothing linkable
     if ($pos -lt $type.Length) {
         [void]$sb.Append("``" + (Format-Cell $type.Substring($pos)) + "``")
     }
@@ -423,7 +474,10 @@ function Render-Type([string]$type, [string]$thisPage) {
 # The "Extends" note. A documented parent (another wiki class) is linked; an
 # external parent (Entity) stays a plain code span.
 function Render-Extends([string]$parents, [string]$thisPage) {
-    $rendered = foreach ($p in ($parents -split ',\s*')) { Get-ClassLink $p "``$p``" $thisPage }
+    $rendered = foreach ($p in ($parents -split ',\s*')) {
+        $link = Get-TokenLink $p $thisPage
+        if ($link) { $link } else { "``$p``" }
+    }
     return "Extends " + ($rendered -join ', ') + "."
 }
 

@@ -44,7 +44,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Controls table<string, string>?
 ---@field TextureSets table<string, tardis_texture_set>
 ---@field CustomPortals table<string, DoorCustomPortal>?
----@field FalseWorlds table<string, table>?
+---@field FalseWorlds table<string, wp.FalseWorld>?
 ---@field FalseWorldWindows table<string, tardis_false_world_window>?
 ---@field ExitBox tardis_box?
 ---@field UI_Theme string?
@@ -393,8 +393,6 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field base string?
 ---@field [integer] { [1]: string, [2]: integer, [3]: string }
 
---- A Doors false-world window (its DoorPortalSide fields) plus the id of the false
---- world it opens onto.
 ---@class tardis_false_world_window : DoorPortalSide
 ---@field falseworld string?
 
