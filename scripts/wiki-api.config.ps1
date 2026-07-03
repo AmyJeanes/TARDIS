@@ -11,7 +11,7 @@
         @{ Title = 'Icon Packs Reference';        File = 'Icon-Packs-Reference';        Roots = @('tardis_icon_pack') }
         @{ Title = 'GUI Themes Reference';        File = 'GUI-Themes-Reference';        Roots = @('tardis_gui_theme') }
         @{ Title = 'Screens Reference';           File = 'Screens-Reference';           Roots = @('tardis_screen_options') }
-        @{ Title = 'Hooks Reference';             File = 'Hooks-Reference';             Kind = 'hooks' }
+        @{ Title = 'Hooks Reference';             File = 'Hooks-Reference';             Kind = 'hooks'; CommonEntities = @('gmod_tardis', 'gmod_tardis_interior') }
     )
     OwnedPrefix = @('tardis_')
 }
