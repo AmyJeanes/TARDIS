@@ -12,6 +12,7 @@
         @{ Title = 'GUI Themes Reference';        File = 'GUI-Themes-Reference';        Roots = @('tardis_gui_theme') }
         @{ Title = 'Screens Reference';           File = 'Screens-Reference';           Roots = @('tardis_screen_options') }
         @{ Title = 'Hooks Reference';             File = 'Hooks-Reference';             Kind = 'hooks'; CommonEntities = @('gmod_tardis', 'gmod_tardis_interior') }
+        @{ Title = 'ConVars Reference';           File = 'ConVars-Reference';           Kind = 'convars' }
     )
     OwnedPrefix = @('tardis_')
 }
