@@ -99,6 +99,10 @@ function TARDIS:GetControl(id, ent)
     end
 end
 
+---@param control_id string
+---@param ply Player
+---@param part gmod_tardis_part?
+---@api
 function TARDIS:Control(control_id, ply, part)
     if CLIENT then ply = LocalPlayer() end
     if not ply:IsPlayer() then return end

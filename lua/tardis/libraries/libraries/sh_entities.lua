@@ -66,6 +66,7 @@ end
 
 ---@param ply Player?
 ---@return gmod_tardis_interior?
+---@api
 function TARDIS:GetInteriorEnt(ply)
     if CLIENT then ply = ply or LocalPlayer() end
     if not IsValid(ply) then return end

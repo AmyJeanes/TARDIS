@@ -1,5 +1,6 @@
 -- TARDIS
 
+---@class TARDIS
 TARDIS=TARDIS or {}
 function TARDIS:LoadFolder(folder,addonly,noprefix)
     if folder then
