@@ -14,6 +14,8 @@ ENT:AddHook("Cordon","parts",function(self,class,ent)
     if ent.TardisPart and not ent.AllowThroughPortals and (ent.InteriorPart or ent.CustomAlpha) then return false end
 end)
 
+---@api
+---@param id string
 function ENT:GetPart(id)
     return self.parts and self.parts[id] or NULL
 end

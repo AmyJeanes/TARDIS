@@ -89,6 +89,11 @@ if SERVER then
         return COLLISION_GROUP_WORLD
     end
 
+    ---@api
+    ---@param pos Vector?
+    ---@param ang Angle?
+    ---@param callback fun(success: boolean)?
+    ---@param force boolean?
     function ENT:Demat(pos, ang, callback, force)
 
         if pos and ang then
@@ -170,6 +175,8 @@ if SERVER then
         self:CallHook("TeleportPositionChanged", pos, ang, phys_enable)
     end
 
+    ---@api
+    ---@param callback fun(success: boolean)?
     function ENT:Mat(callback)
         local pos = self:GetDestinationPos(true)
         local ang = self:GetDestinationAng(true)

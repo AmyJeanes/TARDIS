@@ -12,6 +12,7 @@ ENT:AddHook("CanUseTardisControl", "power", function(self, control, ply)
 end)
 
 if SERVER then
+    ---@api
     function ENT:TogglePower()
         return self.exterior:TogglePower()
     end
