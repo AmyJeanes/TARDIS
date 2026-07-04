@@ -109,6 +109,13 @@ if SERVER then
     end)
 else
     ENT:AddHook("Think","vortex",function(self)
+        -- Ensure vortexmodelvalid is set even if the client missed the StopDemat message
+        if self:GetData("vortex") and self:GetData("vortexmodelvalid") == nil
+            and IsValid(self:GetPart("vortex"))
+        then
+            self:RefreshVortexModelValid()
+        end
+
         local alpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()
         local target = (self:GetData("vortex") and enabled) and 1 or 0
@@ -189,17 +196,18 @@ else
         return true, is_int_portal
     end)
 
-    ENT:AddHook("StopDemat","vortex",function(self)
+    function ENT:RefreshVortexModelValid()
         local vortex=self:GetPart("vortex")
-        local valid = false
-        if IsValid(vortex) then
-            valid = util.IsValidModel(vortex.model)
-        end
+        local valid = IsValid(vortex) and util.IsValidModel(vortex.model)
         if not valid and self:GetData("hasvortex") and (not self:GetData("vortexmodelwarn")) then
             TARDIS:Message(LocalPlayer(), "Vortex.ModelMissing")
             self:SetData("vortexmodelwarn",true)
         end
         self:SetData("vortexmodelvalid",valid)
+    end
+
+    ENT:AddHook("StopDemat","vortex",function(self)
+        self:RefreshVortexModelValid()
     end)
 
     ENT:AddHook("ShouldTurnOffLight","vortex",function(self)

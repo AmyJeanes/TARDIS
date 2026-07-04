@@ -54,13 +54,16 @@ if SERVER then
     function ENT:ForceDematState()
         self:SetDestination(self:GetPos(), self:GetAngles())
 
-        self:SetData("demat",true)
-        self:SetData("vortexalpha", 1)
-        self:SetData("teleport",true)
-        self:SetData("alpha", 0)
-        self:UpdateShadow()
-
         self:StopDemat()
+
+        -- Network what StopDemat only set serverside, so clients don't stay visibly landed
+        self:SetData("vortex", true, true)
+        self:SetData("teleport", false, true)
+        self:SetData("demat", false, true)
+        self:SetData("alpha", 0, true)
+
+        self:UpdateShadow()
+        self:UpdateDoorCollision()
     end
 
     function ENT:DematDoorCheck(pos, ang, callback, force)
