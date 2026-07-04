@@ -71,6 +71,7 @@ function TARDIS:GetGUIThemes()
     return self.gui_themes
 end
 
+---@api
 ---@return tardis_gui_theme?
 function TARDIS:GetGUITheme(id)
     return self.gui_themes[id]

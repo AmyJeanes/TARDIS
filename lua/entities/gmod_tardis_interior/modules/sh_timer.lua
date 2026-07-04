@@ -12,10 +12,6 @@ function ENT:CancelTimer(id)
     self.timers[id] = nil
 end
 
-function ENT:GetTimers()
-    return self.timers
-end
-
 ---@api
 function ENT:GetTimer(id)
     return self.timers[id]

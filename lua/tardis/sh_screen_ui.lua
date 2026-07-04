@@ -172,10 +172,6 @@ function TARDIS:AddScreen(name,options,func)
 end
 TARDIS:LoadFolder("screens")
 
-function TARDIS:GetScreens()
-    return screens
-end
-
 ---@api
 function TARDIS:ScreenActive(name)
     local int=TARDIS:GetInteriorEnt()
@@ -210,8 +206,9 @@ function TARDIS:GetScreens()
 end
 
 function TARDIS:GetScreenByName(name)
-    if not self.HUDScreenActive or not IsValid(self.screenpop) then return end
-    local screen = self:GetScreens()[name]
+    local tab = self:GetScreens()
+    if not tab then return end
+    local screen = tab[name]
     if not screen then return end
     return screen
 end

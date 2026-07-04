@@ -41,18 +41,7 @@ function ENT:ToggleScreens()
 end
 
 if SERVER then
-    ENT:LoadFolder("modules/screens")
     return
-end
-
-local screens={}
-function ENT:AddScreen(name,func)
-    screens[name]=func
-end
-ENT:LoadFolder("modules/screens")
-
-function ENT:GetScreens()
-    return screens
 end
 
 function ENT:RemoveScreens()

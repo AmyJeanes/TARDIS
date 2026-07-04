@@ -2,15 +2,6 @@
 
 --Methods
 
-function ENT:CalcLightBrightness(pos)
-    local lightcolor = render.GetLightColor(pos):ToColor()
-    local rm = 0.299*lightcolor.r
-    local gm = 0.587*lightcolor.g
-    local bm = 0.114*lightcolor.b
-    local luminance = rm + gm + bm
-    return luminance
-end
-
 function ENT:PickProjectedLightColor()
     local override = TARDIS:GetSetting("extprojlight-override-color")
     if override then return TARDIS:GetSetting("extprojlight-color") end
