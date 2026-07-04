@@ -13,6 +13,34 @@
         @{ Title = 'Screens Reference';           File = 'Screens-Reference';           Roots = @('tardis_screen_options') }
         @{ Title = 'Hooks Reference';             File = 'Hooks-Reference';             Kind = 'hooks'; CommonEntities = @('gmod_tardis', 'gmod_tardis_interior') }
         @{ Title = 'ConVars Reference';           File = 'ConVars-Reference';           Kind = 'convars' }
+        @{
+            Title = 'Settings Catalogue'; File = 'Settings-Catalogue'; Kind = 'catalogue'
+            Register = 'TARDIS:AddSetting'; NameHeader = 'Setting'
+            Labels = @{ Key = 'Settings.Sections.{section}.{subsection}.{name}'; Fallback = 'name' }
+            Group = @(
+                @{ By = 'section' }
+                @{ By = 'subsection'; LabelKey = 'Settings.Sections.{section}.{subsection}' }
+            )
+            Where = @{ Field = 'option'; Equals = 'true' }
+            Columns = @(
+                @{ H = 'Type';        F = 'type' }
+                @{ H = 'Default';     F = 'value'; Range = 'min,max'; Code = $true }
+                @{ H = 'Scope';       F = 'class'; Map = @{ global = 'Server-wide'; local = 'Client'; networked = 'Per-player' } }
+                @{ H = 'ConVar';      F = 'convar.name'; Link = 'ConVars-Reference'; SkipEmptyColumn = $true }
+                @{ H = 'Description'; Desc = $true }
+            )
+        }
+        @{
+            Title = 'Keybinds'; File = 'Keybinds'; Kind = 'catalogue'
+            Register = 'TARDIS:AddKeyBind'; Arg = 'id-table'; NameHeader = 'Bind'
+            Labels = @{ Key = 'Binds.Sections.{section}.{name}'; Fallback = 'name' }
+            Group = @( @{ By = 'section' } )
+            Columns = @(
+                @{ H = 'Default Key'; F = 'key'; KeyName = $true; Code = $true }
+                @{ H = 'Runs on';     RunsOn = 'exterior,interior'; Realm = @{ serveronly = 'server'; clientonly = 'client' } }
+                @{ H = 'Description'; Desc = $true }
+            )
+        }
     )
     OwnedPrefix = @('tardis_')
 }
