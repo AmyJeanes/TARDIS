@@ -104,6 +104,7 @@ if SERVER then
     util.AddNetworkString("TARDIS-SetupPart")
 end
 
+---@param self gmod_tardis_part
 function TARDIS.ShouldDrawInteriorPart(self)
     local int=self.interior
     local ext=self.exterior
@@ -135,6 +136,7 @@ function TARDIS.ShouldDrawInteriorPart(self)
     return false
 end
 
+---@param self gmod_tardis_part
 function TARDIS.ShouldDrawExteriorPart(self)
     local ext=self.exterior
 
@@ -149,6 +151,8 @@ function TARDIS.ShouldDrawExteriorPart(self)
     return false
 end
 
+---@param self gmod_tardis_part
+---@param override boolean?
 function TARDIS.DrawOverride(self,override)
     if self.NoDraw then return end
     if self:IsInvisible() and not (self.alpha and self.alpha > 0) then return end
@@ -188,6 +192,11 @@ function TARDIS.DrawOverride(self,override)
     end
 end
 
+---@param self gmod_tardis_part
+---@param can_move boolean
+---@param a tardis_part_animation_state
+---@param target number
+---@param should_reset boolean
 function TARDIS.DoPartAnimation(self, can_move, a, target, should_reset)
     local pose_pos = a.pos
     local speed = a.speed
@@ -213,6 +222,8 @@ function TARDIS.DoPartAnimation(self, can_move, a, target, should_reset)
     a.pos = pose_pos
 end
 
+---@param self gmod_tardis_part
+---@param anim tardis_part_animation
 function TARDIS.InitAnimation(self, anim)
     -- `anim` is either the part or extra animation table
 
@@ -243,6 +254,7 @@ function TARDIS.InitAnimation(self, anim)
 end
 
 ---@param self gmod_tardis_part
+---@param a tardis_part_animation_state
 function TARDIS.ProcessAnimation(self, a)
 
     if a.type == "travel" then
@@ -313,7 +325,8 @@ function TARDIS.ProcessAnimation(self, a)
         end
 
     elseif a.type == "custom" then
-        a.custom_func(self, a)
+        local custom_func = a.custom_func
+        if custom_func then custom_func(self, a) end
     end
 end
 
@@ -532,6 +545,7 @@ function SetupOverrides(e)
     scripted_ents.Register(e,name)
 end
 
+---@type table<string, {class: string, source: string}>
 local parts={}
 
 ---@api
@@ -590,6 +604,7 @@ function TARDIS:AddPart(part)
     parts[part.ID] = { class = class, source = source }
 end
 
+---@param id string
 function TARDIS:GetRegisteredPart(id)
     return scripted_ents.Get(parts[id].class)
 end
@@ -792,6 +807,7 @@ local function SetupPartControl(e)
 end
 
 if SERVER then
+    ---@param ent gmod_tardis|gmod_tardis_interior
     function TARDIS:SetupParts(ent)
         ent.parts={}
         local tempparts={}
@@ -914,40 +930,46 @@ if SERVER then
         part:SetOn(not on)
     end
 else
-    function TARDIS:SetupPart(e,name,ext,int,parent)
-        if IsValid(e) and IsValid(parent) then
-            e.exterior=ext
-            e.interior=int
-            e.parent=parent
-            e.ExteriorPart=(parent==ext)
-            e.InteriorPart=(parent==int)
-            local data=GetData(parent,e,name)
+    ---@param ent Entity
+    ---@param name string
+    ---@param ext gmod_tardis
+    ---@param int gmod_tardis_interior
+    ---@param parent Entity
+    function TARDIS:SetupPart(ent,name,ext,int,parent)
+        if IsValid(ent) and IsValid(parent) then
+            ent.exterior=ext
+            ent.interior=int
+            ent.parent=parent
+            ent.ExteriorPart=(parent==ext)
+            ent.InteriorPart=(parent==int)
+            local data=GetData(parent,ent,name)
             if type(data)=="table" then
-                table.Merge(e,data)
+                table.Merge(ent,data)
             end
 
-            if e.Translucent then
-                e.RenderGroup = RENDERGROUP_TRANSLUCENT
+            if ent.Translucent then
+                ent.RenderGroup = RENDERGROUP_TRANSLUCENT
             end
 
             if not parent.controlparts then parent.controlparts = {} end
-            SetupPartControl(e)
-            if e.EnabledOnStart then
-                e:SetOn(true)
+            SetupPartControl(ent)
+            if ent.EnabledOnStart then
+                ent:SetOn(true)
             end
 
             if not parent.parts then parent.parts={} end
-            parent.parts[name]=e
-            if e.matrixScale then
+            parent.parts[name]=ent
+            if ent.matrixScale then
                 local matrix = Matrix()
-                matrix:Scale(e.matrixScale)
-                e:EnableMatrix("RenderMultiply",matrix)
+                matrix:Scale(ent.matrixScale)
+                ent:EnableMatrix("RenderMultiply",matrix)
             end
-            if e.o.Initialize then
-                e.o.Initialize(e)
+            local o = ent.o
+            if o and o.Initialize then
+                o.Initialize(ent)
             end
-            CapturePartShadowOffset(e)
-            e._init=true
+            CapturePartShadowOffset(ent)
+            ent._init=true
         end
     end
     net.Receive("TARDIS-SetupPart", function(ply)

@@ -11,6 +11,9 @@ else
     end)
 end
 
+---@param ply Player
+---@param error boolean
+---@param message string
 function TARDIS:MessageInternal(ply, error, message, ...)
     if not IsValid(ply) then return end
 

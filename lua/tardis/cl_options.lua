@@ -1,5 +1,7 @@
 -- Options
 
+---@param id string
+---@param data table
 function TARDIS:CreateOptionInterface(id, data)
 
     local section = "Settings.Sections."..(data.section or "Other")

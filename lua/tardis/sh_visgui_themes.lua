@@ -79,6 +79,7 @@ function TARDIS:GetGUITheme(id)
     return self.gui_themes[id]
 end
 
+---@param id string|table
 function TARDIS:GetGUIThemeFolder(id)
     local theme = self.gui_themes[id]
     if not theme then

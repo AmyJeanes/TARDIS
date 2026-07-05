@@ -4,6 +4,7 @@
 ---@field BaseClass gmod_door_exterior
 ---@field timers table<string, table>
 ---@field parts table<string, gmod_tardis_part>
+---@field controlparts table<string, table<string, gmod_tardis_part>>?
 ---@field metadataID string
 ---@field effect_pos Vector
 ---@field metadata tardis_metadata
@@ -54,6 +55,7 @@ function ENT:GetHooksTable()
     return hooks
 end
 
+---@param listInteriorHooks boolean?
 function ENT:ListHooks(listInteriorHooks)
     print("[Exterior]"..(SERVER and "[Server]" or "[Client]"))
     for h in pairs(hooks) do

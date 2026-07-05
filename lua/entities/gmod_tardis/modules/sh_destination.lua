@@ -372,6 +372,9 @@ if SERVER then
     end)
 else
     local defaultdist = 210
+    ---@param ply Player
+    ---@param pos Vector?
+    ---@param ang Angle
     function ENT:GetDestinationPropPos(ply, pos, ang)
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
@@ -385,6 +388,8 @@ else
         return tr.HitPos+(ang:Forward()*10), Angle(ang.p,ang.y,0)
     end
 
+    ---@param ply Player
+    ---@param ang Angle
     function ENT:GetDestinationPropTrace(ply,ang)
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
@@ -422,6 +427,7 @@ else
         return prop
     end
 
+    ---@param exterior_id string?
     function ENT:CreateDestinationProp(exterior_id)
         self:RemoveDestinationProp()
 
@@ -681,6 +687,8 @@ function ENT:GetDestinationAng(auto)
     return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
 end
 
+---@param point Vector
+---@param vertical_offset number?
 function ENT:DestinationTraceDown(point, vertical_offset)
     vertical_offset = vertical_offset or 50
 
@@ -693,6 +701,8 @@ function ENT:DestinationTraceDown(point, vertical_offset)
     return util.QuickTrace(point + Vector(0, 0, vertical_offset), TRACE_DOWN_VECTOR, filter)
 end
 
+---@param point Vector
+---@param vertical_offset number?
 function ENT:DestinationTraceDownHit(point, vertical_offset)
     return self:DestinationTraceDown(point, vertical_offset).HitPos
 end
@@ -781,6 +791,8 @@ local function SelectPlaneDefiningPoints(points)
     return a,b,c
 end
 
+---@param point Vector
+---@param get_angle boolean?
 function ENT:GetGroundedPos(point, get_angle)
     if TRACE_DEBUG then
         RunConsoleCommand("tardis2_debug_pointer_clear")
@@ -881,6 +893,8 @@ local function IsTraceBelowWorld(trace_result)
     return false
 end
 
+---@param p1 Vector
+---@param p2 Vector
 function ENT:FindPosInBox(p1, p2)
     local xmin, ymin, zmin = p1:Unpack()
     local xmax, ymax, zmax = p2:Unpack()

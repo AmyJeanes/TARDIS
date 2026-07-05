@@ -42,19 +42,20 @@ if CLIENT then
         lmp.parsed = true
     end
 
-    function ENT:InitLampData(lmp)
-        if not lmp or not lmp.pos then return end
-        lmp.pos_global = self:LocalToWorld(lmp.pos)
-        if lmp.sprite then
-            lmp.spritepixvis = util.GetPixelVisibleHandle()
-            lmp.sprite_brightness = lmp.sprite_brightness or 1
+    ---@param lamp table?
+    function ENT:InitLampData(lamp)
+        if not lamp or not lamp.pos then return end
+        lamp.pos_global = self:LocalToWorld(lamp.pos)
+        if lamp.sprite then
+            lamp.spritepixvis = util.GetPixelVisibleHandle()
+            lamp.sprite_brightness = lamp.sprite_brightness or 1
         end
-        self:InitLampData(lmp.warn)
-        self:InitLampData(lmp.off)
-        self:InitLampData(lmp.off_warn)
+        self:InitLampData(lamp.warn)
+        self:InitLampData(lamp.off)
+        self:InitLampData(lamp.off_warn)
 
-        if not lmp.states then return end
-        for _,v in pairs(lmp.states) do
+        if not lamp.states then return end
+        for _,v in pairs(lamp.states) do
             self:InitLampData(v)
         end
     end
@@ -78,19 +79,20 @@ if CLIENT then
         self:CreateLamps()
     end)
 
-    function ENT:CreateLamp(lmp)
-        if not lmp then return end
-        if lmp.enabled == false then return end
+    ---@param lamp table?
+    function ENT:CreateLamp(lamp)
+        if not lamp then return end
+        if lamp.enabled == false then return end
         local pl = ProjectedTexture()
-        pl:SetTexture(lmp.texture)
-        pl:SetPos(lmp.pos_global)
-        pl:SetAngles(lmp.ang)
-        pl:SetFOV(lmp.fov)
-        pl:SetColor(lmp.color)
-        pl:SetBrightness(lmp.brightness)
-        pl:SetFarZ(lmp.distance)
-        pl:SetEnableShadows(lmp.shadows)
-        pl:SetShadowFilter(lmp.shadowfilter)
+        pl:SetTexture(lamp.texture)
+        pl:SetPos(lamp.pos_global)
+        pl:SetAngles(lamp.ang)
+        pl:SetFOV(lamp.fov)
+        pl:SetColor(lamp.color)
+        pl:SetBrightness(lamp.brightness)
+        pl:SetFarZ(lamp.distance)
+        pl:SetEnableShadows(lamp.shadows)
+        pl:SetShadowFilter(lamp.shadowfilter)
         pl:SetNoCull(true)
         pl:Update()
         return pl

@@ -1,5 +1,8 @@
 -- Binds
 
+---@param id string
+---@param data table
+---@param callback function?
 function TARDIS:ChangeKeyBind(id,data,callback)
     local frame = vgui.Create("DFrame")
     frame:SetSkin(TARDIS:GetPhrase("Common.TARDIS"))
@@ -75,6 +78,8 @@ function TARDIS:ChangeKeyBind(id,data,callback)
     end
 end
 
+---@param id string
+---@param data table
 function TARDIS:CreateBindOptionInterface(id, data)
     local button = vgui.Create("DButton")
     button.DoClick = function(self)

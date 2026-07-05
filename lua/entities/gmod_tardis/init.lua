@@ -16,6 +16,7 @@ ENT:AddHook("PostPlayerInitialize", "senddata", function(self,ply)
 end)
 
 if not TARDIS.DoorsFound then
+    ---@param ply Player
     function ENT:SpawnFunction(ply,...)
         if not scripted_ents.GetStored(self.Base) then
             TARDIS:ErrorMessage(ply, "Common.DoorsNotInstalled")
@@ -43,9 +44,12 @@ function ENT:Initialize()
     end
 end
 
+---@param colData table
+---@param collider Entity
 function ENT:PhysicsCollide(colData, collider)
     self:CallHook("PhysicsCollide", colData, collider)
 end
+---@param dmginfo CTakeDamageInfo
 function ENT:OnTakeDamage(dmginfo)
     if self:CallHook("ShouldTakeDamage",dmginfo)==false then return end
     self:CallHook("OnTakeDamage", dmginfo)

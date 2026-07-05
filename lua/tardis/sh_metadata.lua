@@ -30,7 +30,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Fallback tardis_interior_fallback
 ---@field Sounds tardis_interior_sound_metadata
 ---@field IdleSound tardis_sound_entry[]?
----@field Tips table[]?
+---@field Tips table[]
 ---@field CustomTips tardis_custom_tip[]?
 ---@field PartTips table<string, tardis_part_tip>?
 ---@field TipSettings tardis_tip_settings
@@ -314,6 +314,13 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field allow_custom boolean?
 ---@field randomize_custom boolean?
 
+---@class tardis_versions_complete : tardis_versions
+---@field main tardis_version_entry
+---@field other tardis_version_entry[]
+---@field custom table<string, table>
+---@field list_all table
+---@field list_original table
+
 ---@class tardis_model_offset
 ---@field pos Vector
 ---@field ang Angle
@@ -411,7 +418,7 @@ function TARDIS:LoadInteriors()
     TARDIS.MetadataRaw = {}
     ---@type table<string, tardis_metadata>
     TARDIS.MetadataTemplates = {}
-    ---@type table<string, tardis_versions>
+    ---@type table<string, tardis_versions_complete>
     TARDIS.MetadataVersions = {}
     ---@type table<string, table<string, table>>
     TARDIS.MetadataCustomVersions = {}
@@ -439,6 +446,7 @@ function TARDIS:LoadInteriors()
     hook.Call("TARDIS_PostMetadataLoaded", GAMEMODE)
 end
 
+---@param ext_m table?
 function TARDIS:PreMergeExteriorMetadata(ext_m)
     if ext_m and ext_m.Teleport then
         if ext_m.Teleport.HadsDematSequence then
@@ -455,6 +463,7 @@ function TARDIS:PreMergeExteriorMetadata(ext_m)
     end
 end
 
+---@param ext_m table?
 function TARDIS:PostMergeExteriorMetadata(ext_m)
     if ext_m and ext_m.Teleport then
         if ext_m.Teleport.DematSequenceSaved then
@@ -474,16 +483,19 @@ function TARDIS:PostMergeExteriorMetadata(ext_m)
     end
 end
 
+---@param base table
+---@param override table
 ---@return tardis_metadata
-function TARDIS:MergeMetadata(base, t)
+function TARDIS:MergeMetadata(base, override)
     ---@type tardis_metadata
     local copy=table.Copy(base) -- table.Copy returns a bare table, dropping the class
-    self:PreMergeExteriorMetadata(t.Exterior)
-    table.Merge(copy,t)
+    self:PreMergeExteriorMetadata(override.Exterior)
+    table.Merge(copy,override)
     self:PostMergeExteriorMetadata(copy.Exterior)
     return copy
 end
 
+---@param id string
 function TARDIS:ClearMetadata(id)
     self.Metadata[id] = nil
     for k,v in pairs(self.MetadataRaw) do
@@ -493,58 +505,60 @@ function TARDIS:ClearMetadata(id)
     end
 end
 
-function TARDIS:ValidateMetadata(t)
-    if t.Interior then
-        if t.Interior.Size and (t.Interior.Size.Min or t.Interior.Size.Max) then
-            if not t.Interior.Size.Min then
+---@param metadata table
+function TARDIS:ValidateMetadata(metadata)
+    if metadata.Interior then
+        if metadata.Interior.Size and (metadata.Interior.Size.Min or metadata.Interior.Size.Max) then
+            if not metadata.Interior.Size.Min then
                 return "Interior.Size.Min not set"
             end
 
-            if not t.Interior.Size.Max then
+            if not metadata.Interior.Size.Max then
                 return "Interior.Size.Max not set"
             end
 
-            if t.Interior.Size.Min.x >= t.Interior.Size.Max.x then
+            if metadata.Interior.Size.Min.x >= metadata.Interior.Size.Max.x then
                 return "Interior.Size.Min.x >= Maxs.x"
             end
 
-            if t.Interior.Size.Min.y >= t.Interior.Size.Max.y then
+            if metadata.Interior.Size.Min.y >= metadata.Interior.Size.Max.y then
                 return "Interior.Size.Min.y >= Maxs.y"
             end
 
-            if t.Interior.Size.Min.z >= t.Interior.Size.Max.z then
+            if metadata.Interior.Size.Min.z >= metadata.Interior.Size.Max.z then
                 return "Interior.Size.Min.z >= Maxs.z"
             end
         end
 
-        if t.Interior.ExitBox and (t.Interior.ExitBox.Min or t.Interior.ExitBox.Max) then
-            if not t.Interior.ExitBox.Min then
+        if metadata.Interior.ExitBox and (metadata.Interior.ExitBox.Min or metadata.Interior.ExitBox.Max) then
+            if not metadata.Interior.ExitBox.Min then
                 return "Interior.ExitBox.Min not set"
             end
 
-            if not t.Interior.ExitBox.Max then
+            if not metadata.Interior.ExitBox.Max then
                 return "Interior.ExitBox.Max not set"
             end
 
-            if t.Interior.ExitDistance then
+            if metadata.Interior.ExitDistance then
                 return "Interior.ExitDistance cannot be used with Interior.ExitBox"
             end
 
-            if t.Interior.ExitBox.Min.x >= t.Interior.ExitBox.Max.x then
+            if metadata.Interior.ExitBox.Min.x >= metadata.Interior.ExitBox.Max.x then
                 return "Interior.ExitBox.Min.x >= Maxs.x"
             end
 
-            if t.Interior.ExitBox.Min.y >= t.Interior.ExitBox.Max.y then
+            if metadata.Interior.ExitBox.Min.y >= metadata.Interior.ExitBox.Max.y then
                 return "Interior.ExitBox.Min.y >= Maxs.y"
             end
 
-            if t.Interior.ExitBox.Min.z >= t.Interior.ExitBox.Max.z then
+            if metadata.Interior.ExitBox.Min.z >= metadata.Interior.ExitBox.Max.z then
                 return "Interior.ExitBox.Min.z >= Maxs.z"
             end
         end
     end
 end
 
+---@param int_id string
 function TARDIS:SetupFalseWorlds(int_id)
     if not (wp and wp.addfalseworld) then return end
 
@@ -615,6 +629,7 @@ function TARDIS:AddInterior(interior)
     end
 end
 
+---@param id string?
 function TARDIS:SetupMetadata(id)
     if self.Metadata[id] then return end
     ---@type table?
@@ -637,6 +652,8 @@ function TARDIS:SetupMetadata(id)
     self.Metadata[id].Versions = nil -- we don't want those mixing up anywhere
 end
 
+---@param id string?
+---@param ent Entity?
 ---@return tardis_metadata
 function TARDIS:CreateInteriorMetadata(id, ent)
     if ent then

@@ -29,6 +29,7 @@ function TARDIS:GetPhrase(phrase, ...)
     return self:FormatString(str, ...)
 end
 
+---@param str string
 function TARDIS:FormatString(str, ...)
     local args = {...}
     local cache = self.LanguageCache[self.CurrentLanguage]
@@ -102,7 +103,9 @@ function TARDIS:AddLanguageExtension(extension)
     end
 end
 
+---@param code string
 function TARDIS:CompileLanguage(code)
+    ---@type table<string, string>
     local phrases = {}
 
     local lang = self.Languages[code]

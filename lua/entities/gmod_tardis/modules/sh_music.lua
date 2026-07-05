@@ -55,6 +55,7 @@ function ENT:StopMusic(network)
     end
 end
 
+---@param url string
 function ENT:ResolveMusicURL(url)
     if url:find("youtu.be") or url:find("youtube.com") then
         TARDIS:ErrorMessage(LocalPlayer(), "Music.YouTubeNotSupported")

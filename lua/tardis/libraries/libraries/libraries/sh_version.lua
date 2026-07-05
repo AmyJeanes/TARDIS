@@ -118,6 +118,8 @@ local function get_versions(versionStrOrTbl, compareVersionStrOrTbl)
     return version, compareVersion
 end
 
+---@param versionStrOrTbl string|table
+---@param compareVersionStrOrTbl string|table?
 function TARDIS:IsVersionHigherOrEqualTo(versionStrOrTbl, compareVersionStrOrTbl)
     local version, compareVersion = get_versions(versionStrOrTbl, compareVersionStrOrTbl)
 
@@ -132,6 +134,8 @@ function TARDIS:IsVersionHigherOrEqualTo(versionStrOrTbl, compareVersionStrOrTbl
     return false
 end
 
+---@param versionStrOrTbl string|table
+---@param compareVersionStrOrTbl string|table?
 function TARDIS:IsVersionHigherThan(versionStrOrTbl, compareVersionStrOrTbl)
     local version, compareVersion = get_versions(versionStrOrTbl, compareVersionStrOrTbl)
 
@@ -146,6 +150,8 @@ function TARDIS:IsVersionHigherThan(versionStrOrTbl, compareVersionStrOrTbl)
     return false
 end
 
+---@param versionStrOrTbl string|table
+---@param compareVersionStrOrTbl string|table?
 function TARDIS:IsVersionEqualTo(versionStrOrTbl, compareVersionStrOrTbl)
     local version, compareVersion = get_versions(versionStrOrTbl, compareVersionStrOrTbl)
 

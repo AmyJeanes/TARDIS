@@ -123,6 +123,7 @@ local function build_pack_index(pack)
     return index
 end
 
+---@param pack_id string
 function TARDIS:RebuildIconPackIndex(pack_id)
     local pack = self.iconpacks[pack_id]
     if pack then
@@ -180,6 +181,8 @@ function TARDIS:AddIconPack(iconpack)
     self:RebuildIconPackIndex(pack.ID)
 end
 
+---@param pack tardis_icon_pack
+---@param category string
 function TARDIS:PackHasCategory(pack, category)
     if pack.IsBase then return true end
     local idx = self.iconpack_index[pack.ID]
@@ -188,6 +191,9 @@ function TARDIS:PackHasCategory(pack, category)
     return cat and next(cat) ~= nil or false
 end
 
+---@param pack_id string
+---@param category string
+---@param id string
 function TARDIS:PackProvidesIcon(pack_id, category, id)
     local idx = self.iconpack_index[pack_id]
     if not idx then return false end
@@ -195,6 +201,9 @@ function TARDIS:PackProvidesIcon(pack_id, category, id)
     return cat and id and cat[id:lower()] ~= nil or false
 end
 
+---@param pack_id string
+---@param category string
+---@param id string
 function TARDIS:GetPackIcon(pack_id, category, id)
     local idx = self.iconpack_index[pack_id]
     if not idx then return nil end
@@ -202,6 +211,9 @@ function TARDIS:GetPackIcon(pack_id, category, id)
     return cat and id and cat[id:lower()] or nil
 end
 
+---@param category string
+---@param id string
+---@param config_override? table
 function TARDIS:GetIconProvider(category, id, config_override)
     if id == nil or category == nil then return nil end
     local config = config_override or self:GetIconPackConfig()
@@ -248,10 +260,14 @@ local function lookup_pack_missing(self, pack_id, category)
     return (category and idx.missing[category]) or idx.missing.root
 end
 
+---@param pack_id string
+---@param category string
 function TARDIS:PackProvidesMissingIcon(pack_id, category)
     return lookup_pack_missing(self, pack_id, category) ~= nil
 end
 
+---@param pack_id string
+---@param category string
 function TARDIS:GetPackMissingIcon(pack_id, category)
     return lookup_pack_missing(self, pack_id, category)
 end

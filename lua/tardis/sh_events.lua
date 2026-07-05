@@ -91,6 +91,7 @@ if CLIENT then
         self:Message(LocalPlayer(), "Events.Skipped", self:GetEventName(event))
     end
 
+    ---@param event integer?
     function TARDIS:NotifyEvent(event)
         if not event then event = self:GetCurrentEvent() end
         local eventname = self:GetEventName(event, true)

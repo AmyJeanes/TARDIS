@@ -1,5 +1,6 @@
 TARDIS.SpawnmenuOptionsSectionElements = TARDIS.SpawnmenuOptionsSectionElements or {}
 
+---@param section string?
 function TARDIS:ReloadSpawnmenuOptionElements(section)
     if not section then
         for k,_ in pairs(self.SpawnmenuOptionsSectionElements) do

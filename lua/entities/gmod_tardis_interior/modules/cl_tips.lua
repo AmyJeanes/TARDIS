@@ -31,6 +31,7 @@
 ---@field frame Color
 ---@field text Color
 
+---@param style_name string
 function ENT:InitializeTips(style_name)
     local int_metadata = self.metadata.Interior
     local text_overrides = int_metadata.TipSettings.TextOverrides

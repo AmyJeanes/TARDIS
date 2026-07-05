@@ -4,6 +4,7 @@ if SERVER then
     util.AddNetworkString("TARDIS-Data")
     util.AddNetworkString("TARDIS-DataClear")
 
+    ---@param ply Player? nil broadcasts to all players
     function ENT:SendData(ply)
         if self.data then
             net.Start("TARDIS-Data")

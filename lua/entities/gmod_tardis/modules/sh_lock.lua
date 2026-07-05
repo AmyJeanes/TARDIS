@@ -19,6 +19,9 @@ if SERVER then
         return self:SetLocked(not self:Locked(), callback, nil, force)
     end
 
+    ---@param locked boolean
+    ---@param callback fun(state: boolean)?
+    ---@param silent boolean?
     function ENT:ActualSetLocked(locked,callback,silent)
         self:SetData("locking",false,true)
         self:SetData("locked",locked,true)

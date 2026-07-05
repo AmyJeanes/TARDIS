@@ -1,5 +1,7 @@
 -- Helper functions
 
+---@param name string
+---@param func function
 function TARDIS:Benchmark(name,func)
     local time=SysTime()
     func()
@@ -33,6 +35,9 @@ concommand.Add("tardis_getlocal",function(ply,cmd,args)
 end)
 
 -- Thanks world-portals!
+---@param object_pos Vector
+---@param plane_pos Vector
+---@param plane_forward Vector
 function TARDIS:IsBehind( object_pos, plane_pos, plane_forward )
     local vec = object_pos - plane_pos
 

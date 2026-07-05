@@ -14,7 +14,7 @@ end
 ---@field bypass_isomorphic boolean?
 ---@field bypass_console_toggle boolean?
 ---@field tip_text string?
----@field moves table<string, true|fun(self: gmod_tardis, part: gmod_tardis_part, ...): boolean?>?
+---@field moves table<string, true|fun(self: gmod_tardis|gmod_tardis_interior, part: gmod_tardis_part, ...): boolean?>?
 ---@field screen_button tardis_screen_button|false?
 
 ---@class tardis_screen_button
@@ -51,6 +51,7 @@ function TARDIS:AddControl(control)
     end
 end
 
+---@param control tardis_control
 function TARDIS:RegisterControlMoves(control)
     for k,v in pairs(control_moves) do
         if v[control.id] then
@@ -69,11 +70,14 @@ function TARDIS:GetControlMoves()
     return control_moves
 end
 
+---@param ent gmod_tardis|gmod_tardis_interior
+---@param hook string
 function TARDIS:CallControlMove(ent, hook, ...)
     if control_moves[hook] then
         for id, func in pairs(control_moves[hook]) do
-            if ent.controlparts and ent.controlparts[id] and ent.controlpartsactive and not ent.controlpartsactive[id] then
-                for _, part in pairs(ent.controlparts[id]) do
+            local control_parts = ent.controlparts and ent.controlparts[id]
+            if control_parts and ent.controlpartsactive and not ent.controlpartsactive[id] then
+                for _, part in pairs(control_parts) do
                     if not part.NoAutoMove and (func == true or func(ent, part, ...)) then
                         TARDIS:TogglePart(part)
                     end

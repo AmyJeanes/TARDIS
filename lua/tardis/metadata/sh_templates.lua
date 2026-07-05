@@ -1,4 +1,5 @@
 ---@param template tardis_metadata
+---@param offset Vector
 function TARDIS:AddInteriorPartsOffset(template, offset)
     ---@type tardis_metadata
     local moved = table.Copy(template) -- table.Copy returns a bare table, dropping the class
@@ -42,6 +43,7 @@ function TARDIS:AddInteriorPartsOffset(template, offset)
 end
 
 ---@param template tardis_metadata
+---@param rotate_ang Angle
 function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
     ---@type tardis_metadata
     local rotated = table.Copy(template) -- table.Copy returns a bare table, dropping the class
@@ -92,6 +94,7 @@ function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
 end
 
 
+---@param id string
 function TARDIS:SetupTemplateUpdates(id)
     local t = self.MetadataRaw[id]
     if not t.Templates then return end
@@ -105,6 +108,8 @@ function TARDIS:SetupTemplateUpdates(id)
     end
 end
 
+---@param template_id string
+---@param id string
 function TARDIS:HandleMissingTemplate(template_id, id, template)
     local can_print = CLIENT and LocalPlayer() and LocalPlayer().ChatPrint
 
@@ -237,11 +242,13 @@ end
 
 -- Texture set support of inherited params
 
+---@param texture_sets_table table<string, tardis_texture_set>?
 function TARDIS:GetMergedTextureSets(texture_sets_table)
     if not texture_sets_table then
         return texture_sets_table
     end
 
+    ---@type table<string, table>
     local texture_sets_merged = {}
 
     local function merge_texture_set(id)

@@ -8,6 +8,8 @@ ENT:AddHook("ShouldAllowThickPortal", "teleport", function(self, portal)
     end
 end)
 
+---@param pos Vector
+---@param ang Angle
 function ENT:DrawViewCrosshair(pos,ang)
     local fw=ang:Forward()
     local bk=fw*-1

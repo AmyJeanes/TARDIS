@@ -4,6 +4,7 @@
 ---@field BaseClass gmod_door_interior
 ---@field timers table<string, table>
 ---@field parts table<string, gmod_tardis_part>
+---@field controlparts table<string, table<string, gmod_tardis_part>>?
 ---@field roundthings table<integer, integer>
 ---@field owner Player?
 ---@field metadata tardis_metadata

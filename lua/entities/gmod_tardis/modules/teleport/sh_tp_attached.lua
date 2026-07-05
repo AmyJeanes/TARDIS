@@ -92,6 +92,7 @@ if SERVER then
     end)
 end
 
+---@param alpha number
 function ENT:SetAttachedTransparency(alpha)
     local attached=self:GetData("demat-attached")
 

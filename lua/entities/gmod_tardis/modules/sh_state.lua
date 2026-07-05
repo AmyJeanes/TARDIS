@@ -64,6 +64,7 @@ end
 
 --
 
+---@param state string
 function ENT:SetState(state)
   if not TARDIS.States[state] then
     error("Attempted to apply unsupported state " .. state)

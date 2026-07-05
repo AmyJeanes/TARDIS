@@ -1,6 +1,7 @@
 -- Round things (light sprites for old default interior)
 
 if CLIENT then
+    ---@param pos Vector
     function ENT:AddRoundThing(pos)
         self.roundthings[pos]=util.GetPixelVisibleHandle()
     end

@@ -1,3 +1,4 @@
+---@param int_id string
 function TARDIS:SetupVersions(int_id)
     local t = self.MetadataRaw[int_id]
 
@@ -67,6 +68,7 @@ function TARDIS:SelectDoorVersionID(id, ent)
 end
 
 
+---@param int_id string
 function TARDIS:DefaultPreferredVersion(int_id)
     int_id = TARDIS:GetMainVersionId(int_id)
     local versions = self.MetadataVersions[int_id]
@@ -122,6 +124,9 @@ function TARDIS:GetMainVersionId(int_id)
     return (self.Metadata[int_id] and self.Metadata[int_id].IsVersionOf) or int_id
 end
 
+---@param main_id string
+---@param version_id string
+---@param version table
 function TARDIS:SetupCustomVersion(main_id, version_id, version)
     local versions = self.MetadataVersions[main_id]
 
@@ -154,6 +159,8 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Redecoration
 
+---@param int_id string
+---@param ent Entity?
 function TARDIS:ShouldRedecorateInto(int_id, ent)
     int_id = TARDIS:GetMainVersionId(int_id)
     return not TARDIS:GetCustomSetting(int_id, "redecoration_exclude", ent)

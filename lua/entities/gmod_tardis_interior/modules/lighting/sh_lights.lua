@@ -139,6 +139,8 @@ if CLIENT then
         self:LoadLights()
     end)
 
+    ---@param id number
+    ---@param light table<string, any>
     function ENT:DrawLight(id,light)
         if self:CallHook("ShouldDrawLight",id,light)==false then return end
 

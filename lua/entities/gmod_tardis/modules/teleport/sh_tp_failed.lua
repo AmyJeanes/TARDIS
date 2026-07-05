@@ -20,6 +20,9 @@ if SERVER then
         self:CallClientCommonHook("DematFailStopped")
     end
 
+    ---@param pos Vector?
+    ---@param ang Angle?
+    ---@param callback fun(success: boolean)?
     function ENT:HandleNoMat(pos, ang, callback)
         local fail = self:CallHook("ShouldFailMat", pos, ang)
         local possible = self:CallHook("CanMat", pos, ang, true)
@@ -87,6 +90,9 @@ if SERVER then
         end
     end)
 
+    ---@param pos Vector?
+    ---@param ang Angle?
+    ---@param callback fun(success: boolean)?
     function ENT:ForceDemat(pos, ang, callback)
         self:Demat(pos, ang, callback, true)
     end
@@ -127,6 +133,9 @@ if SERVER then
         end
     end)
 
+    ---@param pos Vector?
+    ---@param ang Angle?
+    ---@param callback fun(success: boolean)?
     function ENT:EngineReleaseDemat(pos, ang, callback)
         if not self:GetData("failing-demat", false) then return end
 

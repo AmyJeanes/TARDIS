@@ -1,6 +1,7 @@
 -- Data
 
 if SERVER then
+    ---@param ply Player? nil broadcasts to all players
     function ENT:SendData(ply)
         self.exterior:SendData(ply)
     end

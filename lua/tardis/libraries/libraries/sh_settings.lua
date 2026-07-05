@@ -302,6 +302,7 @@ function TARDIS:ResetSettings()
     self:SendSettings()
 end
 
+---@param section string?
 function TARDIS:ResetSectionSettings(section)
     for k,v in pairs(self.SettingsData) do
         if (section ~= nil and v.section == section) or (section == nil and v.option ~= nil) then
@@ -353,6 +354,7 @@ if SERVER then
         end
     end)
 
+    ---@param ply Player? nil broadcasts to all players
     function TARDIS:RequestSettings(ply)
         net.Start("TARDIS-RequestSettings")
         if IsValid(ply) then
@@ -362,6 +364,7 @@ if SERVER then
         end
     end
 
+    ---@param ply Player? nil broadcasts to all players
     function TARDIS:SendPlayerSettings(ply)
         for k,v in pairs(self.ClientSettings) do
             net.Start("TARDIS-ClientSettings")
@@ -389,6 +392,8 @@ if SERVER then
         TARDIS:SetSetting(id, val)
     end)
 else
+    ---@param id string
+    ---@param value any
     function TARDIS:GlobalSettingChange(id, value)
         local ply = LocalPlayer()
         if not ply:IsAdmin() then
@@ -436,6 +441,9 @@ else
     end)
 end
 
+---@param id string
+---@param value any
+---@param ply Player? nil broadcasts to all players (server) or sends to server (client)
 function TARDIS:SendSetting(id,value,ply)
     if SERVER then
         net.Start("TARDIS-Settings")
@@ -456,6 +464,7 @@ function TARDIS:SendSetting(id,value,ply)
     end
 end
 
+---@param ply Player? nil broadcasts to all players (server) or sends to server (client)
 function TARDIS:SendSettings(ply)
     if SERVER then
         net.Start("TARDIS-Settings")
@@ -475,6 +484,9 @@ function TARDIS:SendSettings(ply)
     end
 end
 
+---@param id string
+---@param value any
+---@param old_value any
 function TARDIS:OnSettingChanged(id,value,old_value,ply)
     hook.Call("TARDIS_SettingChanged", GAMEMODE, id, value, old_value, ply)
     for _,ent in ipairs(TARDIS:GetExteriorEnts()) do

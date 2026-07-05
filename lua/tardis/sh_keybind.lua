@@ -283,6 +283,10 @@ else
         end
     end
 
+    ---@param ext gmod_tardis
+    ---@param int gmod_tardis_interior?
+    ---@param key integer
+    ---@param down boolean
     function TARDIS:HandleKey(ext,int,key,down)
         for k,v in pairs(self.bindkeys) do
             if v==key then

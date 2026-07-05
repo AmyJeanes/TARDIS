@@ -1,3 +1,5 @@
+---@param ext_id string
+---@param category string
 function TARDIS:SetExteriorCategory(ext_id, category)
     for _,v in pairs(self.ExteriorCategories) do
         if v[ext_id] then
@@ -9,6 +11,7 @@ function TARDIS:SetExteriorCategory(ext_id, category)
     cat[ext_id] = true
 end
 
+---@param id string
 function TARDIS:ClearExteriorMetadata(id)
     self.ExteriorsMetadata[id] = nil
     for k,v in pairs(self.ExteriorsMetadataRaw) do
@@ -74,14 +77,17 @@ function TARDIS:ImportExterior(int_id, import_options)
     return true
 end
 
-function TARDIS:MergeExteriorMetadata(base, t)
+---@param base tardis_exterior_metadata
+---@param override table
+function TARDIS:MergeExteriorMetadata(base, override)
     local copy=table.Copy(base)
-    self:PreMergeExteriorMetadata(t)
-    table.Merge(copy,t)
+    self:PreMergeExteriorMetadata(override)
+    table.Merge(copy,override)
     self:PostMergeExteriorMetadata(copy)
     return copy
 end
 
+---@param id string
 function TARDIS:SetupExteriorMetadata(id)
     if self.ExteriorsMetadata[id] then return end
     local t = self.ExteriorsMetadataRaw[id]

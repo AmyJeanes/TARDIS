@@ -1,4 +1,5 @@
 if SERVER then
+    ---@param collision_data CollisionData
     function ENT:IsVerticalLanding(collision_data)
         local ang = self:GetAngles()
         local angmax = math.max(math.abs(ang.p), math.abs(ang.r))

@@ -5,6 +5,7 @@ function TARDIS:GetCustomSettings(ent)
     return TARDIS:GetSetting("interior_custom_settings", ent) or {} -- nil is never allowed
 end
 
+---@param int_id string
 function TARDIS:SetupCustomSettings(int_id)
     local csettings = {}
 
@@ -66,6 +67,7 @@ function TARDIS:GetCustomSetting(int_id, setting_id, ent, default_val)
 end
 
 if CLIENT then
+    ---@param settings table
     function TARDIS:SaveCustomSettings(settings)
         TARDIS:SetSetting("interior_custom_settings", settings)
     end

@@ -69,6 +69,7 @@ if SERVER then
         self:ChangeHealth(newhealth)
     end
 
+    ---@param dmg number
     function ENT:ApplyDamage(dmg)
         local shields = self:GetShields()
         if shields then

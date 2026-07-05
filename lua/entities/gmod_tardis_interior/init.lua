@@ -80,6 +80,7 @@ function ENT:Initialize()
     self.BaseClass.Initialize(self)
 end
 
+---@param dmginfo CTakeDamageInfo
 function ENT:OnTakeDamage(dmginfo)
     if self:CallHook("ShouldTakeDamage",dmginfo)==false then return end
     self:CallHook("OnTakeDamage", dmginfo)

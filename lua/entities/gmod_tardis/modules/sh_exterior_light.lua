@@ -26,6 +26,7 @@ if SERVER then
         return self:SetFlashLight(not self:GetFlashLight())
     end
 else
+    ---@param time number
     function ENT:FlashLight(time)
         self:SetData("flashuntil",CurTime()+time)
     end

@@ -12,6 +12,12 @@ ENT:AddHook("Initialize","seats",function(self)
     end
 end)
 
+---@param Pos Vector
+---@param Ang Angle
+---@param Model string
+---@param Class string
+---@param VName string
+---@param VTable table
 function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable )
     local ent = ents.Create( Class )
     if not ent then return NULL end

@@ -66,6 +66,10 @@ if SERVER then
         self:UpdateDoorCollision()
     end
 
+    ---@param pos Vector?
+    ---@param ang Angle?
+    ---@param callback fun(success: boolean)?
+    ---@param force boolean?
     function ENT:DematDoorCheck(pos, ang, callback, force)
         local autoclose = TARDIS:GetSetting("teleport-door-autoclose", self)
         if (force or autoclose) and self:GetData("doorstatereal") then
@@ -174,6 +178,9 @@ if SERVER then
         self:AutoDemat(pos, ang, callback)
     end
 
+    ---@param pos Vector
+    ---@param ang Angle
+    ---@param phys_enable boolean
     function ENT:ChangePosition(pos, ang, phys_enable)
         if self:CallHook("PreTeleportPositionChange", pos, ang, phys_enable) == false then return end
 

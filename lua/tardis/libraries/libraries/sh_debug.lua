@@ -1,4 +1,9 @@
 -- I often need to run custom code in the TARDIS, this is a template for that
+---@param ext gmod_tardis?
+---@param int gmod_tardis_interior?
+---@param ply Player
+---@param cmd string
+---@param args table
 TARDIS.DebugFunction = function(ext,int,ply,cmd,args)
     TARDIS:Debug("Debug function")
     TARDIS:Debug("Exterior:", ext, "")
@@ -99,6 +104,8 @@ concommand.Add("tardis2_debug_tips_reset", function(ply,cmd,args)
     int.debug_tips_text = nil
 end)
 
+---@param self gmod_tardis_part
+---@param ply Player
 TARDIS.DebugTipsFunction = function(self, ply, ...)
     local int = self.interior
 

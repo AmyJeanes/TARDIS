@@ -12,6 +12,7 @@ list.Set( "ContentCategoryIcons", "#TARDIS.Spawnmenu.CategoryTools", "vgui/tardi
 
 if CLIENT then
 
+    ---@param id string
     function TARDIS:SelectForRedecoration(id)
         TARDIS:SetSetting("redecorate-interior", id)
         local current_tardis = LocalPlayer():GetTardisExterior()
@@ -477,6 +478,7 @@ TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
 local c_overrides = TARDIS_OVERRIDES.Categories or {}
 local n_overrides = TARDIS_OVERRIDES.Names or {}
 
+---@param id string
 function TARDIS:AddSpawnmenuInterior(id)
     local t = self.MetadataRaw[id]
 

@@ -215,6 +215,7 @@ function TARDIS:GetScreens()
     return tab
 end
 
+---@param name string
 function TARDIS:GetScreenByName(name)
     local tab = self:GetScreens()
     if not tab then return end
@@ -243,6 +244,7 @@ function TARDIS:RefreshArrowFunctions(screen)
 end
 
 ---@param screen TardisScreen
+---@param newscreen tardis_screen_entry
 function TARDIS:SwitchScreen(screen,newscreen)
     if not newscreen then return false end
     local frame = newscreen.frame
@@ -280,6 +282,7 @@ net.Receive("TARDIS-PopToScreen", function(len)
 end)
 
 ---@param screen TardisScreen
+---@param all boolean?
 function TARDIS:PopScreen(screen,all)
     if #screen.backstack>0 then
         local info=screen.backstack[#screen.backstack]
@@ -619,6 +622,9 @@ function TARDIS:LoadScreenUI(screen)
 end
 
 ---@param screen TardisScreen
+---@param frame Panel
+---@param func function
+---@param isvgui boolean?
 function TARDIS:LoadButtons(screen, frame, func, isvgui)
     if isvgui ~= nil and isvgui then
         local layout_rows
@@ -832,6 +838,8 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
     end
 end
 
+---@param id string
+---@param options table<string, any>
 function TARDIS:LoadScreen(id, options)
     local screen = vgui.Create("DPanel") --[[@as TardisScreen]]
     screen.id=id

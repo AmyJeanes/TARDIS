@@ -1,6 +1,7 @@
 if SERVER then
     util.AddNetworkString("TARDIS-Spawn-Delete-Sound")
 
+    ---@param entity gmod_tardis
     function TARDIS:SetupRandomSkin(entity)
         if not TARDIS:GetSetting("randomize_skins", entity) then return end
 

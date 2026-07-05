@@ -121,6 +121,7 @@ else
     end)
 end
 
+---@param id string|false
 function ENT:ChangeExteriorMetadata(id)
     if SERVER then
         self:SendMessage("exterior_metadata_update", {id})
@@ -131,7 +132,7 @@ function ENT:ChangeExteriorMetadata(id)
     end
     local original_md = self.metadata.ExteriorOriginal
 
-    local ext_md = (id == false and original_md) or TARDIS:CreateExteriorMetadata(id)
+    local ext_md = (id == false and original_md) or TARDIS:CreateExteriorMetadata(id --[[@as string]])
 
     local oldvortex = self.metadata.Exterior.Parts.vortex
     if oldvortex then
@@ -336,6 +337,7 @@ function ENT:ChangeExterior(id, animate, ply, retry)
     end)
 end
 
+---@param animate boolean?
 function ENT:RetryChameleon(animate)
     local id = self:GetData("chameleon_selected_exterior")
     local ply = self:GetData("chameleon_exterior_last_selector")
