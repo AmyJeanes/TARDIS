@@ -37,6 +37,7 @@ local default_custom_setting_values = {
 ---@param setting_id string
 ---@param ent Entity?
 ---@param default_val any
+---@return any
 function TARDIS:GetCustomSetting(int_id, setting_id, ent, default_val)
     int_id = self:GetMainVersionId(int_id)
 

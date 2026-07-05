@@ -26,13 +26,19 @@ if CLIENT then
 
     TARDIS.Spawnmenu = {}
 
+    ---@param dmenu DMenu
+    ---@param text string
     function TARDIS.Spawnmenu.AddLabel(dmenu, text)
         local label = vgui.Create("DLabel", dmenu)
         label:SetText("  " .. TARDIS:GetPhrase(text))
         label:SetTextColor(Color(0,0,0))
+        -- stub types AddPanel as a class-name factory, but it also accepts a panel instance
+        ---@diagnostic disable-next-line: param-type-mismatch
         dmenu:AddPanel(label)
     end
 
+    ---@param dmenu DMenu
+    ---@param id string
     function TARDIS.Spawnmenu.AddSingleVersion(dmenu, id)
         local spawn = dmenu:AddOption(TARDIS:GetPhrase("Spawnmenu.Spawn"), function()
             TARDIS:SpawnByID(id)
@@ -58,6 +64,9 @@ if CLIENT then
         copy:SetIcon("icon16/page_copy.png")
     end
 
+    ---@param dmenu DMenu
+    ---@param classic_doors_id string
+    ---@param double_doors_id string
     function TARDIS.Spawnmenu.AddDoubleVersion(dmenu, classic_doors_id, double_doors_id)
         TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.ClassicDoorsVersion")
         TARDIS.Spawnmenu.AddSingleVersion(dmenu, classic_doors_id)
@@ -68,15 +77,19 @@ if CLIENT then
         TARDIS.Spawnmenu.AddSingleVersion(dmenu, double_doors_id)
     end
 
+    ---@param dmenu DMenu
+    ---@param version tardis_version_entry
     function TARDIS.Spawnmenu.AddVersion(dmenu, version)
         if version.classic_doors_id then
-            TARDIS.Spawnmenu.AddDoubleVersion(dmenu, version.classic_doors_id, version.double_doors_id)
+            TARDIS.Spawnmenu.AddDoubleVersion(dmenu, version.classic_doors_id, assert(version.double_doors_id))
         else
             TARDIS.Spawnmenu.AddSingleVersion(dmenu, version.id)
         end
         dmenu:AddSpacer()
     end
 
+    ---@param dmenu DMenu
+    ---@param version tardis_version_entry
     function TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, version)
         if not version or not version.name then return end
 
@@ -88,6 +101,10 @@ if CLIENT then
         return submenu
     end
 
+    ---@param dmenu DMenu
+    ---@param int_id string
+    ---@param setting_id string
+    ---@param name string
     function TARDIS.Spawnmenu.AddBoolSetting(dmenu, int_id, setting_id, name)
         local setting_button = dmenu:AddOption(TARDIS:GetPhrase(name), function(self)
             TARDIS:ToggleCustomSetting(int_id, setting_id)
@@ -104,6 +121,12 @@ if CLIENT then
         return setting_button
     end
 
+    ---@param dmenu DMenu
+    ---@param int_id string
+    ---@param setting_id string
+    ---@param name string
+    ---@param options table?
+    ---@param compare_func? fun(a: any, b: any): boolean
     function TARDIS.Spawnmenu.AddListSetting(dmenu, int_id, setting_id, name, options, compare_func)
         local submenu = dmenu:AddSubMenu(TARDIS:GetPhrase(name), nil)
 
@@ -136,6 +159,8 @@ if CLIENT then
 
     end
 
+    ---@param parent DMenu
+    ---@param int_id string
     function TARDIS.Spawnmenu.AddChameleonSetting(parent, int_id)
         local exterior_setting_submenu = parent:AddSubMenu(TARDIS:GetPhrase("Spawnmenu.Chameleon"), nil)
 
@@ -155,6 +180,8 @@ if CLIENT then
         end
     end
 
+    ---@param parent DMenu
+    ---@param int_id string
     function TARDIS.Spawnmenu.AddSettings(parent, int_id)
         int_id = TARDIS:GetMainVersionId(int_id)
 
@@ -296,6 +323,8 @@ if CLIENT then
         return nil
     end
 
+    ---@param container Panel
+    ---@param update_current boolean?
     function TARDIS.Spawnmenu.UpdateIconMaterial(container, update_current)
         local mode = TARDIS:GetSetting("spawnmenu_icon_mode")
         local pack = TARDIS:GetSetting("icon_pack_config")
@@ -344,6 +373,7 @@ if CLIENT then
         end
     end
 
+    ---@param obj table
     function TARDIS.Spawnmenu.DoToggleFavorite(obj)
         TARDIS:ToggleFavoriteInt(obj.spawnname)
         TARDIS:AddSpawnmenuInterior(obj.spawnname)
@@ -351,6 +381,7 @@ if CLIENT then
         RunConsoleCommand("spawnmenu_reload")
     end
 
+    ---@param obj table
     function TARDIS.Spawnmenu.OpenRightClickMenu(obj)
         local dmenu = DermaMenu()
         local versions = TARDIS.MetadataVersions[obj.spawnname]
@@ -393,15 +424,22 @@ if CLIENT then
         dmenu:Open()
     end
 
+    ---@param container Panel
+    ---@param obj table
+    ---@param icon Panel
     function TARDIS.Spawnmenu.DoClickIconMenu(container, obj, icon)
         local id = TARDIS:SelectSpawnID(icon.spawnname_override or obj.spawnname, LocalPlayer())
         TARDIS:SpawnByID(id)
     end
 
+    ---@param container Panel
+    ---@param obj table
     function TARDIS.Spawnmenu.OpenIconMenu(container, obj)
         TARDIS.Spawnmenu.OpenRightClickMenu(obj)
     end
 
+    ---@param container Panel
+    ---@param obj table
     function TARDIS.Spawnmenu.CreateIcon(container, obj)
         if not obj.material then return end
         if not obj.nicename then return end
