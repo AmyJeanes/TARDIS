@@ -18,6 +18,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field CustomHooks table<string, tardis_custom_hook>?
 ---@field CustomControls table<string, tardis_custom_control>?
 ---@field CustomSettings table<string, tardis_custom_setting>?
+---@field CustomMessages table<string, function>?
 ---@field SyncExteriorBodygroupToDoors boolean?
 ---@field EnableClassicDoors boolean?
 ---@field Hidden boolean?

@@ -38,7 +38,7 @@ E.Parts={
     },
 }
 
-TARDIS:AddInteriorTemplate("exterior_sidrat", {
+TARDIS:AddInteriorTemplate("exterior_sidrat", TARDIS:NewInteriorTemplate({
     Exterior = TARDIS:CopyTable(E),
     Interior = {
         Parts={
@@ -48,7 +48,7 @@ TARDIS:AddInteriorTemplate("exterior_sidrat", {
             },
         }
     },
-})
+}))
 
 -- SIDRAT exterior
 E.ID = "sidrat"
@@ -101,7 +101,7 @@ E.Parts={
 }
 E.ScannerOffset = Vector(30,0,50)
 
-TARDIS:AddInteriorTemplate("exterior_ttcapsule_type40", {
+TARDIS:AddInteriorTemplate("exterior_ttcapsule_type40", TARDIS:NewInteriorTemplate({
     Exterior = TARDIS:CopyTable(E),
     Interior = {
         Parts={
@@ -112,7 +112,7 @@ TARDIS:AddInteriorTemplate("exterior_ttcapsule_type40", {
             },
         }
     },
-})
+}))
 
 -- Type 40 exterior
 E.ID = "ttcapsule_type40"
@@ -164,7 +164,7 @@ E.Parts={
     },
 }
 
-TARDIS:AddInteriorTemplate("exterior_ttcapsule_type50", {
+TARDIS:AddInteriorTemplate("exterior_ttcapsule_type50", TARDIS:NewInteriorTemplate({
     Exterior = TARDIS:CopyTable(E),
     Interior = {
         Parts={
@@ -175,7 +175,7 @@ TARDIS:AddInteriorTemplate("exterior_ttcapsule_type50", {
             },
         }
     },
-})
+}))
 
 -- Type 50 exterior
 E.ID = "ttcapsule_type50"
@@ -227,7 +227,7 @@ E.Parts={
     },
 }
 
-local ttcapsule_template = {
+local ttcapsule_template = TARDIS:NewInteriorTemplate({
     Exterior = TARDIS:CopyTable(E),
     Interior = {
         Parts={
@@ -238,7 +238,7 @@ local ttcapsule_template = {
             },
         }
     },
-}
+})
 TARDIS:AddInteriorTemplate("exterior_ttcapsule_type55", ttcapsule_template)
 TARDIS:AddInteriorTemplate("ttcapsule", ttcapsule_template)
 

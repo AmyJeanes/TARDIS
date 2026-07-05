@@ -223,9 +223,19 @@ function TARDIS:MergeTemplates(metadata, ent)
     return metadata
 end
 
+-- Types a partial template literal as tardis_metadata without literal-checking
+-- it (templates are partial metadata merged into an interior on apply, so
+-- downstream .Interior/.Exterior access must resolve). Mirrors NewInterior.
+---@api
+---@param def table
+---@return tardis_metadata
+function TARDIS:NewInteriorTemplate(def)
+    return def
+end
+
 ---@api
 ---@param id string
----@param template table
+---@param template tardis_metadata
 function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
 

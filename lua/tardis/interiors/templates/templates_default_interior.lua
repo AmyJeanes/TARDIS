@@ -1,4 +1,4 @@
-TARDIS:AddInteriorTemplate("default_lamps", {
+TARDIS:AddInteriorTemplate("default_lamps", TARDIS:NewInteriorTemplate({
     Interior = {
         Size = {
             Max = Vector(892.477, 457.64, 800)
@@ -77,9 +77,9 @@ TARDIS:AddInteriorTemplate("default_lamps", {
             end,
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_dynamic_color", {
+TARDIS:AddInteriorTemplate("default_dynamic_color", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         int_color = {
             inthooks = { ["Think"] = true },
@@ -106,7 +106,7 @@ TARDIS:AddInteriorTemplate("default_dynamic_color", {
             end,
         },
     },
-})
+}))
 
 local function get_color_setting_k(ply)
     local st = TARDIS:GetCustomSetting("default", "color", ply)
@@ -126,7 +126,7 @@ local function get_color_setting_k(ply)
     return 0
 end
 
-TARDIS:AddInteriorTemplate("default_fixed_color", {
+TARDIS:AddInteriorTemplate("default_fixed_color", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         int_color = {
             inthooks = {
@@ -140,7 +140,7 @@ TARDIS:AddInteriorTemplate("default_fixed_color", {
             end,
         },
     },
-})
+}))
 
 local function change_light_color(lt, col)
     if lt and lt.brightness and col then
@@ -178,7 +178,7 @@ local function set_interior_color_smith(int, k)
     int:SetData("default_int_color_set_mult", k)
 end
 
-TARDIS:AddInteriorTemplate("default_color_update_smith", {
+TARDIS:AddInteriorTemplate("default_color_update_smith", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         int_color_update = {
             inthooks = { ["Think"] = true },
@@ -194,7 +194,7 @@ TARDIS:AddInteriorTemplate("default_color_update_smith", {
             end,
         },
     },
-})
+}))
 
 local function set_interior_color_capaldi(int, k)
     if not int.light_data then return end
@@ -227,7 +227,7 @@ local function set_interior_color_capaldi(int, k)
     int:SetData("default_int_color_set_mult", k)
 end
 
-TARDIS:AddInteriorTemplate("default_color_update_capaldi", {
+TARDIS:AddInteriorTemplate("default_color_update_capaldi", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         int_color_update = {
             inthooks = { ["Think"] = true },
@@ -243,9 +243,9 @@ TARDIS:AddInteriorTemplate("default_color_update_capaldi", {
             end,
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_small_version", {
+TARDIS:AddInteriorTemplate("default_small_version", TARDIS:NewInteriorTemplate({
     Interior = {
         Size = {
             Min = Vector(-555.742, -461.072, 0),
@@ -266,17 +266,17 @@ TARDIS:AddInteriorTemplate("default_small_version", {
             default_corridors_small = { ang = Angle(0,90,0) },
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_small_version_lamp_fix", {
+TARDIS:AddInteriorTemplate("default_small_version_lamp_fix", TARDIS:NewInteriorTemplate({
     Interior = {
         Size = {
             Max = Vector(484.983, 514.944, 800)
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_studio_set_ceiling", {
+TARDIS:AddInteriorTemplate("default_studio_set_ceiling", TARDIS:NewInteriorTemplate({
      CustomHooks = {
         studio_set_ceiling = {
             inthooks = {
@@ -292,9 +292,9 @@ TARDIS:AddInteriorTemplate("default_studio_set_ceiling", {
             end,
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_screens_off", {
+TARDIS:AddInteriorTemplate("default_screens_off", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         screens_init = {
             inthooks = {
@@ -311,9 +311,9 @@ TARDIS:AddInteriorTemplate("default_screens_off", {
             default_flat_switch_1 = { EnabledOnStart = false, },
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_screens_on", {
+TARDIS:AddInteriorTemplate("default_screens_on", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         screens_init = {
             inthooks = {
@@ -330,9 +330,9 @@ TARDIS:AddInteriorTemplate("default_screens_on", {
             default_flat_switch_1 = { EnabledOnStart = true, },
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_smith", {
+TARDIS:AddInteriorTemplate("default_smith", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         init = {
             inthooks = {
@@ -349,9 +349,9 @@ TARDIS:AddInteriorTemplate("default_smith", {
             end,
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_capaldi", {
+TARDIS:AddInteriorTemplate("default_capaldi", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         init = {
             inthooks = {
@@ -394,9 +394,9 @@ TARDIS:AddInteriorTemplate("default_capaldi", {
             end,
         },
     },
-})
+}))
 
-TARDIS:AddInteriorTemplate("default_christmas", {
+TARDIS:AddInteriorTemplate("default_christmas", TARDIS:NewInteriorTemplate({
     Interior = {
         Parts = {
             default_decorations_christmas = {
@@ -415,4 +415,4 @@ TARDIS:AddInteriorTemplate("default_christmas", {
             end,
         }
     }
-})
+}))

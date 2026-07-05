@@ -91,7 +91,7 @@ local function can_be_outside(ext)
     end
 end
 
-TARDIS:AddInteriorTemplate("default_halloween", {
+TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
     Interior = {
         Parts = {
             pumpkin = {
@@ -471,4 +471,4 @@ TARDIS:AddInteriorTemplate("default_halloween", {
             self.interior:EmitSound(self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop)
         end,
     }
-})
+}))

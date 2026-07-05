@@ -63,4 +63,4 @@ E.ScannerOffset = Vector(25,0,50)
 
 TARDIS:AddExterior(E)
 
-TARDIS:AddInteriorTemplate("default_exterior", { Exterior = E, })
+TARDIS:AddInteriorTemplate("default_exterior", TARDIS:NewInteriorTemplate({ Exterior = E, }))
