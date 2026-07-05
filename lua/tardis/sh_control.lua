@@ -83,6 +83,7 @@ function TARDIS:CallControlMove(ent, hook, ...)
 end
 
 ---@api
+---@param id string
 function TARDIS:RemoveControl(id)
     controls[id]=nil
 end
@@ -93,6 +94,8 @@ function TARDIS:GetControls()
 end
 
 ---@api
+---@param id string
+---@param ent (gmod_tardis|gmod_tardis_interior)?
 ---@return tardis_control?
 function TARDIS:GetControl(id, ent)
     if ent and ent.metadata.CustomControls and ent.metadata.CustomControls[id] then

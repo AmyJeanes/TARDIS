@@ -1,6 +1,7 @@
 -- Fast return
 
 ---@api
+---@param callback fun(success: boolean)?
 function ENT:FastReturn(callback)
     local retpos, retang = self:GetData("fastreturn-pos"), self:GetData("fastreturn-ang")
 

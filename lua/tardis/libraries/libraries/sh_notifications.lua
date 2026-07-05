@@ -54,16 +54,25 @@ function TARDIS:MessageInternal(ply, error, message, ...)
 end
 
 ---@api
+---@param ply Player
+---@param message string
 function TARDIS:Message(ply, message, ...)
     return TARDIS:MessageInternal(ply, false, message, ...)
 end
 
 ---@api
+---@param ply Player
+---@param message string
 function TARDIS:ErrorMessage(ply, message, ...)
     return TARDIS:MessageInternal(ply, true, message, ...)
 end
 
 ---@api
+---@param ply Player
+---@param name string
+---@param condition boolean
+---@param enabled_msg? string
+---@param disabled_msg? string
 function TARDIS:StatusMessage(ply, name, condition, enabled_msg, disabled_msg)
     if not enabled_msg then enabled_msg = "Common.Enabled.Lower" end
     if not disabled_msg then disabled_msg = "Common.Disabled.Lower" end

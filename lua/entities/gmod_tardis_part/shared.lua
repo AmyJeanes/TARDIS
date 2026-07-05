@@ -42,17 +42,17 @@ hook.Add("CanDrive", "tardis-part", function(ply,ent)
     if ent.TardisPart then return false end
 end)
 
-function ENT:SetData(k,v,network)
-    return IsValid(self.exterior) and self.exterior:SetData(k, v, network)
+function ENT:SetData(key,value,network)
+    return IsValid(self.exterior) and self.exterior:SetData(key, value, network)
 end
 
 ---@generic T
----@param k string
+---@param key string
 ---@param default? T
 ---@return T
-function ENT:GetData(k,default)
+function ENT:GetData(key,default)
     if IsValid(self.exterior) then
-        return self.exterior:GetData(k, default)
+        return self.exterior:GetData(key, default)
     else
         return default
     end

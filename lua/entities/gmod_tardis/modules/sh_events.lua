@@ -16,11 +16,14 @@ function ENT:IsChristmasEvent()
 end
 
 ---@api
+---@return integer?
 function ENT:GetEvent()
     return self:GetData("event")
 end
 
 ---@api
+---@param force boolean?
+---@param all boolean?
 function ENT:NotifyEvent(force, all)
     local event = self:GetEvent()
     if not event then return end

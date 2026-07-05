@@ -45,6 +45,7 @@ if CLIENT then
 end
 
 ---@api
+---@param on boolean
 function ENT:SetCloisters(on)
     self:SetData("cloisters",on,true)
 end

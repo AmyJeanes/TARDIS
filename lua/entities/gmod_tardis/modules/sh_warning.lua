@@ -14,6 +14,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param on boolean
     function ENT:SetWarning(on)
         self:SetData("warning", on, true)
         self:CallCommonHook("WarningToggled", on)

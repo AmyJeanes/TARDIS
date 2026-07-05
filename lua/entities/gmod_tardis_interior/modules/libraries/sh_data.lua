@@ -7,14 +7,23 @@ if SERVER then
 end
 
 ---@api
-function ENT:SetData(k,v,network)
-    return IsValid(self.exterior) and self.exterior:SetData(k, v, network)
+---@generic T
+---@param key string
+---@param value T
+---@param network? boolean
+---@return T|false
+function ENT:SetData(key,value,network)
+    return IsValid(self.exterior) and self.exterior:SetData(key, value, network)
 end
 
 ---@api
-function ENT:GetData(k,default)
+---@generic T
+---@param key string
+---@param default? T
+---@return T
+function ENT:GetData(key,default)
     if IsValid(self.exterior) then
-        return self.exterior:GetData(k, default)
+        return self.exterior:GetData(key, default)
     else
         return default
     end

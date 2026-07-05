@@ -7,6 +7,7 @@ end
 
 if SERVER then
     ---@api
+    ---@param on boolean
     function ENT:SetFlightlessFlight(on)
         local flightfirst = self:GetData("flight")
         if on then

@@ -11,6 +11,7 @@ ENT:AddHook("Initialize","parts",function(self)
 end)
 
 ---@api
+---@param id string
 function ENT:GetPart(id)
     return self.parts and self.parts[id] or NULL
 end
@@ -36,6 +37,9 @@ end)
 
 if SERVER then
     ---@api
+    ---@param id string
+    ---@param invisible boolean?
+    ---@param nofade boolean?
     function ENT:SetPartInvisible(id, invisible, nofade)
         local invisible_parts = self:GetData("invisible_int_parts", {})
         invisible_parts[id] = {

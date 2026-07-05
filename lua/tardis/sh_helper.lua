@@ -10,6 +10,8 @@ function TARDIS:Benchmark(name,func)
 end
 
 ---@api
+---@param ent Entity
+---@param ply Player?
 ---@return Vector?
 ---@return Angle?
 function TARDIS:GetLocalPos(ent,ply)
@@ -69,6 +71,9 @@ local pp_trace = {
 
 -- Prop Protection
 ---@api
+---@param ply Player
+---@param ent Entity
+---@return boolean?
 function TARDIS:CheckPP(ply, ent)
     pp_trace.Entity = ent
     return hook.Call("CanTool", GAMEMODE, ply, pp_trace, "")

@@ -7,17 +7,21 @@ end
 
 if SERVER then
     ---@api
+    ---@param time number
     function ENT:FlashLight(time)
         self:SendMessage("flash-light", { time })
     end
 
     ---@api
+    ---@param enabled boolean
+    ---@return boolean
     function ENT:SetFlashLight(enabled)
         self:SetData("flash-light-enabled", enabled, true)
         return enabled
     end
 
     ---@api
+    ---@return boolean
     function ENT:ToggleFlashLight()
         return self:SetFlashLight(not self:GetFlashLight())
     end

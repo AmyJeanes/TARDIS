@@ -19,12 +19,15 @@ ENT:AddHook("StopDemat", "no_vortex", function(self)
 end)
 
 ---@api
+---@return boolean
 function ENT:ToggleFastRemat()
     local on = not self:GetFastRemat()
     return self:SetFastRemat(on)
 end
 
 ---@api
+---@param on boolean
+---@param force boolean?
 function ENT:SetFastRemat(on, force)
     if self:CallHook("CanToggleFastRemat", force) == false then
         return false

@@ -86,6 +86,7 @@ function TARDIS:IsNewInstall()
 end
 
 ---@api
+---@param version tardis_version?
 function TARDIS:GetVersionString(version)
     version = version or self.Version
     return string.format("%d.%d.%d", version.Major, version.Minor, version.Patch)
@@ -156,6 +157,9 @@ function TARDIS:IsVersionEqualTo(versionStrOrTbl, compareVersionStrOrTbl)
 end
 
 ---@api
+---@param name string
+---@param fromVersion string
+---@param func fun(self: TARDIS)
 function TARDIS:AddMigration(name, fromVersion, func)
     local source = debug.getinfo(2).short_src
 

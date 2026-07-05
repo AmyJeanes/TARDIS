@@ -7,6 +7,9 @@ TARDIS.CurrentLanguage = TARDIS.CurrentLanguage
 TARDIS.DefaultLanguage = "en"
 
 ---@api
+---@param phrase string?
+---@param ... any
+---@return string
 function TARDIS:GetPhrase(phrase, ...)
     if not phrase then
         return ""
@@ -36,12 +39,17 @@ function TARDIS:FormatString(str, ...)
 end
 
 ---@api
+---@param phrase string?
+---@return boolean
 function TARDIS:PhraseExists(phrase)
     local cache = self.LanguageCache[self.CurrentLanguage]
     return cache[phrase] ~= nil
 end
 
 ---@api
+---@param phrase string?
+---@param ... any
+---@return string?
 function TARDIS:GetPhraseIfExists(phrase, ...)
     if not phrase then
         return nil
@@ -58,37 +66,37 @@ function TARDIS:GetPhraseIfExists(phrase, ...)
 end
 
 ---@api
-function TARDIS:AddLanguage(t)
-    if not (t.Code and t.Phrases and t.Name) then
+function TARDIS:AddLanguage(language)
+    if not (language.Code and language.Phrases and language.Name) then
         error("TARDIS:AddLanguage: Invalid language configuration")
     end
     local lang = {}
-    lang.Name = t.Name
-    lang.Base = t.Base
-    lang.Extends = t.Extends
-    lang.Phrases = t.Phrases
+    lang.Name = language.Name
+    lang.Base = language.Base
+    lang.Extends = language.Extends
+    lang.Phrases = language.Phrases
 
-    self.Languages[t.Code] = lang
+    self.Languages[language.Code] = lang
 
-    self:CompileLanguage(t.Code)
+    self:CompileLanguage(language.Code)
     self:UpdateLanguage()
 end
 
 ---@api
-function TARDIS:AddLanguageExtension(t)
-    if not (t.Code and t.Phrases and t.Extends) then
+function TARDIS:AddLanguageExtension(extension)
+    if not (extension.Code and extension.Phrases and extension.Extends) then
         error("TARDIS:AddLanguageExtension: Invalid language extension configuration")
     end
 
     local langExtension = {}
-    langExtension.Phrases = t.Phrases
+    langExtension.Phrases = extension.Phrases
 
-    local extensions = self.LanguageExtensions[t.Extends] or {}
-    self.LanguageExtensions[t.Extends] = extensions
-    extensions[t.Code] = langExtension
+    local extensions = self.LanguageExtensions[extension.Extends] or {}
+    self.LanguageExtensions[extension.Extends] = extensions
+    extensions[extension.Code] = langExtension
 
-    if self.Languages[t.Extends] then
-        self:CompileLanguage(t.Extends)
+    if self.Languages[extension.Extends] then
+        self:CompileLanguage(extension.Extends)
     end
 end
 
@@ -156,6 +164,7 @@ function TARDIS:CompileLanguage(code)
 end
 
 ---@api
+---@return string
 function TARDIS:GetLanguage()
     if not TARDIS.CurrentLanguage then
         self:UpdateLanguage()

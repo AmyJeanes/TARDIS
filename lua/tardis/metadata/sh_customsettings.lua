@@ -1,4 +1,6 @@
 ---@api
+---@param ent Entity?
+---@return table<string, table<string, any>>
 function TARDIS:GetCustomSettings(ent)
     return TARDIS:GetSetting("interior_custom_settings", ent) or {} -- nil is never allowed
 end
@@ -30,6 +32,10 @@ local default_custom_setting_values = {
 }
 
 ---@api
+---@param int_id string
+---@param setting_id string
+---@param ent Entity?
+---@param default_val any
 function TARDIS:GetCustomSetting(int_id, setting_id, ent, default_val)
     int_id = self:GetMainVersionId(int_id)
 
@@ -65,6 +71,9 @@ if CLIENT then
     end
 
     ---@api
+    ---@param int_id string
+    ---@param setting_id string
+    ---@param value any
     function TARDIS:SetCustomSetting(int_id, setting_id, value)
         int_id = self:GetMainVersionId(int_id)
 
@@ -75,6 +84,7 @@ if CLIENT then
     end
 
     ---@api
+    ---@param int_id string?
     function TARDIS:ResetCustomSettings(int_id)
         int_id = self:GetMainVersionId(int_id)
 
@@ -89,6 +99,8 @@ if CLIENT then
     end
 
     ---@api
+    ---@param int_id string
+    ---@param setting_id string
     function TARDIS:ToggleCustomSetting(int_id, setting_id)
         local value = TARDIS:GetCustomSetting(int_id, setting_id)
         TARDIS:SetCustomSetting(int_id, setting_id, (not value))
@@ -99,17 +111,23 @@ end
 -- Favorites
 
 ---@api
+---@param id string
+---@param ent Entity?
+---@return boolean
 function TARDIS:IsFavoriteInt(id, ent)
     return self:GetCustomSetting(id, "is_favorite", ent, false)
 end
 
 if CLIENT then
     ---@api
+    ---@param id string
+    ---@param favorite boolean
     function TARDIS:SetFavoriteInt(id, favorite)
         self:SetCustomSetting(id, "is_favorite", favorite)
     end
 
     ---@api
+    ---@param id string
     function TARDIS:ToggleFavoriteInt(id)
         self:ToggleCustomSetting(id, "is_favorite")
     end

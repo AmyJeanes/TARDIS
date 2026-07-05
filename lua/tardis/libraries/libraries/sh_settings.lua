@@ -69,6 +69,7 @@ function TARDIS:AddSetting(data)
 end
 
 ---@api
+---@param id string
 function TARDIS:GetSettingData(id)
     return self.SettingsData[id]
 end
@@ -82,6 +83,9 @@ end
 -- Accessing
 
 ---@api
+---@param id string
+---@param value any
+---@param ignore_convar boolean?
 function TARDIS:SetSetting(id, value, ignore_convar)
     local data = self.SettingsData[id]
     local old_value
@@ -151,6 +155,8 @@ function TARDIS:SetSetting(id, value, ignore_convar)
 end
 
 ---@api
+---@param id string
+---@param no_default boolean?
 function TARDIS:GetSetting(id, src, no_default)
     local ply
     if IsValid(src) and not src:IsPlayer() and not src.TardisExterior then

@@ -15,12 +15,14 @@ end
 
 if SERVER then
     ---@api
+    ---@return boolean
     function ENT:ToggleRepair()
         local on = not self:GetRepairPrimed()
         return self:SetRepair(on)
     end
 
     ---@api
+    ---@param on boolean
     function ENT:SetRepair(on)
         if not TARDIS:GetSetting("health-enabled")
             and self:GetHealth() ~= self:GetHealthMax()

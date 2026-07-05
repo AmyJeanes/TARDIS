@@ -154,8 +154,8 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field NoExtraNoLO tardis_interior_light_state?
 
 ---@class tardis_light_override
----@field basebrightness number?
----@field nopowerbrightness number?
+---@field basebrightness number
+---@field nopowerbrightness number
 ---@field transitionspeed number
 ---@field basebrightnessRGB Vector|number[]|nil
 
@@ -587,14 +587,14 @@ function TARDIS:NewInterior()
 end
 
 ---@api
-function TARDIS:AddInterior(t)
-    t = table.Copy(t)
+function TARDIS:AddInterior(interior)
+    interior = table.Copy(interior)
 
-    local id = t.ID
+    local id = interior.ID
 
-    self.MetadataRaw[id] = t
+    self.MetadataRaw[id] = interior
 
-    local error = self:ValidateMetadata(t)
+    local error = self:ValidateMetadata(interior)
     if error then
         ErrorNoHalt("TARDIS: Error in interior '"..id.."' metadata: "..error.."\n")
         return
@@ -689,6 +689,8 @@ function TARDIS:GetInteriors()
 end
 
 ---@api
+---@param id string
+---@return tardis_metadata?
 function TARDIS:GetInterior(id)
     return self.Metadata[id] or self.MetadataRaw[id]
 end

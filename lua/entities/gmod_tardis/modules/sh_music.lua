@@ -2,6 +2,7 @@
 
 if SERVER then
     ---@api
+    ---@param ply Player?
     function ENT:PlayMusic(url, ply)
         if url then
             if ply and (not self:CheckSecurity(ply)) then
@@ -40,6 +41,7 @@ if SERVER then
 end
 
 ---@api
+---@param network boolean
 function ENT:StopMusic(network)
     if IsValid(self.music) then
         if self.music:GetState() == GMOD_CHANNEL_PLAYING then
@@ -63,6 +65,7 @@ function ENT:ResolveMusicURL(url)
 end
 
 ---@api
+---@param resolved boolean?
 function ENT:PlayMusic(url,resolved)
     if not resolved then
         TARDIS:Message(LocalPlayer(), "Music.Loading")

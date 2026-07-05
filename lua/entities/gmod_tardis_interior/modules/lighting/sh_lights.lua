@@ -215,6 +215,7 @@ local function ChangeSingleLightState(light_table, state)
 end
 
 ---@api
+---@param state string
 function ENT:ApplyLightState(state)
     self:SetData("light_state", state)
     self:CallHook("LightStateChanged", state)

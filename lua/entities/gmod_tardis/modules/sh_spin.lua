@@ -6,11 +6,14 @@ function ENT:GetSpin()
 end
 
 ---@api
+---@param ignore_enabled boolean?
+---@return integer
 function ENT:GetSpinDir(ignore_enabled)
     return ignore_enabled and self:GetData("spin-dir",-1) or (self:GetSpin() and self:GetData("spin-dir",-1) or 0)
 end
 
 ---@api
+---@param ignore_enabled boolean?
 function ENT:GetSpinDirText(ignore_enabled)
     local current = self:GetSpinDir(ignore_enabled)
 
@@ -33,12 +36,15 @@ if SERVER then
     end)
 
     ---@api
+    ---@param dir integer
     function ENT:SetSpinDir(dir)
         self:SetData("spin-dir", dir, true)
         self:CallHook("SpinChanged", self:GetSpinDir())
     end
 
     ---@api
+    ---@param on boolean
+    ---@param dir integer?
     function ENT:SetSpin(on, dir)
         self:SetData("spin", on, true)
         if dir ~= nil then

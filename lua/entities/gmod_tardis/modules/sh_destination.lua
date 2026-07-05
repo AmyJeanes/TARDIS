@@ -235,6 +235,8 @@ end)
 
 if SERVER then
     ---@api
+    ---@param pos Vector?
+    ---@param ang Angle?
     function ENT:SetDestination(pos, ang)
         if self:CallCommonHook("CanChangeDestination", pos, ang) == false then
             return false
@@ -252,16 +254,19 @@ if SERVER then
     end
 
     ---@api
+    ---@param pos Vector
     function ENT:SetDestinationPos(pos)
         return self:SetDestination(pos, self:GetData("destination_ang"))
     end
 
     ---@api
+    ---@param ang Angle
     function ENT:SetDestinationAng(ang)
         return self:SetDestination(self:GetData("destination_pos"), ang)
     end
 
     ---@api
+    ---@param grounded boolean
     function ENT:SetRandomDestination(grounded)
         local randomLocation = self:GetRandomLocation(grounded)
         if randomLocation then
@@ -273,6 +278,8 @@ if SERVER then
     end
 
     ---@api
+    ---@param ply Player
+    ---@param enabled boolean
     function ENT:SelectDestination(ply, enabled)
         if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] then
             if ply:GetTardisData("thirdperson") then
@@ -661,11 +668,15 @@ function ENT:GetDestination()
 end
 
 ---@api
+---@param auto boolean?
+---@return Vector?
 function ENT:GetDestinationPos(auto)
     return self:GetData("destination_pos") or (auto and self:GetPos() or nil)
 end
 
 ---@api
+---@param auto boolean?
+---@return Angle?
 function ENT:GetDestinationAng(auto)
     return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
 end
@@ -926,6 +937,8 @@ function ENT:FindPosInBox(p1, p2)
 end
 
 ---@api
+---@param grounded boolean
+---@return Vector
 function ENT:GetRandomLocation(grounded)
     local max = 16384
 

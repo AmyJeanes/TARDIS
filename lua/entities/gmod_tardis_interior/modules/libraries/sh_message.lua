@@ -5,6 +5,9 @@ if SERVER then
 end
 
 ---@api
+---@param name string
+---@param data table?
+---@param ply Player?
 function ENT:SendMessage(name,data,ply)
     net.Start("TARDIS-MessageInt")
     net.WriteEntity(self)
@@ -32,6 +35,7 @@ end
 local messagehandlers={}
 ---@api
 ---@param func fun(self: gmod_tardis_interior, data: any, ply: Player)
+---@param name string
 function ENT:OnMessage(name,func)
     messagehandlers[name]=func
 end

@@ -14,11 +14,14 @@ end)
 
 if SERVER then
     ---@api
+    ---@return boolean
     function ENT:TogglePower()
         return self.exterior:TogglePower()
     end
 
     ---@api
+    ---@param on boolean
+    ---@return boolean
     function ENT:SetPower(on)
         return self.exterior:SetPower(on)
     end

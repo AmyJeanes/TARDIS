@@ -47,6 +47,8 @@ TARDIS:AddMigration("music-move", "2025.2.0", function(self)
 end)
 
 ---@api
+---@param name string
+---@param url string
 function TARDIS:AddCustomMusic(name, url)
     if name == nil or name == "" then
         TARDIS:ErrorMessage(LocalPlayer(), "Screens.Music.MissingName")
@@ -70,6 +72,7 @@ function TARDIS:AddCustomMusic(name, url)
 end
 
 ---@api
+---@param index integer
 function TARDIS:RemoveCustomMusic(index)
     local removed = custom_music[index]
     if not removed then return end

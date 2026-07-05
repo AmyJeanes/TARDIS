@@ -26,14 +26,14 @@ function TARDIS:NewExterior()
 end
 
 ---@api
-function TARDIS:AddExterior(t)
-    local id = t.ID
-    t.Category = t.Category or "Exteriors.Categories.Misc"
+function TARDIS:AddExterior(exterior)
+    local id = exterior.ID
+    exterior.Category = exterior.Category or "Exteriors.Categories.Misc"
 
     self:ClearExteriorMetadata(id)
-    self.ExteriorsMetadataRaw[id] = t
+    self.ExteriorsMetadataRaw[id] = exterior
 
-    self:SetExteriorCategory(id, t.Category)
+    self:SetExteriorCategory(id, exterior.Category)
 end
 
 --[[
@@ -45,6 +45,8 @@ supported import_options:
     modify_func
 ]]
 ---@api
+---@param int_id string
+---@param import_options table?
 function TARDIS:ImportExterior(int_id, import_options)
     import_options = import_options or {}
 
@@ -100,6 +102,7 @@ function TARDIS:SetupExteriorMetadata(id)
 end
 
 ---@api
+---@param id string
 ---@return tardis_exterior_metadata
 function TARDIS:CreateExteriorMetadata(id)
     self:SetupExteriorMetadata(id)

@@ -7,6 +7,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param on boolean
     function ENT:SetHADS(on)
         self:CallCommonHook("HadsToggled", on)
         self:SetData("hads",on,true)

@@ -5,6 +5,7 @@ function ENT:GetShieldsMax()
 end
 
 ---@api
+---@return number
 function ENT:GetShieldsLevel()
     return self:GetData("shields_val")
 end
@@ -17,6 +18,7 @@ function ENT:GetShieldsPercent()
 end
 
 ---@api
+---@return boolean
 function ENT:GetShieldsOn()
     return self:GetData("shields_on")
 end
@@ -31,6 +33,8 @@ end
 
 if SERVER then
     ---@api
+    ---@param value number
+    ---@param force boolean?
     function ENT:SetShieldsLevel(value, force)
         if not self:GetShieldsOn() and not force then return end
 
@@ -45,6 +49,8 @@ if SERVER then
     end
 
     ---@api
+    ---@param value number
+    ---@param force boolean?
     function ENT:AddShieldsLevel(value, force)
         if not self:GetShieldsOn() and not force then return end
 
@@ -59,6 +65,7 @@ if SERVER then
     end)
 
     ---@api
+    ---@param on boolean
     function ENT:SetShieldsOn(on)
         if self:CallCommonHook("CanToggleShields", on) == false then
             return false

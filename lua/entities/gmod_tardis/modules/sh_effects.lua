@@ -2,10 +2,11 @@
 
 if SERVER then
     ---@api
-    function ENT:Explode(f)
+    ---@param magnitude number?
+    function ENT:Explode(magnitude)
         local force = 60
-        if f ~= nil then
-            force = tostring(f)
+        if magnitude ~= nil then
+            force = tostring(magnitude)
         end
         local explode = ents.Create("env_explosion")
         explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
@@ -174,6 +175,7 @@ else -- CLIENT
     end
 
     ---@api
+    ---@param power number
     function ENT:InteriorSparks(power)
         if self.effect_pos == nil then
             get_effect_pos(self)
@@ -189,6 +191,7 @@ else -- CLIENT
     end
 
     ---@api
+    ---@param power number
     function ENT:ExteriorSparks(power)
         local effect_data = EffectData()
         effect_data:SetOrigin(self:GetPos())

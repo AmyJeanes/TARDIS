@@ -137,6 +137,7 @@ function TARDIS:GetIconPacks()
 end
 
 ---@api
+---@param id string
 ---@return tardis_icon_pack?
 function TARDIS:GetIconPack(id)
     return self.iconpacks[id]
@@ -150,9 +151,9 @@ function TARDIS:NewIconPack()
 end
 
 ---@api
-function TARDIS:AddIconPack(t)
+function TARDIS:AddIconPack(iconpack)
     ---@type tardis_icon_pack
-    local pack = table.Copy(t)
+    local pack = table.Copy(iconpack)
 
     if not pack.ID then
         ErrorNoHalt("TARDIS: Icon pack missing ID\n")
@@ -295,6 +296,10 @@ local function lookup_pack_icon(self, pack_id, category, id)
 end
 
 ---@api
+---@param category string
+---@param id string
+---@param config_override? table
+---@return string?
 function TARDIS:GetIcon(category, id, config_override)
     if id == nil or category == nil then return nil end
 
@@ -312,6 +317,9 @@ function TARDIS:GetIcon(category, id, config_override)
 end
 
 ---@api
+---@param category string
+---@param config_override? table
+---@return string?
 function TARDIS:GetMissingIcon(category, config_override)
     if category == nil then return nil end
 
@@ -331,16 +339,25 @@ function TARDIS:GetMissingIcon(category, config_override)
 end
 
 ---@api
+---@param id string
+---@param config_override? table
+---@return string?
 function TARDIS:GetSpawnIcon(id, config_override)
     return self:GetIcon(self.IconCategory.Spawnicon, id, config_override)
 end
 
 ---@api
+---@param id string
+---@param config_override? table
+---@return string?
 function TARDIS:GetExteriorIcon(id, config_override)
     return self:GetIcon(self.IconCategory.Exterior, id, config_override)
 end
 
 ---@api
+---@param id string
+---@param config_override? table
+---@return string?
 function TARDIS:GetInteriorIcon(id, config_override)
     return self:GetIcon(self.IconCategory.Interior, id, config_override)
 end

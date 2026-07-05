@@ -14,6 +14,8 @@ TARDIS:AddKeyBind("vortex-toggle",{
 })
 
 ---@api
+---@param pilot Player?
+---@return boolean
 function ENT:IsVortexEnabled(pilot)
     local hookResult = self:CallHook("VortexEnabled", pilot)
     if hookResult ~= nil then return hookResult end

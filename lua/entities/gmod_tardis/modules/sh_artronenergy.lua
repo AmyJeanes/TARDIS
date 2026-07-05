@@ -40,6 +40,7 @@ if SERVER then
     }
 
     ---@api
+    ---@param value number
     function ENT:SetArtron(value)
         local maxArtron = TARDIS:GetSetting("artron_energy_max")
         value = math.max(0, math.min(value, maxArtron))
@@ -50,6 +51,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param value number
     function ENT:AddArtron(value)
         local currentArtron = self:GetArtron()
         self:SetArtron(currentArtron + value)

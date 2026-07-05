@@ -9,6 +9,7 @@ function TARDIS:AddTipStyle(style)
 end
 
 ---@api
+---@param id string
 function TARDIS:RemoveTipStyle(id)
     tip_styles[id]=nil
 end
@@ -19,6 +20,7 @@ function TARDIS:GetTipStyles()
 end
 
 ---@api
+---@param id string
 ---@return tardis_tip
 function TARDIS:GetTipStyle(id)
     if tip_styles[id] then

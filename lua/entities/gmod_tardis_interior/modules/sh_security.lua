@@ -6,12 +6,15 @@ function ENT:GetSecurity()
 end
 
 ---@api
+---@param ply Player
+---@return boolean
 function ENT:CheckSecurity(ply)
     return self.exterior:CheckSecurity(ply)
 end
 
 if SERVER then
     ---@api
+    ---@param on boolean
     function ENT:SetSecurity(on)
         return self.exterior:SetSecurity(on)
     end

@@ -66,6 +66,8 @@
 ---@field RestoreHexLayout function
 
 ---@api
+---@param name string
+---@param ply Player?
 function TARDIS:PopToScreen(name, ply)
     if SERVER then
         if IsValid(ply) and ply:IsPlayer() then
@@ -96,6 +98,8 @@ TARDIS.fonts = {}
 TARDIS.fontcache = {}
 ---@api
 ---@param screen TardisScreen
+---@param name string
+---@return string
 function TARDIS:GetScreenFont(screen, name)
     local scale = screen.res * screen.resscale
     if not self.fontcache[scale] then self.fontcache[scale] = {} end
@@ -114,6 +118,7 @@ function TARDIS:GetScreenFont(screen, name)
 end
 
 ---@api
+---@param name string
 function TARDIS:CreateScreenFont(name, font)
     self.fonts[name] = font
 end
@@ -165,6 +170,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
 ---@type table<string, {[1]: tardis_screen_options, [2]: function}>
 local screens={}
 ---@api
+---@param name string
 ---@param func fun(self, ext, int, frame, screen: TardisScreen)
 function TARDIS:AddScreen(name,options,func)
     if options.id == nil then options.id = name end
@@ -173,6 +179,8 @@ end
 TARDIS:LoadFolder("screens")
 
 ---@api
+---@param name string
+---@return TardisScreen[]?
 function TARDIS:ScreenActive(name)
     local int=TARDIS:GetInteriorEnt()
     local t={}
@@ -311,6 +319,7 @@ function TARDIS:RemoveHUDScreen()
 end
 
 ---@api
+---@param window Panel?
 function TARDIS:HUDScreen(window)
     if IsValid(self.screenpopframe) then
         self:RemoveHUDScreen()
@@ -320,7 +329,7 @@ function TARDIS:HUDScreen(window)
         self.screen_in_context_menu = nil
     end
 
-    local frame = window or vgui.Create("DFrame")
+    local frame = (window or vgui.Create("DFrame")) --[[@as DFrame]]
     frame:SetSkin("TARDIS")
     frame:SetTitle(TARDIS:GetPhrase("Common.Interface"))
     frame:SetDraggable(true)

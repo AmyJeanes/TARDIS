@@ -43,6 +43,7 @@ Full documentation for control sequences will be available on the wiki.
 
 
 ---@api
+---@return boolean
 function ENT:GetSequencesEnabled()
     return TARDIS:GetSetting("csequences-enabled", self)
 end

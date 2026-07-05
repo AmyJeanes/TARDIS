@@ -15,34 +15,43 @@ end
 
 if SERVER then
     ---@api
+    ---@param on boolean
+    ---@return boolean
     function ENT:SetConsoleEnabled(on)
         self:CallHook("ConsoleToggled", on)
         return self:SetData("console_on", on, true)
     end
 
     ---@api
+    ---@param on boolean
+    ---@return boolean
     function ENT:SetHandbrakeControlEnabled(on)
         self:CallHook("HandbrakeControlToggled", on)
         return self:SetData("handbrake_control_on", on, true)
     end
 
     ---@api
+    ---@param on boolean
+    ---@return boolean
     function ENT:SetTeleportControlEnabled(on)
         self:CallHook("TeleportControlToggled", on)
         return self:SetData("teleport_control_on", on, true)
     end
 
     ---@api
+    ---@return boolean
     function ENT:ToggleConsole()
         return self:SetConsoleEnabled(not self:GetConsoleEnabled())
     end
 
     ---@api
+    ---@return boolean
     function ENT:ToggleHandbrakeControl()
         return self:SetHandbrakeControlEnabled(not self:GetHandbrakeControlEnabled())
     end
 
     ---@api
+    ---@return boolean
     function ENT:ToggleTeleportControl()
         return self:SetTeleportControlEnabled(not self:GetTeleportControlEnabled())
     end

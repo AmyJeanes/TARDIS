@@ -25,6 +25,10 @@ function TARDIS:SaveLocations()
 end
 
 ---@api
+---@param pos Vector
+---@param ang Angle
+---@param name string
+---@param map string
 function TARDIS:AddLocation(pos,ang,name,map)
     if TARDIS.Locations and TARDIS.Locations[map] then
 
@@ -66,6 +70,8 @@ function TARDIS:AddLocation(pos,ang,name,map)
 end
 
 ---@api
+---@param map string
+---@param index integer
 function TARDIS:RemoveLocation(map,index)
     table.remove(TARDIS.Locations[map],index)
     TARDIS:SaveLocations()

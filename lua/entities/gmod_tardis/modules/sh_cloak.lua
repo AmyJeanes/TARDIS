@@ -33,6 +33,7 @@ end
 
 if SERVER then
     ---@api
+    ---@param on boolean
     function ENT:SetCloak(on)
         if self:CallHook("CanToggleCloak")==false then return false end
         self:SetData("cloak", on)

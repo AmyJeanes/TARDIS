@@ -65,6 +65,8 @@ TARDIS:AddKeyBind("float-brake",{
 
 if SERVER then
     ---@api
+    ---@param on boolean
+    ---@return boolean?
     function ENT:SetFloat(on)
         if (not on) and self:CallHook("CanTurnOffFloat")==false then return end
         if (on) and self:CallHook("CanTurnOnFloat")==false then return end
@@ -75,6 +77,7 @@ if SERVER then
     end
 
     ---@api
+    ---@return boolean?
     function ENT:ToggleFloat()
         local on=not self:GetData("float",false)
         if self:GetData("flight") then

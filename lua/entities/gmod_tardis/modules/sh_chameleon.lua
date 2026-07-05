@@ -161,6 +161,10 @@ if CLIENT then
 end
 
 ---@api
+---@param id string|false|nil
+---@param animate boolean
+---@param ply Player?
+---@param retry boolean?
 function ENT:ChangeExterior(id, animate, ply, retry)
     if CLIENT then
         self:SendMessage("chameleon_change_exterior", {id, animate, ply, retry})

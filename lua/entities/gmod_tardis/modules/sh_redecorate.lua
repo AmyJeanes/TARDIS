@@ -19,6 +19,7 @@ local saved_data_names = {
 
 if SERVER then
     ---@api
+    ---@param on boolean
     function ENT:SetRedecoration(on)
         if self:CallCommonHook("CanToggleRedecoration", on) == false
             or self:CallHook("CanRepair") == false

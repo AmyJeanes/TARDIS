@@ -33,6 +33,9 @@ end)
 
 if SERVER then
     ---@api
+    ---@param id string
+    ---@param invisible boolean?
+    ---@param nofade boolean?
     function ENT:SetPartInvisible(id, invisible, nofade)
         local invisible_parts = self:GetData("invisible_int_parts") or {}
         invisible_parts[id] = {

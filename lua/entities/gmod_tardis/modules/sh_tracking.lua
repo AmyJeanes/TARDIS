@@ -45,6 +45,7 @@ TARDIS:AddKeyBind("tracking-rotation",{
 })
 
 ---@api
+---@return Entity?
 function ENT:GetTracking()
     return self:GetData("tracking-ent")
 end
@@ -190,6 +191,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param on boolean
     function ENT:SetTrackRotation(on)
         if self:GetTrackRotation() == on then return end
 
@@ -557,7 +559,7 @@ else
     end)
 
     ENT:OnMessage("tracking-pilotwarning", function(self)
-        local keyName = input.GetKeyName(TARDIS:GetBindKey("tracking"))
+        local keyName = input.GetKeyName(TARDIS:GetBindKey("tracking") --[[@as BUTTON_CODE]])
         TARDIS:Message(LocalPlayer(), "Controls.Tracking.PilotWarning", string.upper(keyName))
     end)
 

@@ -12,6 +12,9 @@ end
 
 if SERVER then
     ---@api
+    ---@param callback fun(state: boolean)?
+    ---@param force boolean?
+    ---@return boolean
     function ENT:ToggleLocked(callback, force)
         return self:SetLocked(not self:Locked(), callback, nil, force)
     end
@@ -27,6 +30,10 @@ if SERVER then
     end
 
     ---@api
+    ---@param locked boolean
+    ---@param callback fun(state: boolean)?
+    ---@param silent boolean?
+    ---@param force boolean?
     function ENT:SetLocked(locked, callback, silent, force)
         if not self:CallHook("CanLock") then return false end
         if locked then

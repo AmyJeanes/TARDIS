@@ -1,4 +1,5 @@
 ---@api
+---@param id string
 function TARDIS:SpawnByID(id)
     RunConsoleCommand("tardis2_spawn", id)
     surface.PlaySound("ui/buttonclickrelease.wav")

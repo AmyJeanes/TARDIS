@@ -16,11 +16,14 @@ function ENT:IsChristmasEvent()
 end
 
 ---@api
+---@return integer?
 function ENT:GetEvent()
     return IsValid(self.exterior) and self.exterior:GetEvent()
 end
 
 ---@api
+---@param force boolean?
+---@param all boolean?
 function ENT:NotifyEvent(force, all)
     return IsValid(self.exterior) and self.exterior:NotifyEvent(force, all)
 end

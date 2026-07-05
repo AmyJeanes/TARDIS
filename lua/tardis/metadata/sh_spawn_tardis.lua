@@ -31,6 +31,10 @@ if SERVER then
     end
 
     ---@api
+    ---@param ply Player
+    ---@param customData table
+    ---@param force boolean?
+    ---@return gmod_tardis?
     function TARDIS:SpawnTARDIS(ply, customData, force)
         local entityName = "gmod_tardis"
 

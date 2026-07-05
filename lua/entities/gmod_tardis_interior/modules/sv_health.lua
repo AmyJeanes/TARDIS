@@ -5,10 +5,11 @@ ENT:AddHook("OnTakeDamage", "Health", function(self, dmginfo)
 end)
 
 ---@api
-function ENT:Explode(f)
+---@param magnitude number?
+function ENT:Explode(magnitude)
     local force = 60
-    if f ~= nil then
-        force = tostring(f)
+    if magnitude ~= nil then
+        force = tostring(magnitude)
     end
     local explode = ents.Create("env_explosion")
 

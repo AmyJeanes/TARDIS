@@ -535,6 +535,8 @@ end
 local parts={}
 
 ---@api
+---@param ent Entity
+---@param id string
 ---@return Entity
 function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
@@ -548,6 +550,8 @@ function TARDIS:NewPart()
 end
 
 ---@api
+---@param ent Entity
+---@return table<string, gmod_tardis_part>|false|nil
 function TARDIS:GetParts(ent)
     return IsValid(ent) and ent.parts
 end
@@ -556,33 +560,33 @@ local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 
 ---@api
-function TARDIS:AddPart(e)
+function TARDIS:AddPart(part)
     local source = debug.getinfo(2).short_src
 
-    if string.lower(e.ID) ~= e.ID then
-        error("The part ID \"" .. e.ID .. "\" contains uppercase symbols. All part IDs have to be lowercase.")
+    if string.lower(part.ID) ~= part.ID then
+        error("The part ID \"" .. part.ID .. "\" contains uppercase symbols. All part IDs have to be lowercase.")
     end
 
-    if parts[e.ID] and parts[e.ID].source ~= source then
-        error("Duplicate part ID registered: " .. e.ID .. " (exists in both " .. parts[e.ID].source .. " and " .. source .. ")")
+    if parts[part.ID] and parts[part.ID].source ~= source then
+        error("Duplicate part ID registered: " .. part.ID .. " (exists in both " .. parts[part.ID].source .. " and " .. source .. ")")
     end
 
-    if not e.Name then
-        e.Name = e.ID -- most creators just copy the ID anyway
+    if not part.Name then
+        part.Name = part.ID -- most creators just copy the ID anyway
     end
 
-    e=table.Copy(e)
-    e.HasUseBasic = e.UseBasic ~= nil
-    e.HasUse = e.Use ~= nil
-    e.Base = "gmod_tardis_part"
-    local class="gmod_tardis_part_"..e.ID
-    scripted_ents.Register(e,class)
+    part=table.Copy(part)
+    part.HasUseBasic = part.UseBasic ~= nil
+    part.HasUse = part.Use ~= nil
+    part.Base = "gmod_tardis_part"
+    local class="gmod_tardis_part_"..part.ID
+    scripted_ents.Register(part,class)
     if postinit then
-        SetupOverrides(e)
+        SetupOverrides(part)
     else
-        overridequeue[e.ID] = e
+        overridequeue[part.ID] = part
     end
-    parts[e.ID] = { class = class, source = source }
+    parts[part.ID] = { class = class, source = source }
 end
 
 function TARDIS:GetRegisteredPart(id)
@@ -874,6 +878,7 @@ if SERVER then
     end)
 
     ---@api
+    ---@param part gmod_tardis_part
     function TARDIS:TogglePart(part)
         local on = part:GetOn()
         if part.PowerOffSound ~= false or part.interior:GetPower() then

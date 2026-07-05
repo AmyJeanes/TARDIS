@@ -7,6 +7,7 @@ function ENT:GetCustomBaseLightEnabled()
 end
 
 ---@api
+---@return Color?
 function ENT:GetCustomBaseLightColor()
     return self:GetData("interior_custom_base_light_color")
 end
@@ -16,6 +17,7 @@ function ENT:GetGetBaseLightColorVector()
 end
 
 ---@api
+---@return number?
 function ENT:GetCustomBaseLightBrightness()
     return self:GetData("interior_custom_base_light_brightness")
 end
@@ -23,6 +25,7 @@ end
 
 if SERVER then
     ---@api
+    ---@param enabled boolean
     function ENT:SetCustomBaseLightEnabled(enabled)
         self:SetData("interior_custom_base_light_enabled", enabled or false, true)
     end
@@ -33,11 +36,13 @@ if SERVER then
     end
 
     ---@api
+    ---@param color Color
     function ENT:SetCustomBaseLightColor(color)
         self:SetData("interior_custom_base_light_color", color, true)
     end
 
     ---@api
+    ---@param brightness number
     function ENT:SetCustomBaseLightBrightness(brightness)
         self:SetData("interior_custom_base_light_brightness", brightness, true)
     end
@@ -48,6 +53,7 @@ else
     end
 
     ---@api
+    ---@return Color
     function ENT:GetBaseLightColor()
         return self:GetBaseLightColorVector():ToColor()
     end

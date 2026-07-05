@@ -109,6 +109,7 @@ end)
 
 if SERVER then
     ---@api
+    ---@return boolean
     function ENT:ToggleFlight()
         local on = not self:GetData("flight",false)
         return self:SetFlight(on)
@@ -129,6 +130,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param on boolean
     function ENT:SetFlight(on)
         if not on and self:CallHook("CanTurnOffFlight")==false then
             return false

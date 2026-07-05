@@ -33,13 +33,17 @@ function TARDIS:SetupVersions(int_id)
 end
 
 ---@api
+---@param ent Entity?
+---@return boolean
 function TARDIS:ShouldUseClassicDoors(ent)
     return TARDIS:GetSetting("use_classic_door_interiors", ent)
 end
 
 ---@api
-function TARDIS:SelectDoorVersionID(x, ent)
-    local version = (istable(x) and x) or self.MetadataVersions[x].main
+---@param ent Entity?
+---@return string?
+function TARDIS:SelectDoorVersionID(id, ent)
+    local version = (istable(id) and id) or self.MetadataVersions[id].main
     if not version then return end
 
     if not version.classic_doors_id then return version.id end
@@ -79,6 +83,9 @@ function TARDIS:DefaultPreferredVersion(int_id)
 end
 
 ---@api
+---@param id string
+---@param ent Entity?
+---@return string?
 function TARDIS:SelectSpawnID(id, ent)
     local versions = self.MetadataVersions[id]
     if not versions then return id end
@@ -109,6 +116,8 @@ function TARDIS:SelectSpawnID(id, ent)
 end
 
 ---@api
+---@param int_id string?
+---@return string?
 function TARDIS:GetMainVersionId(int_id)
     return (self.Metadata[int_id] and self.Metadata[int_id].IsVersionOf) or int_id
 end
@@ -125,6 +134,8 @@ function TARDIS:SetupCustomVersion(main_id, version_id, version)
 end
 
 ---@api
+---@param main_id string
+---@param version_id string
 function TARDIS:AddCustomVersion(main_id, version_id, version)
     if version_id == "main" then return end
 
@@ -148,6 +159,9 @@ function TARDIS:ShouldRedecorateInto(int_id, ent)
 end
 
 ---@api
+---@param current string?
+---@param ent Entity?
+---@return string?
 function TARDIS:SelectNewRandomInterior(current, ent)
     current = TARDIS:GetMainVersionId(current)
     local chosen_int

@@ -63,6 +63,7 @@ if SERVER then
     end)
 
     ---@api
+    ---@param value number
     function ENT:AddHealth(value)
         local newhealth = self:GetHealth() + value
         self:ChangeHealth(newhealth)
@@ -81,6 +82,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param new_health number
     function ENT:ChangeHealth(new_health)
         if self:GetRepairing() then
             return

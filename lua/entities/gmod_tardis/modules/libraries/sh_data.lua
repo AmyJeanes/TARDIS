@@ -48,26 +48,35 @@ else
 end
 
 ---@api
-function ENT:SetData(k,v,network)
+---@generic T
+---@param key string
+---@param value T
+---@param network? boolean
+---@return T
+function ENT:SetData(key,value,network)
     if not self.data then self.data = {} end
-    self.data[k]=v
-    self:CallHook("DataChanged",k,v)
+    self.data[key]=value
+    self:CallHook("DataChanged",key,value)
 
     if SERVER and network then
         net.Start("TARDIS-Data")
             net.WriteEntity(self)
             net.WriteBool(false)
-            net.WriteType(k)
-            net.WriteType(v)
+            net.WriteType(key)
+            net.WriteType(value)
         net.Broadcast()
     end
-    return v
+    return value
 end
 
 ---@api
-function ENT:GetData(k,default)
-    if self.data and self.data[k] ~= nil then
-        return self.data[k]
+---@generic T
+---@param key string
+---@param default? T
+---@return T
+function ENT:GetData(key,default)
+    if self.data and self.data[key] ~= nil then
+        return self.data[key]
     end
     return default
 end

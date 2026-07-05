@@ -6,12 +6,15 @@ function ENT:GetSecurity()
 end
 
 ---@api
+---@param ply Player
+---@return boolean
 function ENT:CheckSecurity(ply)
     return (not self:GetSecurity()) or (ply==self:GetCreator()) or (TARDIS:GetSetting("admin_security_bypass") and ply:IsAdmin())
 end
 
 if SERVER then
     ---@api
+    ---@param on boolean
     function ENT:SetSecurity(on)
         self:CallHook("SecurityToggled", on)
         self:SetData("security", on, true)

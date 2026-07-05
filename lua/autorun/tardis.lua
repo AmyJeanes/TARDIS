@@ -3,6 +3,9 @@
 ---@class TARDIS
 TARDIS=TARDIS or {}
 ---@api
+---@param folder string?
+---@param addonly boolean?
+---@param noprefix boolean?
 function TARDIS:LoadFolder(folder,addonly,noprefix)
     if folder then
         folder="tardis/"..folder.."/"

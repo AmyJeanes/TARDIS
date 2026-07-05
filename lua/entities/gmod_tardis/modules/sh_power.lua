@@ -38,6 +38,7 @@ if SERVER then
         return self:SetPower(not self:GetPower())
     end
     ---@api
+    ---@param on boolean
     function ENT:SetPower(on)
         local cantoggle, reason, arg1, arg2 = self:CallCommonHook("CanTogglePower", on)
         if cantoggle == false then return false, reason, arg1, arg2 end

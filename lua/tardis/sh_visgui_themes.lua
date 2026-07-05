@@ -72,6 +72,7 @@ function TARDIS:GetGUIThemes()
 end
 
 ---@api
+---@param id string
 ---@return tardis_gui_theme?
 function TARDIS:GetGUITheme(id)
     return self.gui_themes[id]
@@ -92,6 +93,11 @@ function TARDIS:GetGUIThemeFolder(id)
 end
 
 ---@api
+---@param theme_id string|table
+---@param section string
+---@param element string?
+---@param no_defaults boolean?
+---@return string?
 function TARDIS:GetGUIThemeElement(theme_id, section, element, no_defaults)
     if element == nil then
         return TARDIS:GetGUIThemeElement(theme_id, section, "default")

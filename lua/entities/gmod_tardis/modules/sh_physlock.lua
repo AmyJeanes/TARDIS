@@ -33,6 +33,7 @@ function ENT:ExplodeIfFast()
 end
 
 ---@api
+---@param on boolean
 function ENT:SetPhyslock(on)
     if not on and self:CallHook("CanTurnOffPhyslock") == false then
         return false

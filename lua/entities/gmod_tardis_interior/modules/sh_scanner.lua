@@ -22,12 +22,14 @@ function ENT:GetScannersOn()
 end
 
 ---@api
+---@param id integer
 function ENT:GetScannerOn(id)
     return self:GetData("scanners_on_"..id, false)
 end
 
 if SERVER then
     ---@api
+    ---@param on boolean
     function ENT:SetScannersOn(on)
         if not on and self:CallHook("CanTurnOffScanners")==false then
             return false
@@ -44,6 +46,8 @@ if SERVER then
     end
 
     ---@api
+    ---@param id integer
+    ---@param on boolean
     function ENT:SetScannerOn(id, on)
         if not on and (self:CallHook("CanTurnOffScanners")==false or self:CallHook("CanTurnOffScanner", id)==false) then
             return false
@@ -63,6 +67,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param id integer
     function ENT:ToggleScanner(id)
         return self:SetScannerOn(id, not self:GetScannerOn(id))
     end
@@ -98,13 +103,8 @@ ENT:AddHook("Initialize", "scanner", function(self)
             scanner.uid = "tardisi_scanner_"..self:GetCreationID().."_"..k.."_"..v.width.."_"..v.height.."_"..v.fov
 
             if SERVER then
-                local ent = self
-                if v.part then
-                    local part = self:GetPart(v.part)
-                    if IsValid(part) then
-                        ent = part
-                    end
-                end
+                local part = v.part and self:GetPart(v.part)
+                local ent = IsValid(part) and part or self
                 scanner.ent = ent
 
                 local found=false

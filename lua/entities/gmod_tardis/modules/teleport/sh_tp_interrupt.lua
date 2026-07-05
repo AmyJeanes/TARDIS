@@ -6,6 +6,7 @@ function ENT:GetTeleportInterrupted()
 end
 
 ---@api
+---@param round boolean
 function ENT:GetTeleportInterruptedTimeRemaining(round)
     local time = CurTime() - self:GetData("teleport-interrupt-time", 0)
     if round then
@@ -16,6 +17,7 @@ end
 
 if SERVER then
     ---@api
+    ---@param callback fun(state: boolean)?
     function ENT:InterruptTeleport(callback)
         if not self:GetData("teleport", false) and not self:GetData("vortex", false) then return end
 

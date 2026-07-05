@@ -19,6 +19,7 @@ end)
 if SERVER then return end
 
 ---@api
+---@param ... any
 function ENT:DoorOpen(...)
     return self.exterior:DoorOpen(...)
 end

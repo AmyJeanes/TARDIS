@@ -2,6 +2,8 @@
 
 if SERVER then
     ---@api
+    ---@param ply Player
+    ---@param enabled boolean
     function ENT:SetOutsideView(ply, enabled)
         if IsValid(ply) and ply:IsPlayer() and self.occupants[ply] and CurTime()>ply:GetTardisData("outsidecool", 0) then
             if enabled then

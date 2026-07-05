@@ -7,6 +7,9 @@ TARDIS_EVENTS_HALLOWEEN = 3
 TARDIS_EVENTS_CHRISTMAS = 4
 
 ---@api
+---@param ent (Player|gmod_tardis)?
+---@param autoonly boolean?
+---@return integer?
 function TARDIS:GetCurrentEvent(ent, autoonly)
     local setting = TARDIS:GetSetting("events", ent)
     local year = tonumber(os.date("%Y"))
@@ -37,6 +40,9 @@ function TARDIS:GetCurrentEvent(ent, autoonly)
 end
 
 ---@api
+---@param event integer?
+---@param id boolean?
+---@return string?
 function TARDIS:GetEventName(event, id)
     if not event then event = TARDIS:GetCurrentEvent() end
     local name

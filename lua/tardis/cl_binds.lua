@@ -44,7 +44,7 @@ function TARDIS:ChangeKeyBind(id,data,callback)
     end
     function keybutton:Think()
         if self.keytrap then
-            local key=input.CheckKeyTrapping()
+            local key=input.CheckKeyTrapping() --[[@as BUTTON_CODE]]
             if key then
                 self.key=key
                 self:Update()

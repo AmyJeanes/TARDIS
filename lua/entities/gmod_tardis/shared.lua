@@ -3,6 +3,7 @@
 ---@class gmod_tardis : gmod_door_exterior
 ---@field BaseClass gmod_door_exterior
 ---@field timers table<string, table>
+---@field parts table<string, gmod_tardis_part>
 ---@field metadataID string
 ---@field effect_pos Vector
 ---@field metadata tardis_metadata
@@ -31,6 +32,8 @@ local hooks={}
 -- Hook system for modules
 ---@api
 ---@param func fun(self: gmod_tardis, ...)
+---@param name string
+---@param id string
 function ENT:AddHook(name,id,func)
     if not (hooks[name]) then hooks[name]={} end
     if hooks[name][id] then error("Duplicate hook ID '"..id.."' for '"..name.."' hook",2) end
@@ -39,6 +42,8 @@ function ENT:AddHook(name,id,func)
 end
 
 ---@api
+---@param name string
+---@param id string
 function ENT:RemoveHook(name,id)
     if hooks[name] and hooks[name][id] then
         hooks[name][id]=nil
@@ -58,6 +63,7 @@ function ENT:ListHooks(listInteriorHooks)
 end
 
 ---@api
+---@param name string
 function ENT:CallCommonHook(name, ...)
     local a,b,c,d,e,f
 
@@ -75,6 +81,7 @@ function ENT:CallCommonHook(name, ...)
 end
 
 ---@api
+---@param name string
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
@@ -116,6 +123,9 @@ function ENT:CallHook(name,...)
 end
 
 ---@api
+---@param folder string
+---@param addonly boolean?
+---@param noprefix boolean?
 function ENT:LoadFolder(folder,addonly,noprefix)
     folder="entities/"..class.."/"..folder.."/"
     local modules = file.Find(folder.."*.lua","LUA")
@@ -149,10 +159,12 @@ ENT:LoadFolder("modules/libraries")
 
 if SERVER then
     ---@api
+    ---@param name string
     function ENT:CallClientHook(name, ...)
         self:SendMessage("client_hook", {name, ...})
     end
     ---@api
+    ---@param name string
     function ENT:CallClientCommonHook(name, ...)
         self:SendMessage("client_common_hook", {name, ...})
     end

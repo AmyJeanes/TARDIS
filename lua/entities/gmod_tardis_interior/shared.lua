@@ -3,6 +3,7 @@
 ---@class gmod_tardis_interior : gmod_door_interior
 ---@field BaseClass gmod_door_interior
 ---@field timers table<string, table>
+---@field parts table<string, gmod_tardis_part>
 ---@field roundthings table<integer, integer>
 ---@field owner Player?
 ---@field metadata tardis_metadata
@@ -22,6 +23,8 @@ local hooks={}
 
 -- Hook system for modules
 ---@api
+---@param name string
+---@param id string
 ---@param func fun(self: gmod_tardis_interior, ...)
 function ENT:AddHook(name,id,func)
     if not (hooks[name]) then hooks[name]={} end
@@ -31,6 +34,8 @@ function ENT:AddHook(name,id,func)
 end
 
 ---@api
+---@param name string
+---@param id string
 function ENT:RemoveHook(name,id)
     if hooks[name] and hooks[name][id] then
         hooks[name][id]=nil
@@ -49,11 +54,13 @@ function ENT:ListHooks()
 end
 
 ---@api
+---@param name string
 function ENT:CallCommonHook(name, ...)
     return self.exterior:CallCommonHook(name, ...)
 end
 
 ---@api
+---@param name string
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
@@ -95,6 +102,9 @@ function ENT:CallHook(name,...)
 end
 
 ---@api
+---@param folder string
+---@param addonly boolean?
+---@param noprefix boolean?
 function ENT:LoadFolder(folder,addonly,noprefix)
     folder="entities/"..class.."/"..folder.."/"
     local modules = file.Find(folder.."*.lua","LUA")
@@ -128,10 +138,14 @@ ENT:LoadFolder("modules/libraries")
 
 if SERVER then
     ---@api
+    ---@param name string
+    ---@param ... any
     function ENT:CallClientHook(name, ...)
         self:SendMessage("client_hook", {name, ...})
     end
     ---@api
+    ---@param name string
+    ---@param ... any
     function ENT:CallClientCommonHook(name, ...)
         self:SendMessage("client_common_hook", {name, ...})
     end

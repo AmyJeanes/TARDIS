@@ -72,6 +72,7 @@ function ENT:SetState(state)
 end
 
 ---@api
+---@return string?
 function ENT:GetState()
   return self:GetData("state")
 end
@@ -127,6 +128,7 @@ end
 --
 
 ---@api
+---@return boolean?
 function ENT:IsTravelling()
     return self:CallHook("IsTravelling")
 end

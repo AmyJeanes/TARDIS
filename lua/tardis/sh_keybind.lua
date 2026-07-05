@@ -27,6 +27,7 @@ if SERVER then
     end)
 
     ---@api
+    ---@param id string
     function TARDIS:AddKeyBind(id,data)
         if not data.clientonly then
             self.binds[id]=table.Copy(data)
@@ -35,6 +36,9 @@ if SERVER then
     end
 
     ---@api
+    ---@param ply Player
+    ---@param id string
+    ---@return boolean?
     function TARDIS:IsBindDown(ply,id)
         local bind = self.binds[id]
         local b = bind and bind.b
@@ -44,6 +48,7 @@ if SERVER then
     end
 
     ---@api
+    ---@param id string
     function TARDIS:RemoveKeyBind(id)
         self.binds[id]=nil
     end
@@ -160,6 +165,8 @@ else
     }
 
     ---@api
+    ---@param key BUTTON_CODE?
+    ---@return string?
     function TARDIS:GetKeyName(key)
         if keys[key] then
             return keys[key].n
@@ -186,6 +193,8 @@ else
     TARDIS.binds=TARDIS.binds or {}
 
     ---@api
+    ---@param id string
+    ---@return BUTTON_CODE?
     function TARDIS:GetBindKey(id)
         if self.bindkeys[id] then
             return self.bindkeys[id]
@@ -193,6 +202,7 @@ else
     end
 
     ---@api
+    ---@param id string
     function TARDIS:AddKeyBind(id,data)
         if self.bindkeys[id]==nil then
             self.bindkeys[id]=data.key
@@ -201,12 +211,15 @@ else
     end
 
     ---@api
+    ---@param id string
     function TARDIS:RemoveKeyBind(id)
         self.bindkeys[id]=nil
         self.binds[id]=nil
     end
 
     ---@api
+    ---@param id string
+    ---@param key integer
     function TARDIS:SetKeyBind(id,key)
         if self.bindkeys[id] then
             self.bindkeys[id]=key
@@ -220,6 +233,8 @@ else
     end
 
     ---@api
+    ---@param id string
+    ---@return table?
     function TARDIS:GetBind(id)
         if self.binds[id] then
             return self.binds[id]
@@ -258,6 +273,8 @@ else
     end)
 
     ---@api
+    ---@param id string
+    ---@return boolean?
     function TARDIS:IsBindDown(id)
         if self.bindkeys[id] then
             return keys[self.bindkeys[id]].b

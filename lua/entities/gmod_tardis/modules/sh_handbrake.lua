@@ -11,11 +11,13 @@ if SERVER then
     end)
 
     ---@api
+    ---@return boolean
     function ENT:ToggleHandbrake()
         return self:SetHandbrake(not self:GetHandbrake())
     end
 
     ---@api
+    ---@param on boolean
     function ENT:SetHandbrake(on)
         if self:CallCommonHook("CanToggleHandbrake") == false then
             return false

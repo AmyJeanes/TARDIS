@@ -92,6 +92,9 @@ if SERVER then
     end
 
     ---@api
+    ---@param pos Vector?
+    ---@param ang Angle?
+    ---@param callback fun(success: boolean)?
     function ENT:AutoDemat(pos, ang, callback)
         if self:CallHook("CanDemat", false, true) ~= false then
             self:Demat(pos, ang, callback)

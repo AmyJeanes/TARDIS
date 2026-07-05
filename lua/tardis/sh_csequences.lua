@@ -24,6 +24,7 @@ function TARDIS:AddControlSequence(cseq)
 end
 
 ---@api
+---@param id string
 ---@return tardis_sequence?
 function TARDIS:GetControlSequence(id)
     if self.CSequences[id] ~= nil then
