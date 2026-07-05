@@ -560,6 +560,7 @@ local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 
 ---@api
+---@param part table
 function TARDIS:AddPart(part)
     local source = debug.getinfo(2).short_src
 

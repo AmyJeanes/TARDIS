@@ -587,6 +587,7 @@ function TARDIS:NewInterior()
 end
 
 ---@api
+---@param interior table
 function TARDIS:AddInterior(interior)
     interior = table.Copy(interior)
 

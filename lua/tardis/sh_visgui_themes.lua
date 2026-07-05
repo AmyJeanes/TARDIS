@@ -22,6 +22,7 @@ function TARDIS:NewGUITheme()
 end
 
 ---@api
+---@param theme table
 function TARDIS:AddGUITheme(theme)
     ---@type tardis_gui_theme
     local copy = table.Copy(theme)

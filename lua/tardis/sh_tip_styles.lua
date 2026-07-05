@@ -2,6 +2,7 @@
 local tip_styles={}
 
 ---@api
+---@param style table
 function TARDIS:AddTipStyle(style)
     if CLIENT then
         tip_styles[style.style_id]=table.Copy(style)

@@ -28,6 +28,7 @@ if SERVER then
 
     ---@api
     ---@param id string
+    ---@param data table
     function TARDIS:AddKeyBind(id,data)
         if not data.clientonly then
             self.binds[id]=table.Copy(data)
@@ -203,6 +204,7 @@ else
 
     ---@api
     ---@param id string
+    ---@param data table
     function TARDIS:AddKeyBind(id,data)
         if self.bindkeys[id]==nil then
             self.bindkeys[id]=data.key

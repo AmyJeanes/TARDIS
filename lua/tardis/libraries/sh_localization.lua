@@ -66,6 +66,7 @@ function TARDIS:GetPhraseIfExists(phrase, ...)
 end
 
 ---@api
+---@param language table
 function TARDIS:AddLanguage(language)
     if not (language.Code and language.Phrases and language.Name) then
         error("TARDIS:AddLanguage: Invalid language configuration")
@@ -83,6 +84,7 @@ function TARDIS:AddLanguage(language)
 end
 
 ---@api
+---@param extension table
 function TARDIS:AddLanguageExtension(extension)
     if not (extension.Code and extension.Phrases and extension.Extends) then
         error("TARDIS:AddLanguageExtension: Invalid language extension configuration")

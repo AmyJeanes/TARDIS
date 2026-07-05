@@ -34,6 +34,7 @@ end
 -- Setup
 
 ---@api
+---@param data table
 function TARDIS:AddSetting(data)
     self.SettingsData[data.id]=data
     if data.class == "global" and data.convar then

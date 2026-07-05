@@ -219,6 +219,7 @@ end
 
 ---@api
 ---@param id string
+---@param template table
 function TARDIS:AddInteriorTemplate(id, template)
     if not id or not template then return end
 

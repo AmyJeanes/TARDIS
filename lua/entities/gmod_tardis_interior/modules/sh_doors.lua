@@ -19,9 +19,9 @@ end)
 if SERVER then return end
 
 ---@api
----@param ... any
-function ENT:DoorOpen(...)
-    return self.exterior:DoorOpen(...)
+---@param real boolean?
+function ENT:DoorOpen(real)
+    return self.exterior:DoorOpen(real)
 end
 
 

@@ -119,6 +119,7 @@ end
 
 ---@api
 ---@param name string
+---@param font table
 function TARDIS:CreateScreenFont(name, font)
     self.fonts[name] = font
 end
@@ -171,6 +172,7 @@ TARDIS:AddKeyBind("tp-openscreen",{
 local screens={}
 ---@api
 ---@param name string
+---@param options table
 ---@param func fun(self, ext, int, frame, screen: TardisScreen)
 function TARDIS:AddScreen(name,options,func)
     if options.id == nil then options.id = name end
