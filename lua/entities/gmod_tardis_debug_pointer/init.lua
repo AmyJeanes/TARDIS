@@ -31,6 +31,8 @@ function ENT:Initialize()
     end
 end
 
+---@param activator Player
+---@param caller Player
 function ENT:Use( activator, caller )
     if activator:GetTardisInterior() then
         local pos,ang = TARDIS:GetLocalPos(self, activator)

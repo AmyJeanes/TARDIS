@@ -39,6 +39,8 @@ function ENT:Initialize()
     end
 end
 
+---@param tname string
+---@param value number
 function ENT:TriggerWire(tname,value)
     if WireLib then
         Wire_TriggerOutput(self,tname,value)
@@ -49,12 +51,14 @@ function ENT:GetRadius()
     return self.Radius
 end
 
+---@param radius number
 function ENT:SetRadius(radius)
     self.Radius = math.Clamp(radius,0,2048)
     self:TriggerWire("Radius",self.Radius)
     return self.Radius
 end
 
+---@param repair number
 function ENT:Repair(repair)
     if self.EntHealth >= 0 then
         local hp = self.EntHealth + repair
@@ -69,6 +73,8 @@ function ENT:Repair(repair)
     end
 end
 
+---@param iname string
+---@param value number
 function ENT:TriggerInput(iname, value)
     if iname == "Activate" then
         if self.Broken then return end
@@ -83,6 +89,7 @@ function ENT:TriggerInput(iname, value)
     end
 end
 
+---@param active boolean
 function ENT:TurnOn(active)
     if self.Broken then return end
 
@@ -127,6 +134,7 @@ function ENT:TurnOn(active)
     end
 end
 
+---@param ply Player
 function ENT:Use(ply)
     if self.Broken then return end
 
@@ -202,6 +210,7 @@ function ENT:Break()
     util.Effect("Explosion", effect_data)
 end
 
+---@param damage CTakeDamageInfo
 function ENT:OnTakeDamage(damage)
     if self.Broken then return end
 
