@@ -2,7 +2,7 @@
 
 ---@class tardis_setting
 ---@field id string
----@field name string
+---@field name string?
 ---@field type string?
 ---@field value any
 ---@field section string?
@@ -34,7 +34,7 @@ end
 -- Setup
 
 ---@api
----@param data table
+---@param data tardis_setting
 function TARDIS:AddSetting(data)
     self.SettingsData[data.id]=data
     if data.class == "global" and data.convar then

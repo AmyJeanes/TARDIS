@@ -4,10 +4,10 @@
 ---@field base_id string?
 ---@field bgcolor Color?
 ---@field folder string?
----@field frames table<string, string>?
----@field backgrounds table<string, string>?
----@field text_icons_off table<string, string>?
----@field text_icons_on table<string, string>?
+---@field frames table<string, string?>?
+---@field backgrounds table<string, string?>?
+---@field text_icons_off table<string, string?>?
+---@field text_icons_on table<string, string?>?
 
 ---@type table<string, tardis_gui_theme>
 TARDIS.gui_themes={}
@@ -22,7 +22,7 @@ function TARDIS:NewGUITheme()
 end
 
 ---@api
----@param theme table
+---@param theme tardis_gui_theme
 function TARDIS:AddGUITheme(theme)
     ---@type tardis_gui_theme
     local copy = table.Copy(theme)

@@ -152,7 +152,7 @@ function TARDIS:NewIconPack()
 end
 
 ---@api
----@param iconpack table
+---@param iconpack tardis_icon_pack
 function TARDIS:AddIconPack(iconpack)
     ---@type tardis_icon_pack
     local pack = table.Copy(iconpack)
