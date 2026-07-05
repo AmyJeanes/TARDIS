@@ -198,6 +198,7 @@ T.SyncExteriorBodygroupToDoors = true
 
 TARDIS:AddInterior(T)
 
+---@type tardis_exterior_metadata
 local E = TARDIS:CopyTable(T.Exterior)
 E.ID = "base"
 E.Base = true

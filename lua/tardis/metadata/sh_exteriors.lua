@@ -29,7 +29,7 @@ function TARDIS:NewExterior()
 end
 
 ---@api
----@param exterior table
+---@param exterior tardis_exterior_metadata
 function TARDIS:AddExterior(exterior)
     local id = exterior.ID
     exterior.Category = exterior.Category or "Exteriors.Categories.Misc"
