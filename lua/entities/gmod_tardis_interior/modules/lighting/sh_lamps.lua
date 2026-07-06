@@ -1,6 +1,7 @@
 -- Lamps (projected lights)
 
 if CLIENT then
+    ---@param keep_warn_off_options boolean
     local function MergeLampTable(tbl, base, keep_warn_off_options)
         if not tbl then return nil end
 

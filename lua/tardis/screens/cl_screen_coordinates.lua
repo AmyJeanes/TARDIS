@@ -1,5 +1,6 @@
 -- Destination
 
+---@param on boolean
 local function EnsureEnabled(self, on)
     if self:IsEnabled() ~= on then
         self:SetEnabled(on)
@@ -399,6 +400,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
 
 
+    ---@param pos Vector
+    ---@param name string
     local function updatetextinputs(pos,ang,name)
         pitch:SetText(tostring(ang.p or 0.0))
         yaw:SetText(tostring(ang.y or 0.0))

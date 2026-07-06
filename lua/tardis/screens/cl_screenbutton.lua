@@ -207,6 +207,7 @@ function TardisScreenButton:SetFrameType(type1, type2)
     if type2 == nil then
         type2 = type1
     end
+    ---@param type integer
     local function getFrameType(type)
         if type == 0 then
             return "default", true

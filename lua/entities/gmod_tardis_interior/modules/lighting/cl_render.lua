@@ -78,11 +78,14 @@ local function postdraw_o(self)
     render.SuppressEngineLighting(false)
 end
 
+---@param ply Player
+---@param ent Entity
 local function predraw_ply(ply, ent)
     local int = ply:GetTardisInterior()
     if int then predraw_o(int, ent) end
 end
 
+---@param ply Player
 local function postdraw_ply(ply)
     local int = ply:GetTardisInterior()
     if int then postdraw_o(int) end
@@ -129,6 +132,7 @@ local meta = assert(FindMetaTable("Entity"))
 -- Use a weak table (__mode = "k") so that when the weapon is removed, the clone is automatically garbage collected.
 local weaponClones = setmetatable({}, { __mode = "k" }) -- [weapon] = { draw, pose, override, base, interior, ply, model, skin }
 
+---@param wep Entity
 local function releaseWeaponClone(wep)
     local rec = weaponClones[wep]
     if not rec then return end
@@ -144,6 +148,7 @@ end
 -- from the model returned by GetWeaponWorldModel if the weapon overrides DrawWorldModel.
 -- This is hacky but necessary as some weapons e.g. the Sonic Screwdriver use a placeholder
 -- model and then draw the actual model dynamically in DrawWorldModel.
+---@param wep Entity
 local function resolveWeaponWorldModel(wep)
     if not isfunction(wep.DrawWorldModel) then
         return wep:GetModel(), wep:GetSkin()
@@ -162,6 +167,7 @@ end
 -- it matches the real weapon as closely as possible. The owner is important for some weapons
 -- that use the owner to determine how to draw themselves, e.g. the Physgun for player weapon
 -- colour or the Sonic Screwdriver to show the lighting effects when the player is holding it.
+---@param wep Entity
 local function syncWeaponDrawClone(rec, wep)
     local draw = rec.draw
     if draw:GetModel() ~= rec.model then draw:SetModel(rec.model) end
@@ -197,6 +203,7 @@ local function makeWeaponOverride(rec)
     end
 end
 
+---@param model string
 local function makeWeaponClone(model)
     local c = ClientsideModel(model)
     if not IsValid(c) then return end
@@ -205,6 +212,8 @@ local function makeWeaponClone(model)
     return c
 end
 
+---@param ply Player
+---@param int gmod_tardis_interior
 local function ensureWeaponClone(ply, int)
     local wep = ply:GetActiveWeapon()
     if not IsValid(wep) then return end

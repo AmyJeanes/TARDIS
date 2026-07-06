@@ -203,6 +203,7 @@ else
             end
         end
 
+        ---@param src_player_view boolean?
         local function RefreshAbsoluteCoords(src_player_view)
             local posr, ang
 
@@ -285,6 +286,8 @@ else
 
         RefreshRealCoords()
 
+        ---@param src_relative boolean?
+        ---@param src_player_view boolean?
         local function UpdatePointerPos(src_relative, src_player_view)
             if src_player_view then
                 RefreshAbsoluteCoords(true)
@@ -321,6 +324,9 @@ else
             net.SendToServer()
         end
 
+        ---@param category string
+        ---@param name string
+        ---@param value number
         local function SetupProperty(category, name, value, a, b, c, d)
             local vmin, vmax, update_func
             local vtype = "Float"

@@ -118,6 +118,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
 
     refresh_exteriors_list()
 
+    ---@param id string
     local function select_exterior(id)
         change_id = id
         local icon = TARDIS:GetExteriorIcon(id) or TARDIS:GetMissingIcon(TARDIS.IconCategory.Exterior)

@@ -1,5 +1,9 @@
 -- Virtual console
 
+---@param ext gmod_tardis
+---@param int gmod_tardis_interior
+---@param frame tardis_screen_frame
+---@param screen TardisScreen
 local function new_virtual_console(self,ext,int,frame,screen)
     frame:SetBackgroundColor(Color(0,0,0))
 
@@ -92,6 +96,10 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
 end
 
+---@param ext gmod_tardis
+---@param int gmod_tardis_interior
+---@param frame tardis_screen_frame
+---@param screen TardisScreen
 local function old_virtual_console(self,ext,int,frame,screen)
     local power=vgui.Create("DButton",frame)
     power:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )

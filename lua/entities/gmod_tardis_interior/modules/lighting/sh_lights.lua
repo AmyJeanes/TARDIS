@@ -1,5 +1,7 @@
 -- Lights
 
+---@param interior gmod_tardis_interior
+---@param default_falloff number
 local function ParseLightTable(lt, interior, default_falloff)
     if SERVER then return end
 
@@ -80,6 +82,8 @@ local function ParseLightTable(lt, interior, default_falloff)
 end
 
 if CLIENT then
+    ---@param tbl tardis_interior_light?
+    ---@param base tardis_interior_light
     local function MergeLightTable(tbl, base)
         local new_table = TARDIS:CopyTable(base)
         if not tbl then return new_table end
@@ -210,6 +214,8 @@ end
 
 -- Light states
 
+---@param light_table tardis_interior_light
+---@param state string
 local function ChangeSingleLightState(light_table, state)
     local new_state = light_table.states and light_table.states[state]
     if not new_state then return end

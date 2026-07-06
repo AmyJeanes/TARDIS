@@ -38,6 +38,7 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
     label:SetText(TARDIS:GetPhrase("Screens.Scanner.Front"))
     label:DoLayout()
 
+    ---@param y number
     local function updatetext(y)
         local text
         if y==-180 or y==180 then
