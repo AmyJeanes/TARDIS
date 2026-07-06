@@ -1,5 +1,6 @@
 -- Virtual console
 
+---@param self TARDIS
 ---@param ext gmod_tardis
 ---@param int gmod_tardis_interior
 ---@param frame tardis_screen_frame
@@ -96,6 +97,7 @@ local function new_virtual_console(self,ext,int,frame,screen)
 
 end
 
+---@param self TARDIS
 ---@param ext gmod_tardis
 ---@param int gmod_tardis_interior
 ---@param frame tardis_screen_frame

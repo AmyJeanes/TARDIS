@@ -104,6 +104,18 @@ matproxy.Add({
     end
 })
 
+---@class tardis_matproxy
+---@field name string
+---@field ResultTo string
+---@field on_var string?
+---@field off_var string?
+---@field LastValue Vector
+---@field TransitionSpeedOn number
+---@field TransitionSpeedOff number
+---@field last_var string?
+---@field last_value Vector?
+
+---@param self tardis_matproxy
 ---@param mat IMaterial
 ---@param values table
 local function matproxy_tardis_power_init(self, mat, values)
@@ -115,6 +127,7 @@ local function matproxy_tardis_power_init(self, mat, values)
     self.TransitionSpeedOff = values.transitionspeedoff or 0
 end
 
+---@param self tardis_matproxy
 ---@param mat IMaterial
 local function matproxy_tardis_power_bind(self, mat, ent)
     if not IsValid(ent) then return end
@@ -257,6 +270,7 @@ matproxy.Add({
     end
 })
 
+---@param self tardis_matproxy
 ---@param mat IMaterial
 ---@param values table
 local function matproxy_tardis_warning_init(self, mat, values)
@@ -265,6 +279,7 @@ local function matproxy_tardis_warning_init(self, mat, values)
     self.off_var = values.offvar
 end
 
+---@param self tardis_matproxy
 ---@param mat IMaterial
 local function matproxy_tardis_warning_bind(self, mat, ent)
     if not IsValid(ent) then return end
@@ -296,6 +311,7 @@ matproxy.Add({
 })
 
 
+---@param self tardis_matproxy
 ---@param mat IMaterial
 ---@param values table
 local function matproxy_tardis_HDR_init(self, mat, values)
@@ -304,6 +320,7 @@ local function matproxy_tardis_HDR_init(self, mat, values)
     self.off_var = values.offvar
 end
 
+---@param self tardis_matproxy
 ---@param mat IMaterial
 local function matproxy_tardis_HDR_bind(self, mat, ent)
     if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end

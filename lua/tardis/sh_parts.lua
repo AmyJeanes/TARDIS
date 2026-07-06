@@ -619,6 +619,7 @@ hook.Add("InitPostEntity", "tardis-parts", function()
     postinit=true
 end)
 
+---@param self gmod_tardis|gmod_tardis_interior
 ---@param e gmod_tardis_part
 ---@param id string
 local function GetData(self,e,id)
@@ -714,6 +715,7 @@ function TARDIS:UpdatePartShadow(part)
     part.LastShadowTarget = tpos
 end
 
+---@param self gmod_tardis|gmod_tardis_interior
 ---@param e gmod_tardis_part
 ---@param id string
 local function AutoSetup(self,e,id)
