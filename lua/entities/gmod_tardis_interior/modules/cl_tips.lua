@@ -106,7 +106,6 @@ function ENT:InitializeTips(style_name)
             tip.colors.current = tip.colors.normal
             tip.highlighted = false
 
-            ---@param self tardis_tip
             tip.SetHighlight = function(self, on)
                 self.highlighted = on
                 if on then
@@ -119,7 +118,6 @@ function ENT:InitializeTips(style_name)
             tip.ToggleHighlight = function(self)
                 self:SetHighlight(not tip.highlighted)
             end
-            ---@param self tardis_tip
             tip.GetHighlight = function(self)
                 return self.highlighted
             end
