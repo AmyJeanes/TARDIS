@@ -406,7 +406,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_custom_hook
 ---@field inthooks table<string, boolean>?
 ---@field exthooks table<string, boolean>?
----@field func function
+---@field func fun(ext: gmod_tardis, int: gmod_tardis_interior, ...): any
 
 ---@class tardis_texture_set
 ---@field prefix string?
