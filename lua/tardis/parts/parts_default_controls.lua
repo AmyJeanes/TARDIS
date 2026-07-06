@@ -24,6 +24,8 @@ PART.AnimateOptions = {
 }
 
 if CLIENT then
+    ---@param self gmod_tardis_part
+    ---@param ply Player
     PART.Use = function(self, ply)
         ---@cast self.animation table
         self.animation.stop_anywhere = LocalPlayer():KeyDown(IN_WALK)

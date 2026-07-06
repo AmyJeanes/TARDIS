@@ -643,6 +643,7 @@ T.CustomHooks = {
 }
 
 
+---@param self gmod_tardis_interior
 ---@param ply Player
 ---@param no integer
 local function screen_toggle_func(self, ply, no)

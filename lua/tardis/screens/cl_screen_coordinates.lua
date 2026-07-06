@@ -1,5 +1,6 @@
 -- Destination
 
+---@param self Panel
 ---@param on boolean
 local function EnsureEnabled(self, on)
     if self:IsEnabled() ~= on then

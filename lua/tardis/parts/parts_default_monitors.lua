@@ -559,6 +559,7 @@ TARDIS:AddPart(PART)
 
 -- Hitbox use functions
 
+---@param self part_default_monitors
 ---@param ply Player
 local function UseScreen(self,ply)
     local monitor = self:GetMonitor()
@@ -569,6 +570,7 @@ local function UseScreen(self,ply)
     end
 end
 
+---@param self part_default_monitors
 ---@param ply Player
 local function UseHandle(self,ply)
     local monitor = self:GetMonitor()
@@ -583,6 +585,7 @@ local function UseHandle(self,ply)
     end
 end
 
+---@param self part_default_monitors
 ---@param ply Player
 local function UseStatic(self,ply)
     local monitor = self:GetMonitor()
@@ -610,6 +613,7 @@ local function Setup_Hitbox_Parts(MonitorID)
         end
     end
 
+    ---@param self part_default_monitors
     PART.GetMonitor = function(self)
         return self.interior:GetPart(self.MonitorID)
     end
@@ -628,6 +632,7 @@ local function Setup_Hitbox_Parts(MonitorID)
     -- moving
 
     if SERVER then
+        ---@param self part_default_monitors
         ---@param pos Vector
         ---@param ang Angle
         PART.Move = function(self, pos, ang)

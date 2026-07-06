@@ -230,6 +230,7 @@ function TARDIS:GetIconProvider(category, id, config_override)
     return nil
 end
 
+---@param self TARDIS
 ---@param stored_list table?
 ---@param category string
 local function build_category_list(self, stored_list, category)
@@ -259,6 +260,7 @@ local function build_category_list(self, stored_list, category)
     return valid
 end
 
+---@param self TARDIS
 ---@param pack_id string
 ---@param category string
 local function lookup_pack_missing(self, pack_id, category)
@@ -279,6 +281,7 @@ function TARDIS:GetPackMissingIcon(pack_id, category)
     return lookup_pack_missing(self, pack_id, category)
 end
 
+---@param self TARDIS
 ---@param stored table<string, string>?
 local function build_missing_map(self, stored)
     stored = stored or {}
@@ -313,6 +316,7 @@ function TARDIS:GetDefaultIconPackConfig()
     return result
 end
 
+---@param self TARDIS
 ---@param pack_id string
 ---@param category string
 ---@param id string
