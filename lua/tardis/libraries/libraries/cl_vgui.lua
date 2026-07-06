@@ -32,23 +32,33 @@ local function RequestInput( pnl )
     end
 end
 
+---@class DTextEntry3D2D : DTextEntry
 local tbl={}
+---@param self DTextEntry3D2D
 tbl.Init = function(self,...)
     local old = vgui.GetControlTable("DTextEntry")
     local oldInit = old and old.Init
     if oldInit then oldInit(self,...) end
     self.OldOnMousePressed = self.OnMousePressed
+    ---@param self DTextEntry3D2D
+    ---@param key integer
     self.OnMousePressed = function(self,key)
         if self.is3D2D and self:IsEnabled() then
             RequestInput(self)
         end
-        self:OldOnMousePressed(key)
+        if self.OldOnMousePressed then self:OldOnMousePressed(key) end
     end
 end
 vgui.Register( "DTextEntry3D2D", tbl, "DTextEntry" )
 
+---@class DModelPanel3D2D : DModelPanel
+---@field rt ITexture?
+---@field rtmat IMaterial?
+---@field rt_w number
+---@field rt_h number
 local dmodel_tbl={}
 
+---@param self DModelPanel3D2D
 ---@param w number
 ---@param h number
 local function ensure_rt(self, w, h)
@@ -63,14 +73,16 @@ local function ensure_rt(self, w, h)
     -- RT with a dedicated depth surface to ensure depth testing works inside 3D2D
     self.rt = GetRenderTargetEx(name, w, h, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, 0, CREATERENDERTARGETFLAGS_UNFILTERABLE_OK, IMAGE_FORMAT_BGRA8888)
 
-    if not self.rtmat then
-        self.rtmat = CreateMaterial("tardis_dmodelpanel3d2d_mat_" .. util.CRC(name), "UnlitGeneric", {
+    local mat = self.rtmat
+    if not mat then
+        mat = CreateMaterial("tardis_dmodelpanel3d2d_mat_" .. util.CRC(name), "UnlitGeneric", {
             ["$vertexcolor"] = 1,
             ["$vertexalpha"] = 1,
         })
+        self.rtmat = mat
     end
 
-    self.rtmat:SetTexture("$basetexture", self.rt)
+    mat:SetTexture("$basetexture", self.rt)
 end
 
 dmodel_tbl.Init = function(self,...)
