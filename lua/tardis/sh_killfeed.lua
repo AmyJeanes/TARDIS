@@ -32,6 +32,10 @@ if SERVER then
         patched = true
 
         local base = GAMEMODE.SendDeathNotice
+        ---@param attacker string
+        ---@param inflictor string
+        ---@param victim string
+        ---@param flags integer
         function GAMEMODE:SendDeathNotice(attacker, inflictor, victim, flags)
             if inflictor == "gmod_tardis" then
                 if pendingicon then inflictor = pendingicon end

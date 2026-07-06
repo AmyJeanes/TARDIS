@@ -1,6 +1,6 @@
 -- The console
 
-local PART={}
+local PART = TARDIS:NewPart()
 PART.ID = "console"
 PART.Name = "The Console"
 PART.AutoSetup = true

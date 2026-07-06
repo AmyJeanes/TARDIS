@@ -13,17 +13,17 @@ PART.BypassIsomorphic = true
 
 
 if SERVER then
-    function PART:Use(a)
+    function PART:Use(ply)
 
         if self:GetData("locked") then
-            if IsValid(a) and a:IsPlayer() then
-                if self.exterior:CallHook("LockedUse",a)==nil then
-                    TARDIS:Message(a, "Parts.Door.Locked")
+            if IsValid(ply) and ply:IsPlayer() then
+                if self.exterior:CallHook("LockedUse",ply)==nil then
+                    TARDIS:Message(ply, "Parts.Door.Locked")
                 end
             end
         else
-            if a:KeyDown(IN_WALK) or self:GetData("legacy_door_type") then
-                self.exterior:PlayerExit(a)
+            if ply:KeyDown(IN_WALK) or self:GetData("legacy_door_type") then
+                self.exterior:PlayerExit(ply)
             end
         end
     end

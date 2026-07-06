@@ -67,12 +67,12 @@ function PART:Initialize()
 end
 
 if SERVER then
-    function PART:Use(a)
+    function PART:Use(ply)
         if self:GetData("locked") then
-            if IsValid(a) and a:IsPlayer() then
-                if self.exterior:CallHook("LockedUse",a)==nil then
-                    TARDIS:Message(a, "Parts.Door.Locked")
-                    self.exterior:SendMessage("lockattempted", {a})
+            if IsValid(ply) and ply:IsPlayer() then
+                if self.exterior:CallHook("LockedUse",ply)==nil then
+                    TARDIS:Message(ply, "Parts.Door.Locked")
+                    self.exterior:SendMessage("lockattempted", {ply})
                 end
                 local door_sounds = self.exterior.metadata.Exterior.Sounds.Door
                 self:EmitSound(door_sounds.locked)
@@ -87,21 +87,21 @@ if SERVER then
                 end
             end
         else
-            if self:GetData("legacy_door_type") and a:KeyDown(IN_WALK) then
+            if self:GetData("legacy_door_type") and ply:KeyDown(IN_WALK) then
                 if self.ExteriorPart then
-                    self.exterior:PlayerEnter(a)
-                    self.exterior:PlayerThirdPerson(a, true)
+                    self.exterior:PlayerEnter(ply)
+                    self.exterior:PlayerThirdPerson(ply, true)
                 else
-                    self.exterior:PlayerExit(a)
-                    a:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
+                    self.exterior:PlayerExit(ply)
+                    ply:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
                 end
-            elseif a:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
+            elseif ply:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
                 if self.ExteriorPart then
-                    self.exterior:PlayerEnter(a)
-                    a:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
+                    self.exterior:PlayerEnter(ply)
+                    ply:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
                 else
-                    self.exterior:PlayerExit(a)
-                    a:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
+                    self.exterior:PlayerExit(ply)
+                    ply:ScreenFade(SCREENFADE.IN, color_black, 1, 0)
                 end
             else
                 if self.exterior.metadata.EnableClassicDoors == true and not self.ExteriorPart then return end

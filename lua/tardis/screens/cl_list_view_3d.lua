@@ -1,6 +1,6 @@
 ---@class ListView3D
 ---@field parent Panel
----@field screen table
+---@field screen TardisScreen
 ---@field font string
 ---@field selection_font string
 ---@field pos number[]
@@ -19,9 +19,15 @@
 ---@field scroll_panel DPanel?
 ---@field up_button DButton?
 ---@field down_button DButton?
+---@field OnRowSelected fun(self: ListView3D, rowIndex: integer, row: Panel)
+---@field OnRowSelectionRemoved fun(self: ListView3D, rowIndex: integer, row: Panel)
 ---@field DoDoubleClick fun(self: ListView3D, rowIndex: integer, row: Panel)
 ListView3D = {}
 
+---@param parent Panel
+---@param screen TardisScreen
+---@param elem_height number?
+---@param col Color?
 ---@return ListView3D
 function ListView3D:new(parent,screen,elem_height,col)
     local l = {
@@ -203,25 +209,33 @@ function ListView3D:UpdateLayout()
 
 end
 
+---@param sizeX number
+---@param sizeY number
 function ListView3D:SetSize(sizeX, sizeY)
     self.size = {sizeX, sizeY}
     self:UpdateLayout()
 end
+---@param sizeY number
 function ListView3D:SetTall(sizeY)
     self:SetSize(self.size[1], sizeY)
 end
+---@param sizeX number
 function ListView3D:SetWide(sizeX)
     self:SetSize(sizeX, self.size[2])
 end
 
+---@param posX number
+---@param posY number
 function ListView3D:SetPos(posX, posY)
     self.pos = {posX, posY}
     self.panel:SetPos(self.pos[1], self.pos[2])
 end
 
+---@param font string
 function ListView3D:SetFont(font)
     self.font = font
 end
+---@param font string
 function ListView3D:SetSelectionFont(font)
     self.selection_font = font
 end
@@ -245,6 +259,7 @@ function ListView3D:GetSize()
     return self.size[1], self.size[2]
 end
 
+---@param h number
 function ListView3D:SetElementHeight(h)
     self.elem_h = h
     self:UpdateLayout()
@@ -256,6 +271,7 @@ function ListView3D:Clear()
     self.lines = {}
     self:UpdateLayout()
 end
+---@param text string
 function ListView3D:AddLine(text)
     table.insert(self.lines, text)
     self:UpdateLayout()
@@ -285,6 +301,7 @@ end
 function ListView3D:GetScroll()
     return self.scroll
 end
+---@param s number
 function ListView3D:SetScroll(s)
     self.scroll = math.Clamp(s, 0, self.max_scroll)
     local up_button = self.up_button
@@ -293,6 +310,7 @@ function ListView3D:SetScroll(s)
     up_button:SetEnabled(self.scroll ~= 0)
     down_button:SetEnabled(self.scroll ~= self.max_scroll)
 end
+---@param s number
 function ListView3D:SetScrollSpeed(s)
     self.scroll_speed = s
 end
@@ -304,14 +322,17 @@ end
 
 -- interface / placeholder / compatibility functions
 
+---@param name string
 function ListView3D:AddColumn(name)
 
 end
 
+---@param b boolean
 function ListView3D:SetSortable(b)
     -- sorting is neither required nor implemented
 end
 
+---@param b boolean
 function ListView3D:SetMultiSelect(b)
     -- multiselect is neither required nor implemented
 end

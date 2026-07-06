@@ -26,6 +26,8 @@
 ---@field DoClick function?
 TardisScreenButton = {}
 
+---@param parent Panel
+---@param screen TardisScreen
 ---@return TardisScreenButton
 function TardisScreenButton:new(parent,screen)
     local sb = {}
@@ -164,12 +166,16 @@ function TardisScreenButton:Think()
     self.ThinkInternal()
 end
 
+---@param sizeX number
+---@param sizeY number
 function TardisScreenButton:SetSize(sizeX, sizeY)
     self.size = {sizeX, sizeY}
     self:AdjustTextOffset()
     self.ThinkInternal()
 end
 
+---@param posX number
+---@param posY number?
 function TardisScreenButton:SetPos(posX, posY)
     if posY == nil then
         self.pos = {posX, 0}
@@ -179,18 +185,24 @@ function TardisScreenButton:SetPos(posX, posY)
     self.ThinkInternal()
 end
 
+---@param off string
+---@param on string?
 function TardisScreenButton:SetImages(off, on)
     self.icon_off = off
     self.icon_on = on or off
     self.icon:SetImage(self.icon_off)
 end
 
+---@param off string
+---@param on string?
 function TardisScreenButton:SetFrameImages(off, on)
     self.frame_off = off
     self.frame_on = on or off
     self.frame:SetImage(self.frame_off)
 end
 
+---@param type1 integer
+---@param type2 integer?
 function TardisScreenButton:SetFrameType(type1, type2)
     if type2 == nil then
         type2 = type1
@@ -209,14 +221,17 @@ function TardisScreenButton:SetFrameType(type1, type2)
     self.frame:SetImage(self.frame_off)
 end
 
+---@param id string
 function TardisScreenButton:SetID(id)
     self.id = id
 end
 
+---@param order integer?
 function TardisScreenButton:SetOrder(order)
     self.order = order
 end
 
+---@param text string
 function TardisScreenButton:SetText(text)
     if not self.id then error("You must set button id before calling SetText") end
     self.text = text
@@ -258,6 +273,7 @@ function TardisScreenButton:AdjustTextOffset()
     end
 end
 
+---@param font string
 function TardisScreenButton:SetFont(font)
     self.label:SetFont(font)
     self:AdjustTextOffset()
@@ -279,10 +295,12 @@ function TardisScreenButton:GetSize()
     return self.size[1], self.size[2]
 end
 
+---@param is_toggle boolean
 function TardisScreenButton:SetIsToggle(is_toggle)
     self.is_toggle=is_toggle
 end
 
+---@param on boolean
 function TardisScreenButton:SetPressed(on)
     if self.on ~= on then
         self.on = on
@@ -299,10 +317,12 @@ function TardisScreenButton:IsPressed()
     return self.on
 end
 
+---@param t number
 function TardisScreenButton:SetClickTime(t)
     self.click_time = t
 end
 
+---@param visible boolean
 function TardisScreenButton:SetVisible(visible)
     self.visible = visible
     self.icon:SetVisible(visible)
@@ -314,16 +334,20 @@ function TardisScreenButton:IsVisible()
     return self.visible
 end
 
+---@param x number
 function TardisScreenButton:SetTransparency(x)
     self.transparency = x
 end
 
+---@param control string
 function TardisScreenButton:SetControl(control)
     self.DoClick = function()
         TARDIS:Control(control, LocalPlayer())
     end
 end
 
+---@param ent gmod_tardis
+---@param data string|string[]
 function TardisScreenButton:SetPressedStateData(ent, data)
     if istable(data) then
         self.Think = function()
@@ -331,9 +355,10 @@ function TardisScreenButton:SetPressedStateData(ent, data)
             self:SetPressed(ent:GetData(data[1]) or ent:GetData(data[2]))
         end
     else
+        local data_id = data --[[@as string]]
         self.Think = function()
             if not ent._init then return end
-            self:SetPressed(ent:GetData(data))
+            self:SetPressed(ent:GetData(data_id))
         end
     end
 end

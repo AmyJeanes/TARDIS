@@ -182,6 +182,9 @@ hook.Add("KeyRelease", "VGUI3D2DMouseRelease", function(_, key)
     end
 end)
 
+---@param pos Vector
+---@param ang Angle
+---@param res number
 function vgui.Start3D2D(pos, ang, res)
     origin = pos
     scale = res
@@ -192,10 +195,12 @@ function vgui.Start3D2D(pos, ang, res)
     cam.Start3D2D(pos, ang, res)
 end
 
+---@param range number?
 function vgui.MaxRange3D2D(range)
     maxrange = isnumber(range) and range or 0
 end
 
+---@param pnl Panel
 function vgui.IsPointingPanel(pnl)
     origin = pnl.Origin
     scale = pnl.Scale

@@ -86,6 +86,8 @@ function dmodel_tbl:DrawModel()
     end
 end
 
+---@param w number
+---@param h number
 function dmodel_tbl:Paint( w, h )
     if not IsValid( self.Entity ) then return end
 

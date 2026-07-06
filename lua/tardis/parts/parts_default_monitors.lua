@@ -2,7 +2,7 @@ local HIDE_COLLISIONS = true
 -- Default monitors
 ---@class part_default_monitors : gmod_tardis_part
 ---@field MonitorID string?
-local PART = {}
+local PART = TARDIS:NewPart()
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
 PART.Collision = true
@@ -13,7 +13,7 @@ PART.poses_down = { 0.5, 0, 1, }
 
 -- Initialize: set data names for each monitor
 
-function PART:Initialize(ply)
+function PART:Initialize()
     self.data_flip = self.ID .. "_flip"
     self.data_flip_pos = self.ID .. "_flip_pos"
     self.data_down = self.ID .. "_down"
@@ -64,6 +64,7 @@ end
 
 -- Animation functions
 
+---@param anim tardis_part_animation_state
 function PART:AnimateRotation(anim)
     local target = self:GetData(self.data_rotation,0)
 
@@ -91,11 +92,13 @@ function PART:AnimateRotation(anim)
     end
 end
 
+---@param anim tardis_part_animation_state
 function PART:AnimateDownMovement(anim)
     local target = self:GetData(self.data_down_pos, 0.5)
     TARDIS.DoPartAnimation(self, true, anim, target, false)
 end
 
+---@param anim tardis_part_animation_state
 function PART:AnimateFlip(anim)
     local target = self:GetData(self.data_flip_pos, 0.5)
     TARDIS.DoPartAnimation(self, true, anim, target, false)
@@ -184,6 +187,8 @@ local function rotations_distance(r1, r2)
     return math.min(d1, d2, d3)
 end
 
+---@param rotation number
+---@param down number
 function PART:ChangePosition(rotation, down)
     local other_r = self:GetOtherRotation()
 
@@ -221,6 +226,8 @@ if SERVER then
         do_collision(self:GetHitboxStatic(), static)
     end
 
+    ---@param pos Vector
+    ---@param ang Angle
     function PART:MoveHitboxes(pos, ang)
         local handles_hitbox = self:GetHitboxHandles()
         local screen_hitbox = self:GetHitboxScreen()
@@ -262,6 +269,7 @@ if SERVER then
         end
     end
 
+    ---@param ply Player
     function PART:MoveDown(ply)
         if not self:CanMove() then return end
 
@@ -273,6 +281,7 @@ if SERVER then
         self:RequestHitboxUpdate(ply)
     end
 
+    ---@param ply Player
     function PART:Flip(ply)
         if not self:CanFlip() then return end
 
@@ -283,6 +292,7 @@ if SERVER then
         self:RequestHitboxUpdate(ply)
     end
 
+    ---@param ply Player?
     function PART:RotateToEyePos(ply)
         local prev = self:GetData(self.data_rotated_by)
 
@@ -318,6 +328,8 @@ if SERVER then
         end
     end
 
+    ---@param bodygroup integer
+    ---@param value integer
     function PART:OnBodygroupChanged(bodygroup, value)
         if not IsValid(self.interior) then return end
 
@@ -406,6 +418,9 @@ if SERVER then
     util.AddNetworkString("TARDIS_DefaultMonitorsRequestUpdate")
     util.AddNetworkString("TARDIS_DefaultMonitorsUpdate")
 
+    ---@param update_pos boolean
+    ---@param update_hitbox boolean
+    ---@param ply Player
     function PART:RequestUpdate(update_pos, update_hitbox, ply)
         net.Start("TARDIS_DefaultMonitorsRequestUpdate")
             net.WriteEntity(self)
@@ -414,8 +429,11 @@ if SERVER then
         net.Send(ply)
     end
 
+    ---@param ply Player
     function PART:RequestHitboxUpdate(ply) self:RequestUpdate(false, true, ply) end
+    ---@param ply Player
     function PART:RequestPositionUpdate(ply) self:RequestUpdate(true, false, ply) end
+    ---@param ply Player
     function PART:RequestFullUpdate(ply) self:RequestUpdate(true, true, ply) end
 
     -- Dynamic read/write counts not handled by analyzer.
@@ -442,6 +460,8 @@ if SERVER then
         end
     end)
 else
+    ---@param update_pos boolean
+    ---@param update_hitbox boolean
     function PART:SendMonitorsUpdate(update_pos, update_hitbox)
         net.Start("TARDIS_DefaultMonitorsUpdate")
 
@@ -563,7 +583,7 @@ end
 
 local function Setup_Hitbox_Parts(MonitorID)
     -- Default monitor hitboxes
-    PART = {} --[[@as part_default_monitors]]
+    PART = TARDIS:NewPart() --[[@as part_default_monitors]]
     PART.MonitorID = MonitorID
     PART.AutoSetup = true
     PART.Collision = false
@@ -628,7 +648,7 @@ Setup_Hitbox_Parts("default_monitor_2")
 -- Rotor ring
 
 -- Default rotor ring
-PART = {} --[[@as part_default_monitors]]
+PART = TARDIS:NewPart() --[[@as part_default_monitors]]
 PART.ID = "default_rotor_ring"
 PART.Model = "models/molda/toyota_int/rotor_ring.mdl"
 PART.AutoSetup = true

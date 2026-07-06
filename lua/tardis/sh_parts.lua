@@ -66,6 +66,7 @@
 ---@field pos Vector
 ---@field ang Angle
 ---@field static boolean?
+---@field Use fun(self: gmod_tardis_part, activator: Player, caller?: Entity, useType?: number, value?: number)?
 ---@field UseBasic fun(self: gmod_tardis_part, activator: Player)?
 ---@field PreDraw fun(self: gmod_tardis_part)?
 ---@field PostDraw fun(self: gmod_tardis_part)?
@@ -574,7 +575,7 @@ local overridequeue={}
 postinit=postinit or false -- local vars cannot stay on autorefresh
 
 ---@api
----@param part table
+---@param part gmod_tardis_part
 function TARDIS:AddPart(part)
     local source = debug.getinfo(2).short_src
 

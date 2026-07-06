@@ -9,11 +9,14 @@
 ---@field dh number
 ---@field dw number
 ---@field button_size number[]
----@field buttons table
+---@field buttons TardisScreenButton[]
 HexagonalLayout = {}
 
 local v3 = math.sqrt(3) -- sqrt(3)
 
+---@param screen Panel
+---@param n_rows integer
+---@param gap_scale number
 ---@return HexagonalLayout
 function HexagonalLayout:new(screen, n_rows, gap_scale)
     local layout = {}
@@ -44,6 +47,8 @@ function HexagonalLayout:new(screen, n_rows, gap_scale)
     return layout
 end
 
+---@param i integer
+---@param j integer
 function HexagonalLayout:GetButtonPos(i, j)
     local px = v3 * self.gap_scale * self.button_side_length / 2
     px = px + self.dw * (j % 2 + 2 * (i - 1))
@@ -51,6 +56,7 @@ function HexagonalLayout:GetButtonPos(i, j)
     return px,py
 end
 
+---@param x integer?
 function HexagonalLayout:GetButtonSize(x)
     if x then
         return self.button_size[x]
@@ -65,6 +71,7 @@ function HexagonalLayout:GetCols()
     return self.n_cols
 end
 
+---@param screen_button TardisScreenButton
 function HexagonalLayout:AddNewButton(screen_button)
     screen_button:SetVisible(false)
     table.insert(self.buttons, screen_button)
@@ -120,6 +127,7 @@ function HexagonalLayout:DrawButtons()
     end
 end
 
+---@param x number
 function HexagonalLayout:ScrollButtons(x)
     local cancel = false
     for _,button in ipairs(self.buttons) do

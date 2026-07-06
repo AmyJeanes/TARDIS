@@ -93,6 +93,20 @@ function DModelPanel:PreDrawModel(ent) end
 ---@class DListView_Line
 ---@field DoDoubleClick fun(self: DListView_Line)
 
+---@class DListView
+---@field OnRowSelected fun(self: DListView, lineID: integer, line: DListView_Line)
+---@field OnRowSelectionRemoved fun(self: DListView, lineID: integer, line: DListView_Line)
+---@field DoDoubleClick fun(self: DListView, lineID: integer, line: DListView_Line)
+
+---@class DCheckBoxLabel
+---@field OnChange fun(self: DCheckBoxLabel, value: boolean)
+
+-- glua-api-snippets declares panel hook signatures on PANEL, while
+-- vgui.Create returns Panel descendants. Mirror common hook fields here
+-- so ad-hoc instance overrides infer their arguments.
+---@class Panel
+---@field PerformLayout fun(self: Panel, width: number, height: number)?
+
 -- Panel fields set by our 3D2D vgui wrapper (cl_3d2dvgui.lua's Paint3D2D
 -- attaches the active orientation back onto the panel so it can be read
 -- after the render loop in IsPointingPanel and friends).
