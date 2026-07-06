@@ -35,7 +35,6 @@ end
 local function drawFrustum(self)
     -- Use the live light when it's emitting, otherwise reconstruct where it would be from metadata.
     local pl = self.projectedlight
-    local active = IsValid(pl)
     local origin, ang, hfov, vfov, nearz, farz
     if IsValid(pl) then
         origin, ang = pl:GetPos(), pl:GetAngles()
@@ -62,7 +61,7 @@ local function drawFrustum(self)
     drawRect(near, col_stub)
 
     -- cone: NearZ -> FarZ (dimmed when the light isn't emitting)
-    local cone = active and col_cone_on or col_cone_off
+    local cone = IsValid(pl) and col_cone_on or col_cone_off
     for i = 1, 4 do render.DrawLine(near[i], far[i], cone, false) end
     drawRect(far, cone)
 
