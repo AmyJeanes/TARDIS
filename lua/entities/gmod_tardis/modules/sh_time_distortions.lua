@@ -4,6 +4,7 @@ local search_radius = 2048
 local explode_radius = 300
 
 ---@param pos Vector
+---@param outside boolean
 ---@param int_radius number?
 local function TimeDistortionsPresent(pos, outside, int_radius)
     for _,v in ipairs(ents.FindInSphere(pos, search_radius)) do
@@ -83,7 +84,7 @@ if SERVER then
     end)
 
     ENT:AddHook("ShouldFailMat", "time_distortions_destination", function(self, dest_pos, dest_ang)
-        if dest_pos ~= nil and dest_pos ~= self:GetPos() and TimeDistortionsPresent(dest_pos, search_radius)
+        if dest_pos ~= nil and dest_pos ~= self:GetPos() and TimeDistortionsPresent(dest_pos, true)
         then
             return true
         end

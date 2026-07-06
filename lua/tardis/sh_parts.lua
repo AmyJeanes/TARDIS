@@ -797,11 +797,13 @@ local function AutoSetup(self,e,id)
     end
 end
 
+---@param e gmod_tardis_part
 local function SetupPartControl(e)
-    if (e.parent == e.interior) then
-        controls_metadata = e.parent.metadata.Interior.Controls
+    local parent = e.parent
+    if (parent == e.interior) then
+        controls_metadata = parent.metadata.Interior.Controls
     else
-        controls_metadata = e.parent.metadata.Exterior.Controls
+        controls_metadata = parent.metadata.Exterior.Controls
     end
     if controls_metadata ~= nil then
         if controls_metadata[e.ID] ~= nil then
@@ -809,8 +811,9 @@ local function SetupPartControl(e)
         end
     end
     if e.Control then
-        e.parent.controlparts[e.Control] = e.parent.controlparts[e.Control] or {}
-        e.parent.controlparts[e.Control][e.ID] = e
+        parent.controlparts = parent.controlparts or {}
+        parent.controlparts[e.Control] = parent.controlparts[e.Control] or {}
+        parent.controlparts[e.Control][e.ID] = e
     end
 end
 
