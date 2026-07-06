@@ -44,7 +44,7 @@ function ENT:Initialize()
     end
 end
 
----@param colData table
+---@param colData CollisionData
 ---@param collider Entity
 function ENT:PhysicsCollide(colData, collider)
     self:CallHook("PhysicsCollide", colData, collider)

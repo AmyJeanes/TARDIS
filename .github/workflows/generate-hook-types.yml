@@ -1,0 +1,67 @@
+name: Generate Hook Types
+
+on:
+  push:
+    branches:
+    - dev
+    paths:
+    - lua/**
+    - scripts/generate-hook-types.ps1
+    - scripts/bootstrap.ps1
+    - scripts/install-tools.ps1
+    - .github/workflows/generate-hook-types.yml
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate_hook_types:
+    name: Generate Hook Types
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          path: TARDIS
+          token: ${{ secrets.TOKEN }}
+
+      - name: Checkout Doors
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/Doors
+          ref: dev
+          path: Doors
+
+      - name: Checkout world-portals
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/world-portals
+          ref: dev
+          path: world-portals
+
+      - name: Checkout gmod-addon-tools
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/gmod-addon-tools
+          # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
+          ref: v0.11.0
+          path: gmod-addon-tools
+
+      - name: Install tooling
+        working-directory: TARDIS
+        run: ./scripts/install-tools.ps1
+        shell: pwsh
+
+      - name: Generate hook types
+        working-directory: TARDIS
+        run: ./scripts/generate-hook-types.ps1
+        shell: pwsh
+
+      - name: Commit
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
+        with:
+          repository: TARDIS
+          commit_message: "Update generated hook type catalogue"
