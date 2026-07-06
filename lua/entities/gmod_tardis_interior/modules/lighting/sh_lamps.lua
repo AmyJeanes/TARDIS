@@ -1,7 +1,10 @@
 -- Lamps (projected lights)
 
 if CLIENT then
+    ---@param tbl tardis_lamp_complete?
+    ---@param base tardis_lamp_complete
     ---@param keep_warn_off_options boolean
+    ---@return tardis_lamp_complete?
     local function MergeLampTable(tbl, base, keep_warn_off_options)
         if not tbl then return nil end
 
@@ -16,6 +19,7 @@ if CLIENT then
         return new_table
     end
 
+    ---@param lmp tardis_lamp_complete
     local function ParseLampTable(lmp)
         if not lmp then return end
         if lmp.parsed == true then return end
@@ -43,7 +47,7 @@ if CLIENT then
         lmp.parsed = true
     end
 
-    ---@param lamp table?
+    ---@param lamp tardis_lamp_complete?
     function ENT:InitLampData(lamp)
         if not lamp or not lamp.pos then return end
         lamp.pos_global = self:LocalToWorld(lamp.pos)
@@ -68,8 +72,10 @@ if CLIENT then
         self.lamps_data = {}
 
         for k,v in pairs(lamps) do
-            ParseLampTable(v) -- only once per metadata
-            local this_lamp = TARDIS:CopyTable(v)
+            -- authorable lamp -> runtime lamp: ParseLampTable fills it in place
+            local lamp = v --[[@as tardis_lamp_complete]]
+            ParseLampTable(lamp) -- only once per metadata
+            local this_lamp = TARDIS:CopyTable(lamp)
             self:InitLampData(this_lamp)
             self.lamps_data[k] = this_lamp
         end
@@ -80,7 +86,7 @@ if CLIENT then
         self:CreateLamps()
     end)
 
-    ---@param lamp table?
+    ---@param lamp tardis_lamp_complete?
     function ENT:CreateLamp(lamp)
         if not lamp then return end
         if lamp.enabled == false then return end
@@ -100,6 +106,7 @@ if CLIENT then
     end
 
     ---@param self gmod_tardis_interior
+    ---@param lmp tardis_lamp_complete
     local function SelectLampTable(self, lmp)
         local state = self:GetData("light_state")
         local warning = self:GetData("warning", false)

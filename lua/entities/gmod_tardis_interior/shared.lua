@@ -13,6 +13,8 @@
 ---@field idlesounds table<any, CSoundPatch>
 ---@field dematfailsound CSoundPatch?
 ---@field spacebuild_env sb_resource_environment?
+---@field light_data tardis_interior_light_data?
+---@field lamps_data table<string, tardis_lamp_complete>?
 
 ENT.Base="gmod_door_interior"
 ENT.TardisInterior=true

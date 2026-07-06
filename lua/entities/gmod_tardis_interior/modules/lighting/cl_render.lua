@@ -27,16 +27,15 @@ local function predraw_o(self, part)
     end
 
     --render.SetLightingMode(1)
-    local light = self.light_data and self.light_data.main
-
-    if light == nil then return end
-    --because for some reason SOMEONE OUT THERE didn't define a light.
-
-    local lights = self.light_data.extra
+    local ld = self.light_data
+    if not ld then return end
+    local light = ld.main
+    local lights = ld.extra
     local warning = self:GetData("warning", false)
 
     local tab={}
 
+    ---@param lt tardis_interior_light_state_complete
     local function SelectLightRenderTable(lt)
         if self:CallHook("ShouldDrawLight",nil,lt) == false then
             return {}

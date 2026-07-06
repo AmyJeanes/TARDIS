@@ -143,6 +143,7 @@ TARDIS:AddInteriorTemplate("default_fixed_color", TARDIS:NewInteriorTemplate({
     },
 }))
 
+---@param lt tardis_interior_light_state_complete?
 ---@param col Color
 local function change_light_color(lt, col)
     if lt and lt.brightness and col then
@@ -152,9 +153,11 @@ local function change_light_color(lt, col)
     end
 end
 
+---@param int gmod_tardis_interior
 ---@param k number
 local function set_interior_color_smith(int, k)
-    if not int.light_data then return end
+    local ld = int.light_data
+    if not ld then return end
 
     local p = 1 - k
 
@@ -163,8 +166,8 @@ local function set_interior_color_smith(int, k)
 
     int:SetData("default_int_env_color", col)
 
-    change_light_color(int.light_data.main, col)
-    change_light_color(int.light_data.extra.console_bottom, col)
+    change_light_color(ld.main, col)
+    change_light_color(ld.extra.console_bottom, col)
 
     -- Color(80, 120, 255) ... Color (80, 255, 120)
     local rotor_col = Color(80, 120 + 125 * k, 120 + 125 * p)
@@ -172,7 +175,7 @@ local function set_interior_color_smith(int, k)
 
     -- Color(240,240,255) ... Color(255,255,200)
     local console_col = Color(240 + 15 * k, 240 + 15 * k, 200 + 55 * p)
-    change_light_color(int.light_data.extra.console_white, console_col)
+    change_light_color(ld.extra.console_white, console_col)
 
     -- Color(255,255,200) ... Color(255,255,220)
     local floor_lights_col = Color(255, 255, 200 + 20 * p)
@@ -199,9 +202,11 @@ TARDIS:AddInteriorTemplate("default_color_update_smith", TARDIS:NewInteriorTempl
     },
 }))
 
+---@param int gmod_tardis_interior
 ---@param k number
 local function set_interior_color_capaldi(int, k)
-    if not int.light_data then return end
+    local ld = int.light_data
+    if not ld then return end
 
     local p = 1 - k
 
@@ -213,8 +218,8 @@ local function set_interior_color_capaldi(int, k)
     -- Color(255,50,0) ... Color(255,75,0)
     local main_col = Color(255, 50 + 15 * k, 0)
 
-    change_light_color(int.light_data.main, main_col)
-    change_light_color(int.light_data.extra.console_bottom, main_col)
+    change_light_color(ld.main, main_col)
+    change_light_color(ld.extra.console_bottom, main_col)
 
     -- Color(150,50,0) ... Color(150,65,0)
     local rotor_col = Color(150, 50 + 15 * k, 0)
@@ -222,7 +227,7 @@ local function set_interior_color_capaldi(int, k)
 
     -- Color(255,50,0) ... Color(255,75,0)
     local console_col = Color(255, 50 + 15 * k, 0)
-    change_light_color(int.light_data.extra.console_white, console_col)
+    change_light_color(ld.extra.console_white, console_col)
 
     -- Color(255,255,200) ... Color(255,255,220)
     local floor_lights_col = Color(255, 255, 200 + 20 * p)

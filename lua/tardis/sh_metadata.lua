@@ -135,6 +135,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field brightness number?
 ---@field falloff number?
 ---@field warn_color Color?
+---@field warncolor Color?
 ---@field warn_pos Vector?
 ---@field warn_brightness number?
 ---@field warn_falloff number?
@@ -153,6 +154,43 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field NoLO tardis_interior_light_state?
 ---@field NoExtra tardis_interior_light_state?
 ---@field NoExtraNoLO tardis_interior_light_state?
+
+--- Runtime variant of a light state after ParseLightTable: the base fields are
+--- defaulted (so non-optional here) plus the precomputed colour vectors, world
+--- positions and local-model-light render tables.
+---@class tardis_interior_light_state_complete : tardis_interior_light_state
+---@field color Color
+---@field pos Vector
+---@field brightness number
+---@field falloff number
+---@field warn_color Color
+---@field warn_pos Vector
+---@field warn_brightness number
+---@field warn_falloff number
+---@field off_color Color
+---@field off_pos Vector
+---@field off_brightness number
+---@field off_falloff number
+---@field off_warn_color Color
+---@field off_warn_pos Vector
+---@field off_warn_brightness number
+---@field off_warn_falloff number
+---@field color_vec Vector
+---@field pos_global Vector
+---@field warn_color_vec Vector
+---@field warn_pos_global Vector
+---@field off_color_vec Vector
+---@field off_pos_global Vector
+---@field off_warn_color_vec Vector
+---@field off_warn_pos_global Vector
+---@field render_table table
+---@field warn_render_table table
+---@field off_render_table table
+---@field off_warn_render_table table
+
+---@class tardis_interior_light_data
+---@field main tardis_interior_light_state_complete
+---@field extra table<string, tardis_interior_light_state_complete>
 
 ---@class tardis_light_override
 ---@field basebrightness number
@@ -376,10 +414,35 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field brightness number?
 ---@field ang Angle?
 ---@field shadows boolean?
+---@field shadowfilter number?
+---@field sprite boolean?
+---@field sprite_brightness number?
+---@field enabled boolean?
+---@field nopower boolean?
 ---@field states table<string, tardis_lamp>?
 ---@field warn tardis_lamp?
 ---@field off tardis_lamp?
 ---@field off_warn tardis_lamp?
+
+--- Runtime variant of a lamp after ParseLampTable/InitLampData: the base fields
+--- are defaulted (so non-optional here) plus the parsed flag, precomputed world
+--- position and sprite pixel-visibility handle.
+---@class tardis_lamp_complete : tardis_lamp
+---@field texture string
+---@field fov number
+---@field distance number
+---@field brightness number
+---@field ang Angle
+---@field shadows boolean
+---@field shadowfilter number
+---@field sprite_brightness number
+---@field parsed boolean
+---@field pos_global Vector
+---@field spritepixvis pixelvis_handle_t
+---@field states table<string, tardis_lamp_complete>?
+---@field warn tardis_lamp_complete?
+---@field off tardis_lamp_complete?
+---@field off_warn tardis_lamp_complete?
 
 ---@class tardis_interior_template
 ---@field override boolean?
