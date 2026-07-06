@@ -99,6 +99,7 @@ if CLIENT then
         return pl
     end
 
+    ---@param self gmod_tardis_interior
     local function SelectLampTable(self, lmp)
         local state = self:GetData("light_state")
         local warning = self:GetData("warning", false)

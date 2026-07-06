@@ -550,6 +550,7 @@ if SERVER then
         end
     end)
 else
+    ---@param self gmod_tardis
     local function ShouldPlayFlightSounds(self)
         if not TARDIS:GetSetting("sound") then return false end
         if not TARDIS:GetSetting("flight-externalsound") then return false end
@@ -580,6 +581,7 @@ else
         end
     end
 
+    ---@param self gmod_tardis
     local function IsFlightSoundWrong(self)
         if self.flightsoundbroken ~= self:GetData("broken_flight", false) then return true end
         if self.flightsounddamaged ~= (self:IsLowHealth() and not self:GetData("broken_flight")) then return true end

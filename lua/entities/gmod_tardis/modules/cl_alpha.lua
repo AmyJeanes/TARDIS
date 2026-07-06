@@ -19,6 +19,7 @@ function ENT:GetAlpha()
     return 1
 end
 
+---@param self gmod_tardis
 ---@param part gmod_tardis_part?
 local function shouldapply(self,part)
     local target,override = self:GetAlpha()
@@ -30,6 +31,7 @@ local function shouldapply(self,part)
     end
 end
 
+---@param self gmod_tardis
 local function shouldUseEnhancedFade(self)
     if not TARDIS:GetSetting("enhanced-fading-enabled") then
         return false
@@ -42,6 +44,7 @@ local function shouldUseEnhancedFade(self)
     return true
 end
 
+---@param self gmod_tardis
 ---@param part gmod_tardis_part?
 local function dopredraw(self,part)
     local target = shouldapply(self,part)
@@ -69,6 +72,7 @@ local function dopredraw(self,part)
     end
 end
 
+---@param self gmod_tardis
 ---@param part gmod_tardis_part?
 local function dopostdraw(self,part)
     if shouldapply(self,part)~=nil then

@@ -139,6 +139,7 @@ end
 -- Custom states for visual effects with no functionality
 --
 
+---@param self gmod_tardis
 ---@param time number
 ---@param data_id string
 ---@param hook_name string

@@ -84,6 +84,7 @@ if SERVER then
         end
     end)
 
+    ---@param self gmod_tardis
     local function ArtronDematCheck(self)
         local fast = self:GetFastRemat()
         local artron = self:GetArtron()

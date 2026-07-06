@@ -32,12 +32,14 @@ function ENT:ChooseFlightSound()
     self.flightsound = CreateSound(self, current_sound)
 end
 
+---@param self gmod_tardis_interior
 local function IsFlightSoundWrong(self)
     if self.flightsoundbroken ~= self:GetData("broken_flight", false) then return true end
     if self.flightsounddamaged ~= (self.exterior:IsLowHealth() and not self:GetData("broken_flight")) then return true end
     return false
 end
 
+---@param self gmod_tardis_interior
 local function ShouldPlayFlightSounds(self)
     if not TARDIS:GetSetting("sound") then return false end
     if not TARDIS:GetSetting("flight-internalsound") then return false end

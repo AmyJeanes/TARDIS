@@ -1,5 +1,6 @@
 -- Scanner
 
+---@param self gmod_tardis_interior
 local function UpdateScannerState(self)
     local state = false
     for k,_ in pairs(self.scanners) do

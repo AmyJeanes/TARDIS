@@ -206,6 +206,7 @@ else
         self:EmitSound(self.metadata.Exterior.Sounds.RepairFinish)
     end)
 
+    ---@param self gmod_tardis
     local function StopRepairLoop(self)
         if self.repairloopsound then
             self.repairloopsound:Stop()

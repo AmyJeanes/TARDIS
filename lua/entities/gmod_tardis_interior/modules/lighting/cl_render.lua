@@ -1,5 +1,6 @@
 -- Rendering override
 
+---@param self gmod_tardis_interior
 local function predraw_o(self, part)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
     if part and part.AllowThroughPortals and not self.props[part] then return end
@@ -72,6 +73,7 @@ local function predraw_o(self, part)
     end
 end
 
+---@param self gmod_tardis_interior
 local function postdraw_o(self)
     if not TARDIS:GetSetting("lightoverride-enabled") then return end
     if not self.metadata.Interior.LightOverride then return end

@@ -712,6 +712,7 @@ function ENT:DestinationTraceDownHit(point, vertical_offset)
     return self:DestinationTraceDown(point, vertical_offset).HitPos
 end
 
+---@param self gmod_tardis
 ---@param yaw Angle
 local function GenerateTracePoints(self, yaw)
     local trace_offsets = { Vector(0,0,0), }

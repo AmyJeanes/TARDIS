@@ -31,12 +31,13 @@ local function drawRect(corners, col)
     for i = 1, 4 do render.DrawLine(corners[i], corners[i % 4 + 1], col, false) end
 end
 
+---@param self gmod_tardis
 local function drawFrustum(self)
     -- Use the live light when it's emitting, otherwise reconstruct where it would be from metadata.
     local pl = self.projectedlight
     local active = IsValid(pl)
     local origin, ang, hfov, vfov, nearz, farz
-    if active then
+    if IsValid(pl) then
         origin, ang = pl:GetPos(), pl:GetAngles()
         hfov, vfov = pl:GetHorizontalFOV(), pl:GetVerticalFOV()
         nearz, farz = pl:GetNearZ(), pl:GetFarZ()
