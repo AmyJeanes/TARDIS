@@ -139,6 +139,7 @@ if SERVER then
     end)
 
 else -- CLIENT
+    ---@param x number
     local function rand_offset(x)
         return math.random(-x, x)
     end

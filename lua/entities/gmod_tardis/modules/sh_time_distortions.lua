@@ -3,6 +3,8 @@
 local search_radius = 2048
 local explode_radius = 300
 
+---@param pos Vector
+---@param int_radius number?
 local function TimeDistortionsPresent(pos, outside, int_radius)
     for _,v in ipairs(ents.FindInSphere(pos, search_radius)) do
         if v:GetClass() == "gmod_time_distortion_generator" and v:GetEnabled() then
@@ -38,6 +40,7 @@ local function DistortionsInside(ent)
     return TimeDistortionsPresent(interior:LocalToWorld(center), false, radius)
 end
 
+---@param ent gmod_tardis
 local function DistortionsOutside(ent)
     return TimeDistortionsPresent(ent:GetPos(), true)
 end

@@ -18,12 +18,18 @@ end)
 
 if SERVER then return end
 
+---@param version string
+---@param newVersion string
 local function get_release_notes(version, newVersion)
     local show = TARDIS:GetSetting("show_release_notes")
     if not show then return end
     local headers = {
         ["X-GitHub-Api-Version"] = "2022-11-28"
     }
+    ---@param body string
+    ---@param size number
+    ---@param response_headers table
+    ---@param code number
     local function onsuccess(body, size, response_headers, code)
         if code ~= 200 then
             print("Failed to retrieve TARDIS release notes for " .. version .. ", code: " .. code .. ", body: " .. body)
@@ -63,6 +69,7 @@ local function get_release_notes(version, newVersion)
             )
         end
     end
+    ---@param reason string
     local function onfailure(reason)
         print("Failed to retrieve TARDIS release notes for " .. version .. ": " .. reason)
     end

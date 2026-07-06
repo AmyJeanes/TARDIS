@@ -1,5 +1,6 @@
 -- Phase Animation
 
+---@param ent Entity
 local function dodraw(self, ent)
     if not self:CallHook("ShouldDrawPhaseAnimation") then return end
 

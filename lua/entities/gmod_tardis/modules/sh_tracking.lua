@@ -50,6 +50,7 @@ function ENT:GetTracking()
     return self:GetData("tracking-ent")
 end
 
+---@param ent Entity
 local function get_ent_size(ent)
     if not ent.GetModelBounds then return 0 end
 

@@ -9,6 +9,13 @@ local col_cone_on  = Color(0, 235, 255)    -- live cone, light emitting
 local col_cone_off = Color(95, 115, 150)   -- cone, light not emitting
 local col_wall     = Color(255, 150, 0)    -- portal occluding wall (full size)
 
+---@param origin Vector
+---@param fwd Vector
+---@param right Vector
+---@param up Vector
+---@param dist number
+---@param tanh number
+---@param tanv number
 local function frustumCorners(origin, fwd, right, up, dist, tanh, tanv)
     local c = origin + fwd * dist
     local hw, hh = dist * tanh, dist * tanv
@@ -18,6 +25,8 @@ local function frustumCorners(origin, fwd, right, up, dist, tanh, tanv)
     }
 end
 
+---@param corners Vector[]
+---@param col Color
 local function drawRect(corners, col)
     for i = 1, 4 do render.DrawLine(corners[i], corners[i % 4 + 1], col, false) end
 end

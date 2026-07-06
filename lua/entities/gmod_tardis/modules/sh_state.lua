@@ -79,6 +79,7 @@ function ENT:GetState()
 end
 
 function ENT:SelectState()
+  ---@param state string
   local function select_warning(state)
     return self:GetWarning() and (state .. "_warning") or state
   end
@@ -138,6 +139,9 @@ end
 -- Custom states for visual effects with no functionality
 --
 
+---@param time number
+---@param data_id string
+---@param hook_name string
 local function ProcessTemporaryState(self, time, data_id, hook_name)
   if time ~= 0 then
     self:SetData(data_id, true)

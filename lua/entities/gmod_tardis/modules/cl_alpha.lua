@@ -19,6 +19,7 @@ function ENT:GetAlpha()
     return 1
 end
 
+---@param part gmod_tardis_part?
 local function shouldapply(self,part)
     local target,override = self:GetAlpha()
     if (target ~= 1 or override) and ((not part) or (part and (not part.CustomAlpha))) then
@@ -41,6 +42,7 @@ local function shouldUseEnhancedFade(self)
     return true
 end
 
+---@param part gmod_tardis_part?
 local function dopredraw(self,part)
     local target = shouldapply(self,part)
     if target~=nil then
@@ -67,6 +69,7 @@ local function dopredraw(self,part)
     end
 end
 
+---@param part gmod_tardis_part?
 local function dopostdraw(self,part)
     if shouldapply(self,part)~=nil then
         cam.IgnoreZ(false)

@@ -1,6 +1,8 @@
 -- Open door with E, go in with Alt-E
 
 if SERVER then
+    ---@param callbacks table<function, boolean>
+    ---@param state boolean
     local function runcallbacks(callbacks,state)
         for k,_ in pairs(callbacks) do
             k(state)
@@ -8,6 +10,8 @@ if SERVER then
         end
     end
 
+    ---@param callback fun(state: boolean)?
+    ---@param state boolean
     local function delay(callback,state) -- Ensures callback (if given) is called async
         if not callback then return end
         timer.Simple(0,function()

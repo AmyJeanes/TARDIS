@@ -201,6 +201,7 @@ if SERVER then
             return
         end
 
+        ---@param state boolean
         local continue_mat = function(state)
             if state then
                 if callback then callback(false) end

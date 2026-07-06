@@ -405,6 +405,10 @@ else
         return trace.HitPos,angle
     end
 
+    ---@param ent Entity
+    ---@param model string?
+    ---@param pos Vector?
+    ---@param ang Angle?
     local function setup(ent, model, pos, ang)
         if not IsValid(ent) then return end
         local prop = ents.CreateClientProp()
@@ -692,6 +696,7 @@ end
 function ENT:DestinationTraceDown(point, vertical_offset)
     vertical_offset = vertical_offset or 50
 
+    ---@param ent Entity
     local filter = function(ent)
         if ent:IsNPC() or ent:IsPlayer() then return false end
         if ent == self or ent.TardisPart then return false end
@@ -707,6 +712,7 @@ function ENT:DestinationTraceDownHit(point, vertical_offset)
     return self:DestinationTraceDown(point, vertical_offset).HitPos
 end
 
+---@param yaw Angle
 local function GenerateTracePoints(self, yaw)
     local trace_offsets = { Vector(0,0,0), }
 
@@ -879,6 +885,7 @@ function ENT:GetGroundedPos(point, get_angle)
     return pos, initial_yaw
 end
 
+---@param trace_result TraceResult
 local function IsTraceBelowWorld(trace_result)
     if trace_result.HitPos.z < -16384 then
         return true

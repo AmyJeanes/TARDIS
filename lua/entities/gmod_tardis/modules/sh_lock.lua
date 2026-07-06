@@ -42,6 +42,7 @@ if SERVER then
         if locked then
             self:SetData("locking",true,true)
 
+            ---@param state boolean
             local dolock = function(state)
                 if state then
                     self:SetData("locking",false,true)
