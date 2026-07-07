@@ -881,6 +881,7 @@ function TARDIS:LoadScreen(id, options)
 
     ---@param self Panel
     screen.Think = function(self)
+        ---@type gmod_tardis_interior
         local int = self.int
         if not IsValid(int) then return end
         local shouldDraw = not (int:CallHook("ShouldNotDrawScreen", self.id) or false)

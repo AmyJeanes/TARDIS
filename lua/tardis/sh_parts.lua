@@ -428,6 +428,7 @@ local overrides={
     end, CLIENT},
     ["Use"]={
         ---@param self gmod_tardis_part
+        ---@param a Entity
         function(self,a,...)
         if SERVER and TARDIS.debug_tips and self.InteriorPart then
             return TARDIS.DebugTipsFunction(self, a, ...)
