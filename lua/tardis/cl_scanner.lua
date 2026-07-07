@@ -43,7 +43,7 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
                     fov = v.fov,
                     origin = camOrigin,
                     angles = camAngle,
-                    drawpostprocess = true,
+                    dopostprocess = true,
                     drawhud = false,
                     drawmonitors = false,
                     drawviewmodel = false,
