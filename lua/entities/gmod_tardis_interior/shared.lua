@@ -1,5 +1,9 @@
 -- TARDIS Interior
 
+---@class tardis_interior_portals
+---@field exterior linked_portal_door
+---@field interior linked_portal_door
+
 ---@class gmod_tardis_interior : gmod_door_interior
 ---@field BaseClass gmod_door_interior
 ---@field timers table<string, table>
@@ -15,6 +19,9 @@
 ---@field spacebuild_env sb_resource_environment?
 ---@field light_data tardis_interior_light_data?
 ---@field lamps_data table<string, tardis_lamp_complete>?
+---@field occupants table<Player, true>
+---@field scanners table<integer, any>
+---@field portals tardis_interior_portals
 
 ENT.Base="gmod_door_interior"
 ENT.TardisInterior=true

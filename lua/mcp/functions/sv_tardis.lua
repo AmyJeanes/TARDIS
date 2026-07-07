@@ -6,6 +6,8 @@ MCP:AddCapability({
     default = false,
 })
 
+---@param entindex number
+---@return gmod_tardis? ent, string? err
 local function resolveTardis(entindex)
     if type(entindex) ~= "number" then
         return nil, "`entindex` must be a number"
@@ -14,9 +16,11 @@ local function resolveTardis(entindex)
     if not IsValid(ent) or not ent.TardisExterior then
         return nil, "no TARDIS at entindex " .. entindex
     end
+    ---@cast ent gmod_tardis -- narrowed via the TardisExterior flag field, not a class-narrowing check the analyzer follows
     return ent
 end
 
+---@param steamid string?
 local function resolvePlayer(steamid)
     if steamid ~= nil then
         if type(steamid) ~= "string" then
@@ -37,6 +41,7 @@ local function resolvePlayer(steamid)
     return players[1]
 end
 
+---@param t any decoded JSON arg, validated at runtime
 ---@param label string
 ---@return number[]? values, string? err
 local function parseTriple(t, label)
@@ -101,6 +106,7 @@ local function materialization(ext)
     }
 end
 
+---@param ext gmod_tardis
 local function occupantList(ext)
     local list = {}
     if istable(ext.occupants) then
@@ -115,6 +121,7 @@ end
 
 -- Census the interior's cordoned props (int.props) instead of the hand-rolled walk: a count and a
 -- class -> count tally, plus an optional per-entity list (index/class/pos).
+---@param ext gmod_tardis
 ---@param includeEntities boolean
 local function cordonCensus(ext, includeEntities)
     local int = ext.interior
@@ -155,15 +162,17 @@ local function chameleonInfo(ext)
 end
 
 -- Scanners live on the interior entity, not the exterior.
+---@param ext gmod_tardis
 local function scannerInfo(ext)
     local int = ext.interior
-    if not (IsValid(int) and int.GetScannersOn) then return nil end
+    if not IsValid(int) or not int.GetScannersOn then return nil end
     return {
         on = int:GetScannersOn(),
         count = istable(int.scanners) and table.Count(int.scanners) or 0,
     }
 end
 
+---@param p linked_portal_door
 local function portalTransform(p)
     if not IsValid(p) then return nil end
     local t = { pos = vec3(p:GetPos()), ang = ang3(p:GetAngles()) }
@@ -175,9 +184,10 @@ end
 -- The interior's door portals (linked_portal_door): `exterior` sits at the exterior model's door in
 -- the world, `interior` at the interior set. Their world transforms are how you aim a shot or trace at
 -- the actual doorway.
+---@param ext gmod_tardis
 local function portalInfo(ext)
     local int = ext.interior
-    if not (IsValid(int) and istable(int.portals)) then return nil end
+    if not IsValid(int) or not istable(int.portals) then return nil end
     return {
         exterior = portalTransform(int.portals.exterior),
         interior = portalTransform(int.portals.interior),
@@ -187,13 +197,16 @@ end
 -- Reverse lookup: the TARDIS a player is currently inside. Server-authoritative -- set on PlayerEnter,
 -- cleared on exit (ply:GetTardisData("exterior")); read server-side only, so no sv/cl divergence. An
 -- empty steamid means the first/only player (handy in singleplayer).
+---@param steamid string
+---@return gmod_tardis? ext, string? err
 local function tardisFromPlayer(steamid)
     local ply, err = resolvePlayer(steamid ~= "" and steamid or nil)
     if not ply then return nil, err end
     local ext = ply.GetTardisData and ply:GetTardisData("exterior")
-    if not (IsValid(ext) and ext.TardisExterior) then
+    if not IsValid(ext) or not ext.TardisExterior then
         return nil, "player " .. ply:Nick() .. " is not currently inside a TARDIS"
     end
+    ---@cast ext gmod_tardis -- narrowed via the TardisExterior flag field, not a class-narrowing check the analyzer follows
     return ext
 end
 
@@ -385,7 +398,7 @@ MCP:AddFunction({
         else
             return { ok = false, error = "specify `entindex` (a TARDIS exterior) or `steamid` (find the TARDIS a player is inside)" }
         end
-        if not ext then return { ok = false, error = err } end
+        if not IsValid(ext) then return { ok = false, error = err } end
 
         local occupants = occupantList(ext)
         return {
