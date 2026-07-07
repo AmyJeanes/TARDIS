@@ -196,6 +196,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                     preview3D.door = nil
                 end
 
+                ---@param ent Entity
                 function preview3D:PostDrawModel( ent )
                     if not self then return end
                     if not IsValid(self.door) then return end
@@ -211,6 +212,7 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                     end
                 end
 
+                ---@param ent Entity
                 function preview3D:LayoutEntity( ent )
                     -- overrides the model constantly spinning
                 end
@@ -236,10 +238,14 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         unselect_exterior()
     end
 
+    ---@param rowIndex integer
+    ---@param row Panel
     function list_exteriors:OnRowSelected(rowIndex, row)
         select_exterior(exteriors[rowIndex][1])
     end
 
+    ---@param rowIndex integer
+    ---@param row Panel
     function list_exteriors:OnRowSelectionRemoved(rowIndex, row)
         unselect_exterior()
     end

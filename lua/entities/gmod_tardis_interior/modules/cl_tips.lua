@@ -107,6 +107,7 @@ function ENT:InitializeTips(style_name)
             tip.colors.current = tip.colors.normal
             tip.highlighted = false
 
+            ---@param on boolean
             tip.SetHighlight = function(self, on)
                 self.highlighted = on
                 if on then

@@ -160,6 +160,7 @@ TARDIS.DebugTipsFunction = function(self, ply, ...)
     local p = ents.Create("gmod_tardis_debug_pointer")
     p:SetCreator(ply)
     p:SetPos(p_pos)
+    ---@param ptr gmod_tardis_debug_pointer
     p.Use = function(ptr)
         add_tip_text(int:WorldToLocal(ptr:GetPos()))
         ply:ChatPrint("Added. Use tardis2_debug_tips_print to get the list.")

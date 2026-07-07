@@ -201,6 +201,10 @@ else
         ---@param category string
         ---@param name string
         ---@param value number
+        ---@param a number
+        ---@param b number|fun(val: number)
+        ---@param c (fun(val: number))|nil
+        ---@param d string|nil
         local function SetupProperty(category, name, value, a, b, c, d)
             local vmin, vmax, update_func
             local vtype = "Float"
@@ -223,6 +227,8 @@ else
 
             row1:Setup( vtype, { min = vmin, max = vmax } )
             row1:SetValue(value)
+            ---@param _ Panel
+            ---@param val number
             row1.DataChanged = function( _, val )
                 row2:SetValue(val)
                 update_func(val)
@@ -230,6 +236,8 @@ else
 
             row2:Setup( "Generic" )
             row2:SetValue(value)
+            ---@param _ Panel
+            ---@param val number
             row2.DataChanged = function( _, val )
                 if tonumber(val) == nil then return end
                 row1:SetValue(val)
@@ -296,6 +304,8 @@ else
         local inv = pr:CreateRow( "3D", "Inverted" )
         inv:Setup( "Bool" )
         inv:SetValue(inverted)
+        ---@param _ Panel
+        ---@param val boolean
         inv.DataChanged = function( _, val )
             inverted = val
             UpdatePortal3D()
@@ -341,6 +351,8 @@ else
         local reset = pr:CreateRow( "Actions", "Reset" )
         reset:Setup( "Bool" )
         reset:SetValue(false)
+        ---@param _ Panel
+        ---@param val boolean
         reset.DataChanged = function( _, val )
             reset:SetValue(false)
 
@@ -368,6 +380,8 @@ else
         local print_row = pr:CreateRow( "Actions", "Print to console" )
         print_row:Setup( "Bool" )
         print_row:SetValue(false)
+        ---@param _ Panel
+        ---@param val boolean
         print_row.DataChanged = function( _, val )
             print_row:SetValue(false)
 

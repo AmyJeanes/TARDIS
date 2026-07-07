@@ -6,6 +6,7 @@ TARDIS.DynamicProxyVars = TARDIS.DynamicProxyVars or {}
 ---@param ent gmod_tardis
 ---@param mat IMaterial
 ---@param name string
+---@param default any
 local function getdynamicproxyvars(ent, mat, name, default)
     if not TARDIS.DynamicProxyVars[ent] then
         TARDIS.DynamicProxyVars[ent] = {}
@@ -129,6 +130,7 @@ end
 
 ---@param self tardis_matproxy
 ---@param mat IMaterial
+---@param ent any
 local function matproxy_tardis_power_bind(self, mat, ent)
     if not IsValid(ent) then return end
 
@@ -281,6 +283,7 @@ end
 
 ---@param self tardis_matproxy
 ---@param mat IMaterial
+---@param ent any
 local function matproxy_tardis_warning_bind(self, mat, ent)
     if not IsValid(ent) then return end
 
@@ -322,6 +325,7 @@ end
 
 ---@param self tardis_matproxy
 ---@param mat IMaterial
+---@param ent any
 local function matproxy_tardis_HDR_bind(self, mat, ent)
     if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
 

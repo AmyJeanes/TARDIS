@@ -137,6 +137,7 @@ function TARDIS:Control(control_id, ply, part)
         if IsValid(part) then
             ext.controlpartsactive[control_id] = part
         end
+        ---@param ent any
         local async_complete = function(ent)
             if ent.controlpartsactive then
                 ent.controlpartsactive[control_id] = false

@@ -137,7 +137,7 @@ local meta = assert(FindMetaTable("Entity"))
 ---@field interior gmod_tardis_interior
 ---@field ply Player
 ---@field model string
----@field skin number
+---@field skin number?
 ---@field override function?
 ---@field base function?
 
@@ -168,8 +168,13 @@ local function resolveWeaponWorldModel(wep)
     end
     local model, skin
     local oSet, oSkin, oDraw = meta.SetModel, meta.SetSkin, meta.DrawModel
+    ---@param s Entity
+    ---@param m string
     meta.SetModel = function(s, m) if s == wep then model = m return end return oSet(s, m) end
+    ---@param s Entity
+    ---@param k number
     meta.SetSkin = function(s, k) if s == wep then skin = k return end return oSkin(s, k) end
+    ---@param s Entity
     meta.DrawModel = function(s, ...) if s == wep then return end return oDraw(s, ...) end
     pcall(wep.DrawWorldModel, wep)
     meta.SetModel, meta.SetSkin, meta.DrawModel = oSet, oSkin, oDraw
@@ -194,6 +199,7 @@ local function syncWeaponDrawClone(rec, wep)
     end
 end
 
+---@param rec tardis_weapon_clone
 local function makeWeaponOverride(rec)
     return function(self, flags)
         local int = rec.interior

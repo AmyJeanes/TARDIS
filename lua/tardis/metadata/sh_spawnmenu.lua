@@ -199,6 +199,7 @@ if CLIENT then
             local option_versions = {}
 
             ---@param option_name string
+            ---@param option_id string|table
             ---@param order integer
             local function add_version_option(option_name, option_id, order)
                 local prefixes = { "  ", "  ", "  ", "  " } -- spaces are different symbols
@@ -226,6 +227,8 @@ if CLIENT then
                 end
             end
 
+            ---@param a string|table
+            ---@param b string|table
             local function versions_compare(a, b)
                 if istable(a) ~= istable(b) then return false end
                 if not istable(a) then
@@ -304,6 +307,7 @@ if CLIENT then
     -- missing icon without trying the other type. Hover modes fall through
     -- to the other type first, since both faces are part of the experience,
     -- and only resort to the missing icon when neither real icon exists.
+    ---@param v table
     ---@param mode integer
     local function get_primary(v, mode)
         if mode == MODE.InteriorOnly then
@@ -322,6 +326,7 @@ if CLIENT then
     -- Hover face: only the icon type the mode swaps to, no fallback. If that
     -- icon doesn't exist for this entity, hover does nothing (caller treats
     -- nil as "leave material alone").
+    ---@param v table
     ---@param mode integer
     local function get_hover(v, mode)
         if mode == MODE.InteriorOnHover then return v.interior_icon end

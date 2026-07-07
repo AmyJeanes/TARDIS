@@ -54,8 +54,14 @@ function ListView3D:new(parent,screen,elem_height,col)
         l:Think()
     end
 
+    ---@param i integer
+    ---@param row Panel
     l.OnRowSelected = function(i,row) end
+    ---@param rowIndex integer
+    ---@param row Panel
     l.DoDoubleClick = function(rowIndex, row) end
+    ---@param i integer
+    ---@param row Panel
     l.OnRowSelectionRemoved = function(i,row) end
     l.Think = function() end
 
@@ -97,6 +103,7 @@ function ListView3D:UpdateLayout()
     self.scroll_panel:SetSize(w, #self.lines * (self.elem_h + d))
     self.scroll = 0
 
+    ---@param this Panel
     self.scroll_panel.Think = function(this)
         if this:GetY() == -self.scroll then return end
 
@@ -123,6 +130,8 @@ function ListView3D:UpdateLayout()
         b:SetIsToggle(true)
         b.index = i
 
+        ---@param this Panel
+        ---@param state boolean
         b.OnToggled = function(this, state)
             if state then
                 for _,another_line in pairs(self.line_elements) do
@@ -147,6 +156,7 @@ function ListView3D:UpdateLayout()
             end
         end
 
+        ---@param this Panel
         b.DoDoubleClick = function(this)
             self:DoDoubleClick(this.index, this)
         end

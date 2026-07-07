@@ -13,6 +13,7 @@ PART.FadeSpeed = 2
 PART.AllowThroughPortals = true
 
 if CLIENT then
+    ---@param ply Player
     function PART:Use(ply)
         self.exterior:NotifyEvent(false, true)
     end

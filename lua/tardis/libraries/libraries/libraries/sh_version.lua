@@ -94,6 +94,13 @@ function TARDIS:GetVersionString(version)
     return string.format("%d.%d.%d", version.Major, version.Minor, version.Patch)
 end
 
+-- Polymorphic: each arg is a version string or a pre-parsed version table, resolved
+-- by the istable branch below. Typed `any` because istable narrowing does not remove
+-- the class from a string|version union, which cascades false nil-flags into callers.
+---@param versionStrOrTbl any
+---@param compareVersionStrOrTbl any
+---@return tardis_version version
+---@return tardis_version compareVersion
 local function get_versions(versionStrOrTbl, compareVersionStrOrTbl)
     local version, compareVersion, success
 

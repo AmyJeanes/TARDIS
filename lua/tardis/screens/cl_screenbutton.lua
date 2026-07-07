@@ -72,6 +72,7 @@ function TardisScreenButton:new(parent,screen)
     sb.Think = function() end
     sb.DoClick = function() end
 
+    ---@param vis boolean
     sb.SetVisibleCustom = function(vis)
         if vis then
             sb.transparency = 255

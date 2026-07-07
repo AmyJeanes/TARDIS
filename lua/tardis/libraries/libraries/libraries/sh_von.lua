@@ -1,4 +1,5 @@
 -- Third-party library
+---@vendored
 ---@diagnostic disable
 
 --[[    vON 1.3.4

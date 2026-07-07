@@ -176,6 +176,7 @@ function TARDIS:GetSetting(id, src, no_default)
     local data = self.SettingsData[id]
     if not data then error("Requested setting " .. id .. " does not exist") end
 
+    ---@param table_value any
     local function select_return_val(table_value)
         if table_value ~= nil then
             return table_value

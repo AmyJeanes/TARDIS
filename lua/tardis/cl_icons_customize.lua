@@ -86,6 +86,7 @@ local function ensure_any_enabled(list)
     return false
 end
 
+---@param pack tardis_icon_pack
 local function pack_display_name(pack)
     local key = "IconPacks." .. pack.Name
     if TARDIS:PhraseExists(key) then return TARDIS:GetPhrase(key) end
@@ -190,6 +191,8 @@ function TARDIS:CustomizeIconPack()
     -- otherwise fall through.
     ---@param panel Panel
     local function clear_on_blank_click(panel)
+        ---@param _ Panel
+        ---@param mc number
         panel.OnMousePressed = function(_, mc)
             if mc == MOUSE_LEFT then clear_selection() end
         end
@@ -264,6 +267,8 @@ function TARDIS:CustomizeIconPack()
     sidebar:SetWide(sidebar_w)
     sidebar:DockMargin(0, 4, 0, 0)
     ---@param self Panel
+    ---@param w number
+    ---@param h number
     sidebar.Paint = function(self, w, h)
         derma.SkinHook("Paint", "Panel", self, w, h)
     end
@@ -279,12 +284,14 @@ function TARDIS:CustomizeIconPack()
     splitter.Paint = function() end
     local split_drag ---@type {x: integer, w: integer}?
     ---@param self Panel
+    ---@param mc number
     splitter.OnMousePressed = function(self, mc)
         if mc ~= MOUSE_LEFT then return end
         split_drag = { x = gui.MouseX(), w = sidebar:GetWide() }
         self:MouseCapture(true)
     end
     ---@param self Panel
+    ---@param mc number
     splitter.OnMouseReleased = function(self, mc)
         if mc ~= MOUSE_LEFT or not split_drag then return end
         split_drag = nil
@@ -346,6 +353,8 @@ function TARDIS:CustomizeIconPack()
     -- Single layout pass for the whole tab bar — keeps tabs, dirty label, and
     -- help button on a shared baseline regardless of how their individual
     -- PerformLayouts would otherwise interleave.
+    ---@param w number
+    ---@param h number
     function tab_bar:PerformLayout(w, h)
         local btn_y = math.floor((h - tab_h) / 2)
         local x = 4
@@ -427,6 +436,7 @@ function TARDIS:CustomizeIconPack()
 
     local refresh_missing_grid -- forward decl, defined below
 
+    ---@param tab table
     set_active_tab = function(tab)
         active_tab = tab
         selected_pack_id = nil
@@ -496,6 +506,8 @@ function TARDIS:CustomizeIconPack()
     order_section:Dock(TOP)
     order_section:DockPadding(SECTION_PAD, SECTION_PAD, SECTION_PAD, SECTION_PAD)
     ---@param self Panel
+    ---@param w number
+    ---@param h number
     order_section.Paint = function(self, w, h)
         derma.SkinHook("Paint", "Panel", self, w, h)
     end
@@ -511,6 +523,8 @@ function TARDIS:CustomizeIconPack()
     missing_section:DockMargin(0, SECTION_GAP, 0, 0)
     missing_section:DockPadding(SECTION_PAD, SECTION_PAD, SECTION_PAD, SECTION_PAD)
     ---@param self Panel
+    ---@param w number
+    ---@param h number
     missing_section.Paint = function(self, w, h)
         derma.SkinHook("Paint", "Panel", self, w, h)
     end
@@ -535,6 +549,8 @@ function TARDIS:CustomizeIconPack()
     missing_grid:SetSpaceY(4)
     clear_on_blank_click(missing_grid)
 
+    ---@param w number
+    ---@param h number
     function list_wrapper:PerformLayout(w, h)
         order_section:SetTall(math.floor((h - SECTION_GAP) / 2))
     end
@@ -585,6 +601,8 @@ function TARDIS:CustomizeIconPack()
                 cell:SetCursor("hand")
                 cell:SetTooltip(pack_display_name(pack))
                 ---@param self Panel
+                ---@param w number
+                ---@param h number
                 cell.Paint = function(self, w, h)
                     surface.SetDrawColor(0, 0, 0, 25)
                     surface.DrawRect(0, 0, w, h)
@@ -603,6 +621,8 @@ function TARDIS:CustomizeIconPack()
                         surface.DrawOutlinedRect(0, 0, w, h, 1)
                     end
                 end
+                ---@param _ Panel
+                ---@param mc number
                 cell.OnMousePressed = function(_, mc)
                     if mc ~= MOUSE_LEFT then return end
                     if working_config.missing[cat] == pack_id then return end
@@ -763,6 +783,9 @@ function TARDIS:CustomizeIconPack()
             row.pack_index = index
             row:Droppable("tardis_iconpack")
             row:SetCursor("sizeall")
+            ---@param _ Panel
+            ---@param w number
+            ---@param h number
             row.Paint = function(_, w, h)
                 -- Subtle darkening reads as a recessed row on both light and
                 -- dark skins; a "lighten" overlay washes out on light themes.
@@ -776,6 +799,7 @@ function TARDIS:CustomizeIconPack()
                 surface.DrawOutlinedRect(0, 0, w, h, 1)
             end
             ---@param self Panel
+            ---@param mouse_code number
             row.OnMousePressed = function(self, mouse_code)
                 if mouse_code == MOUSE_RIGHT and entry.id ~= "base" then
                     local dmenu = DermaMenu()
@@ -796,6 +820,7 @@ function TARDIS:CustomizeIconPack()
             end
 
             ---@param self Panel
+            ---@param mouse_code number
             row.OnMouseReleased = function(self, mouse_code)
                 if mouse_code == MOUSE_LEFT and pressed_row == self and press_x then
                     -- Treat as a click (not drag) if cursor barely moved.
@@ -828,6 +853,8 @@ function TARDIS:CustomizeIconPack()
             number_label:DockMargin(2, 0, 0, 0)
             number_label.display_num = index
             ---@param self Panel
+            ---@param w number
+            ---@param h number
             number_label.Paint = function(self, w, h)
                 local colours = self:GetSkin().Colours
                 if not colours then return end
@@ -844,6 +871,8 @@ function TARDIS:CustomizeIconPack()
 
             local check = vgui.Create("DCheckBox", check_wrap)
             check:SetSize(14, 14)
+            ---@param w number
+            ---@param h number
             function check_wrap:PerformLayout(w, h)
                 check:SetPos((w - 14) / 2, (h - 14) / 2 + 1)
             end
@@ -852,6 +881,8 @@ function TARDIS:CustomizeIconPack()
             if locked then
                 check:SetEnabled(false)
             end
+            ---@param _ Panel
+            ---@param val boolean
             check.OnChange = function(_, val)
                 entry.enabled = val
                 ensure_any_enabled(active_list())
@@ -902,9 +933,13 @@ function TARDIS:CustomizeIconPack()
             label:SetDark(true)
             label:SetMouseInputEnabled(true)
             label:SetCursor("sizeall")
+            ---@param _ Panel
+            ---@param mc number
             label.OnMousePressed = function(_, mc)
                 row:OnMousePressed(mc)
             end
+            ---@param w number
+            ---@param h number
             function label:PerformLayout(w, h)
                 surface.SetFont(self:GetFont())
                 local tw = surface.GetTextSize(pack_name)
@@ -961,12 +996,18 @@ function TARDIS:CustomizeIconPack()
             if selected_pack_id then
                 if in_pack then
                     local border_color = won and WIN_COLOR or LOSE_COLOR
+                    ---@param _ Panel
+                    ---@param w number
+                    ---@param h number
                     icon.PaintOver = function(_, w, h)
                         surface.SetDrawColor(border_color)
                         surface.DrawOutlinedRect(0, 0, w, h, BORDER_THICKNESS)
                     end
                 else
                     -- Dim icons not in the selected pack (overlay handles $alphatest).
+                    ---@param _ Panel
+                    ---@param w number
+                    ---@param h number
                     icon.PaintOver = function(_, w, h)
                         surface.SetDrawColor(20, 20, 20, 220)
                         surface.DrawRect(0, 0, w, h)
@@ -975,6 +1016,7 @@ function TARDIS:CustomizeIconPack()
             end
             icon.DoClick = function() end
             ---@param self Panel
+            ---@param mc number
             icon.OnMousePressed = function(self, mc)
                 if mc == MOUSE_RIGHT then self:OpenMenu() end
             end

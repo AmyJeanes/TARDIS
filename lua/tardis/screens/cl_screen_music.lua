@@ -313,6 +313,8 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
 -- Selecting the rows
 --------------------------------------------------------------------------------
 
+    ---@param rowIndex integer
+    ---@param row Panel
     function list_songs:OnRowSelected(rowIndex,row)
         local sel = list_categories:GetSelectedLine()
         if not sel then return end
@@ -343,6 +345,8 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         end
     end
 
+    ---@param rowIndex integer
+    ---@param row Panel
     function list_songs:DoDoubleClick(rowIndex,row)
         local sel = list_categories:GetSelectedLine()
         if not sel then return end
@@ -354,6 +358,8 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         url = ""
     end
 
+    ---@param rowIndex integer
+    ---@param row Panel
     function list_categories:OnRowSelected(rowIndex,row)
         if list_categories.loading then return end
         list_songs:Clear()
@@ -394,6 +400,8 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
         end
     end
 
+    ---@param rowIndex integer
+    ---@param row Panel
     function list_categories:DoDoubleClick(rowIndex,row)
         -- no-op: use right list for song selection
     end

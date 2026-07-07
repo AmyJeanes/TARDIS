@@ -168,6 +168,7 @@ PART.AnimateSpeed = 0.8
 PART.Sound = "p00gie/tardis/default/intdoors_open.ogg"
 
 if SERVER then
+    ---@param ply Player
     function PART:Use(ply)
         self:SetCollide(self:GetOn())
 

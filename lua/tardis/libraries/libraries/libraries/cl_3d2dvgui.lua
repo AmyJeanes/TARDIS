@@ -1,3 +1,4 @@
+---@vendored
 --[[
 
 3D2D VGUI Wrapper

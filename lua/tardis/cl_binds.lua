@@ -37,9 +37,11 @@ function TARDIS:ChangeKeyBind(id,data,callback)
     keybutton:SetSize(frame:GetWide()*0.6-30, 40)
     keybutton:SetPos((frame:GetWide()*0.5)-(keybutton:GetWide()*0.5),frame:GetTall()-keybutton:GetTall()-10)
     keybutton.key=TARDIS:GetBindKey(id)
+    ---@param s Panel
     keybutton.Update = function(s)
         s:SetText(TARDIS:GetPhrase("Binds.Key")..": "..(TARDIS:GetKeyName(s.key) or TARDIS:GetPhrase("Binds.Invalid")))
     end
+    ---@param s Panel
     keybutton.DoClick = function(s)
         s.keytrap=true
         input.StartKeyTrapping()

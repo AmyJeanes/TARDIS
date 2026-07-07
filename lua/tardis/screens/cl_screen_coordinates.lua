@@ -474,6 +474,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
 
     updatelist()
 
+    ---@param i integer
+    ---@param row Panel
     function llist:OnRowSelected(i,row)
         local locations = TARDIS.Locations[map]
         local locations_num = locations and #locations or 0
@@ -498,6 +500,8 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         updatetextinputs(pos,ang,name)
     end
 
+    ---@param i integer
+    ---@param row Panel
     function llist:OnRowSelectionRemoved(i,row)
         cleartextinputs()
     end

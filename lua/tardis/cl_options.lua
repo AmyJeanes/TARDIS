@@ -19,6 +19,7 @@ function TARDIS:CreateOptionInterface(id, data)
 
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
+        ---@param val boolean
         function elem:OnChange(val)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
@@ -61,6 +62,7 @@ function TARDIS:CreateOptionInterface(id, data)
         end
 
         ---@param self Panel
+        ---@param val number
         elem2.OnValueChanged = function(self, val)
             self.lastchange = CurTime()
             self.lastchange_val = val
@@ -100,6 +102,7 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer:SetWangs(true)
 
         ---@param self Panel
+        ---@param val Color
         mixer.ValueChanged = function(self, val)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
@@ -144,6 +147,9 @@ function TARDIS:CreateOptionInterface(id, data)
         tooltip = tooltip .. " (\"" .. elem2:GetOptionTextByData(data.value) .. "\")"
 
         ---@param self Panel
+        ---@param index number
+        ---@param value string
+        ---@param selected_data any
         elem2.OnSelect = function(self, index, value, selected_data)
             TARDIS:SetSetting(id, selected_data)
             self.lastchange = CurTime()

@@ -100,6 +100,7 @@ PART.ShouldTakeDamage = false
 PART.SoundOn = "p00gie/tardis/default/telepathic_on.ogg"
 PART.SoundOff = "p00gie/tardis/default/telepathic_off.ogg"
 
+---@param ply Player
 function PART:Use(ply)
     local last_d_exit = ply:GetTardisData("destination_last_exit")
 
@@ -452,6 +453,7 @@ PART.Collision = true
 PART.Animate = true
 PART.Sound = "p00gie/tardis/default/levers.ogg"
 if SERVER then
+    ---@param ply Player
     function PART:Use(ply)
         if not self:GetOn() then
             self:SetCollide(false, true)
@@ -470,6 +472,7 @@ PART.Animate = true
 PART.AnimateSpeed = 6
 PART.Sound = "p00gie/tardis/default/switch.ogg"
 if SERVER then
+    ---@param ply Player
     function PART:Use(ply)
         local cover = self.interior:GetPart("default_red_flick_cover")
         if not IsValid(cover) then return end
@@ -609,6 +612,7 @@ PART.AnimateSpeed = 2
 PART.SoundOn = "p00gie/tardis/default/toggles_on.ogg"
 PART.SoundOff = "p00gie/tardis/default/toggles_off.ogg"
 PART.SoundNoPower = "p00gie/tardis/default/toggles.ogg"
+---@param ply Player
 function PART:Use(ply)
     TARDIS:Control(self.Control, ply, self)
 
@@ -708,6 +712,7 @@ PART.Sound = "p00gie/tardis/default/sonic_dispenser.ogg"
 PART.PowerOffUse = false
 
 if SERVER then
+    ---@param ply Player
     function PART:Use(ply)
         TARDIS:Control(self.Control, ply, self)
 
