@@ -1,0 +1,78 @@
+name: Typing Check
+
+# Fails the build on any untyped function param (a silent `any` glua_check never
+# reports) or annotation rot. Needs the sibling addons on the workspace so
+# emmylua_doc_cli resolves cross-addon types, same as the GLua Check job.
+#
+# Requires a gmod-addon-tools release containing Test-GmodTyping (>= v0.12.0);
+# Renovate keeps the pin current after the first bump.
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - alpha
+  push:
+    branches:
+      - dev
+      - alpha
+      - renovate/*
+  workflow_dispatch:
+
+jobs:
+  typing-check:
+    name: Typing Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          path: TARDIS
+
+      - name: Checkout Doors
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/Doors
+          ref: dev
+          path: Doors
+
+      - name: Checkout world-portals
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/world-portals
+          ref: dev
+          path: world-portals
+
+      - name: Checkout Sonic-Screwdriver
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/Sonic-Screwdriver
+          ref: dev
+          path: Sonic-Screwdriver
+
+      - name: Checkout wire
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: wiremod/wire
+          ref: master
+          path: wire
+
+      - name: Checkout GMod-MCP-Server
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/GMod-MCP-Server
+          ref: main
+          path: GMod-MCP-Server
+
+      - name: Checkout gmod-addon-tools
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: AmyJeanes/gmod-addon-tools
+          # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
+          ref: v0.12.0
+          path: gmod-addon-tools
+
+      - name: Run typing check
+        working-directory: TARDIS
+        shell: pwsh
+        run: ./scripts/typing-check.ps1
