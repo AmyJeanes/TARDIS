@@ -113,7 +113,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "Outside", id: string, func: fun(self: gmod_tardis, ply: Player, enabled: true, ...))
 ---@overload fun(self: gmod_tardis, name: "Outside-PosAng", id: string, func: fun(self: gmod_tardis, ply: Player, pos: Vector, ang: Angle, ...))
 ---@overload fun(self: gmod_tardis, name: "Outside-StartCommand", id: string, func: fun(self: gmod_tardis, ply: Player, cmd: CUserCmd, ...))
----@overload fun(self: gmod_tardis, name: "PartBodygroupChanged", id: string, func: fun(self: gmod_tardis, ent: gmod_tardis_part, bodygroup: any, value: any, ...))
+---@overload fun(self: gmod_tardis, name: "PartBodygroupChanged", id: string, func: fun(self: gmod_tardis, ent: gmod_tardis_part, bodygroup: number, value: number, ...))
 ---@overload fun(self: gmod_tardis, name: "PartUsed", id: string, func: fun(self: gmod_tardis, arg1: gmod_tardis_part, a: Entity, ...))
 ---@overload fun(self: gmod_tardis, name: "PhysicsCollide", id: string, func: fun(self: gmod_tardis, colData: CollisionData, collider: Entity, ...))
 ---@overload fun(self: gmod_tardis, name: "PhyslockToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
