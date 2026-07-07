@@ -191,7 +191,6 @@ function TARDIS:CustomizeIconPack()
     -- otherwise fall through.
     ---@param panel Panel
     local function clear_on_blank_click(panel)
-        ---@param _ Panel
         ---@param mc number
         panel.OnMousePressed = function(_, mc)
             if mc == MOUSE_LEFT then clear_selection() end
@@ -621,7 +620,6 @@ function TARDIS:CustomizeIconPack()
                         surface.DrawOutlinedRect(0, 0, w, h, 1)
                     end
                 end
-                ---@param _ Panel
                 ---@param mc number
                 cell.OnMousePressed = function(_, mc)
                     if mc ~= MOUSE_LEFT then return end
@@ -783,7 +781,6 @@ function TARDIS:CustomizeIconPack()
             row.pack_index = index
             row:Droppable("tardis_iconpack")
             row:SetCursor("sizeall")
-            ---@param _ Panel
             ---@param w number
             ---@param h number
             row.Paint = function(_, w, h)
@@ -881,7 +878,6 @@ function TARDIS:CustomizeIconPack()
             if locked then
                 check:SetEnabled(false)
             end
-            ---@param _ Panel
             ---@param val boolean
             check.OnChange = function(_, val)
                 entry.enabled = val
@@ -933,7 +929,6 @@ function TARDIS:CustomizeIconPack()
             label:SetDark(true)
             label:SetMouseInputEnabled(true)
             label:SetCursor("sizeall")
-            ---@param _ Panel
             ---@param mc number
             label.OnMousePressed = function(_, mc)
                 row:OnMousePressed(mc)
@@ -996,7 +991,6 @@ function TARDIS:CustomizeIconPack()
             if selected_pack_id then
                 if in_pack then
                     local border_color = won and WIN_COLOR or LOSE_COLOR
-                    ---@param _ Panel
                     ---@param w number
                     ---@param h number
                     icon.PaintOver = function(_, w, h)
@@ -1005,7 +999,6 @@ function TARDIS:CustomizeIconPack()
                     end
                 else
                     -- Dim icons not in the selected pack (overlay handles $alphatest).
-                    ---@param _ Panel
                     ---@param w number
                     ---@param h number
                     icon.PaintOver = function(_, w, h)

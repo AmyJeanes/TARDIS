@@ -1,10 +1,4 @@
 #!/usr/bin/env pwsh
-# Runs the typing-enforcement gate against the repo: fails on any untyped function
-# param (a silent `any` glua_check never reports) or annotation rot (STALE/DUP/OVER).
-# Installs the pinned tooling on demand, same as glua-check.ps1.
-#
-# Local:  pwsh -File scripts/typing-check.ps1
-# CI:     same
 
 [CmdletBinding()]
 param()

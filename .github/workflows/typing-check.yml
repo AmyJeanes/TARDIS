@@ -1,12 +1,5 @@
 name: Typing Check
 
-# Fails the build on any untyped function param (a silent `any` glua_check never
-# reports) or annotation rot. Needs the sibling addons on the workspace so
-# emmylua_doc_cli resolves cross-addon types, same as the GLua Check job.
-#
-# Requires a gmod-addon-tools release containing Test-GmodTyping (>= v0.12.0);
-# Renovate keeps the pin current after the first bump.
-
 on:
   pull_request:
     branches:
