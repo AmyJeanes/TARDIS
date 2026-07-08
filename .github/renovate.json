@@ -19,11 +19,5 @@
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s+ref: (?<currentValue>\\S+)"
       ]
     }
-  ],
-  "packageRules": [
-    {
-      "matchDepNames": ["AmyJeanes/gmod-addon-tools"],
-      "automerge": false
-    }
   ]
 }
