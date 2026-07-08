@@ -159,6 +159,7 @@ end
 ---@param id string
 ---@param src Entity?
 ---@param no_default boolean?
+---@return any
 function TARDIS:GetSetting(id, src, no_default)
     ---@type Player?
     local ply

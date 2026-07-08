@@ -38,6 +38,7 @@ end
 ---@api
 ---@param cmd string
 ---@param ... any
+---@return any
 function ENT:HandleE2(cmd, ...)
     local ret=self:CallHook("HandleE2", cmd, ...)
     if ret==nil then ret=0 end

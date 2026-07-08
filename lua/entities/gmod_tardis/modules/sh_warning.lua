@@ -10,7 +10,7 @@ if SERVER then
 
     ---@api
     function ENT:ToggleWarning()
-        return self:SetWarning(not self:GetWarning())
+        self:SetWarning(not self:GetWarning())
     end
 
     ---@api

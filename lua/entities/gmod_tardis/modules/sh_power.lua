@@ -34,6 +34,7 @@ end)
 
 if SERVER then
     ---@api
+    ---@return boolean
     function ENT:TogglePower()
         return self:SetPower(not self:GetPower())
     end

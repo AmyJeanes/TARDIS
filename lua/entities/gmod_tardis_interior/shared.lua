@@ -146,12 +146,14 @@ end
 
 ---@api
 ---@param name string
+---@return any
 function ENT:CallCommonHook(name, ...)
     return self.exterior:CallCommonHook(name, ...)
 end
 
 ---@api
 ---@param name string
+---@return any
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
