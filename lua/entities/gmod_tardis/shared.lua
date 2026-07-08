@@ -161,7 +161,6 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "ShouldStopFire", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldStopSmoke", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldTakeDamage", id: string, func: fun(self: gmod_tardis, dmginfo: CTakeDamageInfo, ...))
----@overload fun(self: gmod_tardis, name: "ShouldThink", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldTurnOffFlightPhysics", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldTurnOffFlightSound", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldTurnOffFloatPhysics", id: string, func: fun(self: gmod_tardis, ...))
