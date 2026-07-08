@@ -47,7 +47,7 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.19.0
+          ref: v0.19.1
           path: gmod-addon-tools
 
       # The wiki is a separate git repo (<repo>.wiki.git). The default GITHUB_TOKEN
