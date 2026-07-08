@@ -14,6 +14,9 @@ ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
 end)
 
 if CLIENT then
+    ---@param portal linked_portal_door
+    ---@param exit linked_portal_door
+    ---@param origin Vector
     ENT:AddHook("ShouldRenderPortal", "portals", function(self,portal,exit,origin)
         local dont,black = self:CallHook("ShouldNotRenderPortal",self,portal,exit,origin)
         if dont==nil then

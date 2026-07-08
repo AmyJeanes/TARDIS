@@ -211,6 +211,7 @@ function TARDIS:UpdateLanguage()
         end
     end
 
+    ---@type string
     local oldLangCode = self.CurrentLanguage
     self.CurrentLanguage = langCode
 

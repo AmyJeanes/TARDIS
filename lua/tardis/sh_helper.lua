@@ -72,7 +72,7 @@ local pp_trace = {
     ["StartSolid"] = false,
     ["SurfaceFlags"] = SURF_HITBOX,
     ["SurfaceProps"] = 0
-}
+} --[[@as TraceResult]] -- hand-built trace passed to the CanTool permission hook
 
 -- Prop Protection
 ---@api
