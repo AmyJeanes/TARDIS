@@ -32,7 +32,7 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.20.0
+          ref: v0.21.0
           path: gmod-addon-tools
 
       - name: Generate CLAUDE.md
