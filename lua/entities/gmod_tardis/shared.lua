@@ -143,7 +143,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "ShouldDrawProjectedLight", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldDrawShadow", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldEmitDoorSound", id: string, func: fun(self: gmod_tardis, ...))
----@overload fun(self: gmod_tardis, name: "ShouldFailDemat", id: string, func: fun(self: gmod_tardis, force: boolean, ...))
+---@overload fun(self: gmod_tardis, name: "ShouldFailDemat", id: string, func: fun(self: gmod_tardis, force: boolean?, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldFailMat", id: string, func: fun(self: gmod_tardis, pos: Vector?, ang: Angle?, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldForceDemat", id: string, func: fun(self: gmod_tardis, pos: Vector?, ang: Angle?, ...))
 ---@overload fun(self: gmod_tardis, name: "ShouldNotAllowFalling", id: string, func: fun(self: gmod_tardis, ...))
