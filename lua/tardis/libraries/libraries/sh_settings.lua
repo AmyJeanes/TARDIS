@@ -155,6 +155,21 @@ function TARDIS:SetSetting(id, value, ignore_convar)
     return value
 end
 
+-- Module-scoped (not a per-call closure): GetSetting is hot, called per part per pass.
+---@param table_value any
+---@param no_default boolean?
+---@param default_value any
+---@return any
+local function select_return_val(table_value, no_default, default_value)
+    if table_value ~= nil then
+        return table_value
+    end
+    if no_default then
+        return nil
+    end
+    return default_value
+end
+
 ---@api
 ---@param id string
 ---@param src Entity?
@@ -177,32 +192,21 @@ function TARDIS:GetSetting(id, src, no_default)
     local data = self.SettingsData[id]
     if not data then error("Requested setting " .. id .. " does not exist") end
 
-    ---@param table_value any
-    local function select_return_val(table_value)
-        if table_value ~= nil then
-            return table_value
-        end
-        if no_default then
-            return nil
-        end
-        return data.value
-    end
-
     if data.class == "global" then
-        return select_return_val(self.GlobalSettings[id])
+        return select_return_val(self.GlobalSettings[id], no_default, data.value)
     end
 
     if data.class == "local" then
         if SERVER then
             error("Local setting " .. id .. " is being requested serverside")
         end
-        return select_return_val(self.LocalSettings[id])
+        return select_return_val(self.LocalSettings[id], no_default, data.value)
     end
 
     if data.class == "networked" then
 
         if CLIENT and (ply == nil or ply == LocalPlayer()) then
-            return select_return_val(self.NetworkedSettings[id])
+            return select_return_val(self.NetworkedSettings[id], no_default, data.value)
         end
 
         local user_id = (IsValid(ply) and ply:UserID()) or (IsValid(ent) and ent.CreatorID) or nil
@@ -212,10 +216,10 @@ function TARDIS:GetSetting(id, src, no_default)
         end
 
         if not user_id or not self.ClientSettings[user_id] then
-            return select_return_val(nil)
+            return select_return_val(nil, no_default, data.value)
         end
 
-        return select_return_val(self.ClientSettings[user_id][id])
+        return select_return_val(self.ClientSettings[user_id][id], no_default, data.value)
     end
 
     error("Requested setting " .. id .. " either doesn't exist or has no defined class")
