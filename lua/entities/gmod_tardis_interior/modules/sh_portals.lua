@@ -56,14 +56,16 @@ if CLIENT then
         local ext=self.exterior
         if not IsValid(ext) then return end
 
-        -- Skip the distance auto-close (keep the door open) when closing would be wrong: the
-        -- door is already shut; the player is inside us at any depth; or our exterior is parked
-        -- in another interior the player isn't in - out there the world distance to it is
+        -- Skip the distance auto-close (keep the door open) when closing would be wrong: the door
+        -- is already shut; the player is inside us at any depth; the view is through one of our
+        -- cordon cameras (inside us, so distance to our exterior is meaningless); or our exterior
+        -- is parked in another interior the player isn't in - there the world distance to it is
         -- meaningless and it only renders nested through that interior's portal, so closing it
         -- here just blanks us when someone looks in. We still distance-close from its own space.
         local container = ext.insideof
         if not ext:GetData("doorstate",false)
             or self:LocalPlayerInside()
+            or self:RenderingThroughCordonCamera()
             or (IsValid(container) and not container:LocalPlayerInside()) then
             if ext.DoorOverride~=nil then ext.DoorOverride=nil end
             return
