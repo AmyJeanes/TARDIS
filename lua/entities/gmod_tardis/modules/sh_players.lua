@@ -111,6 +111,7 @@ else
 end
 
 ---@class Player
+---@field tardis table<string, any>? internal per-player data store backing Get/SetTardisData
 local meta = FindMetaTable("Player")
 
 ---@return gmod_tardis_interior?

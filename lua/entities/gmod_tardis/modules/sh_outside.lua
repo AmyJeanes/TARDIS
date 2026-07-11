@@ -29,6 +29,7 @@ if SERVER then
                 ply:SetTardisData("outsidecool", CurTime()+0.5)
                 self:CallHook("Outside", ply, enabled)
                 self:SendMessage("Outside", {ply, enabled})
+                ply:SetTardisData("outside_attacklock", true)
             end
             return true
         end
@@ -49,7 +50,9 @@ if SERVER then
     end)
 
     hook.Add("StartCommand", "tardis-outside", function(ply, cmd)
-        if ply:GetTardisData("outside") then
+        local td = ply.tardis
+        if not td then return end
+        if td.outside then
             local ext=ply:GetTardisExterior()
             if not IsValid(ext) then return end
             if not ply:Alive() then ext:SetOutsideView(ply,false) return end
@@ -62,16 +65,39 @@ if SERVER then
                 ext:SetOutsideView(ply,false)
             end
             cmd:ClearButtons()
+        elseif td.outside_attacklock then
+            -- eat a still-held click (e.g. destination confirm) so it doesn't fire the restored weapon
+            if cmd:KeyDown(IN_ATTACK) or cmd:KeyDown(IN_ATTACK2) then
+                cmd:RemoveKey(IN_ATTACK)
+                cmd:RemoveKey(IN_ATTACK2)
+            else
+                td.outside_attacklock = nil
+            end
         end
     end)
 else
     hook.Add("StartCommand", "tardis-outside", function(ply, cmd)
-        if ply:GetTardisData("outside") then
+        local td = ply.tardis
+        if not td then return end
+        if td.outside then
             local ext=ply:GetTardisExterior()
             if not IsValid(ext) then return end
             ext:CallHook("Outside-StartCommand", ply, cmd)
             cmd:ClearMovement()
+        elseif td.outside_attacklock then
+            -- eat a still-held click (e.g. destination confirm) so it doesn't fire the restored weapon
+            if cmd:KeyDown(IN_ATTACK) or cmd:KeyDown(IN_ATTACK2) then
+                cmd:RemoveKey(IN_ATTACK)
+                cmd:RemoveKey(IN_ATTACK2)
+            else
+                td.outside_attacklock = nil
+            end
         end
+    end)
+
+    ENT:AddHook("Outside", "attacklock", function(self, ply, enabled)
+        if enabled or ply ~= LocalPlayer() then return end
+        ply:SetTardisData("outside_attacklock", true)
     end)
 
     hook.Add("SetupMove", "tardis-outside", function(ply, mv, cmd)
