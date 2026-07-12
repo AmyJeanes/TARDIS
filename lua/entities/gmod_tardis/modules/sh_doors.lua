@@ -152,11 +152,19 @@ if SERVER then
         self:UpdateDoorCollision()
     end)
 
+    ENT:AddHook("MatStart", "doorcollision", function(self)
+        self:UpdateDoorCollision()
+    end)
+
     ENT:AddHook("StopMat", "doorcollision", function(self)
         self:UpdateDoorCollision()
     end)
 
     ENT:AddHook("ToggleDoorReal", "doorcollision", function(self)
+        self:UpdateDoorCollision()
+    end)
+
+    ENT:AddHook("ExteriorChanged", "doorcollision", function(self)
         self:UpdateDoorCollision()
     end)
 

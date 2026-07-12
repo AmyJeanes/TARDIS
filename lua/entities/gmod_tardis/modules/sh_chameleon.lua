@@ -357,7 +357,9 @@ ENT:AddHook("PowerToggled", "chameleon", function(self,on)
 end)
 
 ENT:AddHook("MigrateData", "chameleon", function(self,parent,data)
-    self:SetData("chameleon_selected_exterior", self:GetData("chameleon_current_exterior"), true)
+    local current = self:GetData("chameleon_current_exterior")
+    if not current then return end
+    self:SetData("chameleon_selected_exterior", current, true)
 end)
 
 ENT:AddHook("MatStart", "chameleon", function(self)
