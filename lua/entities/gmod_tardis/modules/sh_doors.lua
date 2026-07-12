@@ -172,7 +172,7 @@ if SERVER then
         local door_ext = TARDIS:GetPart(self, "door")
         local door_int = TARDIS:GetPart(self.interior, "door")
 
-        if not IsValid(door_ext) or not IsValid(door_int) then return end
+        if not IsValid(door_ext) then return end
 
         local open = self:DoorOpen(true)
 
@@ -190,13 +190,13 @@ if SERVER then
             else
                 door_ext:SetCollisionGroup(colgroup)
             end
-            door_int:SetCollisionGroup(COLLISION_GROUP_NONE)
+            if IsValid(door_int) then door_int:SetCollisionGroup(COLLISION_GROUP_NONE) end
         elseif open then
             door_ext:SetCollisionGroup(COLLISION_GROUP_WORLD)
-            door_int:SetCollisionGroup(COLLISION_GROUP_WORLD)
+            if IsValid(door_int) then door_int:SetCollisionGroup(COLLISION_GROUP_WORLD) end
         else
             door_ext:SetCollisionGroup(colgroup)
-            door_int:SetCollisionGroup(colgroup)
+            if IsValid(door_int) then door_int:SetCollisionGroup(colgroup) end
         end
     end
 
