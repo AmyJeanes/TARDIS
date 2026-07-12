@@ -87,13 +87,10 @@ end
 ---@param dmginfo CTakeDamageInfo
 ---@return boolean
 function TARDIS:IsFireDamage(dmginfo)
-    if dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_SLOWBURN) then
-        return true
-    end
-    if not dmginfo:IsDamageType(DMG_DIRECT) then return false end
-    local inflictor = dmginfo:GetInflictor()
-    if not IsValid(inflictor) then return false end
-    return inflictor.TardisExterior or inflictor.TardisInterior or inflictor.TardisPart or false
+    -- DMG_DIRECT is vFire's damage type for burning generic props like the TARDIS
+    return dmginfo:IsDamageType(DMG_BURN)
+        or dmginfo:IsDamageType(DMG_SLOWBURN)
+        or dmginfo:IsDamageType(DMG_DIRECT)
 end
 
 TARDIS.color_white_vector = Vector(1,1,1)
