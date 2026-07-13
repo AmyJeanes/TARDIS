@@ -116,7 +116,7 @@ function TARDIS:SelectSpawnID(id, ent)
 
     version = TARDIS:SelectDoorVersionID(version, ent)
 
-    if not self.Metadata[version] then
+    if not self.MetadataRaw[version] then
         version = TARDIS:SelectDoorVersionID(versions.main, ent)
     end
     
@@ -127,7 +127,8 @@ end
 ---@param int_id string?
 ---@return string?
 function TARDIS:GetMainVersionId(int_id)
-    return (self.Metadata[int_id] and self.Metadata[int_id].IsVersionOf) or int_id
+    local raw = self.MetadataRaw[int_id]
+    return (raw and raw.IsVersionOf) or int_id
 end
 
 ---@param main_id string
