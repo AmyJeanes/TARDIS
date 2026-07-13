@@ -83,6 +83,7 @@
     "Binds.Sections.ThirdPerson.TogglePhyslock.Description": "Udělat TARDIS neměnnou a nehybnou v prostoru",
     "Binds.Sections.ThirdPerson.TogglePower": "Hlavní energie",
     "Binds.Sections.ThirdPerson.ToggleVortex": "Režim víru",
+    "Chameleon.ExteriorChangeCancelled": "Změna exteriéru byla zrušena.",
     "Chameleon.ExteriorPlanned": "Změna exteriéru byla naplánována. Bude aplikována při dalším přistání TARDIS",
     "Chameleon.ExteriorSelected": "Nový exteriér byl vybrán",
     "Chameleon.FailedExteriorSelect": "Nepodařilo se vybrat nový exteriér",

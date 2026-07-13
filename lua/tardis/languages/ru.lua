@@ -86,6 +86,7 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "Зафиксировать физическую оболочку ТАРДИС в одном положении",
     ["Binds.Sections.ThirdPerson.TogglePower"] = "Переключить Энергию",
     ["Binds.Sections.ThirdPerson.ToggleVortex"] = "Переключить Режим временной воронки",
+    ["Chameleon.ExteriorChangeCancelled"] = "Внешнее изменение было отменено.",
     ["Chameleon.ExteriorPlanned"] = "Внешний вид ТАРДИС выбран. Он применится при следующей посадке",
     ["Chameleon.ExteriorSelected"] = "Выбран новый внешний вид",
     ["Chameleon.FailedExteriorSelect"] = "Не удалось выбрать новый внешний вид",

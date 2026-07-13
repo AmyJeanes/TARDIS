@@ -86,6 +86,7 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "Gwnewch y TARDIS yn gyson ac yn ansymudol yn y gofod",
     ["Binds.Sections.ThirdPerson.TogglePower"] = "Togl Pŵer",
     ["Binds.Sections.ThirdPerson.ToggleVortex"] = "Togglo Vortex",
+    ["Chameleon.ExteriorChangeCancelled"] = "Mae'r newid allanol wedi cael ei ganslo.",
     ["Chameleon.ExteriorPlanned"] = "Mae newid tu allan wedi'i gynllunio. Bydd yn cael ei gymhwyso pan fydd y TARDIS yn glanio nesaf",
     ["Chameleon.ExteriorSelected"] = "Mae tu allan newydd wedi'i ddewis",
     ["Chameleon.FailedExteriorSelect"] = "Wedi methu dewis tu allan newydd",

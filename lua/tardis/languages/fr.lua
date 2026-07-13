@@ -86,6 +86,7 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "Rendez le TARDIS statique et immobile dans l'espace",
     ["Binds.Sections.ThirdPerson.TogglePower"] = "Activer/Désactiver l'allimentation",
     ["Binds.Sections.ThirdPerson.ToggleVortex"] = "Activer/Désactiver les vortex",
+    ["Chameleon.ExteriorChangeCancelled"] = "La modification extérieure a été annulée.",
     ["Chameleon.ExteriorPlanned"] = "Une modification d'extérieur a été planifiée. Elle s'appliquera lors du prochain atterrissage du TARDIS",
     ["Chameleon.ExteriorSelected"] = "Un nouvel extérieur a été sélectionné",
     ["Chameleon.FailedExteriorSelect"] = "Échec lors de la sélection d'un nouvel extérieur",

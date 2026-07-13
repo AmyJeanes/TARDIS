@@ -83,6 +83,7 @@
     "Binds.Sections.ThirdPerson.TogglePhyslock.Description": "Tee TARDISista liikkumaton avaruudessa",
     "Binds.Sections.ThirdPerson.TogglePower": "Virta päälle/pois",
     "Binds.Sections.ThirdPerson.ToggleVortex": "Aikapyörre päälle/pois",
+    "Chameleon.ExteriorChangeCancelled": "Ulkopuolinen muutos on peruttu.",
     "Chameleon.ExteriorPlanned": "Ulkokuoren vaihdos on meneillään. Se toteutuu kun TARDIS seuraavan kerran laskeutuu",
     "Chameleon.ExteriorSelected": "Uusi ulkokuori on valittu",
     "Chameleon.FailedExteriorSelect": "Uuden ulkokuoren valinta epäonnistui",

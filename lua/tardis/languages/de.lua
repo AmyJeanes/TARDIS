@@ -86,6 +86,7 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "Macht die TARDIS im Raum konstant und unbeweglich",
     ["Binds.Sections.ThirdPerson.TogglePower"] = "Strom umschalten",
     ["Binds.Sections.ThirdPerson.ToggleVortex"] = "Vortex umschalten",
+    ["Chameleon.ExteriorChangeCancelled"] = "Die äußere Änderung wurde storniert.",
     ["Chameleon.ExteriorPlanned"] = "Eine Hüllenänderung wurde geplant. Sie wird nach der Landung angewandt",
     ["Chameleon.ExteriorSelected"] = "Eine neue Hülle wurde ausgewählt",
     ["Chameleon.FailedExteriorSelect"] = "Konnte keine neue Hülle auswählen",

@@ -86,6 +86,7 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "讓塔迪斯在空間中不可移動",
     ["Binds.Sections.ThirdPerson.TogglePower"] = "切換電源",
     ["Binds.Sections.ThirdPerson.ToggleVortex"] = "切換漩渦",
+    ["Chameleon.ExteriorChangeCancelled"] = "外部變更已被取消。",
     ["Chameleon.ExteriorPlanned"] = "已計劃更換外觀，將於塔迪斯下次著陸時生效",
     ["Chameleon.ExteriorSelected"] = "已選擇新外觀",
     ["Chameleon.FailedExteriorSelect"] = "無法選擇新外觀",

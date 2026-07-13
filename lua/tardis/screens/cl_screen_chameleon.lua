@@ -263,8 +263,23 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
         end
     end
 
+    function reset:Think()
+        if not IsValid(ext) then return end
+        local staged = ext:IsChameleonStaged()
+        if staged ~= self.showing_cancel then
+            self.showing_cancel = staged
+            self:SetText(TARDIS:GetPhrase(staged and "Common.Cancel" or "Screens.Chameleon.Reset"))
+        end
+        self:SetEnabled(staged or ext:IsChameleonActive())
+    end
+
     function reset:DoClick()
-        ext:ChangeExterior(nil, true, LocalPlayer())
+        if not IsValid(ext) then return end
+        if ext:IsChameleonStaged() then
+            ext:CancelStagedExterior()
+        else
+            ext:ChangeExterior(nil, true, LocalPlayer())
+        end
     end
 
 end)

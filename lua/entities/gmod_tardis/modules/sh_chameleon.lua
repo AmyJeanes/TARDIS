@@ -5,6 +5,12 @@ if SERVER then
         end
     end)
 
+    ENT:OnMessage("chameleon_cancel_staged", function(self,data,ply)
+        if self:CheckSecurity(ply) then
+            self:CancelStagedExterior(ply)
+        end
+    end)
+
     ENT:AddHook("Initialize", "chameleon", function(self)
         local init_ext = self:GetData("chameleon_current_exterior")
         if init_ext ~= nil then
@@ -337,6 +343,20 @@ function ENT:ChangeExterior(id, animate, ply, retry)
     end)
 end
 
+---@api
+---@param ply Player?
+function ENT:CancelStagedExterior(ply)
+    if CLIENT then
+        self:SendMessage("chameleon_cancel_staged")
+        return
+    end
+
+    self:SetData("chameleon_planned_exterior", nil, true)
+    self:SetData("chameleon_selected_exterior", nil, true)
+    self:SetData("chameleon_exterior_last_selector", nil, true)
+    TARDIS:Message(ply, "Chameleon.ExteriorChangeCancelled")
+end
+
 ---@param animate boolean?
 function ENT:RetryChameleon(animate)
     local id = self:GetData("chameleon_selected_exterior")
@@ -421,4 +441,11 @@ end)
 ---@api
 function ENT:IsChameleonActive()
     return self:GetData("chameleon_active", false)
+end
+
+---@api
+---@return boolean
+function ENT:IsChameleonStaged()
+    return self:GetData("chameleon_planned_exterior") ~= nil
+        or self:GetData("chameleon_selected_exterior") ~= nil
 end

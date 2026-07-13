@@ -86,6 +86,7 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "TARDIS'i uzayda sabit ve hareketsiz hale getirir",
     ["Binds.Sections.ThirdPerson.TogglePower"] = "Gücü Değiştir",
     ["Binds.Sections.ThirdPerson.ToggleVortex"] = "Vortex'i aç/kapat",
+    ["Chameleon.ExteriorChangeCancelled"] = "Dış değişiklik iptal edildi.",
     ["Chameleon.ExteriorPlanned"] = "Bir dış kabuk değişikliği planlandı. TARDIS bir sonraki inişinde uygulanacak",
     ["Chameleon.ExteriorSelected"] = "Yeni bir dış kabuk seçildi",
     ["Chameleon.FailedExteriorSelect"] = "Yeni bir dış kabuk seçilemedi",

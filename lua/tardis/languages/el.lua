@@ -86,6 +86,7 @@ T.Phrases = {
     ["Binds.Sections.ThirdPerson.TogglePhyslock.Description"] = "Παγώνει το ΤΑΡΝΤΙΣ στον χώρο",
     ["Binds.Sections.ThirdPerson.TogglePower"] = "Άνοιγμα/κλείσιμο ενέργειας",
     ["Binds.Sections.ThirdPerson.ToggleVortex"] = "Ενεργοποίηση Δίνης",
+    ["Chameleon.ExteriorChangeCancelled"] = "Η εξωτερική αλλαγή έχει ακυρωθεί.",
     ["Chameleon.ExteriorPlanned"] = "Έχει προγραμματιστεί μια εξωτερική αλλαγή. Θα εφαρμοστεί όταν προσγειωθεί το ΤΑΡΝΤΙΣ",
     ["Chameleon.ExteriorSelected"] = "Επιλέχθηκε νέο εξωτερικό",
     ["Chameleon.FailedExteriorSelect"] = "Αποτυχία επιλογής νέου εξωτερικού",

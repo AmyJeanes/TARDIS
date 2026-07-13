@@ -83,6 +83,7 @@
     "Binds.Sections.ThirdPerson.TogglePhyslock.Description": "使 TARDIS 在空间中不可移动",
     "Binds.Sections.ThirdPerson.TogglePower": "切换动力源",
     "Binds.Sections.ThirdPerson.ToggleVortex": "切换漩涡飞行",
+    "Chameleon.ExteriorChangeCancelled": "外部更改已被取消。",
     "Chameleon.ExteriorPlanned": "已计划进行外观更改。这将在 TARDIS 下次着陆时生效",
     "Chameleon.ExteriorSelected": "已选定新外观",
     "Chameleon.FailedExteriorSelect": "选定新外观失败",
