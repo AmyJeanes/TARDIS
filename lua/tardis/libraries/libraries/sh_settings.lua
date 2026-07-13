@@ -355,7 +355,7 @@ if SERVER then
             net.Start("TARDIS-ClientSettings")
                 net.WriteInt(userID,8)
                 net.WriteBool(mode)
-                net.WriteType(key)
+                net.WriteString(key)
                 net.WriteType(value)
             net.Broadcast()
         else
