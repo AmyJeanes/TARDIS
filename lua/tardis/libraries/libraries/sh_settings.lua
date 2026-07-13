@@ -211,7 +211,7 @@ function TARDIS:GetSetting(id, src, no_default)
 
         local user_id = (IsValid(ply) and ply:UserID()) or (IsValid(ent) and ent.CreatorID) or nil
 
-        if not user_id then
+        if not user_id and not IsValid(ent) then
             print("[TARDIS] WARNING: Networked setting " .. id .. " was requested for invalid source " .. tostring(ent))
         end
 

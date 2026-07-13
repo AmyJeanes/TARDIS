@@ -132,8 +132,19 @@ function meta:GetTardisExterior()
     return ext
 end
 
+---@param self gmod_tardis
+---@param creator Player
+local function setup_creator(self, creator)
+    if not IsValid(creator) then return end
+    self.CreatorID = creator:UserID()
+    self.CreatorNick = creator:Nick()
+    self.CreatorSteamID = creator:SteamID64()
+end
+
 ENT:AddHook("Initialize", "creatorID", function(self)
-    self.CreatorID = self:GetCreator():UserID()
-    self.CreatorNick = self:GetCreator():Nick()
-    self.CreatorSteamID = self:GetCreator():SteamID64()
+    setup_creator(self, self:GetCreator())
+end)
+
+ENT:AddHook("SetupOwner", "creatorID", function(self)
+    setup_creator(self, self:GetCreator())
 end)
