@@ -113,7 +113,7 @@ jobs:
   publish:
     name: Publish to workshop
     needs: setup
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@v0.23.0
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@3559cfa4ef0556a6c9bf34c309edc7f27e94456b # v0.23.0
     with:
       addon: TARDIS
       workshop_id: ${{ needs.setup.outputs.id }}
