@@ -168,13 +168,27 @@ if SERVER then
         self:UpdateDoorCollision()
     end)
 
+    ENT:AddHook("InteriorReady", "doorcollision", function(self)
+        self:UpdateDoorCollision()
+    end)
+
     function ENT:UpdateDoorCollision()
         local door_ext = TARDIS:GetPart(self, "door")
         local door_int = TARDIS:GetPart(self.interior, "door")
 
-        if not IsValid(door_ext) then return end
-
         local open = self:DoorOpen(true)
+        local teleporting = self:GetData("teleport") or self:GetData("vortex")
+
+        -- The portal frame only funnels props through an actually-open doorway, so collide
+        -- only when the door is open and we're landed - a closed door already blocks props.
+        if IsValid(self.interior) and self.interior.portals then
+            local portals = self.interior.portals
+            local frame_enabled = open and not teleporting
+            if IsValid(portals.exterior) then portals.exterior:SetFrameCollisionEnabled(frame_enabled) end
+            if IsValid(portals.interior) then portals.interior:SetFrameCollisionEnabled(frame_enabled) end
+        end
+
+        if not IsValid(door_ext) then return end
 
         local colgroup = self:GetCollisionGroup()
 
@@ -184,7 +198,7 @@ if SERVER then
         -- open then both exterior and interior doors become non-solid to allow passage. Otherwise
         -- we match the collision group of exterior and interior doors to match the tardis exterior.
 
-        if self:GetData("teleport") or self:GetData("vortex") then
+        if teleporting then
             if open then
                 door_ext:SetCollisionGroup(COLLISION_GROUP_WORLD)
             else
