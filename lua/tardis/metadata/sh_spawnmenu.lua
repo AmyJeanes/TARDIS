@@ -80,10 +80,10 @@ if CLIENT then
     ---@param dmenu DMenu
     ---@param version tardis_version_entry
     function TARDIS.Spawnmenu.AddVersion(dmenu, version)
-        if version.classic_doors_id then
-            TARDIS.Spawnmenu.AddDoubleVersion(dmenu, version.classic_doors_id, assert(version.double_doors_id))
+        if version.classic_doors_id and version.double_doors_id then
+            TARDIS.Spawnmenu.AddDoubleVersion(dmenu, version.classic_doors_id, version.double_doors_id)
         else
-            TARDIS.Spawnmenu.AddSingleVersion(dmenu, version.id)
+            TARDIS.Spawnmenu.AddSingleVersion(dmenu, version.classic_doors_id or version.id)
         end
         dmenu:AddSpacer()
     end
