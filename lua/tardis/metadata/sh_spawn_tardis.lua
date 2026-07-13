@@ -94,7 +94,7 @@ if SERVER then
             net.Start("TARDIS-Spawn-Delete-Sound")
                 net.WriteBool(false)
                 net.WriteVector(entity:GetPos())
-                net.WriteString(metadataID)
+                net.WriteString(entity.metadata.Exterior.Sounds.Delete or "")
             net.Broadcast()
         end)
         undo.Finish(printName)
@@ -104,7 +104,7 @@ if SERVER then
                 net.WriteBool(true)
                 net.WriteEntity(entity)
                 net.WriteVector(entity:GetPos())
-                net.WriteString(metadataID)
+                net.WriteString(entity.metadata.Exterior.Sounds.Spawn or "")
             net.Broadcast()
         end
 
@@ -120,31 +120,6 @@ if SERVER then
     end)
 else -- CLIENT
 
-    ---@param id string
-    ---@param is_spawn boolean
-    local function GetSpawnDeleteSound(id, is_spawn)
-        local snd_name = is_spawn and "Spawn" or "Delete"
-
-        if TARDIS.Metadata[id] then
-            return TARDIS.Metadata[id].Exterior.Sounds[snd_name]
-        end
-
-        local raw = TARDIS.MetadataRaw[id]
-        if not raw then
-            return TARDIS.MetadataRaw["base"].Exterior.Sounds[snd_name]
-        end
-
-        if raw.Exterior and raw.Exterior.Sounds and raw.Exterior.Sounds[snd_name] then
-            return raw.Exterior.Sounds[snd_name]
-        end
-
-        if raw.Base then
-            return GetSpawnDeleteSound(raw.Base, is_spawn)
-        end
-
-        return TARDIS.MetadataRaw["base"].Exterior.Sounds[snd_name]
-    end
-
     -- Dynamic read/write counts not handled by analyzer.
     ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Spawn-Delete-Sound", function()
@@ -158,18 +133,14 @@ else -- CLIENT
             pos = net.ReadVector()
         end
 
-        local id = net.ReadString()
-        if TARDIS:GetSetting("spawn_delete_sound") and TARDIS:GetSetting("sound") then
-            if spawn then
-                local snd = GetSpawnDeleteSound(id, true)
-                if IsValid(ent) then
-                    ent:EmitSound(snd)
-                else
-                    sound.Play(snd, pos)
-                end
-            else
-                sound.Play(GetSpawnDeleteSound(id, false), pos)
-            end
+        local snd = net.ReadString()
+        if snd == "" then return end
+        if not (TARDIS:GetSetting("spawn_delete_sound") and TARDIS:GetSetting("sound")) then return end
+
+        if spawn and IsValid(ent) then
+            ent:EmitSound(snd)
+        else
+            sound.Play(snd, pos)
         end
     end)
 end
