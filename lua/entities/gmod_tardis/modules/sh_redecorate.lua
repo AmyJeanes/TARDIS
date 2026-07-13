@@ -18,36 +18,6 @@ local saved_data_names = {
 }
 
 if SERVER then
-    -- The old and new TARDIS overlap while the redecoration crossfades. Keep both fully
-    -- non-solid (exterior bodies and their shadow-collision door parts) for the whole
-    -- transition so their physics can't collide and fling each other across the map.
-    ---@param ent gmod_tardis
-    local function set_redecorate_nonsolid(ent)
-        if not IsValid(ent) then return end
-        ent:SetSolid(SOLID_NONE)
-        local phys = ent:GetPhysicsObject()
-        if IsValid(phys) then phys:EnableMotion(false) end
-        local door = TARDIS:GetPart(ent, "door")
-        if IsValid(door) then door:SetSolid(SOLID_NONE) end
-    end
-
-    -- Make the new TARDIS solid again, once it has materialised and the old one is gone.
-    function ENT:FinishRedecorate()
-        if not self:GetData("redecorate_nonsolid") then return end
-        if IsValid(self:GetData("redecorate_parent")) then return end
-        if self:GetData("mat") or self:GetData("vortex") or self:GetData("teleport") then return end
-        self:SetData("redecorate_nonsolid", nil, true)
-        self:SetSolid(SOLID_VPHYSICS)
-        local door = TARDIS:GetPart(self, "door")
-        if IsValid(door) then door:SetSolid(SOLID_VPHYSICS) end
-        local phys = self:GetPhysicsObject()
-        if IsValid(phys) then
-            phys:EnableMotion(not self:GetPhyslock())
-            phys:Wake()
-        end
-        self:UpdateDoorCollision()
-    end
-
     ---@api
     ---@param on boolean
     function ENT:SetRedecoration(on)
@@ -129,7 +99,6 @@ if SERVER then
                     child:SetData("redecorate_parent", nil, true)
                 end
                 self:Remove()
-                if IsValid(child) then child:FinishRedecorate() end
             else
                 self:SetData("redecorate_pending_remove", true)
             end
@@ -149,17 +118,8 @@ if SERVER then
         if parent:GetData("redecorate_pending_remove") then
             parent:Remove()
             self:SetData("redecorate_parent", nil, true)
-            self:FinishRedecorate()
         else
             parent:SetData("redecorate_pending_remove", true)
-        end
-    end)
-
-    -- The mat sequence makes the child solid at MatStart; keep it non-solid until the
-    -- redecoration has fully finished (see FinishRedecorate).
-    ENT:AddHook("MatStart", "redecorate_nonsolid", function(self)
-        if self:GetData("redecorate_nonsolid") then
-            set_redecorate_nonsolid(self)
         end
     end)
 
@@ -178,7 +138,6 @@ if SERVER then
         end
 
         self:SetData("is_redecorate_child", nil, true)
-        self:FinishRedecorate()
     end)
 
     ENT:AddHook("CustomData", "redecorate_child", function(self, customdata)
@@ -231,10 +190,6 @@ if SERVER then
         parent:ForcePlayerDrop()
         parent:Demat(nil, nil, nil, false)
         parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-
-        self:SetData("redecorate_nonsolid", true, true)
-        set_redecorate_nonsolid(self)
-        set_redecorate_nonsolid(parent)
 
         self:Timer("redecorate_materialise", 1, function()
             local p = parent
