@@ -40,15 +40,19 @@ if SERVER then
                 return
             end
 
-            self:SetData("failed-mat-destination-pos", pos)
-            self:SetData("failed-mat-destination-ang", ang)
+            -- Cancel fast return if set in case the destination cannot be landed at e.g.
+            -- a distortion generator and returns the TARDIS back to it's start position
+            self:SetData("fastreturn", false, true)
 
-            self:SetDestination(self:GetPos(), self:GetAngles())
+            if self:SetDestination(self:GetPos(), self:GetAngles()) then
+                self:SetData("failed-mat-destination-pos", pos)
+                self:SetData("failed-mat-destination-ang", ang)
 
-            self:SendMessage("failed-mat")
+                self:SendMessage("failed-mat")
 
-            self:Mat(callback)
-            return
+                self:Mat(callback)
+                return
+            end
         end
 
         self:SetData("failing-mat", true, true)
