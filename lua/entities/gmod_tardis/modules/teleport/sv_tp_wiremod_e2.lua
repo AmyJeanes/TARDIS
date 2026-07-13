@@ -12,10 +12,10 @@ ENT:AddHook("OnWireInput","teleport",function (self, name, value)
         self:Mat()
     elseif name == "Pos" then
         if not isvector(value) then return end
-        self:SetDestinationPos(value)
+        self:SetDestination(value, self:GetDestinationAng(true))
     elseif name == "Ang" then
         if not isangle(value) then return end
-        self:SetDestinationAng(value)
+        self:SetDestination(self:GetDestinationPos(true), value)
     end
 end)
 
@@ -23,16 +23,17 @@ ENT:AddHook("HandleE2", "teleport_args", function(self, name, e2, pos, ang)
     if name == "Demat" and TARDIS:CheckPP(e2.player, self) then
         local success = self:CallHook("CanDemat")~=false
         if not success then return 0 end
-        if not pos or not ang then
+        if not pos then
             self:Demat()
         else
-            self:Demat(Vector(pos[1], pos[2], pos[3]), Angle(ang[1], ang[2], ang[3]))
+            local ang2 = ang and Angle(ang[1], ang[2], ang[3]) or self:GetDestinationAng(true)
+            self:Demat(Vector(pos[1], pos[2], pos[3]), ang2)
         end
         return 1
     elseif name == "SetDestination" and TARDIS:CheckPP(e2.player, self) then
         local pos2 = Vector(pos[1], pos[2], pos[3])
-        local ang2 = Angle(ang[1], ang[2], ang[3])
-        return self:SetDestination(pos2,ang2) and 1 or 0
+        local ang2 = ang and Angle(ang[1], ang[2], ang[3]) or self:GetDestinationAng(true)
+        return self:SetDestination(pos2, ang2) and 1 or 0
     end
 end)
 

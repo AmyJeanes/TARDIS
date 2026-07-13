@@ -254,18 +254,6 @@ if SERVER then
     end
 
     ---@api
-    ---@param pos Vector
-    function ENT:SetDestinationPos(pos)
-        return self:SetDestination(pos, self:GetData("destination_ang"))
-    end
-
-    ---@api
-    ---@param ang Angle
-    function ENT:SetDestinationAng(ang)
-        return self:SetDestination(self:GetData("destination_pos"), ang)
-    end
-
-    ---@api
     ---@param grounded boolean
     function ENT:SetRandomDestination(grounded)
         local randomLocation = self:GetRandomLocation(grounded)
