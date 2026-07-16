@@ -436,7 +436,9 @@ end
 -- EmitSound's default sound level; the SNDLVL_* names aren't Lua globals, so 75
 local DEFAULT_SNDLVL = 75
 
--- SP-pause watcher state (the PreRender hook at the bottom): true while the game is paused
+-- SP-pause watcher state (the PreRender hook at the bottom): true while the game is paused.
+-- SinglePlayer can't change within a session, so read it once instead of per frame.
+local SINGLEPLAYER = game.SinglePlayer()
 local sp_paused = false
 local last_think_frame = 0
 
@@ -559,7 +561,7 @@ end)
 -- Think detect the transition within ~2 frames. Singleplayer only: in multiplayer a Think stall is net
 -- lag, during which native sounds keep playing, so pausing here would create a divergence, not fix one.
 hook.Add("PreRender", "tardis_managed_sounds_pause", function()
-    if not game.SinglePlayer() or last_think_frame == 0 then return end
+    if not SINGLEPLAYER or last_think_frame == 0 then return end
     local now_paused = FrameNumber() - last_think_frame >= 2
     if now_paused == sp_paused then return end
     sp_paused = now_paused
