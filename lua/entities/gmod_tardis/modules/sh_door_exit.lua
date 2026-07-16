@@ -17,10 +17,11 @@ if SERVER then
     ---@return boolean
     local function doorway_blocked(self)
         local portal = self.metadata.Exterior.Portal
-        local door = TARDIS:GetPart(self, "door")
         ---@type Entity[]
         local filter = { self }
-        if IsValid(door) then filter[#filter + 1] = door end
+        for _, part in pairs(self.parts) do
+            if IsValid(part) then filter[#filter + 1] = part end
+        end
 
         local half_w, half_h = portal.width * 0.5, portal.height * 0.5
         local dir = self:LocalToWorldAngles(portal.ang):Forward()
