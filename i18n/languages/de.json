@@ -421,6 +421,7 @@
     "Parts.DefaultHelmic.Text": "Helmic-Regler",
     "Parts.DefaultScreen.Text": "Monitor",
     "Parts.DefaultWibblyLever.Text": "Wibbly-Hebel",
+    "Parts.Door.ExitBlocked": "Der Ausgang ist blockiert.",
     "Parts.Door.Locked": "Die Türen sind verschlossen",
     "Parts.Moveable.Reset": "Der Objektstandort wurde zurückgesetzt.",
     "Parts.Moveable.Unfreeze": "Objekt aufgetaut, zur Rücksetzung Selbstreparatur durchführen",

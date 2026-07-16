@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "Régulateur Helmique",
     ["Parts.DefaultScreen.Text"] = "Moniteur",
     ["Parts.DefaultWibblyLever.Text"] = "Levier d'oscillation",
+    ["Parts.Door.ExitBlocked"] = "La sortie est bloquée.",
     ["Parts.Door.Locked"] = "Les portes sont verrouillées",
     ["Parts.Moveable.Reset"] = "L’emplacement de l’objet a été réinitialisé.",
     ["Parts.Moveable.Unfreeze"] = "Objet décongelé, auto-réparation pour le réinitialiser",
