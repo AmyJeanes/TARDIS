@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "Rheoleiddiwr Helmig",
     ["Parts.DefaultScreen.Text"] = "Sgrin",
     ["Parts.DefaultWibblyLever.Text"] = "Lifer wibbly",
+    ["Parts.Door.ExitBlocked"] = "Mae’r allanfa wedi’i rhwystro.",
     ["Parts.Door.Locked"] = "Mae'r drysau ar glo",
     ["Parts.Moveable.Reset"] = "Mae lleoliad y gwrthrych wedi cael ei ailosod.",
     ["Parts.Moveable.Unfreeze"] = "Wrthrych wedi dadrewi, hunan-atgyweirio i'w ailosod",

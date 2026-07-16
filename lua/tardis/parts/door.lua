@@ -87,6 +87,10 @@ if SERVER then
                 end
             end
         else
+            if self.InteriorPart and ply:KeyDown(IN_WALK) and self.exterior:GetData("door_exit_blocked") then
+                TARDIS:Message(ply, "Parts.Door.ExitBlocked")
+                return
+            end
             if self:GetData("legacy_door_type") and ply:KeyDown(IN_WALK) then
                 if self.ExteriorPart then
                     self.exterior:PlayerEnter(ply)

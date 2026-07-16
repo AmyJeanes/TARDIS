@@ -192,25 +192,27 @@ if SERVER then
 
         local colgroup = self:GetCollisionGroup()
 
-        -- If the tardis is teleporting or in the vortex, the interior doors should always
-        -- be solid even if the door is open (e.g. looking at the vortex) to prevent the player
-        -- from phasing through the door. If not teleporting or in the vortex and the doors are
-        -- open then both exterior and interior doors become non-solid to allow passage. Otherwise
-        -- we match the collision group of exterior and interior doors to match the tardis exterior.
-
+        -- Interior door stays solid to the player when teleporting/in the vortex (stops them
+        -- phasing out into the vortex) and, likewise, when the doorway is walled off - there's
+        -- nowhere to step out to. Open + clear is the only state the player can walk through.
+        -- The exterior door only blocks the player when the door is shut.
+        local ext_target, int_target
         if teleporting then
-            if open then
-                door_ext:SetCollisionGroup(COLLISION_GROUP_WORLD)
-            else
-                door_ext:SetCollisionGroup(colgroup)
-            end
-            if IsValid(door_int) then door_int:SetCollisionGroup(COLLISION_GROUP_NONE) end
+            ext_target = open and COLLISION_GROUP_WORLD or colgroup
+            int_target = COLLISION_GROUP_NONE
         elseif open then
-            door_ext:SetCollisionGroup(COLLISION_GROUP_WORLD)
-            if IsValid(door_int) then door_int:SetCollisionGroup(COLLISION_GROUP_WORLD) end
+            ext_target = COLLISION_GROUP_WORLD
+            int_target = self:GetData("door_exit_blocked") and COLLISION_GROUP_NONE or COLLISION_GROUP_WORLD
         else
-            door_ext:SetCollisionGroup(colgroup)
-            if IsValid(door_int) then door_int:SetCollisionGroup(colgroup) end
+            ext_target = colgroup
+            int_target = colgroup
+        end
+
+        if door_ext:GetCollisionGroup() ~= ext_target then
+            door_ext:SetCollisionGroup(ext_target)
+        end
+        if IsValid(door_int) and door_int:GetCollisionGroup() ~= int_target then
+            door_int:SetCollisionGroup(int_target)
         end
     end
 

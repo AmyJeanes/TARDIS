@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "赫爾米克調節器",
     ["Parts.DefaultScreen.Text"] = "監控器",
     ["Parts.DefaultWibblyLever.Text"] = "Wibbly控製桿",
+    ["Parts.Door.ExitBlocked"] = "出口被堵住了。",
     ["Parts.Door.Locked"] = "門已上鎖",
     ["Parts.Moveable.Reset"] = "物件位置已重設",
     ["Parts.Moveable.Unfreeze"] = "物件已解凍，請自我修復以重置它",
