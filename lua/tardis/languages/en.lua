@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "Helmic Regulator",
     ["Parts.DefaultScreen.Text"] = "Monitor",
     ["Parts.DefaultWibblyLever.Text"] = "Wibbly Lever",
+    ["Parts.Door.EntranceBlocked"] = "The entrance is blocked",
     ["Parts.Door.ExitBlocked"] = "The exit is blocked",
     ["Parts.Door.Locked"] = "The doors are locked",
     ["Parts.Moveable.Reset"] = "Object location has been reset",

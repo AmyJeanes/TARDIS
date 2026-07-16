@@ -21,8 +21,9 @@ if SERVER then
                 end
             end
         elseif ply:KeyDown(IN_WALK) or self:GetData("legacy_door_type") then
-            if self.exterior:GetData("door_exit_blocked") then
-                TARDIS:Message(ply, "Parts.Door.ExitBlocked")
+            local allowed, reason = self.exterior:CallHook("CanPlayerExitDoor", ply)
+            if allowed == false then
+                if reason then TARDIS:Message(ply, reason) end
                 return
             end
             self.exterior:PlayerExit(ply)

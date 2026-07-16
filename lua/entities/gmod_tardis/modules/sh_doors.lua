@@ -202,7 +202,7 @@ if SERVER then
             int_target = COLLISION_GROUP_NONE
         elseif open then
             ext_target = COLLISION_GROUP_WORLD
-            int_target = self:GetData("door_exit_blocked") and COLLISION_GROUP_NONE or COLLISION_GROUP_WORLD
+            int_target = self:GetData("doorway_blocked") and COLLISION_GROUP_NONE or COLLISION_GROUP_WORLD
         else
             ext_target = colgroup
             int_target = colgroup

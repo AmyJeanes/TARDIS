@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "Helmický regulátor",
     ["Parts.DefaultScreen.Text"] = "Monitor",
     ["Parts.DefaultWibblyLever.Text"] = "Šmrdli páka",
+    ["Parts.Door.EntranceBlocked"] = "Vchod je zablokován.",
     ["Parts.Door.ExitBlocked"] = "Východ je zablokován.",
     ["Parts.Door.Locked"] = "Dveře jsou uzamčené",
     ["Parts.Moveable.Reset"] = "Umístění objektu bylo resetováno.",

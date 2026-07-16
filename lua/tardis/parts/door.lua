@@ -87,9 +87,17 @@ if SERVER then
                 end
             end
         else
-            if self.InteriorPart and ply:KeyDown(IN_WALK) and self.exterior:GetData("door_exit_blocked") then
-                TARDIS:Message(ply, "Parts.Door.ExitBlocked")
-                return
+            if ply:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
+                local allowed, reason
+                if self.ExteriorPart then
+                    allowed, reason = self.exterior:CallHook("CanPlayerEnterDoor", ply)
+                else
+                    allowed, reason = self.exterior:CallHook("CanPlayerExitDoor", ply)
+                end
+                if allowed == false then
+                    if reason then TARDIS:Message(ply, reason) end
+                    return
+                end
             end
             if self:GetData("legacy_door_type") and ply:KeyDown(IN_WALK) then
                 if self.ExteriorPart then
