@@ -11,6 +11,69 @@
 -- so it tracks the view like the original. Doppler isn't emulated (Source only applies it to CHAR_DOPPLER
 -- soundscripts).
 
+if SERVER then
+    -- Server-side mirror: serialises the play/stop to clients so server-side events (damage etc.) can
+    -- start resumable sounds. Fire-and-forget - the BASS channel lives client-side, so no handle comes
+    -- back; stop by group via StopManagedSounds(owner, tag).
+    util.AddNetworkString("TARDIS-ManagedSound")
+    util.AddNetworkString("TARDIS-ManagedSoundStop")
+
+    ---@class tardis_managed_sound_sv_opts
+    ---@field path string sound path relative to sound/
+    ---@field owner Entity? owner, for group-stop via StopManagedSounds (and auto-stop if it's removed)
+    ---@field tag string? group label, e.g. "damage"
+    ---@field volume number? max volume 0-1, default 1
+    ---@field ent Entity? source entity for distance falloff (its current position is also sent, so a client that doesn't have the entity hears the sound pinned where it was)
+    ---@field pos Vector? fixed world source position for falloff (used when no ent)
+    ---@field offset Vector? local offset from ent for the source position
+    ---@field level number? SNDLVL for distance falloff; clients default it to 75 (EmitSound's default) when a source is given
+    ---@field setting string? client setting id each receiving client checks before playing (omit = always plays, like a plain server EmitSound)
+    ---@field recipients Player|Player[]? who hears it; omit = all players
+
+    ---@api
+    ---@param opts tardis_managed_sound_sv_opts
+    function TARDIS:PlayManagedSound(opts)
+        net.Start("TARDIS-ManagedSound")
+        net.WriteString(opts.path)
+        net.WriteEntity(opts.owner or NULL)
+        net.WriteString(opts.tag or "")
+        net.WriteFloat(opts.volume or 1)
+        net.WriteEntity(opts.ent or NULL)
+        local pos = opts.pos or (IsValid(opts.ent) and opts.ent:GetPos() or nil)
+        net.WriteBool(pos ~= nil)
+        if pos then net.WriteVector(pos) end
+        net.WriteBool(opts.offset ~= nil)
+        if opts.offset then net.WriteVector(opts.offset) end
+        net.WriteBool(opts.level ~= nil)
+        if opts.level then net.WriteUInt(opts.level, 8) end
+        net.WriteString(opts.setting or "")
+        if opts.recipients then
+            -- the stub types net.Send Player-only; it accepts a Player table too
+            net.Send(opts.recipients --[[@as Player]])
+        else
+            net.Broadcast()
+        end
+    end
+
+    ---@api
+    ---@param owner Entity
+    ---@param tag string?
+    ---@param recipients Player|Player[]? who to stop it for; omit = all players
+    function TARDIS:StopManagedSounds(owner, tag, recipients)
+        net.Start("TARDIS-ManagedSoundStop")
+        net.WriteEntity(owner)
+        net.WriteString(tag or "")
+        if recipients then
+            -- the stub types net.Send Player-only; it accepts a Player table too
+            net.Send(recipients --[[@as Player]])
+        else
+            net.Broadcast()
+        end
+    end
+
+    return
+end
+
 -- Source's exact distance gain, ported from the engine (sound_shared.cpp SND_GetGainFromMult), so the
 -- falloff matches EmitSound precisely: inverse-distance from the SNDLVL, plus air/foliage loss and the
 -- >0.5 soft-knee compression and the min-gain floor. Reads the same convars the engine does. Validated
@@ -90,6 +153,10 @@ end
 ---@field offset Vector? local offset from ent for the source position (like a relative EmitSound pos)
 ---@field level number? SNDLVL for distance falloff (needs a source: ent or pos)
 ---@field falloff tardis_sound_falloff_point[]? custom distance->volume curve (needs a source, overrides level)
+---@field last_pos Vector? last resolved source position; the pin target when ent teleports or vanishes
+---@field pin_on_jump number? see tardis_managed_sound_opts
+---@field attach Entity? see tardis_managed_sound_opts
+---@field attach_dist number distance from pos at which attach takes over as the source
 ---@field occ number? smoothed occlusion gain, eased toward the blocked/clear line-of-sight each frame
 ---@field omni boolean true for a stereo .wav - Source plays it omnidirectional (mono, no pan, unobscured)
 ---@field stopped boolean
@@ -100,14 +167,17 @@ MANAGED.__index = MANAGED
 
 ---@class tardis_managed_sound_opts
 ---@field path string sound path relative to sound/
----@field owner Entity? owner, for group-stop via TARDIS:StopManagedSounds
+---@field owner Entity? owner, for group-stop via TARDIS:StopManagedSounds (and auto-stop if it's removed)
 ---@field tag string? group label, e.g. "teleport"
 ---@field volume number? max volume 0-1, default 1
 ---@field ent Entity? source entity for distance falloff (with level or falloff)
 ---@field pos Vector? fixed world source position for falloff (used when no ent)
 ---@field offset Vector? local offset from ent for the source position, like a relative EmitSound origin
----@field level number? SNDLVL for distance falloff (needs a source), e.g. 75 (SNDLVL_75dB) to match EmitSound's default
+---@field level number? SNDLVL for distance falloff; defaults to 75 (SNDLVL_75dB, EmitSound's default) when a source is given, 0 = no attenuation
 ---@field falloff tardis_sound_falloff_point[]? custom distance->volume curve (needs a source, overrides level)
+---@field pin_on_jump number? with ent: the sound pins where the entity vanished from once it moves faster than this (units/second) - a teleporting emitter leaves its tail behind, e.g. the demat echo a bystander hears. A speed, not a distance: interpolation renders a client-side teleport as a short impossibly-fast slide, never a single-frame jump
+---@field attach Entity? with pos: entity that takes over as the source once it arrives within attach_dist of pos (e.g. the exterior landing on its materialise point)
+---@field attach_dist number? arrival distance for attach, default 500
 ---@field update fun(handle: tardis_managed_sound)? custom per-frame volume callback (overrides falloff)
 ---@field on_done fun()? called once when the sound finishes on its own
 
@@ -119,14 +189,33 @@ local function drop(handle)
     table.RemoveByValue(TARDIS.ActiveManagedSounds, handle)
 end
 
--- world position the falloff is measured from: ent (+ local offset), or a fixed pos
+-- world position the falloff is measured from: ent (+ local offset), or a fixed pos. A followed entity
+-- that teleports (pin_on_jump) or is removed leaves the sound pinned at its last position instead of
+-- dragging the tail across the map or going global; a pinned sound with an `attach` entity starts
+-- following it once it arrives at the pin point.
 ---@param handle tardis_managed_sound
 ---@return Vector?
 local function sourcePos(handle)
-    if IsValid(handle.ent) then
-        return handle.offset and handle.ent:LocalToWorld(handle.offset) or handle.ent:GetPos()
+    local ent = handle.ent
+    if IsValid(ent) then
+        local pos = handle.offset and ent:LocalToWorld(handle.offset) or ent:GetPos()
+        local last = handle.last_pos
+        local jump = handle.pin_on_jump and handle.pin_on_jump * math.max(FrameTime(), 0.001)
+        if jump and last and pos:DistToSqr(last) > jump * jump then
+            handle.ent = nil
+            handle.pos = last
+            return last
+        end
+        handle.last_pos = pos
+        return pos
     end
-    return handle.pos
+    local attach = handle.attach
+    if attach ~= nil and handle.pos and IsValid(attach)
+        and attach:GetPos():DistToSqr(handle.pos) <= handle.attach_dist * handle.attach_dist then
+        handle.ent = attach
+        handle.attach = nil
+    end
+    return handle.pos or handle.last_pos
 end
 
 -- Source plays a positioned STEREO .wav as CHAR_OMNI (S_SetChannelStereo, snd_dma.cpp): omnidirectional,
@@ -343,6 +432,9 @@ function MANAGED:Stop()
     drop(self)
 end
 
+-- EmitSound's default sound level; the SNDLVL_* names aren't Lua globals, so 75
+local DEFAULT_SNDLVL = 75
+
 ---@api
 ---@param opts tardis_managed_sound_opts
 ---@return tardis_managed_sound
@@ -356,8 +448,11 @@ function TARDIS:PlayManagedSound(opts)
         ent = opts.ent,
         pos = opts.pos,
         offset = opts.offset,
-        level = opts.level,
+        level = opts.level or ((opts.ent ~= nil or opts.pos ~= nil) and DEFAULT_SNDLVL or nil),
         falloff = opts.falloff,
+        pin_on_jump = opts.pin_on_jump,
+        attach = opts.attach,
+        attach_dist = opts.attach_dist or 500,
         omni = isStereoWav(opts.path),
         update = opts.update,
         on_done = opts.on_done,
@@ -396,12 +491,45 @@ function TARDIS:StopManagedSounds(owner, tag)
     end
 end
 
+net.Receive("TARDIS-ManagedSound", function()
+    local path = net.ReadString()
+    local owner = net.ReadEntity()
+    local tag = net.ReadString()
+    local volume = net.ReadFloat()
+    local ent = net.ReadEntity()
+    local pos = net.ReadBool() and net.ReadVector() or nil
+    local offset = net.ReadBool() and net.ReadVector() or nil
+    local level = net.ReadBool() and net.ReadUInt(8) or nil
+    local setting = net.ReadString()
+    if setting ~= "" and not TARDIS:GetSetting(setting) then return end
+    TARDIS:PlayManagedSound({
+        path = path,
+        owner = IsValid(owner) and owner or nil,
+        tag = tag ~= "" and tag or nil,
+        volume = volume,
+        ent = IsValid(ent) and ent or nil,
+        pos = pos,
+        offset = offset,
+        level = level,
+    })
+end)
+
+net.Receive("TARDIS-ManagedSoundStop", function()
+    local owner = net.ReadEntity()
+    local tag = net.ReadString()
+    if not IsValid(owner) then return end
+    TARDIS:StopManagedSounds(owner, tag ~= "" and tag or nil)
+end)
+
 hook.Add("Think", "tardis_managed_sounds", function()
     local list = TARDIS.ActiveManagedSounds
     for i = #list, 1, -1 do
         local handle = list[i]
         local chan = handle.chan
-        if chan ~= nil then
+        if handle.owner ~= nil and not IsValid(handle.owner) then
+            -- owner deleted: stop, like the entity's own EmitSounds would have
+            handle:Stop()
+        elseif chan ~= nil then
             if not IsValid(chan) or chan:GetState() == GMOD_CHANNEL_STOPPED then
                 drop(handle)
                 if handle.on_done then handle.on_done() end

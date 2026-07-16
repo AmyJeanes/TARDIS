@@ -138,7 +138,7 @@ else -- CLIENT
         if not (TARDIS:GetSetting("spawn_delete_sound") and TARDIS:GetSetting("sound")) then return end
 
         if spawn and IsValid(ent) then
-            ent:EmitSound(snd)
+            TARDIS:PlayManagedSound({ path = snd, owner = ent, tag = "spawn", ent = ent })
         else
             sound.Play(snd, pos)
         end

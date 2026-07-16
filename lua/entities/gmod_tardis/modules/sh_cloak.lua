@@ -195,10 +195,10 @@ else
         end
 
         if TARDIS:GetSetting("cloaksound-enabled") and TARDIS:GetSetting("sound") then
-            self:EmitSound(snd)
+            TARDIS:PlayManagedSound({ path = snd, owner = self, tag = "cloak", ent = self })
 
             if IsValid(self.interior) then
-                self.interior:EmitSound(snd)
+                TARDIS:PlayManagedSound({ path = snd, owner = self, tag = "cloak", ent = self.interior })
             end
         end
     end)

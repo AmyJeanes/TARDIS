@@ -119,12 +119,11 @@ else
         else
             self:EmitSound(extsoundoff)
         end
+        -- the interior copy plays right as players head through the door, so it's managed (the exterior
+        -- clicks are too short to cut)
         if IsValid(self.interior) then
-            if locked then
-                self.interior:EmitSound(intsoundon)
-            else
-                self.interior:EmitSound(intsoundoff)
-            end
+            TARDIS:PlayManagedSound({ path = locked and intsoundon or intsoundoff,
+                owner = self, tag = "lock", ent = self.interior })
         end
     end)
 

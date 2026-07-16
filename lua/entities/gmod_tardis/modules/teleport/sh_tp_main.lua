@@ -313,28 +313,29 @@ if SERVER then
         end
     end)
 else
-    -- Occupant teleport sounds play through managed BASS channels (see cl_sound.lua) so they survive the
+    -- Occupant teleport sounds play through managed BASS channels (see sh_sound.lua) so they survive the
     -- listener crossing the interior<->exterior void on a view toggle or portal teleport, which culls a
-    -- normal EmitSound. Interior and exterior copies attenuate by real listener distance at the default
-    -- EmitSound sound level, so only the copy near the current POV is audible - the same falloff and
-    -- near/far crossfade Source gave them. Stopped as a group on interrupt via StopManagedSounds.
-    -- EmitSound's default sound level (SNDLVL_75dB) - the old interior/exterior EmitSounds used it, so the
-    -- managed copies reproduce the same distance falloff. The SNDLVL_* names aren't Lua globals, so 75.
-    local TELEPORT_SNDLVL = 75
+    -- normal EmitSound. Interior and exterior copies attenuate by real listener distance, so only the
+    -- copy near the current POV is audible - the same falloff and near/far crossfade Source gave them.
+    -- Stopped as a group on interrupt via StopManagedSounds.
     ---@param extpath string?
     ---@param intpath string?
     ---@param shouldext boolean
     ---@param shouldint boolean
     function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint)
         if shouldint and intpath and IsValid(self.interior) then
-            TARDIS:PlayManagedSound({ path = intpath, owner = self, tag = "teleport",
-                ent = self.interior, level = TELEPORT_SNDLVL })
+            TARDIS:PlayManagedSound({ path = intpath, owner = self, tag = "teleport", ent = self.interior })
         end
         if shouldext and extpath then
-            TARDIS:PlayManagedSound({ path = extpath, owner = self, tag = "teleport",
-                ent = self, level = TELEPORT_SNDLVL })
+            TARDIS:PlayManagedSound({ path = extpath, owner = self, tag = "teleport", ent = self })
         end
     end
+
+    -- Bystander copies follow the exterior (a flight demat carries its sound along), then pin where the
+    -- box vanished when it relocates at demat end - the echo tail must not teleport away with it. A speed
+    -- in units/second: real movement tops out around 2-3k, an interpolated teleport reads as tens of
+    -- thousands.
+    local BYSTANDER_PIN_JUMP = 6000
 
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
@@ -379,22 +380,20 @@ else
                     self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif shouldPlayExterior then
+                local dematsnd = sound_demat_ext
                 if self:GetFastRemat() then
-                    sound.Play(sound_demat_fast_ext,self:GetPos())
-                else
-                    if self:GetData("hads-demat") then
-                        sound.Play(sound_demat_hads_ext,self:GetPos())
-                    else
-                        sound.Play(sound_demat_ext,self:GetPos())
-                    end
+                    dematsnd = sound_demat_fast_ext
+                elseif self:GetData("hads-demat") then
+                    dematsnd = sound_demat_hads_ext
                 end
+                TARDIS:PlayManagedSound({ path = dematsnd, owner = self, tag = "teleport",
+                    ent = self, pin_on_jump = BYSTANDER_PIN_JUMP })
                 if pos and self:GetFastRemat() then
-                    if not IsValid(self) then return end
-                    if self:IsLowHealth() and self:GetFastRemat() then
-                        sound.Play(ext.mat_damaged_fast, pos)
-                    else
-                        sound.Play(ext.mat_fast, pos)
-                    end
+                    -- fast remat: the landing sound starts at the destination before the box is there,
+                    -- attaching to it once it arrives
+                    local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
+                    TARDIS:PlayManagedSound({ path = matsnd, owner = self, tag = "teleport",
+                        pos = pos, attach = self })
                 end
             end
         end
@@ -418,11 +417,10 @@ else
                     self:PlayTeleportSound(ext.mat, int.mat or ext.mat, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif not self:GetFastRemat() and shouldPlayExterior then
-                if self:IsLowHealth() then
-                    sound.Play(ext.mat_damaged,pos)
-                else
-                    sound.Play(ext.mat,pos)
-                end
+                -- Bystander copy: pinned at the landing spot (the box isn't there yet), attaching to the
+                -- exterior once it arrives so it isn't left behind if the box flies off mid-materialise
+                TARDIS:PlayManagedSound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat,
+                    owner = self, tag = "teleport", pos = pos, attach = self })
             end
         end
         self:CallCommonHook("PreMatStart")

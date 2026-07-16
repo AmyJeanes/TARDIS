@@ -366,14 +366,14 @@ else
                 local extpart = self:GetPart("door")
                 local extsnd = open and extsnds.open or extsnds.close
                 if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
-                    extpart:EmitSound(extsnd)
+                    TARDIS:PlayManagedSound({ path = extsnd, owner = self, tag = "door", ent = extpart })
                 end
             end
             if intsnds.enabled and IsValid(self.interior) then
                 local intpart = self.interior:GetPart("door")
                 local intsnd = open and intsnds.open or intsnds.close
                 if IsValid(intpart) then
-                    intpart:EmitSound(intsnd)
+                    TARDIS:PlayManagedSound({ path = intsnd, owner = self, tag = "door", ent = intpart })
                 end
             end
         end
@@ -420,7 +420,8 @@ if CLIENT then
         if not door_sound then return end
 
         if intdoor.IntDoorPos ~= nil and intdoor.IntDoorPos ~= 0 and intdoor.IntDoorPos ~= 1 then
-            sound.Play(door_sound, self.interior:LocalToWorld( self.metadata.Interior.Fallback.pos ))
+            TARDIS:PlayManagedSound({ path = door_sound, owner = self, tag = "door",
+                ent = self.interior, offset = self.metadata.Interior.Fallback.pos })
         end
     end)
 end

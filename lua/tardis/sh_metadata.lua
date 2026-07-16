@@ -262,46 +262,50 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Unlock string?
 ---@field Idle tardis_sound_entry[]?
 ---@field Hum string?
+---@field Door tardis_sound_door?
+---@field Chameleon string?
+---@field FlightLand string?
+---@field FlightFall string?
 
 ---@class tardis_exterior_sound_metadata
 ---@field Teleport tardis_exterior_sound_teleport
 ---@field Door tardis_sound_door
----@field RepairFinish string?
+---@field RepairFinish string
 ---@field RepairLoop string?
----@field Lock string?
----@field Unlock string?
----@field Spawn string?
----@field Delete string?
----@field FlightLoop string?
----@field FlightLoopDamaged string?
----@field FlightLoopBroken string?
----@field FlightLand string?
----@field FlightFall string?
----@field BrokenFlightTurn string[]?
----@field BrokenFlightExplosion string?
----@field BrokenFlightEnable string?
----@field BrokenFlightDisable string?
----@field Cloak string?
----@field CloakOff string?
----@field Chameleon string?
+---@field Lock string
+---@field Unlock string
+---@field Spawn string
+---@field Delete string
+---@field FlightLoop string
+---@field FlightLoopDamaged string
+---@field FlightLoopBroken string
+---@field FlightLand string
+---@field FlightFall string
+---@field BrokenFlightTurn string[]
+---@field BrokenFlightExplosion string
+---@field BrokenFlightEnable string
+---@field BrokenFlightDisable string
+---@field Cloak string
+---@field CloakOff string
+---@field Chameleon string
 ---@field Hum tardis_sound_entry?
 
 ---@class tardis_sound_damage
----@field Crash string?
----@field BigCrash string?
----@field Explosion string?
----@field Death string?
----@field Artron string?
+---@field Crash string
+---@field BigCrash string
+---@field Explosion string
+---@field Death string
+---@field Artron string
 
 ---@class tardis_sound_door
 ---@field enabled boolean?
----@field open string?
----@field close string?
----@field locked string?
+---@field open string
+---@field close string
+---@field locked string
 
 ---@class tardis_sound_power
----@field On string?
----@field Off string?
+---@field On string
+---@field Off string
 
 ---@class tardis_interior_sound_teleport
 ---@field demat string?
@@ -321,21 +325,21 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field interrupt string?
 
 ---@class tardis_exterior_sound_teleport
----@field demat string?
----@field demat_damaged string?
----@field demat_fast string?
----@field demat_hads string?
----@field demat_fail string?
+---@field demat string
+---@field demat_damaged string
+---@field demat_fast string
+---@field demat_hads string
+---@field demat_fail string
 ---@field demat_fail_loop string?
 ---@field demat_fail_loop_stop string?
----@field mat string?
----@field mat_damaged string?
----@field mat_fail string?
----@field mat_fast string?
----@field mat_damaged_fast string?
----@field fullflight string?
----@field fullflight_damaged string?
----@field interrupt string?
+---@field mat string
+---@field mat_damaged string
+---@field mat_fail string
+---@field mat_fast string
+---@field mat_damaged_fast string
+---@field fullflight string
+---@field fullflight_damaged string
+---@field interrupt string
 
 ---@class tardis_version_entry
 ---@field id string

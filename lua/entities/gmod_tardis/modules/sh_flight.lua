@@ -654,19 +654,20 @@ else
     ENT:AddHook("FlightToggled", "broken_flight", function(self,on)
         if ShouldPlayFlightSounds(self) and not on and self:IsBroken() then
             local snd = self.metadata.Exterior.Sounds.BrokenFlightDisable
-            self:EmitSound(snd)
+            TARDIS:PlayManagedSound({ path = snd, owner = self, tag = "flight", ent = self })
         end
     end)
 
     ENT:OnMessage("BrokenFlightEnable", function(self, data, ply)
         if not ShouldPlayFlightSounds(self) then return end
         local snd = self.metadata.Exterior.Sounds.BrokenFlightEnable
-        self:EmitSound(snd)
+        TARDIS:PlayManagedSound({ path = snd, owner = self, tag = "flight", ent = self })
     end)
 
     ENT:OnMessage("BrokenFlightExplosion", function(self, data, ply)
         if not ShouldPlayFlightSounds(self) then return end
-        self:EmitSound(self.metadata.Exterior.Sounds.BrokenFlightExplosion)
+        TARDIS:PlayManagedSound({ path = self.metadata.Exterior.Sounds.BrokenFlightExplosion,
+            owner = self, tag = "flight", ent = self })
     end)
 
     ENT:OnMessage("BrokenFlightTurn", function(self, data, ply)

@@ -137,11 +137,7 @@ else
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
-            self:EmitSound(ext.interrupt)
-            local interior = self.interior
-            if IsValid(interior) then
-                interior:EmitSound(int.interrupt or ext.interrupt)
-            end
+            self:PlayTeleportSound(ext.interrupt, int.interrupt or ext.interrupt, true, true)
         end
     end)
 end
