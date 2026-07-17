@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "Helmik Regülatör",
     ["Parts.DefaultScreen.Text"] = "Monitör",
     ["Parts.DefaultWibblyLever.Text"] = "Wibbly Kol",
+    ["Parts.Door.EntranceBlocked"] = "Giriş kapalı.",
     ["Parts.Door.ExitBlocked"] = "Çıkış engellendi.",
     ["Parts.Door.Locked"] = "Kapılar kilitli",
     ["Parts.Moveable.Reset"] = "Nesnenin konumu sıfırlandı.",

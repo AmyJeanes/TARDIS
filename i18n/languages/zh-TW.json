@@ -421,6 +421,7 @@
     "Parts.DefaultHelmic.Text": "赫爾米克調節器",
     "Parts.DefaultScreen.Text": "監控器",
     "Parts.DefaultWibblyLever.Text": "Wibbly控製桿",
+    "Parts.Door.EntranceBlocked": "入口被堵住了",
     "Parts.Door.ExitBlocked": "出口被堵住了。",
     "Parts.Door.Locked": "門已上鎖",
     "Parts.Moveable.Reset": "物件位置已重設",

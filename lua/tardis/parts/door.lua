@@ -87,9 +87,17 @@ if SERVER then
                 end
             end
         else
-            if self.InteriorPart and ply:KeyDown(IN_WALK) and self.exterior:GetData("door_exit_blocked") then
-                TARDIS:Message(ply, "Parts.Door.ExitBlocked")
-                return
+            if ply:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
+                local allowed, reason
+                if self.ExteriorPart then
+                    allowed, reason = self.exterior:CallHook("CanPlayerEnterDoor", ply)
+                else
+                    allowed, reason = self.exterior:CallHook("CanPlayerExitDoor", ply)
+                end
+                if allowed == false then
+                    if reason then TARDIS:Message(ply, reason) end
+                    return
+                end
             end
             if self:GetData("legacy_door_type") and ply:KeyDown(IN_WALK) then
                 if self.ExteriorPart then
@@ -112,6 +120,34 @@ if SERVER then
                 if self.exterior:GetRepairing() and self.ExteriorPart then return end
                 self.exterior:ToggleDoor()
             end
+        end
+    end
+
+    local BUMP_COOLDOWN = 3 -- min seconds between bump messages per player
+    local BUMP_CONTACT_GAP = 0.5 -- contact events further apart than this count as a new bump
+
+    -- Walking into the blocked-solid interior door explains itself with the veto's reason.
+    -- The engine re-fires Start/EndTouch every frame while a player pushes against a solid
+    -- entity, so "stopped touching" is detected as a gap in contact events, not EndTouch.
+    ---@param ent Entity
+    function PART:StartTouch(ent)
+        if not self.InteriorPart then return end
+        if not IsValid(self.exterior) then return end
+        if not (ent:IsPlayer() and self.exterior:DoorOpen(true)) then return end
+
+        self.bump_msgs = self.bump_msgs or setmetatable({}, {__mode = "k"})
+        local state = self.bump_msgs[ent] or { last_contact = 0, next_ok = 0 }
+        self.bump_msgs[ent] = state
+
+        local now = CurTime()
+        local new_bump = now - state.last_contact > BUMP_CONTACT_GAP
+        state.last_contact = now
+        if not new_bump or now < state.next_ok then return end
+
+        local allowed, reason = self.exterior:CallHook("CanPlayerExitDoor", ent)
+        if allowed == false and reason then
+            state.next_ok = now + BUMP_COOLDOWN
+            TARDIS:Message(ent, reason)
         end
     end
 

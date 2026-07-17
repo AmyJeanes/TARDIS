@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "Helmic-säädin",
     ["Parts.DefaultScreen.Text"] = "Näyttö",
     ["Parts.DefaultWibblyLever.Text"] = "Wibbly-vipu",
+    ["Parts.Door.EntranceBlocked"] = "Sisäänkäynti on estetty.",
     ["Parts.Door.ExitBlocked"] = "Uloskäynti on tukossa.",
     ["Parts.Door.Locked"] = "Ovet ovat lukossa",
     ["Parts.Moveable.Reset"] = "Kohteen sijainti on palautettu.",

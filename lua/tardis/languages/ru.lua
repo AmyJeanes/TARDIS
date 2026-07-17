@@ -424,6 +424,7 @@ T.Phrases = {
     ["Parts.DefaultHelmic.Text"] = "Рулевой механизм",
     ["Parts.DefaultScreen.Text"] = "Монитор",
     ["Parts.DefaultWibblyLever.Text"] = "Шатающийся рычаг",
+    ["Parts.Door.EntranceBlocked"] = "Вход заблокирован.",
     ["Parts.Door.ExitBlocked"] = "Выход заблокирован.",
     ["Parts.Door.Locked"] = "Двери заперты",
     ["Parts.Moveable.Reset"] = "Расположение объекта было сброшено",
