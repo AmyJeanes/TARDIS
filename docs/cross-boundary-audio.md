@@ -73,9 +73,24 @@ Slew the aperture term **only, not the total gain**. Rate-limiting the whole gai
 distance changes and make walking past a doorway lag behind you. The discontinuity risk is the topology
 changing, not distance.
 
+**Openness is never a call-site parameter.** It is read per-frame inside the gain path, which already
+recomputes distance, pan and occlusion for every channel every frame. Passing it in would be impossible
+anyway - the value is stale 200ms into the sound. Call sites are unchanged by all of this:
+
+```lua
+Doors:PlaySound({ path = v.path, ent = self, loop = true, volume = v.volume or 1 })
+```
+
+That states *what* and *from where*; everything about the listener, the doorway between them, and how open
+it is, is derived. This is also why decision 8 holds - there is no per-call data for a wrapper to carry.
+
 **API consequence:** `DoorPos` lives on a TARDIS part (`gmod_tardis_part`, ID `door`), which Doors cannot
 read without breaking consumer-agnosticism. Doors must *ask* for openness - a 0..1 the consumer supplies,
 falling back to the boolean open/closed if unimplemented. Same shape as the leak-volume scalar in decision 7.
+
+Doors can already traverse the relationship in its own vocabulary - the links are on its own base entities
+(`gmod_door_exterior.interior`, `gmod_door_interior.exterior`) - so the consumer supplies openness and
+nothing else.
 
 **Portal culling, by contrast, must be inaudible.** A portal culled client-side for performance is a
 rendering optimisation, not a fact about the world. Two players in the same spot
@@ -239,6 +254,10 @@ A wrapper would add a layer while eliminating none of the existing checks.
   matters more than the setting.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
+- **Resolving an arbitrary emitter to its space.** Sounds do not only come from the interior or exterior
+  entity - they come from parts, and from ad-hoc props (the halloween corridor sound uses a clientside prop
+  `SetParent`ed to the interior). Likely a `GetParent()` walk up to a known interior/exterior, cached on
+  the handle, with a positional fallback for unparented emitters. Library-internal; no call site is affected.
 - Whether path distance is transformed straight-line or true path-through-the-mouth.
 - Whether the alternates link is declared in metadata or inferred from the interior/exterior counterpart
   fields (which are already paired by construction), and what the API looks like. It must not be `tag`.
