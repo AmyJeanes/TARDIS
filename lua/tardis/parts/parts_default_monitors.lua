@@ -287,7 +287,7 @@ if SERVER then
         local down_state = self:GetData(self.data_down, 1) % #self.poses_down
         self:SetData(self.data_down, down_state + 1, true)
         self:SetData(self.data_down_pos, self.poses_down[down_state + 1], true)
-        TARDIS:PlaySound({ path = "p00gie/tardis/default/monitor_move_vert.ogg", ent = self })
+        Doors:PlaySound({ path = "p00gie/tardis/default/monitor_move_vert.ogg", ent = self })
 
         self:RequestHitboxUpdate(ply)
     end
@@ -299,7 +299,7 @@ if SERVER then
         local flip_state = self:GetData(self.data_flip, 1) % #self.poses_flip
         self:SetData(self.data_flip, flip_state + 1, true)
         self:SetData(self.data_flip_pos, self.poses_flip[flip_state + 1], true)
-        TARDIS:PlaySound({ path = "p00gie/tardis/default/monitor_flip.ogg", ent = self })
+        Doors:PlaySound({ path = "p00gie/tardis/default/monitor_flip.ogg", ent = self })
         self:RequestHitboxUpdate(ply)
     end
 
@@ -309,7 +309,7 @@ if SERVER then
 
         if not ply then
             if IsValid(prev) then
-                TARDIS:PlaySound({ path = "p00gie/tardis/default/monitor_release.ogg", ent = self })
+                Doors:PlaySound({ path = "p00gie/tardis/default/monitor_release.ogg", ent = self })
             end
             self:SetData(self.data_rotated_by, nil, true)
             return
@@ -319,7 +319,7 @@ if SERVER then
         if IsValid() then return end
 
         self:SetData(self.data_rotated_by, ply, true)
-        TARDIS:PlaySound({ path = "p00gie/tardis/default/monitor_hold.ogg", ent = self })
+        Doors:PlaySound({ path = "p00gie/tardis/default/monitor_hold.ogg", ent = self })
     end
 
     function PART:Think()

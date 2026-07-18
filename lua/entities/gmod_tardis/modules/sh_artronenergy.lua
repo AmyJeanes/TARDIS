@@ -332,7 +332,7 @@ if SERVER then
         self:Explode(30)
         if IsValid(self.interior) then
             self.interior:Explode(30)
-            TARDIS:PlaySound({ path = self.metadata.Interior.Sounds.Damage.Artron,
+            Doors:PlaySound({ path = self.metadata.Interior.Sounds.Damage.Artron,
                 owner = self, tag = "damage", ent = self.interior, resumable = true })
         end
         self:AddArtron(TARDIS.artron_values.increase_engine_release)

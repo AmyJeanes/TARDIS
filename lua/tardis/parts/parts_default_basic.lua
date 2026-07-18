@@ -177,9 +177,9 @@ if SERVER then
                 self:SetOn(false)
                 self:SetCollide(true)
                 if self.SoundOff then
-                    TARDIS:PlaySound({ path = self.SoundOff, ent = self })
+                    Doors:PlaySound({ path = self.SoundOff, ent = self })
                 elseif self.Sound then
-                    TARDIS:PlaySound({ path = self.Sound, ent = self })
+                    Doors:PlaySound({ path = self.Sound, ent = self })
                 end
             end)
         else

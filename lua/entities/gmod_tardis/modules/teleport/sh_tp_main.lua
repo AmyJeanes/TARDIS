@@ -324,10 +324,10 @@ else
     ---@param shouldint boolean
     function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint)
         if shouldint and intpath and IsValid(self.interior) then
-            TARDIS:PlaySound({ path = intpath, owner = self, tag = "teleport", ent = self.interior, resumable = true })
+            Doors:PlaySound({ path = intpath, owner = self, tag = "teleport", ent = self.interior, resumable = true })
         end
         if shouldext and extpath then
-            TARDIS:PlaySound({ path = extpath, owner = self, tag = "teleport", ent = self, resumable = true })
+            Doors:PlaySound({ path = extpath, owner = self, tag = "teleport", ent = self, resumable = true })
         end
     end
 
@@ -386,13 +386,13 @@ else
                 elseif self:GetData("hads-demat") then
                     dematsnd = sound_demat_hads_ext
                 end
-                TARDIS:PlaySound({ path = dematsnd, owner = self, tag = "teleport",
+                Doors:PlaySound({ path = dematsnd, owner = self, tag = "teleport",
                     ent = self, pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
                 if pos and self:GetFastRemat() then
                     -- fast remat: the landing sound starts at the destination before the box is there,
                     -- attaching to it once it arrives
                     local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
-                    TARDIS:PlaySound({ path = matsnd, owner = self, tag = "teleport",
+                    Doors:PlaySound({ path = matsnd, owner = self, tag = "teleport",
                         pos = pos, attach = self, resumable = true })
                 end
             end
@@ -419,7 +419,7 @@ else
             elseif not self:GetFastRemat() and shouldPlayExterior then
                 -- Bystander copy: pinned at the landing spot (the box isn't there yet), attaching to the
                 -- exterior once it arrives so it isn't left behind if the box flies off mid-materialise
-                TARDIS:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat,
+                Doors:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat,
                     owner = self, tag = "teleport", pos = pos, attach = self, resumable = true })
             end
         end

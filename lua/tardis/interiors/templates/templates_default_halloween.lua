@@ -399,7 +399,7 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if IsValid(extdoor) and IsValid(intdoor) then
                 local soundnum = data[1]
                 local sound = "drmatt/tardis/events/knock" .. soundnum .. ".wav"
-                TARDIS:PlaySound({ path = sound, ent = intdoor })
+                Doors:PlaySound({ path = sound, ent = intdoor })
                 intdoor.lastknocksound = sound
                 intdoor.cancelknock = false
                 local lockanim = function()
@@ -430,7 +430,7 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if not IsValid(self.interior) then return end
             local intdoor = self.interior:GetPart("door")
             if IsValid(intdoor) then
-                TARDIS:PlaySound({ path = "hl1/ambience/des_wind2.wav", ent = intdoor, level = 55 })
+                Doors:PlaySound({ path = "hl1/ambience/des_wind2.wav", ent = intdoor, level = 55 })
             end
         end,
         ["halloween-corridorsound"] = function(self, data, ply)
@@ -473,7 +473,7 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if not IsValid(self.interior) then return end
             local snd = self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop
             if snd then
-                TARDIS:PlaySound({ path = snd, ent = self.interior })
+                Doors:PlaySound({ path = snd, ent = self.interior })
             end
         end,
     }
