@@ -130,7 +130,8 @@ if SERVER then
         if not IsValid(self.interior) then return end
         local int = self.metadata.Interior.Sounds.Damage
         if dmginfo:IsDamageType(DMG_BLAST) and self:GetHealth() ~= 0 then
-            TARDIS:PlayManagedSound({ path = int.Explosion, owner = self, tag = "damage", ent = self.interior })
+            TARDIS:PlaySound({ path = int.Explosion, owner = self, tag = "damage",
+                ent = self.interior, resumable = true })
         end
     end)
 
@@ -160,9 +161,11 @@ if SERVER then
 
         local int = self.metadata.Interior.Sounds.Damage
         if self:GetHealth() ~= 0 and vel < 900 then
-            TARDIS:PlayManagedSound({ path = int.Crash, owner = self, tag = "damage", ent = self.interior })
+            TARDIS:PlaySound({ path = int.Crash, owner = self, tag = "damage",
+                ent = self.interior, resumable = true })
         elseif self:GetHealth() ~= 0 and vel > 900 then
-            TARDIS:PlayManagedSound({ path = int.BigCrash, owner = self, tag = "damage", ent = self.interior })
+            TARDIS:PlaySound({ path = int.BigCrash, owner = self, tag = "damage",
+                ent = self.interior, resumable = true })
         end
     end)
 
@@ -179,8 +182,9 @@ if SERVER then
         end
         if IsValid(self.interior) then
             local int = self.metadata.Interior.Sounds.Damage
-            TARDIS:StopManagedSounds(self, "damage")
-            TARDIS:PlayManagedSound({ path = int.Death, owner = self, tag = "damage", ent = self.interior })
+            TARDIS:StopSounds(self, "damage")
+            TARDIS:PlaySound({ path = int.Death, owner = self, tag = "damage",
+                ent = self.interior, resumable = true })
         end
         self:Explode(180)
     end)

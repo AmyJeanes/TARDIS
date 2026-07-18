@@ -77,7 +77,7 @@ if SERVER then
                 TARDIS:Message(a, "Lock.Locked")
                 self.exterior:SendMessage("lockattempted", {a})
             end
-            self:EmitSound(self.metadata.Exterior.Sounds.Door.locked)
+            TARDIS:PlaySound({ path = self.metadata.Exterior.Sounds.Door.locked, ent = self })
         end
     end)
 
@@ -114,16 +114,12 @@ else
         local extsoundoff = self.metadata.Exterior.Sounds.Unlock
         local intsoundon = self.metadata.Interior.Sounds.Lock or extsoundon
         local intsoundoff = self.metadata.Interior.Sounds.Unlock or extsoundoff
-        if locked then
-            self:EmitSound(extsoundon)
-        else
-            self:EmitSound(extsoundoff)
-        end
+        TARDIS:PlaySound({ path = locked and extsoundon or extsoundoff, ent = self })
         -- the interior copy plays right as players head through the door, so it's managed (the exterior
         -- clicks are too short to cut)
         if IsValid(self.interior) then
-            TARDIS:PlayManagedSound({ path = locked and intsoundon or intsoundoff,
-                owner = self, tag = "lock", ent = self.interior })
+            TARDIS:PlaySound({ path = locked and intsoundon or intsoundoff,
+                owner = self, tag = "lock", ent = self.interior, resumable = true })
         end
     end)
 

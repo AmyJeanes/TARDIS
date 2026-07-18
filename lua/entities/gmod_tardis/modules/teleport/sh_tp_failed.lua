@@ -260,7 +260,7 @@ else -- CLIENT
             local teleport = self:GetData("teleport", false)
             local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop
             if power and (not teleport) and sound then
-                interior:EmitSound(sound)
+                TARDIS:PlaySound({ path = sound, ent = interior })
             end
         end
     end)

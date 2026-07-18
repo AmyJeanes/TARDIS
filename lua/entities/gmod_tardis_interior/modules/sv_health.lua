@@ -31,7 +31,7 @@ ENT:AddHook("OnHealthChange", "health", function(self, newhealth, oldhealth)
     local hp = (oldhealth - newhealth) / 10
     local door = self:GetPart("door")
     if door and IsValid(door) then
-        sound.Play("Default.ImpactSoft",door:GetPos())
+        TARDIS:PlaySound({ path = "Default.ImpactSoft", pos = door:GetPos() })
     end
     util.ScreenShake(self:GetPos(),math.Clamp(hp,0,16),5,0.5,700)
 end)

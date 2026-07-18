@@ -316,7 +316,7 @@ function TARDIS.ProcessAnimation(self, a)
                 self.use_sound = nil
 
                 if self.SoundStop then
-                    self:EmitSound(self.SoundStop)
+                    TARDIS:PlaySound({ path = self.SoundStop, ent = self })
                 end
             end
 
@@ -941,10 +941,9 @@ if SERVER then
                 end
             end
 
-            if part_sound and part.SoundPos then
-                sound.Play(part_sound, part:LocalToWorld(part.SoundPos))
-            elseif part_sound then
-                part:EmitSound(part_sound)
+            if part_sound then
+                -- SoundPos, when the part sets one, offsets the sound from the part's own origin
+                TARDIS:PlaySound({ path = part_sound, ent = part, offset = part.SoundPos })
             end
         end
         part:SetOn(not on)

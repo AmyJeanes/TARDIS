@@ -1,7 +1,11 @@
--- Managed BASS sound channels. Source culls an EmitSound one-shot when the listener jumps far - e.g.
--- toggling the exterior view, or a portal teleport across the interior void - and can't resume it. A
--- BASS channel isn't spatialised by Source, so it plays through the jump. PlayManagedSound returns a
--- handle so callers stop the exact sound on interrupt, instead of guessing paths with Entity:StopSound.
+-- Every sound the addon plays goes through TARDIS:PlaySound. Callers describe the sound and where it
+-- comes from; this picks how to play it - a normal engine sound, or a managed BASS channel for the ones
+-- that have to survive the listener jumping across the interior void (opts.resumable).
+--
+-- Managed BASS channels. Source culls an EmitSound one-shot when the listener jumps far - e.g. toggling
+-- the exterior view, or a portal teleport across the interior void - and can't resume it. A BASS channel
+-- isn't spatialised by Source, so it plays through the jump. A resumable sound also returns a handle, so
+-- callers stop the exact sound on interrupt instead of guessing paths with Entity:StopSound.
 --
 -- A positioned managed sound is spatialised by hand on a 2D stereo channel to match Source's positioned
 -- EmitSound: the volume tracks Source's own distance gain each frame, plus its occlusion rolloff when a
@@ -11,34 +15,72 @@
 -- so it tracks the view like the original. Doppler isn't emulated (Source only applies it to CHAR_DOPPLER
 -- soundscripts).
 
-if SERVER then
-    -- Server-side mirror: serialises the play/stop to clients so server-side events (damage etc.) can
-    -- start resumable sounds. Fire-and-forget - the BASS channel lives client-side, so no handle comes
-    -- back; stop by group via StopManagedSounds(owner, tag).
-    util.AddNetworkString("TARDIS-ManagedSound")
-    util.AddNetworkString("TARDIS-ManagedSoundStop")
+---@class tardis_sound_opts
+---@field path string sound path relative to sound/
+---@field ent Entity? entity the sound plays from
+---@field pos Vector? fixed world position to play from, when there is no entity
+---@field offset Vector? local offset from ent for the source position
+---@field volume number? max volume 0-1, default 1
+---@field level number? SNDLVL for distance falloff, default 75 (EmitSound's default)
+---@field resumable boolean? play through a managed BASS channel instead of the engine, so the sound survives the listener jumping across the interior void - a door portal crossing or the exterior view toggle - which culls a normal engine sound. Returns a handle
+---@field owner Entity? owner, for group-stop via TARDIS:StopSounds (a resumable sound also stops when its owner is removed)
+---@field tag string? group label for TARDIS:StopSounds, e.g. "teleport"
+---@field setting string? server only: client setting id each receiving client checks before playing; omit to play for everyone regardless
+---@field recipients Player|Player[]? server only: who hears it; omit = everyone
+---@field falloff tardis_sound_falloff_point[]? resumable only: custom distance->volume curve, overrides level
+---@field pin_on_jump number? resumable only, with ent: the sound pins where the entity vanished from once it moves faster than this (units/second) - a teleporting emitter leaves its tail behind, e.g. the demat echo a bystander hears. A speed, not a distance: interpolation renders a client-side teleport as a short impossibly-fast slide, never a single-frame jump
+---@field attach Entity? resumable only, with pos: entity that takes over as the source once it arrives within attach_dist of pos (e.g. the exterior landing on its materialise point)
+---@field attach_dist number? resumable only: arrival distance for attach, default 500
+---@field update fun(handle: tardis_managed_sound)? resumable only: custom per-frame volume callback (overrides falloff)
+---@field on_done fun()? resumable only: called once when the sound finishes on its own
 
-    ---@class tardis_managed_sound_sv_opts
-    ---@field path string sound path relative to sound/
-    ---@field owner Entity? owner, for group-stop via StopManagedSounds (and auto-stop if it's removed)
-    ---@field tag string? group label, e.g. "damage"
-    ---@field volume number? max volume 0-1, default 1
-    ---@field ent Entity? source entity for distance falloff (its current position is also sent, so a client that doesn't have the entity hears the sound pinned where it was)
-    ---@field pos Vector? fixed world source position for falloff (used when no ent)
-    ---@field offset Vector? local offset from ent for the source position
-    ---@field level number? SNDLVL for distance falloff; clients default it to 75 (EmitSound's default) when a source is given
-    ---@field setting string? client setting id each receiving client checks before playing (omit = always plays, like a plain server EmitSound)
-    ---@field recipients Player|Player[]? who hears it; omit = all players
+-- The engine's own sound, positioned like the caller asked. Shared by both realms: played on the server
+-- it reaches every client by itself, played on a client it is that client's alone.
+---@param opts tardis_sound_opts
+local function playNative(opts)
+    if opts.ent == nil and opts.pos == nil then
+        -- no source at all: an interface sound, played flat rather than placed in the world
+        if CLIENT then surface.PlaySound(opts.path) end
+        return
+    end
+    local ent = opts.ent
+    if IsValid(ent) then
+        -- EmitSound takes no offset, so an offset sound plays from that fixed point instead of following
+        if opts.offset then
+            sound.Play(opts.path, ent:LocalToWorld(opts.offset), opts.level, nil, opts.volume)
+        else
+            ent:EmitSound(opts.path, opts.level, nil, opts.volume)
+        end
+    elseif opts.pos then
+        sound.Play(opts.path, opts.pos, opts.level, nil, opts.volume)
+    end
+end
+
+if SERVER then
+    util.AddNetworkString("TARDIS-Sound")
+    util.AddNetworkString("TARDIS-SoundStop")
 
     ---@api
-    ---@param opts tardis_managed_sound_sv_opts
-    function TARDIS:PlayManagedSound(opts)
-        net.Start("TARDIS-ManagedSound")
+    ---@param opts tardis_sound_opts
+    function TARDIS:PlaySound(opts)
+        -- The engine broadcasts a plain positioned sound by itself, so only send our own message when a
+        -- client has to decide or do something first: check a setting, be the only one to hear it, run
+        -- the BASS channel (which lives client-side), or play an interface sound, which has no position
+        -- for the engine to carry. Fire-and-forget - no handle comes back; stop by group instead.
+        local client_decides = opts.resumable or opts.setting or opts.recipients
+            or (opts.ent == nil and opts.pos == nil)
+        if not client_decides then
+            playNative(opts)
+            return
+        end
+        net.Start("TARDIS-Sound")
         net.WriteString(opts.path)
         net.WriteEntity(opts.owner or NULL)
         net.WriteString(opts.tag or "")
         net.WriteFloat(opts.volume or 1)
         net.WriteEntity(opts.ent or NULL)
+        -- the entity's position rides along, so a client that doesn't have it still hears the sound
+        -- from where it was rather than everywhere at once
         local pos = opts.pos or (IsValid(opts.ent) and opts.ent:GetPos() or nil)
         net.WriteBool(pos ~= nil)
         if pos then net.WriteVector(pos) end
@@ -46,6 +88,7 @@ if SERVER then
         if opts.offset then net.WriteVector(opts.offset) end
         net.WriteBool(opts.level ~= nil)
         if opts.level then net.WriteUInt(opts.level, 8) end
+        net.WriteBool(opts.resumable == true)
         net.WriteString(opts.setting or "")
         if opts.recipients then
             -- the stub types net.Send Player-only; it accepts a Player table too
@@ -59,8 +102,8 @@ if SERVER then
     ---@param owner Entity
     ---@param tag string?
     ---@param recipients Player|Player[]? who to stop it for; omit = all players
-    function TARDIS:StopManagedSounds(owner, tag, recipients)
-        net.Start("TARDIS-ManagedSoundStop")
+    function TARDIS:StopSounds(owner, tag, recipients)
+        net.Start("TARDIS-SoundStop")
         net.WriteEntity(owner)
         net.WriteString(tag or "")
         if recipients then
@@ -154,8 +197,8 @@ end
 ---@field level number? SNDLVL for distance falloff (needs a source: ent or pos)
 ---@field falloff tardis_sound_falloff_point[]? custom distance->volume curve (needs a source, overrides level)
 ---@field last_pos Vector? last resolved source position; the pin target when ent teleports or vanishes
----@field pin_on_jump number? see tardis_managed_sound_opts
----@field attach Entity? see tardis_managed_sound_opts
+---@field pin_on_jump number? see tardis_sound_opts
+---@field attach Entity? see tardis_sound_opts
 ---@field attach_dist number distance from pos at which attach takes over as the source
 ---@field occ number? smoothed occlusion gain, eased toward the blocked/clear line-of-sight each frame
 ---@field omni boolean true for a stereo .wav - Source plays it omnidirectional (mono, no pan, unobscured)
@@ -165,22 +208,6 @@ end
 ---@field on_done fun()?
 local MANAGED = {}
 MANAGED.__index = MANAGED
-
----@class tardis_managed_sound_opts
----@field path string sound path relative to sound/
----@field owner Entity? owner, for group-stop via TARDIS:StopManagedSounds (and auto-stop if it's removed)
----@field tag string? group label, e.g. "teleport"
----@field volume number? max volume 0-1, default 1
----@field ent Entity? source entity for distance falloff (with level or falloff)
----@field pos Vector? fixed world source position for falloff (used when no ent)
----@field offset Vector? local offset from ent for the source position, like a relative EmitSound origin
----@field level number? SNDLVL for distance falloff; defaults to 75 (SNDLVL_75dB, EmitSound's default) when a source is given, 0 = no attenuation
----@field falloff tardis_sound_falloff_point[]? custom distance->volume curve (needs a source, overrides level)
----@field pin_on_jump number? with ent: the sound pins where the entity vanished from once it moves faster than this (units/second) - a teleporting emitter leaves its tail behind, e.g. the demat echo a bystander hears. A speed, not a distance: interpolation renders a client-side teleport as a short impossibly-fast slide, never a single-frame jump
----@field attach Entity? with pos: entity that takes over as the source once it arrives within attach_dist of pos (e.g. the exterior landing on its materialise point)
----@field attach_dist number? arrival distance for attach, default 500
----@field update fun(handle: tardis_managed_sound)? custom per-frame volume callback (overrides falloff)
----@field on_done fun()? called once when the sound finishes on its own
 
 TARDIS.ActiveManagedSounds = TARDIS.ActiveManagedSounds or {} ---@type tardis_managed_sound[]
 
@@ -442,10 +469,9 @@ local SINGLEPLAYER = game.SinglePlayer()
 local sp_paused = false
 local last_think_frame = 0
 
----@api
----@param opts tardis_managed_sound_opts
+---@param opts tardis_sound_opts
 ---@return tardis_managed_sound
-function TARDIS:PlayManagedSound(opts)
+local function playManaged(opts)
     ---@type tardis_managed_sound
     local handle = setmetatable({
         owner = opts.owner,
@@ -491,9 +517,21 @@ function TARDIS:PlayManagedSound(opts)
 end
 
 ---@api
+---@param opts tardis_sound_opts
+---@return tardis_managed_sound? handle to a resumable sound, so callers can stop or track that exact sound
+function TARDIS:PlaySound(opts)
+    if opts.resumable then
+        return playManaged(opts)
+    end
+    playNative(opts)
+end
+
+-- Only resumable sounds can be stopped as a group: the engine's own sounds are fire-and-forget once
+-- started, so a caller that needs to cut one short stops it through the entity it plays from.
+---@api
 ---@param owner Entity
 ---@param tag string?
-function TARDIS:StopManagedSounds(owner, tag)
+function TARDIS:StopSounds(owner, tag)
     local list = TARDIS.ActiveManagedSounds
     for i = #list, 1, -1 do
         local handle = list[i]
@@ -503,7 +541,7 @@ function TARDIS:StopManagedSounds(owner, tag)
     end
 end
 
-net.Receive("TARDIS-ManagedSound", function()
+net.Receive("TARDIS-Sound", function()
     local path = net.ReadString()
     local owner = net.ReadEntity()
     local tag = net.ReadString()
@@ -512,9 +550,10 @@ net.Receive("TARDIS-ManagedSound", function()
     local pos = net.ReadBool() and net.ReadVector() or nil
     local offset = net.ReadBool() and net.ReadVector() or nil
     local level = net.ReadBool() and net.ReadUInt(8) or nil
+    local resumable = net.ReadBool()
     local setting = net.ReadString()
     if setting ~= "" and not TARDIS:GetSetting(setting) then return end
-    TARDIS:PlayManagedSound({
+    TARDIS:PlaySound({
         path = path,
         owner = IsValid(owner) and owner or nil,
         tag = tag ~= "" and tag or nil,
@@ -523,14 +562,15 @@ net.Receive("TARDIS-ManagedSound", function()
         pos = pos,
         offset = offset,
         level = level,
+        resumable = resumable,
     })
 end)
 
-net.Receive("TARDIS-ManagedSoundStop", function()
+net.Receive("TARDIS-SoundStop", function()
     local owner = net.ReadEntity()
     local tag = net.ReadString()
     if not IsValid(owner) then return end
-    TARDIS:StopManagedSounds(owner, tag ~= "" and tag or nil)
+    TARDIS:StopSounds(owner, tag ~= "" and tag or nil)
 end)
 
 hook.Add("Think", "tardis_managed_sounds", function()

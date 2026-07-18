@@ -100,7 +100,7 @@ function ENT:TurnOn(active)
         phys:EnableGravity(false)
         phys:SetVelocity(Vector(0, 0, 15))
 
-        sound.Play("drmatt/tardis/seq_ok.wav", self:GetPos())
+        TARDIS:PlaySound({ path = "drmatt/tardis/seq_ok.wav", pos = self:GetPos() })
 
         if IsValid(self.LastActivator) then
             TARDIS:Message(self.LastActivator, "TimeDistortionGenerator.Starting")
@@ -117,7 +117,7 @@ function ENT:TurnOn(active)
 
         phys:EnableGravity(true)
 
-        sound.Play("drmatt/tardis/seq_bad.wav", self:GetPos())
+        TARDIS:PlaySound({ path = "drmatt/tardis/seq_bad.wav", pos = self:GetPos() })
 
         if IsValid(self.LastActivator) then
             TARDIS:Message(self.LastActivator, "TimeDistortionGenerator.Disabled")
@@ -165,7 +165,7 @@ function ENT:Think()
         self:SetColor(Color(164, 90, 250, self:GetColor().a))
         self:TriggerWire("Active",1)
 
-        sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
+        TARDIS:PlaySound({ path = "drmatt/tardis/power_on.wav", pos = self:GetPos() })
         
         local int
         for _,ent in ipairs(TARDIS:GetInteriorEnts()) do

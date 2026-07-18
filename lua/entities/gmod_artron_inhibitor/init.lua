@@ -103,7 +103,7 @@ function ENT:TurnOn(active)
 
         self:TriggerWire("Active",0.5)
 
-        sound.Play("drmatt/tardis/seq_ok.wav", self:GetPos())
+        TARDIS:PlaySound({ path = "drmatt/tardis/seq_ok.wav", pos = self:GetPos() })
 
         if IsValid(self.LastActivator) then
             TARDIS:Message(self.LastActivator, "ArtronInhibitor.Starting")
@@ -122,7 +122,7 @@ function ENT:TurnOn(active)
 
         phys:EnableGravity(true)
 
-        sound.Play("drmatt/tardis/seq_bad.wav", self:GetPos())
+        TARDIS:PlaySound({ path = "drmatt/tardis/seq_bad.wav", pos = self:GetPos() })
 
         if IsValid(self.LastActivator) then
             TARDIS:Message(self.LastActivator, "ArtronInhibitor.Disabled")
@@ -170,7 +170,7 @@ function ENT:Think()
         self:SetColor(Color(255, 166, 0, self:GetColor().a))
         self:TriggerWire("Active",1)
 
-        sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
+        TARDIS:PlaySound({ path = "drmatt/tardis/power_on.wav", pos = self:GetPos() })
     end
 
     if self.ArtronTick ~= nil and CurTime() - self.ArtronTick > 3 then

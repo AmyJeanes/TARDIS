@@ -203,8 +203,8 @@ if SERVER then
 else
     ENT:OnMessage("repair_finished", function(self)
         if not TARDIS:GetSetting("sound") then return end
-        TARDIS:PlayManagedSound({ path = self.metadata.Exterior.Sounds.RepairFinish,
-            owner = self, tag = "repair", ent = self })
+        TARDIS:PlaySound({ path = self.metadata.Exterior.Sounds.RepairFinish,
+            owner = self, tag = "repair", ent = self, resumable = true })
     end)
 
     ---@param self gmod_tardis

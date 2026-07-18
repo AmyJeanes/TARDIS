@@ -78,7 +78,7 @@ if SERVER then
         if active==false and sequences[id] then
             local allowed = self:CallHook("CanStartControlSequence",id)
             if allowed==false then return end
-            self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
+            TARDIS:PlaySound({ path = self.metadata.Interior.Sounds.SequenceOK, ent = self })
 
             self:SetData("cseq-active", true, true)
             self:SetData("cseq-step", 1, true)
@@ -96,7 +96,7 @@ if SERVER then
             if not seq then return end
 
             if seq.Controls[step] == id then
-                self:EmitSound(self.metadata.Interior.Sounds.SequenceOK)
+                TARDIS:PlaySound({ path = self.metadata.Interior.Sounds.SequenceOK, ent = self })
                 self:SetData("cseq-step", step + 1, true)
                 if step == #seq.Controls then
                     seq.OnFinish(self, a, step, part)
@@ -105,7 +105,7 @@ if SERVER then
                 end
             else
                 if id == "console" or id == "door" then return end
-                self:EmitSound(self.metadata.Interior.Sounds.SequenceFail)
+                TARDIS:PlaySound({ path = self.metadata.Interior.Sounds.SequenceFail, ent = self })
                 if seq.OnFail then
                     seq.OnFail(self, a, step, part)
                 end

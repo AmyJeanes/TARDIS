@@ -123,7 +123,7 @@ if SERVER then
     end
 else
     function ENT:StopTeleportSounds()
-        TARDIS:StopManagedSounds(self, "teleport")
+        TARDIS:StopSounds(self, "teleport")
 
         local interior = self.interior
         if IsValid(interior) and interior.dematfailsound then
