@@ -234,13 +234,9 @@ else
 
         if (self.repairloopsoundname ~= soundname) or (not self.repairloopsound) then
             StopRepairLoop(self)
-            self.repairloopsound = CreateSound(self, soundname)
+            self.repairloopsound = Doors:PlaySound({ path = soundname, ent = self, loop = true,
+                level = 60, owner = self, tag = "repair" })
             self.repairloopsoundname = soundname
-        end
-
-        if self.repairloopsound and not self.repairloopsound:IsPlaying() then
-            self.repairloopsound:SetSoundLevel(60)
-            self.repairloopsound:Play()
         end
     end)
 end

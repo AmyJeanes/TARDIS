@@ -311,19 +311,15 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
                         int.halloween_corridor_sound_ent = soundent
                     end
                     local loopsound = ext:GetData("halloween-loopsound", nil)
-                    if loopsound then
-                        local soundentloopsound = soundent.sound
-                        if not soundentloopsound then
-                            debug_print("Creating corridor looped sound")
-                            soundentloopsound = CreateSound(soundent, loopsound[1])
-                            soundentloopsound:SetSoundLevel(loopsound[2])
-                            soundent.sound = soundentloopsound
-                        end
-                        if not soundentloopsound:IsPlaying() then
-                            debug_print("Playing corridor looped sound")
-                            soundentloopsound:PlayEx(0, 100)
-                            soundentloopsound:ChangeVolume(1, 1)
-                        end
+                    if loopsound and not soundent.sound then
+                        debug_print("Creating corridor looped sound")
+                        ---@type string, number
+                        local loop_path, loop_level = loopsound[1], loopsound[2]
+                        local snd = Doors:PlaySound({ path = loop_path, ent = soundent,
+                            loop = true, level = loop_level, volume = 0,
+                            owner = ext, tag = "halloween" })
+                        soundent.sound = snd
+                        if snd then snd:SetVolume(1, 1) end
                     end
                 else
                     local soundent = int.halloween_corridor_sound_ent
@@ -448,10 +444,9 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
                     soundent.sound:Stop()
                     soundent.sound = nil
                 end
-                soundent.sound = CreateSound(soundent, sound)
-                soundent.sound:SetSoundLevel(soundlvl)
                 debug_print("Playing corridor sound: " .. sound)
-                soundent.sound:Play()
+                soundent.sound = Doors:PlaySound({ path = sound, ent = soundent, resumable = true,
+                    level = soundlvl, owner = self, tag = "halloween" })
             end
         end,
         ["halloween-stopcorridorsound"] = function(self, data, ply)

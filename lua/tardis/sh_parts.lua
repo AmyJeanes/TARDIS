@@ -308,9 +308,8 @@ function TARDIS.ProcessAnimation(self, a)
             local moved_recently = CurTime() - (self.last_moved or 0) < 0.1
 
             if moving and self.SoundLoop and not self.use_sound then
-                self.use_sound = CreateSound(self, self.SoundLoop)
-                self.use_sound:SetSoundLevel(90)
-                self.use_sound:PlayEx(self.SoundLoopVolume or 0.75, 100)
+                self.use_sound = Doors:PlaySound({ path = self.SoundLoop, ent = self, loop = true,
+                    level = 90, volume = self.SoundLoopVolume or 0.75, owner = self, tag = "part_use" })
             elseif self.use_sound and not moved_recently then
                 self.use_sound:Stop()
                 self.use_sound = nil

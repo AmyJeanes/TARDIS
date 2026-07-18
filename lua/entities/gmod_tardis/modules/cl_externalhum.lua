@@ -63,8 +63,8 @@ ENT:AddHook("PlayerExit", "externalhum", function(self, ply)
         local final_vol = vol_with_ratio * vol_setting
         local hum = self.LeakedInteriorHums[k]
         if hum then
-            hum:ChangeVolume(vol_with_ratio, 0)
-            hum:ChangeVolume(final_vol, 0.3)
+            hum:SetVolume(vol_with_ratio)
+            hum:SetVolume(final_vol, 0.3)
         end
     end
 end)
@@ -81,8 +81,7 @@ end)
     for k, snd in pairs(sounds) do
         local hum = self.LeakedInteriorHums[k]
         if hum then
-            local final_vol = (snd.volume or 1) * vol_setting * ratio
-            hum:ChangeVolume(final_vol, 0)
+            hum:SetVolume((snd.volume or 1) * vol_setting * ratio)
         end
     end
 end)
@@ -101,9 +100,9 @@ ENT:AddHook("Think", "externalhum", function(self)
             and self:GetData("power-state")
             and not self:GetData("vortex")
         then
-            if not self.ExternalHum then
-                self.ExternalHum = CreateSound(self, hum_sound_path)
-                self.ExternalHum:PlayEx(hum_sound.volume or 1, 100)
+            if not self.ExternalHum and hum_sound_path then
+                self.ExternalHum = Doors:PlaySound({ path = hum_sound_path, ent = self, loop = true,
+                    volume = hum_sound.volume or 1, owner = self, tag = "hum" })
             end
         elseif self.ExternalHum then
             self.ExternalHum:Stop()
@@ -129,11 +128,11 @@ ENT:AddHook("Think", "externalhum", function(self)
         local emitter = (IsValid(ext_portal) and ext_portal) or self
 
         for k, snd in pairs(sounds) do
+            ---@cast snd tardis_sound_entry -- glua_ls reads a loop variable's fields as nilable
             if snd.path ~= hum_sound_path and not self.LeakedInteriorHums[k] then
-                local final_vol = (snd.volume or 1) * vol_setting * ratio
-                local chan = CreateSound(emitter, snd.path)
-                chan:PlayEx(final_vol, 100)
-                self.LeakedInteriorHums[k] = chan
+                self.LeakedInteriorHums[k] = Doors:PlaySound({ path = snd.path, ent = emitter,
+                    loop = true, volume = (snd.volume or 1) * vol_setting * ratio,
+                    owner = self, tag = "hum_leak" })
             end
         end
 

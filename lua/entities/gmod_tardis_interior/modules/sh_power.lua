@@ -46,18 +46,6 @@ else
                 Doors:PlaySound({ path = state and sound_on or sound_off,
                     owner = self.exterior, tag = "power", ent = self, resumable = true })
             end
-            local idle_sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
-            if idle_sounds and self.idlesounds then
-                for k,v in pairs(idle_sounds) do
-                    if self.idlesounds[k] then
-                        if state then
-                            self.idlesounds[k]:PlayEx(v.volume or 1, 100)
-                        else
-                            self.idlesounds[k]:Stop()
-                        end
-                    end
-                end
-            end
         end
     end)
 

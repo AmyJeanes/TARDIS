@@ -565,20 +565,28 @@ else
         end
     end)
 
-    function ENT:ChooseFlightSound()
+    function ENT:StartFlightSound()
+        local sounds = self.metadata.Exterior.Sounds
+        local path
         if self:GetData("broken_flight") then
-            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopBroken)
+            path = sounds.FlightLoopBroken
             self.flightsounddamaged = false
             self.flightsoundbroken = true
         elseif self:IsLowHealth() then
-            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopDamaged)
+            path = sounds.FlightLoopDamaged
             self.flightsounddamaged = true
             self.flightsoundbroken = false
         else
-            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoop)
+            path = sounds.FlightLoop
             self.flightsounddamaged = false
             self.flightsoundbroken = false
         end
+        if not path then
+            self.flightsound = nil
+            return
+        end
+        self.flightsound = Doors:PlaySound({ path = path, ent = self, loop = true,
+            volume = 0.75, level = 90, owner = self, tag = "flight" })
     end
 
     ---@param self gmod_tardis
@@ -590,7 +598,10 @@ else
 
     ENT:AddHook("Think", "flight", function(self)
         if self:GetData("flight") and ShouldPlayFlightSounds(self) then
-            if self.flightsound and self.flightsound:IsPlaying() then
+            local snd = self.flightsound
+            -- a managed channel loads asynchronously, so track it by whether we hold one rather than
+            -- by IsPlaying - the load frames would otherwise look like a dead sound and restart it
+            if snd then
                 local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
                 local ply=LocalPlayer()
                 local e=ply:GetViewEntity()
@@ -604,12 +615,12 @@ else
                     end
                 end
                 if ply:GetTardisExterior()==self and e==self.thpprop and ply:GetTardisData("outside") then
-                    self.flightsound:ChangePitch(95+p,0.1)
+                    snd:SetPitch(95+p,0.1)
                 else
                     local pos = e:GetPos()
                     local spos = self:GetPos()
                     local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/200
-                    self.flightsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
+                    snd:SetPitch(math.Clamp(95+p+doppler,80,120),0.1)
                 end
 
                 local vol = 0.75
@@ -621,18 +632,14 @@ else
                     local volscale = norm ^ 2
                     vol = vol * volscale
                 end
-                self.flightsound:ChangeVolume(vol)
+                snd:SetVolume(vol)
 
                 if IsFlightSoundWrong(self) then
-                    self.flightsound:Stop()
-                    self:ChooseFlightSound()
-                    self.flightsound:SetSoundLevel(90)
-                    self.flightsound:Play()
+                    snd:Stop()
+                    self:StartFlightSound()
                 end
             else
-                self:ChooseFlightSound()
-                self.flightsound:SetSoundLevel(90)
-                self.flightsound:Play()
+                self:StartFlightSound()
             end
         elseif self.flightsound then
             self.flightsound:Stop()

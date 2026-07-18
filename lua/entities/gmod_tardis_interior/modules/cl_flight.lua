@@ -7,9 +7,11 @@ ENT:AddHook("OnRemove", "flight", function(self)
     end
 end)
 
-function ENT:ChooseFlightSound()
+---@param pitch number
+function ENT:StartFlightSound(pitch)
     local sounds_int = self.metadata.Interior.Sounds
     local sounds_ext = self.metadata.Exterior.Sounds
+    ---@type string?
     local current_sound
 
     if self:GetData("broken_flight") then
@@ -29,7 +31,15 @@ function ENT:ChooseFlightSound()
         self.flightsounddamaged = false
         self.flightsoundbroken = false
     end
-    self.flightsound = CreateSound(self, current_sound)
+    if not current_sound then
+        self.flightsound = nil
+        return
+    end
+
+    local snd = Doors:PlaySound({ path = current_sound, ent = self, loop = true,
+        volume = 0.4, owner = self.exterior, tag = "flight" })
+    self.flightsound = snd
+    if snd then snd:SetPitch(pitch) end
 end
 
 ---@param self gmod_tardis_interior
@@ -50,17 +60,18 @@ end
 ENT:AddHook("Think", "flight", function(self)
     if self:GetData("flight") and ShouldPlayFlightSounds(self) then
         local p=95+math.Clamp(self.exterior:GetVelocity():Length()/250,0,15)
-        if self.flightsound and self.flightsound:IsPlaying() then
-            self.flightsound:ChangePitch(p, 0.1)
+        local snd = self.flightsound
+        -- a managed channel loads asynchronously, so track it by whether we hold one rather than
+        -- by IsPlaying - the load frames would otherwise look like a dead sound and restart it
+        if snd then
+            snd:SetPitch(p, 0.1)
 
             if IsFlightSoundWrong(self) then
-                self.flightsound:Stop()
-                self:ChooseFlightSound()
-                self.flightsound:PlayEx(0.4, p)
+                snd:Stop()
+                self:StartFlightSound(p)
             end
         else
-            self:ChooseFlightSound()
-            self.flightsound:PlayEx(0.4, p)
+            self:StartFlightSound(p)
         end
     elseif self.flightsound then
         self.flightsound:Stop()
