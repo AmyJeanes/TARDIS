@@ -312,9 +312,15 @@ each frame owns that handle's `pos` and `base` and clears its `level`. So the ri
 distance chain - which is the part that moves into `targetVolume` - while pan, occlusion, the mixer
 constant and master volume stay the shipping code underneath.
 
-Both candidate gains (through the doorway, and in the room) are computed every frame regardless of
-which applies, because their ratio is the tuning target: the panel shows it in dB, and near 0 dB while
-standing in an open doorway is the thing to aim for. Sliders cover the aperture coefficients, the
+The resolved gain is compared every frame against **the same total path length with no doorway in it**
+- the sound folded straight - and the panel shows that ratio in dB. That reference matters: comparing
+against the emitter's own world position instead measures across the void, so it reports how wrong
+today's behaviour is rather than what the doorway costs, and it flips sign as you cross the threshold.
+Against the folded path the number is continuous on both sides, and at the mouth it reduces to exactly
+the aperture. Measured with the door open, 20 units out: **+0.1 dB**, and the audible step walking
+through the threshold is **-0.22 dB** - inaudible, so the model is continuous where it has to be.
+
+Sliders cover the aperture coefficients, the
 openness curve, the doorway-size exponent, the extra attenuation when shut, and the transition floor;
 a plot draws gain against distance for both paths so the falloff tightening is visible rather than
 walked. Openness can be driven by hand to hold the door part-open, and a **space swap** button flips
