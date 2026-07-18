@@ -46,7 +46,39 @@ A **closed door** is a fact about the world - deterministic, same for every play
 open/closed becomes an *aperture coefficient* rather than a switch: open is mostly transmitted, closed is
 heavily attenuated but **non-zero**. Sound leaks through a shut door, just quietly and over a shorter range.
 
-A portal **culled client-side for performance** is a rendering optimisation. Two players in the same spot
+**Ride the door animation.** The coefficient tracks a continuous 0..1 openness, so the audio ramps in step
+with what you see. TARDIS already animates `DoorPos` toward `DoorTarget` over `DoorAnimationTime`, and 190
+of 275 interiors sit on the 0.5s base default:
+
+```
+0.000s x1 (portal)   0.250s x8    0.500s x190   0.700s x9    1.000s+ x5
+0.200s x2            0.450s x5    0.600s x38    0.800s x7    2.000s x2
+```
+
+Free win: `LockedDoor.AnimPos` is a partially-open locked-door rattle, so an ajar door leaks proportionally
+with no extra code.
+
+**But floor the transition time.** Two independent things can change the aperture term discontinuously:
+
+1. **Door openness** - gradual for 274 interiors, but `portal` is `DoorAnimationTime = 0` on both sides,
+   genuinely instant.
+2. **The listener changing space** - teleported in or out, or the exterior view toggle, where the door
+   state does not change at all and the animation contributes nothing.
+
+One mechanism covers both: **slew-limit the aperture/path term** so it cannot traverse 0..1 faster than
+some minimum (~0.5-1s, to be tuned). `portal` is then not a special case - it is just where the animation
+contributes nothing and the floor does all the work.
+
+Slew the aperture term **only, not the total gain**. Rate-limiting the whole gain would smear ordinary
+distance changes and make walking past a doorway lag behind you. The discontinuity risk is the topology
+changing, not distance.
+
+**API consequence:** `DoorPos` lives on a TARDIS part (`gmod_tardis_part`, ID `door`), which Doors cannot
+read without breaking consumer-agnosticism. Doors must *ask* for openness - a 0..1 the consumer supplies,
+falling back to the boolean open/closed if unimplemented. Same shape as the leak-volume scalar in decision 7.
+
+**Portal culling, by contrast, must be inaudible.** A portal culled client-side for performance is a
+rendering optimisation, not a fact about the world. Two players in the same spot
 must not hear different things because one has portals turned down. So the resolver must **never read the
 portal entity** - derive from the doorway's own transform (position + angle), which exists regardless. The
 perf setting then has no audible effect at all and there is nothing to fade.
@@ -163,7 +195,11 @@ With the resolver this stops being hum-specific - it is cross-boundary audio in 
 belongs in Doors; the **user option** stays TARDIS-side, with Doors taking a scalar (or callback) from the
 consumer. Keeps Doors consumer-agnostic and keeps one slider in the TARDIS menu.
 
-The existing `interior_hum_leakage_volume` is the model to follow, and probably the setting to generalise.
+The existing `interior_hum_leakage_volume` is the model to follow, and the setting to generalise - it stops
+being hum-specific and becomes the leak volume for all cross-boundary audio. **Carry existing values across
+on rename** rather than resetting to the default; anyone who changed it did so deliberately.
+
+A solid default matters more than the knob. Tune it in a rig first, then expose it.
 
 **Tune the closed-door coefficient early and by ear.** 247 of 275 interiors have no exterior hum at all, so
 leakage is the *only* way they are ever heard from outside - it is the dominant path for ~90% of TARDISes,
@@ -171,8 +207,9 @@ not an edge case.
 
 ## Open questions
 
-- The exact aperture curve and its coefficients (open vs closed), and how doorway size feeds in. Ear-tuning
-  job; reuse the rig pattern from the loop work.
+- The exact aperture curve and its coefficients (open vs closed), how doorway size feeds in, and the
+  minimum transition time. **Build the tuning rig first** - these are ear judgements, and the default
+  matters more than the setting.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
 - Whether path distance is transformed straight-line or true path-through-the-mouth.
@@ -181,6 +218,7 @@ not an edge case.
 
 ## Implementation order
 
+0. **Tuning rig** for the aperture curve and minimum transition time, before the defaults get baked in.
 1. **Resolver core** in Doors: `sourcePos` resolves through the doorway transform, two-stage aperture,
    symmetric in both directions, independent of the portal entity.
 2. **Consumer scalar** so the aperture/leak volume is driven by a TARDIS setting.
