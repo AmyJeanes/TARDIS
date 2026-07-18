@@ -67,18 +67,22 @@ one. Three cases, in order of specificity:
 | Case | Behaviour |
 |---|---|
 | **Same asset** on both sides | One channel, gain = combination of both resolved gains |
-| **Different assets, declared a pair** | Group: crossfade, phase-aligned |
+| **Different assets, declared alternates** | Crossfade between them. No phase guarantee - see below |
 | **Different assets, not declared** | Independent - they sum. This is the default; no primitive needed |
 
-"Sum" is just what you get by *not* grouping. Declaring a group **is** the assertion "these are one logical
-sound, blend don't add". The group primitive therefore carries exactly two guarantees, only where asked
-for: blend instead of sum, and phase-align while blending.
+"Sum" is just what you get by *not* declaring the link. Declaring it **is** the assertion "these are one
+logical sound, blend don't add" - and that is the primitive's only guarantee.
 
 Same-asset collapses to one channel rather than a crossfade because there is no timbre to blend between -
-that gets perfect sync for free (it is one sound, it cannot drift) and no group machinery.
+that gets perfect sync for free (it is one sound, it cannot drift) and no extra machinery.
 
 Equality must be **scoped to one interior/exterior pair**. Two separate TARDISes humming the same file are
 genuinely two sounds and must still sum.
+
+The link is a *pair* relation and must not be folded into `tag`. `tag` is a stop-category at a deliberately
+coarser granularity - `"flight"` covers 9 call sites including three mutually exclusive exterior variants -
+and tags can coincide without meaning anything (`"damage"` covers 5 independent one-shots). Fusing them
+means never being able to stop at one granularity and blend at another.
 
 ### 4. Drop the exterior hum when it duplicates an interior hum
 
@@ -107,33 +111,36 @@ state*. Leakage is quieter and door-dependent, so a shut TARDIS will be noticeab
 is today. Judged more correct, but it is a real audible change and it lands entirely on the closed-door
 coefficient.
 
-### 5. Sync: phase when audible, not identical rates
+### 5. No phase sync - the content has no phase to align
 
-The interior and exterior flight loops already pitch-shift on the **identical** curve - same 95..110 range,
-same divisor, and the interior reads velocity off `self.exterior`, so it is literally the same number:
+**Investigated and dropped.** The plan was for paired members to share a clock: nominate a master, and
+silently re-assert the inaudible member against it when the blend factor starts to rise, so they are in
+phase by the time both can be heard.
 
-```lua
--- cl_flight.lua (interior)
-local p = 95 + math.Clamp(self.exterior:GetVelocity():Length()/250, 0, 15)
--- sh_flight.lua (exterior)
-local p = math.Clamp(self:GetVelocity():Length()/250, 0, 15)   -- then 95 + p, or +doppler clamped 80..120
+The content does not support it. Of the 105 interiors with a distinct interior *and* exterior `FlightLoop`,
+38 pairs are measurable and **33 have mismatched lengths**, most of them wildly:
+
+```
+1.72s vs 54.62s   drmatt/tardis/flight_loop.wav | FuzzyLeo/.../BBC_TARDIS_Flying_Loop.wav
+1.70s vs 50.76s   minibox/torrent/flightloop.wav | minibox/torrent/flightloopint.wav
+1.72s vs 37.09s   drmatt/tardis/flight_loop.wav | FuzzyLeo/.../coral_inflight.wav
+6.43s vs 56.37s   torrentcoolydude/flight_loop.wav | torrentcoolydude/flight_loopint.wav
+1.72s vs  1.59s   drmatt/tardis/flight_loop.wav | p00gie/tardis/default/flight_loop.wav
 ```
 
-The only divergence is the **doppler** term on the exterior. That must not be forced onto the interior:
-inside the TARDIS you move *with* it, so there is no relative motion and physically no doppler. Matching it
-would trade a sync bug for an acoustics bug.
+`drmatt/tardis/flight_loop.wav` (1.72s) is the near-universal exterior loop, paired against interiors from
+1.59s to 56s. A 1.72s loop against a 37.09s one wraps 21 times per interior cycle, so "the same position"
+means nothing. These are not two mixes of one performance - they are independent ambiences that both happen
+to mean "flying". There is no phase relationship to preserve because there never was one.
 
-It does not need to be. Doppler is only significant when the listener has real relative motion to the
-exterior - exactly when the interior member is inaudible. Where sync matters (at the threshold, both
-audible) you are effectively co-located with the exterior and doppler is ~0.
+So crossfading blends **gains only**, and needs no alignment. Phase sync would be a future opt-in for a
+genuinely same-performance pair; none exist in current content, and even the 5 length matches are more
+likely coincidence than intent.
 
-So: **each member takes its own correct rate, and the inaudible member is silently re-asserted against the
-clock master.** When the blend factor starts to rise, snap the quieter member to the master's position - it
-is inaudible at that instant, so the snap is free, and by the time it can be heard it is in phase. Drift
-while apart becomes a non-problem rather than something to prevent.
-
-This weaker invariant - *phase when audible*, not identical rates forever - is what makes the group
-primitive tractable. It only works under the crossfade policy; a summed pair has no silent moment to snap in.
+Related and still true: the two flight loops already pitch-shift on the **identical** curve (same 95..110
+range, same divisor, and the interior reads velocity off `self.exterior` - literally the same number). The
+only divergence is the exterior's **doppler** term, which must *not* be forced onto the interior: inside
+the TARDIS you move with it, so there is physically no doppler. With sync dropped there is no reason to.
 
 ### 6. Virtualise at distance rather than destroy
 
@@ -169,7 +176,8 @@ not an edge case.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
 - Whether path distance is transformed straight-line or true path-through-the-mouth.
-- Whether groups are declared in metadata or inferred, and what the API looks like.
+- Whether the alternates link is declared in metadata or inferred from the interior/exterior counterpart
+  fields (which are already paired by construction), and what the API looks like. It must not be `tag`.
 
 ## Implementation order
 
@@ -179,7 +187,7 @@ not an edge case.
 3. **Delete `cl_externalhum.lua`'s hand-built leak** - the second copy and its `LeakedInteriorHums` table.
    Leaking becomes a property of the geometry rather than a maintained feature.
 4. **Exterior hum dedup** (decision 4).
-5. **Groups** - same-asset collapse, then declared pairs with crossfade + silent re-sync.
+5. **Alternates** - same-asset collapse, then declared pairs with a gain-only crossfade.
 6. **Virtualisation** on top of the resolver's perceived distance.
 
 ## Testing
@@ -208,3 +216,7 @@ interior** - an orphan asset picked purely because it had a marker.
 - **Culling on world distance.** That is the original bug.
 - **Writing a channel's volume from anywhere but `applyGain`.** A caller's volume is the pre-distance one;
   writing it straight to the channel plays far-off sounds at full volume.
+- **Phase-syncing paired interior/exterior loops.** 33 of 38 measurable pairs have mismatched lengths (see
+  decision 5); there is no shared timeline to align to. Crossfade gains only.
+- **Overloading `tag` as the alternates link.** It is a stop-category at a coarser granularity, and tags
+  coincide without meaning anything.
