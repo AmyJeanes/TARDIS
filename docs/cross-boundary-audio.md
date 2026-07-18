@@ -73,13 +73,22 @@ with no extra code.
 2. **The listener changing space** - teleported in or out, or the exterior view toggle, where the door
    state does not change at all and the animation contributes nothing.
 
-One mechanism covers both: **slew-limit the aperture/path term** so it cannot traverse 0..1 faster than
-some minimum (~0.5-1s, to be tuned). `portal` is then not a special case - it is just where the animation
-contributes nothing and the floor does all the work.
+These need **two different mechanisms**, not one - trying to cover both with a single blend is what
+broke it first time round.
 
-Slew the aperture term **only, not the total gain**. Rate-limiting the whole gain would smear ordinary
-distance changes and make walking past a doorway lag behind you. The discontinuity risk is the topology
-changing, not distance.
+1. **Openness is rate-limited** so it cannot traverse 0..1 faster than the floor (~0.5-1s, to be tuned).
+   Everything derived from it inherits the limit. `portal` is then not a special case - it is just
+   where the animation contributes nothing and the floor does all the work.
+2. **A space change is captured as a dB step and healed to nothing** over the same floor. It cannot be
+   done by blending the in-space and cross-boundary gains, because **each is only valid in its own
+   space**: the instant you step out, the in-space term is measuring the emitter's world position
+   across the void, so blending from it blends from silence. Observed as a dive to the noise floor and
+   a climb back over exactly the floor time, on a crossing that should have been seamless. Capturing
+   the step instead means a seamless crossing stays seamless - measured at -0.03 dB one unit out,
+   -0.38 dB at sixty - while a real teleport still glides.
+
+Neither rate-limits the **total gain**. That would smear ordinary distance changes and make walking
+past a doorway lag behind you. The discontinuity risk is the topology changing, not distance.
 
 **Openness is never a call-site parameter.** It is read per-frame inside the gain path, which already
 recomputes distance, pan and occlusion for every channel every frame. Passing it in would be impossible
@@ -382,6 +391,10 @@ interior** - an orphan asset picked purely because it had a marker.
   gain term shifts the whole curve including the mouth, which breaks the one invariant that matters
   (an open doorway costs nothing). A small mouth should make the sound *carry less far*, not be quieter
   where you stand in it.
+- **Crossfading the in-space gain against the cross-boundary one** to smooth a space change. Each term
+  is only valid in its own space, so the moment you cross, one of them is measuring across the void -
+  the blend dives to the noise floor and climbs back over the transition time. Capture the step in dB
+  at the instant it happens and heal that instead; see decision 1.
 - **Raising SNDLVL to tighten falloff.** It does the opposite - a higher sound level travels *further*
   (75 -> 85 took a 600u reading from -11.4 dB to -1.2 dB). Extra attenuation is applied as its own dB
   term, not by moving the level.
