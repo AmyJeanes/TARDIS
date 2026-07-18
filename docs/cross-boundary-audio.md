@@ -251,8 +251,14 @@ A wrapper would add a layer while eliminating none of the existing checks.
 ## Open questions
 
 - The exact aperture curve and its coefficients (open vs closed), how doorway size feeds in, and the
-  minimum transition time. **Build the tuning rig first** - these are ear judgements, and the default
-  matters more than the setting.
+  minimum transition time. The tuning rig is built (see Testing) and these are now ear judgements.
+
+  One of them fell out analytically while building it, though. Standing in the mouth, the two candidate
+  gains differ by *exactly* the aperture: the listener-side stage is at zero distance (gain 1) and the
+  source-side stage is the same distance the direct path would have been, so `cross / direct = aperture`.
+  So the "must approach 1 at the mouth" constraint is not a curve to fit - it says `open = 1.0`, and any
+  value below it is a deliberate choice that the doorway itself costs something. What genuinely needs
+  ears is `closed`, the curve between them, and the transition floor.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
 - **Resolving an arbitrary emitter to its space** - now mostly answered. Every sound emitter is an
@@ -261,12 +267,23 @@ A wrapper would add a layer while eliminating none of the existing checks.
   ad-hoc case, a clientside prop the halloween corridor sound used as an emitter, has been removed. What
   remains is only whether to cache the result on the handle and when to invalidate it.
 - Whether path distance is transformed straight-line or true path-through-the-mouth.
+- **The exterior's doorway transform is not available client-side.** The interior sets `self.Portal` in
+  both realms, the exterior only server-side - and the resolver runs client-side. Either the consumer
+  mirrors the field, or Doors reads it from wherever the consumer already holds it. The rig sidesteps
+  this by reading TARDIS's metadata directly, which the shipping resolver cannot do.
+- **Interiors nest, so "which space is the listener in" is not `LocalPlayerInside()`.** A shell parked
+  inside another interior makes that true all the way up the chain - it answers "somewhere within". The
+  immediate space is `ply.doori`. Verified live: with one TARDIS parked inside another, both interiors
+  reported the local player inside. Nesting also means a sound can be more than one doorway away, which
+  the two-stage model does not currently express; resolving only the immediate boundary is the sane
+  first cut.
 - Whether the alternates link is declared in metadata or inferred from the interior/exterior counterpart
   fields (which are already paired by construction), and what the API looks like. It must not be `tag`.
 
 ## Implementation order
 
-0. **Tuning rig** for the aperture curve and minimum transition time, before the defaults get baked in.
+0. ~~**Tuning rig** for the aperture curve and minimum transition time, before the defaults get baked
+   in.~~ **Built** - see Testing.
 1. **Resolver core** in Doors: `sourcePos` resolves through the doorway transform, two-stage aperture,
    symmetric in both directions, independent of the portal entity.
 2. **Consumer scalar** so the aperture/leak volume is driven by a TARDIS setting.
@@ -277,6 +294,34 @@ A wrapper would add a layer while eliminating none of the existing checks.
 6. **Virtualisation** on top of the resolver's perceived distance.
 
 ## Testing
+
+### The tuning rig
+
+`doors_aperture_rig.lua`, a throwaway client-side panel. Open with:
+
+```
+lua_run_cl RunString(file.Read("doors_aperture_rig.lua","DATA"))
+```
+
+It prototypes the resolver rather than mocking it: it plays a real `Doors:PlaySound` handle and then
+each frame owns that handle's `pos` and `base` and clears its `level`. So the rig computes the whole
+distance chain - which is the part that moves into `targetVolume` - while pan, occlusion, the mixer
+constant and master volume stay the shipping code underneath.
+
+Both candidate gains (through the doorway, and in the room) are computed every frame regardless of
+which applies, because their ratio is the tuning target: the panel shows it in dB, and near 0 dB while
+standing in an open doorway is the thing to aim for. Sliders cover the aperture coefficients, the
+openness curve, the doorway-size exponent, the extra attenuation when shut, and the transition floor;
+a plot draws gain against distance for both paths so the falloff tightening is visible rather than
+walked. Openness can be driven by hand to hold the door part-open, and a **space swap** button flips
+which side the listener counts as being on with the door untouched - the discontinuity the door
+animation cannot cover. Measured live, the blend crosses fully in exactly the configured floor.
+
+There is also a mode selector: `resolver` against `today` (the raw world position, i.e. the bug) and
+`leak` (the hand-built second copy at the current setting), so the new behaviour can be A/B'd against
+what actually ships.
+
+### Content
 
 Mid-file loop markers are rare - a full scan of all 275 interiors (721 readable wavs) found **three**:
 
