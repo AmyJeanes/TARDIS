@@ -319,6 +319,26 @@ A wrapper would add a layer while eliminating none of the existing checks.
 5. **Alternates** - same-asset collapse, then declared pairs with a gain-only crossfade.
 6. **Virtualisation** on top of the resolver's perceived distance.
 
+## Later: capturing arbitrary sounds, not just declared ones
+
+Everything above moves *declared* sounds across the boundary - an interior's hum, a flight loop. The
+obvious next step is to capture **any** sound occurring in one space and re-radiate it through the
+doorway: footsteps and voices heard from outside a TARDIS, a firefight outside heard from within.
+
+That is what would make this pay off for the other Doors consumer. Safe-Space ships no sounds of its
+own today, so nothing there currently exercises any of this - but its doorways are user-resizable up
+to 5000 a side, which is precisely where the size term stops being marginal. Measured at influence
+0.5: 7.46 dB/1000u at its smallest mouth against **0.07** at its largest, i.e. an opening that big
+attenuates nothing and the sound carries out as though the doorway were not there. That falls out of
+the model rather than being special-cased, which is a good sign for it.
+
+The enabling mechanism already exists: the client-side `EntityEmitSound` hook exposes `SoundName`,
+`Volume`, `SoundLevel` and `Entity` for every sound before it plays, and returning false suppresses
+it. So a sound emitted in the space you are *not* in could be swallowed and replayed as a managed
+channel through the resolver. Known risks: every footstep becomes a candidate, so it needs a filter
+rather than a blanket capture; the per-sound cost is real; and one-shots are short enough that the
+managed channel's async load latency may be audible where a loop's is not.
+
 ## Testing
 
 ### The tuning rig
@@ -415,6 +435,10 @@ interior** - an orphan asset picked purely because it had a marker.
 - **Keying cross-boundary audio off the portal entity.** It is a client-side perf optimisation; making audio
   depend on it means two players in the same spot hear different things.
 - **Culling on world distance.** That is the original bug.
+- **Treating a doorway as a point.** Harmless at TARDIS scale (a 50x92 door's corner is 52 units from
+  its centre) and badly wrong beyond it: a Safe-Space doorway may be 5000 a side, where the corner is
+  3536 units out, so a centre-based distance calls you far away while you stand in the opening. Use
+  the nearest point on the doorway rectangle - clamp into it in the doorway's own space.
 - **Attenuating each leg of the path separately.** The intuitive two-stage reading, and wrong against
   Source's own gain curve - see The model. It made a doorway *increase* level by up to 3.7 dB, with the
   error changing sign at ~850u.
