@@ -4,8 +4,9 @@ Phase 3 of the sound rework ([#382](https://github.com/AmyJeanes/TARDIS/issues/3
 the **Doors** addon (`lua/doors/libraries/sh_sound.lua`); this document is the plan, so it may name TARDIS.
 Doors' own code and docs stay consumer-agnostic - generic interior / exterior / portal vocabulary only.
 
-Status: **design agreed, not yet built.** Phases 1 and 2 (managed BASS channels, the central hub, looping
-with mid-file handover) are done and on the `sound-rework` branch of both repos.
+Status: **design agreed, not yet built.** Done and on the `sound-rework` branch of both repos: managed BASS
+channels, the central hub, looping with mid-file handover, and all 13 loop call sites migrated onto it.
+What remains of phase 3 is everything below.
 
 ## Why
 
@@ -254,10 +255,11 @@ A wrapper would add a layer while eliminating none of the existing checks.
   matters more than the setting.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
-- **Resolving an arbitrary emitter to its space.** Sounds do not only come from the interior or exterior
-  entity - they come from parts, and from ad-hoc props (the halloween corridor sound uses a clientside prop
-  `SetParent`ed to the interior). Likely a `GetParent()` walk up to a known interior/exterior, cached on
-  the handle, with a positional fallback for unparented emitters. Library-internal; no call site is affected.
+- **Resolving an arbitrary emitter to its space** - now mostly answered. Every sound emitter is an
+  interior, an exterior, or something parented to one (parts are parented at `sh_parts.lua:792`), so a
+  `GetParent()` walk resolves all of them with no consumer hook and no positional fallback. The one
+  ad-hoc case, a clientside prop the halloween corridor sound used as an emitter, has been removed. What
+  remains is only whether to cache the result on the handle and when to invalidate it.
 - Whether path distance is transformed straight-line or true path-through-the-mouth.
 - Whether the alternates link is declared in metadata or inferred from the interior/exterior counterpart
   fields (which are already paired by construction), and what the API looks like. It must not be `tag`.
