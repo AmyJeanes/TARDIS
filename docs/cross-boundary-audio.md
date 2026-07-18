@@ -26,18 +26,25 @@ and occlusion all derive from its return. **The resolver is a change to that one
 downstream behaviour (the `SND_GetGainFromMult` port, the speaker envelope, the omni rule) keeps working
 untouched.
 
-When listener and emitter are in different spaces, the sound is resolved **through the doorway in two
-stages**:
+When listener and emitter are in different spaces, the sound's **perceived position** is the doorway on
+the listener's side - that is the `sourcePos` change, and it gets pan and occlusion right for free. Its
+**level** is a separate matter, and is the ordinary engine falloff over the whole distance the sound
+travels (source to mouth, plus mouth to listener), with the doorway then taking away in two ways:
 
-1. **Source -> doorway**: how much energy reaches the opening.
-2. **Doorway -> listener**: re-radiate from the doorway as a new point source.
+1. **Aperture** - a flat gain. Exactly **1 when fully open**; below 1 as the door shuts, never 0.
+2. **Extra falloff past the mouth** - dB per 1000 units, on top of the normal falloff, steeper for a
+   smaller mouth and steeper again when shut. **Exactly 0 at the mouth**, whatever it is set to.
 
-Attenuating twice is what makes 500 units outside much quieter than 500 units inside, and it puts the
-perceived *direction* at the doorway, which is what you would actually hear. A single transformed position
-gets the direction right but not the falloff.
+Both terms vanish at the mouth with the door open, which is the invariant the model rests on: standing
+in an open doorway is *identical* to standing in the room, not merely close to it. So there is no
+coefficient for the open case to get wrong - it is 1 by construction, not by tuning.
 
-**Constraint:** the aperture term must approach 1 as the listener approaches the mouth. Standing in the
-doorway must sound nearly like standing inside; over-attenuating there is the failure mode to listen for.
+**Attenuating each leg separately is wrong, and was tried first.** It reads as the physical answer -
+energy reaches the opening, then re-radiates - but Source's gain curve compresses everything above 0.5,
+so two short legs both sit in the flat part and together lose *less* than one long leg. Measured against
+free field at the same total distance, a doorway made things **louder by up to 3.7 dB**, and the sign of
+the error flipped with distance (louder to ~850u, quieter beyond), so it could not even be corrected
+with a constant. Free field over the true path, then subtract, is predictable and monotonic.
 
 ## Decisions
 
@@ -253,12 +260,11 @@ A wrapper would add a layer while eliminating none of the existing checks.
 - The exact aperture curve and its coefficients (open vs closed), how doorway size feeds in, and the
   minimum transition time. The tuning rig is built (see Testing) and these are now ear judgements.
 
-  One of them fell out analytically while building it, though. Standing in the mouth, the two candidate
-  gains differ by *exactly* the aperture: the listener-side stage is at zero distance (gain 1) and the
-  source-side stage is the same distance the direct path would have been, so `cross / direct = aperture`.
-  So the "must approach 1 at the mouth" constraint is not a curve to fit - it says `open = 1.0`, and any
-  value below it is a deliberate choice that the doorway itself costs something. What genuinely needs
-  ears is `closed`, the curve between them, and the transition floor.
+  Two of them are settled, though. **Open is 1 by construction, not by tuning** - both doorway terms
+  are defined to vanish at the mouth, so there is no coefficient to get wrong and no slider for it.
+  And **size feeds the falloff, not the gain** (see Do not re-attempt). What genuinely needs ears:
+  the closed coefficient, the curve between shut and open, the dB-per-1000-units tilt and how much
+  the shut door adds to it, how strongly mouth size should steepen it, and the transition floor.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
 - **Resolving an arbitrary emitter to its space** - now mostly answered. Every sound emitter is an
@@ -369,6 +375,16 @@ interior** - an orphan asset picked purely because it had a marker.
 - **Keying cross-boundary audio off the portal entity.** It is a client-side perf optimisation; making audio
   depend on it means two players in the same spot hear different things.
 - **Culling on world distance.** That is the original bug.
+- **Attenuating each leg of the path separately.** The intuitive two-stage reading, and wrong against
+  Source's own gain curve - see The model. It made a doorway *increase* level by up to 3.7 dB, with the
+  error changing sign at ~850u.
+- **Feeding doorway size into the aperture gain.** Size belongs in the falloff, not the flat gain: a
+  gain term shifts the whole curve including the mouth, which breaks the one invariant that matters
+  (an open doorway costs nothing). A small mouth should make the sound *carry less far*, not be quieter
+  where you stand in it.
+- **Raising SNDLVL to tighten falloff.** It does the opposite - a higher sound level travels *further*
+  (75 -> 85 took a 600u reading from -11.4 dB to -1.2 dB). Extra attenuation is applied as its own dB
+  term, not by moving the level.
 - **Writing a channel's volume from anywhere but `applyGain`.** A caller's volume is the pre-distance one;
   writing it straight to the channel plays far-off sounds at full volume.
 - **Phase-syncing paired interior/exterior loops.** 33 of 38 measurable pairs have mismatched lengths (see
