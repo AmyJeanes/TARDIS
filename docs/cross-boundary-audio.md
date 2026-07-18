@@ -76,9 +76,9 @@ with no extra code.
 These need **two different mechanisms**, not one - trying to cover both with a single blend is what
 broke it first time round.
 
-1. **Openness is rate-limited** so it cannot traverse 0..1 faster than the floor (~0.5-1s, to be tuned).
-   Everything derived from it inherits the limit. `portal` is then not a special case - it is just
-   where the animation contributes nothing and the floor does all the work.
+1. **Openness is rate-limited** so it cannot traverse 0..1 faster than the floor. Everything derived
+   from it inherits the limit. `portal` is then not a special case - it is just where the animation
+   contributes nothing and the floor does all the work.
 2. **A space change is captured as a dB step and healed to nothing** over the same floor. It cannot be
    done by blending the in-space and cross-boundary gains, because **each is only valid in its own
    space**: the instant you step out, the in-space term is measuring the emitter's world position
@@ -89,6 +89,11 @@ broke it first time round.
 
 Neither rate-limits the **total gain**. That would smear ordinary distance changes and make walking
 past a doorway lag behind you. The discontinuity risk is the topology changing, not distance.
+
+**The floor is 1.0s, not a tunable** - matched to the fade-to-black on an Alt+E teleport
+(`parts/door.lua`'s `ScreenFade(SCREENFADE.IN, color_black, 1, 0)`). That is the case the floor exists
+for, so the sound finishes settling exactly as the screen clears. Tying it to the visual rather than
+picking a number by ear also means the two stay together if the fade is ever changed.
 
 **Openness is never a call-site parameter.** It is read per-frame inside the gain path, which already
 recomputes distance, pan and occlusion for every channel every frame. Passing it in would be impossible
@@ -269,11 +274,13 @@ A wrapper would add a layer while eliminating none of the existing checks.
 - The exact aperture curve and its coefficients (open vs closed), how doorway size feeds in, and the
   minimum transition time. The tuning rig is built (see Testing) and these are now ear judgements.
 
-  Two of them are settled, though. **Open is 1 by construction, not by tuning** - both doorway terms
-  are defined to vanish at the mouth, so there is no coefficient to get wrong and no slider for it.
-  And **size feeds the falloff, not the gain** (see Do not re-attempt). What genuinely needs ears:
-  the closed coefficient, the curve between shut and open, the dB-per-1000-units tilt and how much
-  the shut door adds to it, how strongly mouth size should steepen it, and the transition floor.
+  Most of it is settled now, and by construction rather than by ear. **Open is 1** - both doorway terms
+  vanish at the mouth, so there is no coefficient to get wrong. **Size feeds the falloff, not the gain**
+  (see Do not re-attempt). **The floor is the Alt+E fade, 1.0s.** And **a shut door needs no falloff term
+  of its own** - the closed coefficient alone carries it, so the tilt depends only on mouth size.
+
+  What is left for ears: the closed coefficient, the curve between shut and open, the dB-per-1000-units
+  tilt, and how strongly mouth size should steepen it. Four numbers.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
 - **Resolving an arbitrary emitter to its space** - now mostly answered. Every sound emitter is an
