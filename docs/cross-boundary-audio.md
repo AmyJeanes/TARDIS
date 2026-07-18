@@ -205,6 +205,33 @@ A solid default matters more than the knob. Tune it in a rig first, then expose 
 leakage is the *only* way they are ever heard from outside - it is the dominant path for ~90% of TARDISes,
 not an edge case.
 
+### 8. Consumer-specific logic goes in provider hooks, not a TARDIS wrapper
+
+Re-examined when the resolver introduced two consumer-specific inputs (door openness, leak volume) and
+rejected again, more firmly.
+
+Both inputs are **per-entity or per-config, not per-call**. A wrapper wraps a call site; wrapping 68 of them
+to supply information no individual call knows about is the wrong axis. Instead:
+
+- **Openness**: Doors already owns `gmod_door_exterior`, which the consumer's exterior extends. It is a
+  virtual method on an inheritance relationship that already exists - base returns 0/1 from the boolean,
+  the consumer overrides it. No wrapper, no call-site changes.
+- **Leak volume**: one registration at load.
+
+The job previously imagined for a wrapper - folding in the master `sound` gate - does not survive contact
+with how that gate is actually used. 25 gate sites across 15 files against 68 play sites, and:
+
+- The master gate is almost never alone; it is ANDed with a per-feature setting (`teleport-sound`,
+  `doorsounds-enabled`, `locksound-enabled`, ...) that must stay at the call site anyway. The `if` remains
+  either way.
+- It gates more than playing: stopping a loop (`sh_repair.lua`), a predicate feeding a Think
+  (`ShouldPlayFlightSounds`), and non-`PlaySound` audio (`sh_music.lua`). A play-wrapper reaches none of
+  those, so consolidating there splits gating across two conventions.
+- Some sounds **deliberately bypass** the master gate (damage, explosions). A wrapper applying it
+  universally would be a silent behaviour change.
+
+A wrapper would add a layer while eliminating none of the existing checks.
+
 ## Open questions
 
 - The exact aperture curve and its coefficients (open vs closed), how doorway size feeds in, and the
@@ -256,5 +283,7 @@ interior** - an orphan asset picked purely because it had a marker.
   writing it straight to the channel plays far-off sounds at full volume.
 - **Phase-syncing paired interior/exterior loops.** 33 of 38 measurable pairs have mismatched lengths (see
   decision 5); there is no shared timeline to align to. Crossfade gains only.
+- **A TARDIS-side wrapper over `Doors:PlaySound`.** Rejected twice; see decision 8. Consumer-specific
+  inputs are per-entity or per-config, so they belong in provider hooks.
 - **Overloading `tag` as the alternates link.** It is a stop-category at a coarser granularity, and tags
   coincide without meaning anything.
