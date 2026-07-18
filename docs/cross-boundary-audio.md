@@ -90,10 +90,14 @@ broke it first time round.
 Neither rate-limits the **total gain**. That would smear ordinary distance changes and make walking
 past a doorway lag behind you. The discontinuity risk is the topology changing, not distance.
 
-**The floor is 1.0s, not a tunable** - matched to the fade-to-black on an Alt+E teleport
-(`parts/door.lua`'s `ScreenFade(SCREENFADE.IN, color_black, 1, 0)`). That is the case the floor exists
-for, so the sound finishes settling exactly as the screen clears. Tying it to the visual rather than
-picking a number by ear also means the two stay together if the fade is ever changed.
+**The floor is not a tunable** - it is tied to the fade-to-black on an Alt+E teleport
+(`parts/door.lua`'s `ScreenFade(SCREENFADE.IN, color_black, 1, 0)`), which is the case it exists for,
+so the sound finishes settling as the screen clears. Tying it to the visual rather than picking a
+number by ear means the two stay together if the fade is ever changed.
+
+Currently **half** that fade, 0.5s, on trial. A full 1.0s felt slow: the fade is linear from full
+black, so it reads as over around its midpoint, and matching its nominal length left the audio still
+settling well after the picture had arrived.
 
 **Openness is never a call-site parameter.** It is read per-frame inside the gain path, which already
 recomputes distance, pan and occlusion for every channel every frame. Passing it in would be impossible
@@ -376,6 +380,26 @@ Mid-file loop markers are rare - a full scan of all 275 interiors (721 readable 
 | `rtd60` | `uriel/rtd2/.../hum_thebridge.wav` | 2.0221s / 10.99s | The real test case |
 | `type35` | `jorj/type35/type35hum.wav` | 0.1625s / 22.27s | Edge case - only just over the 0.15s crossfade |
 | `baker_1975` | `liam.T/baker/flight_loop.wav` | 0.0029s / 3.60s | Under threshold, stays a whole-file loop |
+
+**Mouth sizes**, measured across all 275 interiors (the smaller of each pair of portals):
+
+| min | p5 | p25 | p50 | p75 | p95 | max |
+|---|---|---|---|---|---|---|
+| 1360 | 2280 | 3563 | **3864** | 4141 | 4759 | 12420 |
+
+`Diamond` is the smallest, `gnome` the largest - 9.1x apart, but p5 to p95 is only about 2x, so mouth
+size barely separates the common case and mostly distinguishes the two tails. Worth knowing before
+spending long tuning the size term: across 90% of content it does very little.
+
+**The reference size must not ship as a Doors constant.** It would be a TARDIS fact baked into a
+consumer-agnostic addon - and it is not needed anyway, because it is algebraically redundant with the
+tilt: `tilt = falloff * (ref/area)^n`, so scaling `ref` by *k* multiplies every tilt by *k^n*, exactly
+cancelled by dividing `falloff` by the same. Only **n** and the tilt at some anchor carry meaning. The
+median above is a tuning anchor for the rig, nothing more.
+
+That also makes **n the one number that generalises across consumers** - Safe-Space is the other Doors
+consumer and populates the same `Portal` dimensions, so it gets this for free, at whatever sizes its
+own doorways happen to be. Which is an argument for not over-fitting n to TARDIS's narrow spread.
 
 `rtd60` is the one to test with: its idle hum is audible both inside and (via leakage) outside, so it
 exercises the resolver on both sides of the same sound.
