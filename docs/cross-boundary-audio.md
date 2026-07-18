@@ -303,6 +303,10 @@ A wrapper would add a layer while eliminating none of the existing checks.
 lua_run_cl RunString(file.Read("doors_aperture_rig.lua","DATA"))
 ```
 
+It lives in the context menu, so holding C adjusts and releasing C walks. The sound keeps resolving
+either way - it is driven by a global Think hook rather than by the panel - which is what makes it
+tunable while moving, and moving is how the falloff is judged.
+
 It prototypes the resolver rather than mocking it: it plays a real `Doors:PlaySound` handle and then
 each frame owns that handle's `pos` and `base` and clears its `level`. So the rig computes the whole
 distance chain - which is the part that moves into `targetVolume` - while pan, occlusion, the mixer
