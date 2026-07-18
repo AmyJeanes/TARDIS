@@ -312,13 +312,27 @@ each frame owns that handle's `pos` and `base` and clears its `level`. So the ri
 distance chain - which is the part that moves into `targetVolume` - while pan, occlusion, the mixer
 constant and master volume stay the shipping code underneath.
 
-The resolved gain is compared every frame against **the same total path length with no doorway in it**
-- the sound folded straight - and the panel shows that ratio in dB. That reference matters: comparing
-against the emitter's own world position instead measures across the void, so it reports how wrong
-today's behaviour is rather than what the doorway costs, and it flips sign as you cross the threshold.
-Against the folded path the number is continuous on both sides, and at the mouth it reduces to exactly
-the aperture. Measured with the door open, 20 units out: **+0.1 dB**, and the audible step walking
-through the threshold is **-0.22 dB** - inaudible, so the model is continuous where it has to be.
+**Everything is measured from the sound, along the path it actually travels** - straight when you share
+a space, out to the mouth and on to you when you do not. This is the one decision that makes the panel
+readable, and it was got wrong twice first:
+
+- **Ratios drift; use absolute levels.** Judging the resolved gain against the same path length folded
+  straight seems reasonable and is not. The resolved path is attenuated twice with one leg fixed, so
+  in the far field it decays *slower* than a single attenuation over the sum, and the ratio climbs as
+  you walk away - in either direction, on either side. Measured inside: +0.08 dB at the mouth drifting
+  to +2.6 dB 300u in, none of which is about the doorway. The panel now shows what you actually hear
+  in dB, plus what the doorway costs (`20*log10(aperture)`), which holds still while you move because
+  it depends only on the tuning.
+- **Distance from the doorway means opposite things on the two sides.** Inside, walking to the door is
+  walking *away* from a sound in the middle of the room. An axis keyed to the doorway therefore runs
+  backwards on one side of it. Keyed to the sound, it is monotonic everywhere.
+
+So the graph is one continuous curve of level against distance from the emitter: plain falloff up to
+the doorway, the through-the-doorway falloff beyond it, and a faint line continuing the undoored
+falloff for comparison. The step down at the doorway line *is* the aperture, and the widening gap to
+the faint line is the extra attenuation - both tunables visible at once. dB up the side, since linear
+gain squashes everything interesting into the bottom pixel. Verified monotonic across the boundary:
+`-0.0 / -0.4 / -3.3 / -6.0` in the room, a -0.5 dB step, then `-6.6 / -8.2 / -16.9 / -21.7` outside.
 
 Sliders cover the aperture coefficients, the
 openness curve, the doorway-size exponent, the extra attenuation when shut, and the transition floor;
