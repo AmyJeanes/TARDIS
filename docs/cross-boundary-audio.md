@@ -32,12 +32,24 @@ the listener's side - that is the `sourcePos` change, and it gets pan and occlus
 travels (source to mouth, plus mouth to listener), with the doorway then taking away in two ways:
 
 1. **Aperture** - a flat gain. Exactly **1 when fully open**; below 1 as the door shuts, never 0.
-2. **Extra falloff past the mouth** - dB per 1000 units, on top of the normal falloff, steeper for a
-   smaller mouth and steeper again when shut. **Exactly 0 at the mouth**, whatever it is set to.
+2. **Extra falloff past the mouth** - dB per 1000 units, for each halving of the doorway below the
+   size at which size stops mattering. **Exactly 0 at the mouth**, whatever it is set to, and 0 for a
+   large enough opening.
+3. **Directivity** - a doorway throws its sound out of the opening, so standing round the back of one
+   is much quieter than standing the same distance in front. **Exactly 1 head-on**, and forced to 1 at
+   the mouth itself, where the direction is meaningless.
 
-Both terms vanish at the mouth with the door open, which is the invariant the model rests on: standing
+All three vanish at the mouth with the door open, which is the invariant the model rests on: standing
 in an open doorway is *identical* to standing in the room, not merely close to it. So there is no
 coefficient for the open case to get wrong - it is 1 by construction, not by tuning.
+
+**Falloff is one slider, not two.** It was briefly split into a base amount plus a size-dependent
+amount, which was a mistake: the base is "attenuation even for an infinitely large opening", which
+must be zero, so its only real function was to let one knob detune the other. `strength * halvings`
+answers the whole question - given this doorway, what does it cost a sound coming through it - and is
+correctly zero for an opening big enough to be just a hole. The size at which that happens is a
+constant rather than a second slider; it is the same degree of freedom wearing a different hat
+(`strength * (log2 NEUTRAL - log2 area)`), but it is pinned by a physical question instead of a dial.
 
 **Attenuating each leg separately is wrong, and was tried first.** It reads as the physical answer -
 energy reaches the opening, then re-radiates - but Source's gain curve compresses everything above 0.5,
@@ -435,6 +447,13 @@ interior** - an orphan asset picked purely because it had a marker.
 - **Keying cross-boundary audio off the portal entity.** It is a client-side perf optimisation; making audio
   depend on it means two players in the same spot hear different things.
 - **Culling on world distance.** That is the original bug.
+- **Deriving which way a doorway faces from its geometry.** Pointing the normal away from the middle
+  of the entity the doorway sits in looks more robust than trusting the authored angle, and is worse
+  in both directions. A free-standing doorframe has its mouth essentially at its own centre, so there
+  is no "away" to find - measured on a Safe-Space frame the test came out at exactly 0.000 and decided
+  the facing on a rounding error. On an interior it gets the answer backwards and points the normal
+  out through the wall. Use `Portal.ang`'s forward: it already points into the space you stand in to
+  use the doorway, out into the world for an exterior and into the room for an interior.
 - **Treating a doorway as a point.** Harmless at TARDIS scale (a 50x92 door's corner is 52 units from
   its centre) and badly wrong beyond it: a Safe-Space doorway may be 5000 a side, where the corner is
   3536 units out, so a centre-based distance calls you far away while you stand in the opening. Use
