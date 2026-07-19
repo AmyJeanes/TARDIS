@@ -331,6 +331,26 @@ A wrapper would add a layer while eliminating none of the existing checks.
 5. **Alternates** - same-asset collapse, then declared pairs with a gain-only crossfade.
 6. **Virtualisation** on top of the resolver's perceived distance.
 
+## Which addon this belongs in
+
+Doors, for now. The question is worth asking because a portal is what makes two distant places
+acoustically adjacent, and that sounds like world-portals' job - but only half of it is.
+
+- **Crossing a portal** is a geometric transform between two linked frames, and would generalise to
+  any portal pair. That half is world-portals-shaped.
+- **A doorway as an acoustic aperture** is not. Openness, aperture, directivity and above all *which
+  space the listener is in* are all Doors concepts: `doori`, `DoorInterior`, a door's animation
+  position. world-portals has no notion of a listener being inside anything.
+
+There is also a constraint pushing the other way: this must **never read the portal entity** (see
+decision 1), because it is client-side perf-culled and two players in the same spot must not hear
+different things. The model uses the doorway descriptor instead, which exists whether or not a portal
+is spawned. Putting the mechanism in world-portals would sit it right beside the one object it is
+forbidden to depend on.
+
+**The trigger to revisit:** when sound needs to cross a portal that is not a Doors doorway. Until
+then, a world-portals layer would have exactly one consumer.
+
 ## Later: capturing arbitrary sounds, not just declared ones
 
 Everything above moves *declared* sounds across the boundary - an interior's hum, a flight loop. The
