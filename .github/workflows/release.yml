@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Test the code round-trip + Steam login but skip the actual Workshop upload"
+        description: "Test the code round-trip + Steam login but skip the actual Workshop upload. Defaults on - untick only to deliberately publish to STABLE."
         type: boolean
-        default: false
+        default: true
       tag:
         description: "Preview only: resolve this release tag's notes and log the change note (no login, no upload)"
         type: string
