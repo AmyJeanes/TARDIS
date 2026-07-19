@@ -246,6 +246,41 @@ assumption into the doubling. The mechanism here is that intent made explicit ra
 - `Interior.Sounds.Hum` (`sh_metadata.lua:264`) is declared but **never read anywhere**. The interior's
   hum-equivalent is `Idle`. Dead schema.
 
+#### How the exception is declared
+
+Settled 2026-07-20. A sound field accepts **either a path or a table**, matching the `SequenceSpeed*`
+precedent (`sh_metadata.lua:234`) - scalar for the default, table for control. The table is the existing
+`tardis_sound_entry`, which `Idle` and `Hum` already use, so the two loop pairs get this for free.
+
+```lua
+FlightLoop = { path = "jodie/tardis/flight_int.wav", through_doors = 0.6 },
+```
+
+`through_doors` is **a number, not a flag**. Absent, the system decides - decision 3's rule, so a pair
+swaps and an unpaired sound leaks. Set, the author overrides with a level.
+
+Naming a boolean was tried at length and every candidate failed, which turned out to be a symptom rather
+than a naming problem: a flag asks the author to *categorise* ("is this distinct? is it a pair? does it
+leak?"), and that is a judgement about the very predicate decision 3 admits is fuzzy. Rejected in order -
+`play_both` describes the mechanism and describes it wrongly, since both members always play and only
+audibility changes; `leak` reads as something every author would want (everything already leaks - the flag
+really means "leak *despite* being a pair") and re-adopts the vocabulary decision 10 is retiring;
+`standalone` inverts on reading, sounding like "play this one alone"; `distinct` was the best of them but
+still asks for a classification.
+
+A number asks instead how much of the sound should be heard from outside, which an author can answer by
+ear. It is also strictly more expressive: the Jodie case does not just get "both play", it gets both at a
+level that sounds right, which is likely the difference between summing working and merely happening.
+`0` becomes meaningful too - seal an *unpaired* sound in, which no boolean could express. And it joins the
+knob family from decision 10 rather than being a one-off concept, sharing vocabulary with the player's
+`sound_through_doors`.
+
+Also considered and rejected: an enum naming the relationship (`counterpart = "distinct"`) - more surface,
+and it still demands the classification; and one blanket flag per interior - tempting because a bespoke
+interior is characterised by bespoke audio, but an interior with its own flight loop still inherits Door,
+Lock and Chameleon from base as identical assets, so a blanket flag would mark those distinct and double
+them. It fails in the direction that reintroduces the bug.
+
 **Both members play throughout; only audibility changes.** They start together where the event allows it,
 which is what makes a mid-sound swap safe for one-shots: a demat heard from inside and the same demat heard
 from outside stay time-aligned for their whole length, so crossing halfway through selects between two
@@ -505,8 +540,17 @@ skipping it forever. Use the date signature; there is no version to reason about
 
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
-- How the **opt-out is declared** per pair, now that the pairing itself is inferred (decision 3). The
-  inventory is settled (see decision 3) - this is the only piece of that design still open.
+- **How far to widen the union.** `through_doors` is settled, but not which fields accept the table form.
+  The top-level pair fields (the `FlightLoop` trio, `FlightLand`, `FlightFall`, `Lock`, `Unlock`,
+  `Chameleon`) are cheap - `Idle` and `Hum` are already entries. The nested ones are not: `Teleport` has
+  ~15 sub-fields and `Door` has three, each inside its own class. Doing only the cheap ones leaves the
+  schema mixed, which is what the table form was meant to end.
+- **Turning a string field into a table changes override semantics**, from replace to `table.Merge`'s deep
+  merge - so an interior overriding only `path` would inherit a parent's `through_doors`. Not live today
+  (no base sound field is a table, and the two that can be, `Idle` and `Hum`, are unset in base) but it
+  arrives with interior-to-interior inheritance. This project already hit exactly this: the teleport
+  sequences are swapped to `*Saved` in `PreMergeExteriorMetadata` to stop the deep merge. Watch for it
+  rather than pre-building the same workaround.
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
