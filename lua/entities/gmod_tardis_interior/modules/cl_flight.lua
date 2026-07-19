@@ -11,7 +11,7 @@ end)
 function ENT:StartFlightSound(pitch)
     local sounds_int = self.metadata.Interior.Sounds
     local sounds_ext = self.metadata.Exterior.Sounds
-    ---@type string?
+    ---@type string|tardis_sound_entry|nil
     local current_sound
 
     if self:GetData("broken_flight") then
@@ -31,13 +31,15 @@ function ENT:StartFlightSound(pitch)
         self.flightsounddamaged = false
         self.flightsoundbroken = false
     end
-    if not current_sound then
+    local entry = TARDIS:SoundEntry(current_sound)
+    if not entry then
         self.flightsound = nil
         return
     end
 
-    local snd = Doors:PlaySound({ path = current_sound, ent = self, loop = true,
-        volume = 0.4, owner = self.exterior, tag = "flight" })
+    local snd = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
+        volume = entry.volume or 0.4, owner = self.exterior, tag = "flight",
+        pair = "flight", through_doors = entry.through_doors })
     self.flightsound = snd
     if snd then snd:SetPitch(pitch) end
 end

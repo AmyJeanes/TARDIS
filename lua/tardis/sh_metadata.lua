@@ -263,9 +263,9 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Idle tardis_sound_entry[]?
 ---@field Door tardis_sound_door?
 ---@field Chameleon string?
----@field FlightLoop string?
----@field FlightLoopDamaged string?
----@field FlightLoopBroken string?
+---@field FlightLoop string|tardis_sound_entry|nil
+---@field FlightLoopDamaged string|tardis_sound_entry|nil
+---@field FlightLoopBroken string|tardis_sound_entry|nil
 ---@field FlightLand string?
 ---@field FlightFall string?
 
@@ -278,9 +278,9 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Unlock string
 ---@field Spawn string
 ---@field Delete string
----@field FlightLoop string
----@field FlightLoopDamaged string
----@field FlightLoopBroken string
+---@field FlightLoop string|tardis_sound_entry
+---@field FlightLoopDamaged string|tardis_sound_entry
+---@field FlightLoopBroken string|tardis_sound_entry
 ---@field FlightLand string
 ---@field FlightFall string
 ---@field BrokenFlightTurn string[]
@@ -373,6 +373,24 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_sound_entry
 ---@field path string
 ---@field volume number?
+---@field through_doors number?
+
+-- A sound is authored either as a plain path or as an entry with settings on it, so every read goes
+-- through here rather than each site testing the shape for itself. Normalising at the read rather than at
+-- merge time keeps the stored metadata exactly as its author wrote it, which anything reading it directly
+-- still expects.
+---@param entry string|tardis_sound_entry|nil
+---@return tardis_sound_entry?
+function TARDIS:SoundEntry(entry)
+    if entry == nil then return nil end
+    if isstring(entry) then
+        ---@cast entry string
+        return { path = entry }
+    end
+    ---@cast entry tardis_sound_entry
+    -- an entry with no path is malformed; treat it as absent rather than playing a nil
+    return entry.path and entry or nil
+end
 
 ---@class tardis_matproxy
 ---@field Color1 Color

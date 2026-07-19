@@ -581,12 +581,14 @@ else
             self.flightsounddamaged = false
             self.flightsoundbroken = false
         end
-        if not path then
+        local entry = TARDIS:SoundEntry(path)
+        if not entry then
             self.flightsound = nil
             return
         end
-        self.flightsound = Doors:PlaySound({ path = path, ent = self, loop = true,
-            volume = 0.75, level = 90, owner = self, tag = "flight" })
+        self.flightsound = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
+            volume = entry.volume or 0.75, level = 90, owner = self, tag = "flight",
+            pair = "flight", through_doors = entry.through_doors })
     end
 
     ---@param self gmod_tardis

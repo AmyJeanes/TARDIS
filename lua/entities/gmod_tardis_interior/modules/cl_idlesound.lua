@@ -25,9 +25,11 @@ ENT:AddHook("Think", "idlesound", function(self)
         ---@cast v tardis_sound_entry -- glua_ls reads a loop variable's fields as nilable
         local idlesnd = self.idlesounds[k]
         if play then
-            if not idlesnd then
-                self.idlesounds[k] = Doors:PlaySound({ path = v.path, ent = self, loop = true,
-                    volume = v.volume or 1, owner = self.exterior, tag = "idle" })
+            local entry = TARDIS:SoundEntry(v)
+            if not idlesnd and entry then
+                self.idlesounds[k] = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
+                    volume = entry.volume or 1, owner = self.exterior, tag = "idle",
+                    pair = "hum", through_doors = entry.through_doors })
             end
         elseif idlesnd then
             idlesnd:Stop()

@@ -28,9 +28,11 @@ ENT:AddHook("Think", "externalhum", function(self)
         and self:GetData("power-state")
         and not self:GetData("vortex")
     then
-        if not self.ExternalHum and hum_sound.path then
-            self.ExternalHum = Doors:PlaySound({ path = hum_sound.path, ent = self, loop = true,
-                volume = hum_sound.volume or 1, owner = self, tag = "hum" })
+        local entry = TARDIS:SoundEntry(hum_sound)
+        if not self.ExternalHum and entry then
+            self.ExternalHum = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
+                volume = entry.volume or 1, owner = self, tag = "hum",
+                pair = "hum", through_doors = entry.through_doors })
         end
     elseif self.ExternalHum then
         self.ExternalHum:Stop()
