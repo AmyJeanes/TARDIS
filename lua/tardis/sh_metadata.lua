@@ -261,9 +261,11 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Lock string?
 ---@field Unlock string?
 ---@field Idle tardis_sound_entry[]?
----@field Hum string?
 ---@field Door tardis_sound_door?
 ---@field Chameleon string?
+---@field FlightLoop string?
+---@field FlightLoopDamaged string?
+---@field FlightLoopBroken string?
 ---@field FlightLand string?
 ---@field FlightFall string?
 
