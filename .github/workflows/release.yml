@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Test the code round-trip + Steam login but skip the actual Workshop upload"
+        description: "Test the code round-trip + Steam login but skip the actual Workshop upload. Defaults on - untick only to deliberately publish to STABLE."
         type: boolean
-        default: false
+        default: true
       tag:
         description: "Preview only: resolve this release tag's notes and log the change note (no login, no upload)"
         type: string
@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   publish:
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@12832db7335874f6c8db3174adc90146a9651be8 # v0.26.1
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@971c227d02b3886fd245373f9c5d6622b21d424c # v0.27.0
     with:
       addon: "TARDIS"
       workshop_id: "307175678"

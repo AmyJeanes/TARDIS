@@ -263,7 +263,7 @@ else
     end
     TARDIS:LoadKeyBinds()
 
-    TARDIS:AddMigration("binds-move", "2025.2.0", function(self)
+    TARDIS:AddMigration("binds-move", "2023-11-16", function(self)
         if file.Exists("tardis_binds.txt", "DATA") then
             if file.Exists(BINDS_FILE, "DATA") then
                 file.Delete(BINDS_FILE)

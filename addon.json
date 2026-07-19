@@ -23,7 +23,6 @@
         "i18n/*",
         "assets/*",
         "scripts/*",
-        "crowdin.yml",
-        "version.json"
+        "crowdin.yml"
     ]
 }

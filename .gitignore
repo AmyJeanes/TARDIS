@@ -1,5 +1,6 @@
 lua/.vscode/settings.json
 Hooks and descriptions.txt
 .tools/
+lua/tardis/libraries/libraries/libraries/sh_version_generated.lua
 .claude/settings.local.json
 .claude/scheduled_tasks.lock

@@ -77,7 +77,7 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.26.1
+          ref: v0.27.0
           path: gmod-addon-tools
 
       - name: Run glua_check
@@ -115,7 +115,7 @@ jobs:
   publish:
     name: Publish to workshop
     needs: setup
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@12832db7335874f6c8db3174adc90146a9651be8 # v0.26.1
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@971c227d02b3886fd245373f9c5d6622b21d424c # v0.27.0
     with:
       addon: TARDIS
       workshop_id: ${{ needs.setup.outputs.id }}

@@ -5,6 +5,17 @@
 ---@field Minor number
 ---@field Patch number
 
+---@class tardis_build
+---@field Channel "release"|"beta"|"alpha"|"source"
+---@field Commits number?
+---@field Sha string?
+
+---@class tardis_migration
+---@field date string
+---@field func fun(self: TARDIS)
+---@field source string
+
+---@type table<string, tardis_migration>
 TARDIS.Migrations = TARDIS.Migrations or {}
 
 ---@param str string
@@ -43,11 +54,18 @@ end
 
 local VERSION_FILE = "tardis/version" .. (SERVER and "_sv" or "_cl") .. ".txt"
 local VERSION_LAST_USED_FILE = "tardis/version_lastused" .. (SERVER and "_sv" or "_cl") .. ".txt"
+local MIGRATIONS_FILE = "tardis/migrations" .. (SERVER and "_sv" or "_cl") .. ".txt"
 
 ---@type tardis_version
 TARDIS.PreviousVersion = TARDIS.PreviousVersion or get_version_from_file(VERSION_FILE)
 ---@type tardis_version
 TARDIS.LastUsedVersion = TARDIS.LastUsedVersion or get_version_from_file(VERSION_LAST_USED_FILE)
+
+-- sh_version_generated.lua is a build artifact; it loads after this file and overwrites these.
+---@type tardis_version
+TARDIS.Version = TARDIS.Version or { Major = 0, Minor = 0, Patch = 0 }
+---@type tardis_build
+TARDIS.Build = TARDIS.Build or { Channel = "source" }
 
 ---@api
 ---@return tardis_version
@@ -64,6 +82,9 @@ function TARDIS:GetLastUsedVersion()
 end
 
 function TARDIS:SetLastUsedVersion()
+    -- Recording a source build's version would misreport the next Workshop launch as an upgrade.
+    if self.Build.Channel == "source" then return end
+
     if self:IsVersionEqualTo(self:GetVersion(), self.LastUsedVersion) then
         return
     end
@@ -72,6 +93,8 @@ function TARDIS:SetLastUsedVersion()
 end
 
 function TARDIS:IsNewVersion()
+    if self.Build.Channel == "source" then return false end
+
     if self.LastUsedVersion.Major == 0
         and self.LastUsedVersion.Minor == 0
         and self.LastUsedVersion.Patch == 0
@@ -93,6 +116,34 @@ function TARDIS:GetVersionString(version)
     version = version or self.Version
     return string.format("%d.%d.%d", version.Major, version.Minor, version.Patch)
 end
+
+---@api
+---@return string
+function TARDIS:GetBuildString()
+    local build = self.Build
+    if build.Channel == "release" then
+        return self:GetVersionString()
+    end
+
+    local version = self:GetVersionString()
+    if version == "0.0.0" then
+        return build.Channel
+    end
+
+    return string.format("%s-%s.%d+g%s", version, build.Channel, build.Commits or 0, build.Sha or "unknown")
+end
+
+concommand.Add("tardis2_version", function()
+    ---@type table[]
+    local addons = engine.GetAddons()
+    local mounted = 0
+    for _, addon in ipairs(addons) do
+        if addon.mounted then mounted = mounted + 1 end
+    end
+
+    print("[TARDIS] " .. TARDIS:GetBuildString() .. " (" .. (SERVER and "server" or "client") .. ")")
+    print("[TARDIS] Addons: " .. mounted .. " mounted of " .. #addons .. " subscribed")
+end)
 
 -- Typed `any` because istable narrowing can't drop the class from a string|table union, cascading false nil-flags into callers.
 ---@param versionStrOrTbl any
@@ -171,57 +222,88 @@ end
 
 ---@api
 ---@param name string
----@param fromVersion string
+---@param date string
 ---@param func fun(self: TARDIS)
-function TARDIS:AddMigration(name, fromVersion, func)
+function TARDIS:AddMigration(name, date, func)
     local source = debug.getinfo(2).short_src
 
-    if not TARDIS:IsVersionHigherOrEqualTo(fromVersion) then
-        error("Invalid version for migration '".. name .."': " .. fromVersion .. " (current version is " .. self:GetVersionString() .. ")")
+    if not string.match(date, "^%d%d%d%d%-%d%d%-%d%d$") then
+        error("Invalid date in migration '" .. name .. "': " .. date .. " (expected YYYY-MM-DD)")
     end
 
-    if self.Migrations[fromVersion] and self.Migrations[fromVersion][name] and self.Migrations[fromVersion][name].source ~= source then
-        error("Duplicate migration registered: " .. name .. "(" .. fromVersion .. ") (exists in both " .. self.Migrations[fromVersion][name].source .. " and " .. source .. ")")
+    local existing = self.Migrations[name]
+    if existing and existing.source ~= source then
+        error("Duplicate migration registered: " .. name .. " (exists in both " .. existing.source .. " and " .. source .. ")")
     end
 
-    local success = get_version_from_string(fromVersion)
-    if not success then
-        error("Invalid version in migration: " .. fromVersion)
-    end
-
-    if self.Migrations[fromVersion] == nil then
-        self.Migrations[fromVersion] = {}
-    end
-    self.Migrations[fromVersion][name] = {
+    self.Migrations[name] = {
+        date = date,
         func = func,
         source = source
     }
 end
 
+local LEGACY_MIGRATION_VERSIONS = {
+    ["health-changed"]  = "2023.8.0",
+    ["binds-move"]      = "2025.2.0",
+    ["settings-move"]   = "2025.2.0",
+    ["locations-move"]  = "2025.2.0",
+    ["music-move"]      = "2025.2.0",
+}
+
+---@return table<string, number>? applied nil when the addon has not run under this scheme yet
+local function read_applied()
+    if not file.Exists(MIGRATIONS_FILE, "DATA") then return nil end
+    local data = TARDIS.von.deserialize(file.Read(MIGRATIONS_FILE, "DATA") or "")
+    return istable(data) and data or {}
+end
+
+---@param applied table<string, number>
+local function write_applied(applied)
+    file.Write(MIGRATIONS_FILE, TARDIS.von.serialize(applied))
+end
+
 function TARDIS:RunMigrations()
-    local versions = table.GetKeys(self.Migrations)
-    
-    if #versions > 0 and not self:IsNewInstall() then
-        local filteredVersions = {}
-        for _, version in ipairs(versions) do
-            if self:IsVersionHigherThan(self.PreviousVersion, version) then
-                table.insert(filteredVersions, version)
+    local applied = read_applied()
+
+    if applied == nil then
+        applied = {}
+        local newInstall = self:IsNewInstall()
+        for name in pairs(self.Migrations) do
+            local legacy = LEGACY_MIGRATION_VERSIONS[name]
+            if newInstall or (legacy and not self:IsVersionHigherThan(self.PreviousVersion, legacy)) then
+                applied[name] = os.time()
             end
         end
+        write_applied(applied)
+    end
 
-        table.sort(filteredVersions, function(a,b)
-            return self:IsVersionHigherThan(a,b)
-        end)
-
-        for _, version in ipairs(filteredVersions) do
-            for name, migration in pairs(self.Migrations[version]) do
-                print("[TARDIS] Running migration " .. name .. " (" .. version .. ")")
-                migration.func(self)
-            end
+    local pending = {}
+    for name in pairs(self.Migrations) do
+        if not applied[name] then
+            table.insert(pending, name)
         end
     end
-    
-    file.Write(VERSION_FILE, self:GetVersionString())
+
+    table.sort(pending, function(a, b)
+        local dateA, dateB = self.Migrations[a].date, self.Migrations[b].date
+        if dateA ~= dateB then return dateA < dateB end
+        return a < b
+    end)
+
+    for _, name in ipairs(pending) do
+        local migration = self.Migrations[name]
+        print("[TARDIS] Running migration " .. name .. " (" .. migration.date .. ")")
+
+        local success, err = pcall(migration.func, self)
+        if success then
+            applied[name] = os.time()
+            write_applied(applied)
+        else
+            -- Deliberately left unrecorded so it retries next load rather than being skipped forever.
+            ErrorNoHalt("[TARDIS] Migration " .. name .. " failed: " .. tostring(err) .. "\n")
+        end
+    end
 end
 
 hook.Add("InitPostEntity", "TARDIS_Migrations", function()

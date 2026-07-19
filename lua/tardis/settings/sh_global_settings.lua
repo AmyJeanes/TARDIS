@@ -45,7 +45,7 @@ TARDIS:AddSetting({
 })
 
 if SERVER then
-    TARDIS:AddMigration("health-changed", "2023.8.0", function(self)
+    TARDIS:AddMigration("health-changed", "2023-11-16", function(self)
         local oldHealthMax = self.GlobalSettings["health-max"]
         if oldHealthMax then
             self:SetSetting("health_max", oldHealthMax * 3)
