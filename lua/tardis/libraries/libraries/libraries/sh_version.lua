@@ -133,6 +133,18 @@ function TARDIS:GetBuildString()
     return string.format("%s-%s.%d+g%s", version, build.Channel, build.Commits or 0, build.Sha or "unknown")
 end
 
+concommand.Add("tardis2_version", function()
+    ---@type table[]
+    local addons = engine.GetAddons()
+    local mounted = 0
+    for _, addon in ipairs(addons) do
+        if addon.mounted then mounted = mounted + 1 end
+    end
+
+    print("[TARDIS] " .. TARDIS:GetBuildString() .. " (" .. (SERVER and "server" or "client") .. ")")
+    print("[TARDIS] Addons: " .. mounted .. " mounted of " .. #addons .. " subscribed")
+end)
+
 -- Typed `any` because istable narrowing can't drop the class from a string|table union, cascading false nil-flags into callers.
 ---@param versionStrOrTbl any
 ---@param compareVersionStrOrTbl any
