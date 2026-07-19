@@ -9,10 +9,12 @@ the `sound-rework` branch: managed BASS channels, the central hub, looping with 
 loop call sites migrated onto it, and then steps 1-3 below - the resolver itself, the consumer volume
 scalar, and the deletion of the hand-built leak.
 
+**Decision 9 is built and ear-tested** (2026-07-19): the listener resolves from the camera, and a view
+change cuts in 40ms where a move still glides in 500ms.
+
 What remains: counterpart pairs (decision 3, which absorbs the old exterior-hum dedup step), the settings
-rename (decision 10), moving the listener onto the camera (decision 9), and virtualisation. Decisions 3, 9
-and 10 were settled on 2026-07-19 and are the current design of record - where an earlier section disagrees
-with them, they win.
+rename (decision 10), and virtualisation. Decisions 3, 9 and 10 were settled on 2026-07-19 and are the
+current design of record - where an earlier section disagrees with them, they win.
 
 The tuned numbers live in `Doors.SoundTuningDefaults` (`sh_sound.lua`), reached by ear against a real
 interior hum through `doors_debug_sound`:
