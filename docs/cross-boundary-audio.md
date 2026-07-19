@@ -349,12 +349,30 @@ means the resolver measures from a camera at least 90 units outside the box whil
 as standing in the console room.
 
 Keying the side off the listener fixes it and puts us back in step with the engine, whose own sound
-listener follows the view - `ply.doori` was the odd one out. Changing view then becomes just another
-listener-side change, smoothed by the same transition as walking or teleporting, which is the point: one
-mechanism for every way the listener can change side.
+listener follows the view - `ply.doori` was the odd one out.
 
 No hysteresis needed. The camera is anchored to the exterior at a 90-unit minimum, so it cannot hover on
 the boundary and flap between spaces.
+
+**But the transition is not one mechanism.** This section first claimed that changing view should be
+smoothed by the same glide as walking, "one mechanism for every way the listener can change side". Built
+and heard, that is wrong: the camera cuts instantly and the sound arrives half a second later, so the
+glide reads as the sound lagging the picture rather than as anything being smoothed. A move has travel for
+a glide to cover; a cut has none.
+
+So a view change gets a 40ms ramp instead of the 0.5s glide - short enough to read as a cut, long enough
+that the gain step (0.62 to 0.03 through a shut door, measured) does not click.
+
+Classifying the two is subtler than it looks, and two obvious tests both fail:
+
+- **Comparing the camera's space to its body's.** They agree again the instant the view switches back, so
+  returning to first person would read as a move.
+- **Looking for a jump in position.** Walking through a portal teleports the camera exactly as far as any
+  cut does.
+
+What does separate them is a change in *whether the two agree at all*: true when a view is switched in
+either direction, false when walking, where camera and body cross together. That also makes it robust to
+the two updating a frame apart.
 
 ### 10. Players get a switch; authors get the numbers
 
