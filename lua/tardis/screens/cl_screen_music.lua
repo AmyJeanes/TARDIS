@@ -36,7 +36,7 @@ end
 TARDIS:LoadCustomMusic()
 TARDIS:LoadFavouriteMusic()
 
-TARDIS:AddMigration("music-move", "2025.2.0", function(self)
+TARDIS:AddMigration("music-move", "2023-11-16", function(self)
     if file.Exists("tardis2_custom_music.txt", "DATA") then
         if file.Exists(CUSTOM_MUSIC_FILE, "DATA") then
             file.Delete(CUSTOM_MUSIC_FILE)

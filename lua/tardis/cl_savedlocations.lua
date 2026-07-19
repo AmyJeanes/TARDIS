@@ -3,7 +3,7 @@ TARDIS.Locations = TARDIS.Locations or {}
 
 local LOCATIONS_FILE = "tardis/locations.txt"
 
-TARDIS:AddMigration("locations-move", "2025.2.0", function(self)
+TARDIS:AddMigration("locations-move", "2023-11-16", function(self)
     if file.Exists("tardis2_locations.txt", "DATA") then
         if file.Exists(LOCATIONS_FILE, "DATA") then
             file.Delete(LOCATIONS_FILE)

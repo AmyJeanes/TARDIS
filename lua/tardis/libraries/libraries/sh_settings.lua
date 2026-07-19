@@ -233,7 +233,7 @@ local LOCAL_SETTINGS_FILE = "tardis/settings_cl.txt"
 local NETWORKED_SETTINGS_FILE = "tardis/settings_cl_nw.txt"
 local GLOBAL_SETTINGS_FILE = "tardis/settings_sv.txt"
 
-TARDIS:AddMigration("settings-move", "2025.2.0", function(self)
+TARDIS:AddMigration("settings-move", "2023-11-16", function(self)
     if SERVER then
         if file.Exists("tardis_settings_sv.txt", "DATA") then
             if file.Exists(GLOBAL_SETTINGS_FILE, "DATA") then

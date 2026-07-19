@@ -402,7 +402,7 @@ TARDIS.iconpacks["base"] = {
 }
 TARDIS:RebuildIconPackIndex("base")
 
-TARDIS:AddMigration("iconmode-from-bool", "2026.1.0", function(self)
+TARDIS:AddMigration("iconmode-from-bool", "2026-06-14", function(self)
     if self.LocalSettings["spawnmenu_interior_icons"] == true then
         self:SetSetting("spawnmenu_icon_mode", TARDIS.SpawnmenuIconMode.InteriorOnly)
     end
