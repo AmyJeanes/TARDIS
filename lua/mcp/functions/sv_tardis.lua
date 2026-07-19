@@ -628,8 +628,6 @@ MCP:AddFunction({
         if not ply then return { ok = false, error = plyErr } end
 
         ext:PlayerEnter(ply)
-        local outsideView
-        if args.outside_view == true then outsideView = ext:SetOutsideView(ply, true) and true or false end
 
         MCP:Settle({
             seconds = 3,
@@ -642,6 +640,18 @@ MCP:AddFunction({
                 ctx.respond({ ok = false, error = "TARDIS or player became invalid during enter" })
                 return
             end
+
+            -- PlayerThirdPerson, not SetOutsideView: the latter only raises the `outside` flag, and the
+            -- camera stays at the player because the hook that moves it out to the exterior answers only
+            -- while `thirdperson` is set. Bare SetOutsideView leaves a half-state no real interaction
+            -- produces. Applied after the settle because PlayerThirdPerson refuses a player the exterior
+            -- does not yet list as an occupant, which PlayerEnter has not necessarily done when it returns.
+            local outsideView
+            if args.outside_view == true then
+                ext:PlayerThirdPerson(ply, true)
+                outsideView = ply:GetTardisData("thirdperson") == true
+            end
+
             ctx.respond({
                 ok = true,
                 entindex = ext:EntIndex(),
