@@ -336,8 +336,24 @@ A wrapper would add a layer while eliminating none of the existing checks.
   fields (which are already paired by construction), and what the API looks like. It must not be `tag`.
 - **The leak setting is now misnamed.** `interior_hum_leakage` / `interior_hum_leakage_volume` drive
   `GetCrossBoundaryVolume`, which covers everything crossing a doorway in either direction - the flight
-  loop heard from inside included, not just hums. Renaming means carrying existing values across rather
-  than resetting to the default; anyone who changed it did so deliberately.
+  loop heard from inside included, not just hums. It should become one generic cross-boundary audio
+  setting. Renaming means carrying existing values across rather than resetting to the default; anyone
+  who changed it did so deliberately.
+- **Should the tuning be per interior, and per direction?** Today `Doors.SoundTuning` is four numbers
+  shared by every doorway in the game, and `GetCrossBoundaryVolume` is a single scalar per boundary
+  covering both directions at once. Neither is obviously right:
+  - **Per interior.** Interiors differ enormously in how enclosed they read - a cupboard and a cathedral
+    should not leak alike, and mouth area only captures part of that. Against it: the size term already
+    varies the falloff per doorway from geometry that is authored anyway, four numbers per interior is
+    a lot of surface to expose, and 275 interiors will mostly never set it. A consumer-side override on
+    top of the global default is the shape that costs least - the same provider-hook pattern as
+    openness and volume, not a new metadata block.
+  - **Per direction.** Genuinely asymmetric in the fiction as well as the physics: a TARDIS interior is
+    meant to be sealed from the world, while the world is meant to be plainly audible from just inside
+    an open door. The model is symmetric by construction (decision 2) and this is the first concrete
+    reason to break that, so it wants to be a deliberate asymmetry rather than two independent sets of
+    numbers that drift. `res.inside` already says which way a given sound is travelling, so the hook
+    can simply take it.
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
@@ -362,6 +378,18 @@ A wrapper would add a layer while eliminating none of the existing checks.
    have a distinct loop on each side, and they now sum where previously the exterior one was inaudible
    across the void. That is decision 3's undeclared-pair default doing exactly what it says, applied to
    a pair that should have been declared. Flying is the case to listen to first.
+
+   **Judged live, and the split is not where the plan assumed.** Summing sounds *good* where the two
+   loops are genuinely different material - the 2020 Jodie interior was called out as working really
+   nicely - and bad where they are similar loops running out of phase, which reads as flanging or as a
+   mistake rather than as two sources. So the thing that needs declaring is not "these are a pair" so
+   much as "these are the same idea twice". Two consequences worth carrying into the design:
+   - Inferring the link from the interior/exterior counterpart fields would catch the Jodie case too
+     and make it worse, so inference alone is not enough - or the default has to be *sum*, with the
+     crossfade opted into per pair.
+   - Similarity is the actual predicate and nothing currently measures it. Same asset is the trivially
+     detectable end of it (13 interiors, step 4); "different file, same idea" is the common case and
+     may just have to be authored.
 6. **Virtualisation** on top of the resolver's perceived distance.
 
 ## Which addon this belongs in
