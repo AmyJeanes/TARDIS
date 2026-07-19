@@ -488,13 +488,21 @@ consumer and populates the same `Portal` dimensions, so it gets this for free, a
 own doorways happen to be. Which is an argument for not over-fitting n to TARDIS's narrow spread.
 
 **Interior volumes above 1 are common and were always being clamped.** A scan of 137 registered idle and
-hum entries found **24 above 1** - `tuat`, `dwebradley`, `ruth`, `nova`, `artonym`, `wooden`,
-`slickwine*` at 10, and `witsetardis` / `sellingrope` / `silence` / `spaceshit` at **50**. Source stores
-channel volume as a byte and caps it at full scale, so an author who wrote 10 heard exactly the same as
-1 and had no reason to notice. A managed channel amplifies instead, which made those interiors 20-34 dB
-too loud until the library started reproducing the cap. Worth remembering before trusting any authored
-number in an interior definition: the engine has been quietly correcting content for years, and each
-place the port replaces the engine has to correct it too.
+hum entries found **24 above 1** - TUAT, DW Exp. Bradley, RUTH, NOVA, Artonym's, Wooden and both
+SlickWine TARDISes at 10, and Witse Tardis / The Silence's Time-Ship / `sellingrope` / `spaceshit` at
+**50**. `CSoundPatch::ChangeVolume` caps its target at 1 before anything else touches it and `PlayEx`
+routes through the same call ([soundenvelope.cpp:417](https://github.com/ValveSoftware/source-sdk-2013/blob/master/src/game/shared/soundenvelope.cpp)),
+so an author who wrote 10 heard exactly what 1 gives and had no reason to notice. A managed channel
+amplifies instead, which made those interiors 20-34 dB too loud until the library reproduced the cap.
+
+Note *where* it caps: the caller's volume, not the result after distance attenuation. Capping the result
+instead would make an over-1 volume carry roughly ten times as far rather than do nothing, which is a
+completely different behaviour - and the plausible one, which is why it was worth checking rather than
+assuming. Confirmed both ways: no audible difference between volume 1 and 10 on the same emitter 1200u
+out, where the distance gain is about 0.1 and an uncapped 10 would have been ~19 dB louder.
+
+Worth remembering before trusting any authored number in an interior definition: the engine has been
+quietly correcting content for years, and each place the port replaces the engine has to correct it too.
 
 `rtd60` is the one to test with: its idle hum is audible both inside and (via leakage) outside, so it
 exercises the resolver on both sides of the same sound.
