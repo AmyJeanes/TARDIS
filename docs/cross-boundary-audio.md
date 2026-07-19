@@ -356,6 +356,12 @@ A wrapper would add a layer while eliminating none of the existing checks.
    over from that copy. Leaking is a property of the geometry now.
 4. **Exterior hum dedup** (decision 4).
 5. **Alternates** - same-asset collapse, then declared pairs with a gain-only crossfade.
+
+   **This one is now urgent rather than nice-to-have.** The resolver made leakage symmetric, so the
+   *exterior* flight loop is newly audible from inside, on top of the interior's own - 105 interiors
+   have a distinct loop on each side, and they now sum where previously the exterior one was inaudible
+   across the void. That is decision 3's undeclared-pair default doing exactly what it says, applied to
+   a pair that should have been declared. Flying is the case to listen to first.
 6. **Virtualisation** on top of the resolver's perceived distance.
 
 ## Which addon this belongs in
