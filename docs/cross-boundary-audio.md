@@ -4,10 +4,15 @@ Phase 3 of the sound rework ([#382](https://github.com/AmyJeanes/TARDIS/issues/3
 the **Doors** addon (`lua/doors/libraries/sh_sound.lua`); this document is the plan, so it may name TARDIS.
 Doors' own code and docs stay consumer-agnostic - generic interior / exterior / portal vocabulary only.
 
-Status: **the resolver is built and tuned.** Done and on the `sound-rework` branch: managed BASS channels,
-the central hub, looping with mid-file handover, all 13 loop call sites migrated onto it, and then steps
-1-3 below - the resolver itself, the consumer volume scalar, and the deletion of the hand-built leak.
-What remains is the exterior-hum dedup, alternates, and virtualisation.
+Status: **the resolver is built and tuned; counterpart handling is designed but not built.** Done and on
+the `sound-rework` branch: managed BASS channels, the central hub, looping with mid-file handover, all 13
+loop call sites migrated onto it, and then steps 1-3 below - the resolver itself, the consumer volume
+scalar, and the deletion of the hand-built leak.
+
+What remains: counterpart pairs (decision 3, which absorbs the old exterior-hum dedup step), the settings
+rename (decision 10), moving the listener onto the camera (decision 9), and virtualisation. Decisions 3, 9
+and 10 were settled on 2026-07-19 and are the current design of record - where an earlier section disagrees
+with them, they win.
 
 The tuned numbers live in `Doors.SoundTuningDefaults` (`sh_sound.lua`), reached by ear against a real
 interior hum through `doors_debug_sound`:
@@ -162,30 +167,55 @@ awkward to retrofit.
 
 ### 3. The grouping ladder
 
-Once interior sounds genuinely leak out, a paired exterior sound would play on top of the leaked interior
-one. Three cases, in order of specificity:
+**The default inverted on 2026-07-19, after listening.** This section originally had unpaired sounds
+summing, with blending as the opt-in. It is the other way round.
 
 | Case | Behaviour |
 |---|---|
-| **Same asset** on both sides | One channel, gain = combination of both resolved gains |
-| **Different assets, declared alternates** | Crossfade between them. No phase guarantee - see below |
-| **Different assets, not declared** | Independent - they sum. This is the default; no primitive needed |
+| **Counterpart pair** - an interior sound with an exterior equivalent, or vice versa | Only the listener's side is audible; crossing fades between them. **The default** |
+| **Counterpart pair, declared independent** | They sum. The opt-out |
+| **No counterpart** | Leaks as it does now. Nothing to collide with |
 
-"Sum" is just what you get by *not* declaring the link. Declaring it **is** the assertion "these are one
-logical sound, blend don't add" - and that is the primitive's only guarantee.
+Why blend is the default: an interior hum and an exterior hum are not two sources. They are one object's
+sound authored twice, for two vantage points - one for how the ship reads in the console room, one for how
+it reads standing next to the box. Summing them is not realism, it is counting the ship twice. So there is
+no framing in which sum is the sensible default, and the opt-out is for the rarer ship whose author really
+did write two different things and wants both (the 2020 Jodie interior is the example that prompted this).
 
-Same-asset collapses to one channel rather than a crossfade because there is no timbre to blend between -
-that gets perfect sync for free (it is one sound, it cannot drift) and no extra machinery.
+**Similarity is the real predicate and nothing can measure it**, so the default has to assume it. Two files
+that are merely *similar* - the common case by far - sound like flanging or like a bug when summed, and no
+code can tell "similar" from "deliberately different" by inspection. The only safe assumption is that any
+counterpart pair will sound wrong played together unless the author says otherwise. Extension authors who
+want both opt in; unmaintained content gets the good behaviour for free, which is the constraint that
+decides this whole area.
 
-Equality must be **scoped to one interior/exterior pair**. Two separate TARDISes humming the same file are
-genuinely two sounds and must still sum.
+Same-asset is no longer a separate rung. It gets identical treatment, so detecting it buys nothing - it
+survives only as an explanation of *severity*: a file summed against itself is comb filtering, the harshest
+version of the artefact. It is also structural rather than rare, because `cl_flight.lua:30` falls back to
+`sounds_ext.FlightLoop` when an interior declares no loop of its own, and `base.lua:125` puts a flight loop
+on the *exterior* section only. Roughly 170 of 275 interiors take that fallback and play the exterior's
+exact file inside, at a different volume and out of phase with it.
+
+Scoping is now free. Pairing is a counterpart relation within one interior/exterior pair by construction,
+so two separate TARDISes humming the same file were never at risk of being fused.
 
 The link is a *pair* relation and must not be folded into `tag`. `tag` is a stop-category at a deliberately
 coarser granularity - `"flight"` covers 9 call sites including three mutually exclusive exterior variants -
 and tags can coincide without meaning anything (`"damage"` covers 5 independent one-shots). Fusing them
 means never being able to stop at one granularity and blend at another.
 
+**Both members play throughout; only audibility changes.** They start together where the event allows it,
+which is what makes a mid-sound swap safe for one-shots: a demat heard from inside and the same demat heard
+from outside stay time-aligned for their whole length, so crossing halfway through selects between two
+synchronised renderings rather than splicing two recordings at an arbitrary join. Loops need no such care -
+they have no meaningful position, which is decision 5. One mechanism covers both. The cost is a channel per
+pair whether or not the far side is ever heard, which is the first real argument for virtualisation
+(decision 6).
+
 ### 4. Drop the exterior hum when it duplicates an interior hum
+
+**Subsumed by decision 3** - `Idle` / `Hum` is just one counterpart pair, and the general rule covers it.
+Do not implement this separately. Kept for the scan below, which is what proves the general rule safe.
 
 Generalises the existing hand-written check in `cl_externalhum.lua`:
 
@@ -260,6 +290,9 @@ it is inaudible either way.
 
 ### 7. Where the user setting lives
 
+**Half superseded by decision 10.** Where the setting lives - TARDIS-side, mechanism in Doors - still
+holds. What the player gets does not: it is a bool, not a slider, and the amounts moved to the interior.
+
 With the resolver this stops being hum-specific - it is cross-boundary audio in general. The **mechanism**
 belongs in Doors; the **user option** stays TARDIS-side, with Doors taking a scalar (or callback) from the
 consumer. Keeps Doors consumer-agnostic and keeps one slider in the TARDIS menu.
@@ -301,6 +334,80 @@ with how that gate is actually used. 25 gate sites across 15 files against 68 pl
 
 A wrapper would add a layer while eliminating none of the existing checks.
 
+### 9. The listener is the camera, not the body
+
+`resolve()` measures everything from `EyePos()` - path distance (`sh_sound.lua:528`, `:553`), directivity
+(`:570`), the occlusion trace (`:805`) - but decides *which side of the boundary you are on* from
+`ply.doori` (`:535`), which is the player's body. Those disagree whenever a view mode moves the camera
+away from the body, and the result is incoherent: distances measured from one place, space classified from
+another.
+
+This is not a corner case, it is the piloting view. TARDIS third person routes through `SetOutsideView`
+(`sh_thirdperson.lua:68`) and anchors the camera to the **exterior**, not to the player -
+`self:LocalToWorld(Vector(0,0,60))` traced back 90 to 500 units (`:29`, `:87`). So flying in third person
+means the resolver measures from a camera at least 90 units outside the box while classifying the listener
+as standing in the console room.
+
+Keying the side off the listener fixes it and puts us back in step with the engine, whose own sound
+listener follows the view - `ply.doori` was the odd one out. Changing view then becomes just another
+listener-side change, smoothed by the same transition as walking or teleporting, which is the point: one
+mechanism for every way the listener can change side.
+
+No hysteresis needed. The camera is anchored to the exterior at a 90-unit minimum, so it cannot hover on
+the boundary and flap between spaces.
+
+### 10. Players get a switch; authors get the numbers
+
+Settled 2026-07-19, and it supersedes the "how much leaks" half of decision 7.
+
+The player-facing setting is a **bool**, `sound_through_doors` - plainly named, because "cross-boundary
+audio" is our vocabulary and not a player's. Every *amount* is content, owned by the interior. TARDIS
+already works this way almost everywhere: it gates sounds on and off and leaves their volume to the
+interior, so this is the existing precedent rather than a new pattern.
+
+That puts the whole weight on the default. If most extensions never set these - and many are unmaintained -
+the shipped default *is* the experience for the overwhelming majority, so it wants tuning as the product,
+not as a fallback.
+
+**Three knobs for authors, not four.** The four tuning values are not the same kind of thing:
+
+- **`volume`** (overall scalar) and **`closed`** (how much passes through a *shut* door) and **`falloff`**
+  (how fast it dies with distance) are *content*. A wooden police box and a sealed blast door genuinely
+  differ, and a cathedral carries sound differently from a cupboard. Exposed.
+- **`curve`** (how aperture responds to the door opening) and **`aim`** (directivity) are *physics*. They
+  should not vary per ship, and they are precisely the two an author cannot hear in isolation or reason
+  about. Locked global. Adding a knob later is easy; un-shipping one that content already sets is not.
+
+**Relative multipliers, not absolute values.** With absolutes, every retune of the global default strands
+every interior that set an explicit number in the old world - the unset majority moves and the customisers,
+who are exactly the maintained extensions, get left behind. With multipliers everyone moves together and a
+ship authored as "leakier than standard" stays that way, which is what the author meant: they are
+expressing character against a norm, not taking physical measurements. Nobody knows what 25 dB per 1000u
+per halving sounds like. Clamp to a sane range so a broken extension cannot set 1000.
+
+**The size derivation is the default, and the knob scales it.** Falloff already varies per interior
+automatically, from doorway area against `SIZE_NEUTRAL` - free, automatic, and right for unmaintained
+content. The author knob multiplies that rather than replacing it, for the case where the geometry lies: a
+wide doorway into a small sealed room, or a narrow one into a cathedral.
+
+**Per direction**, which is the first deliberate break of decision 2's symmetry. Genuinely asymmetric in
+the fiction as well as the physics: a TARDIS interior is meant to be sealed from the world, while the world
+is meant to be plainly audible from just inside an open door. `res.inside` already says which way a sound
+is travelling, so the hook can simply take it. One asymmetry, not two number sets free to drift apart.
+
+Since the three knobs plus a direction no longer fit in a single returned scalar, `GetCrossBoundaryVolume`
+becomes a profile-returning hook, where absent fields mean "use the global default" so unmaintained content
+costs nothing. TARDIS-side, a module reads the interior metadata, applies the player bool, and hands Doors
+the profile. That is the one place a consumer-side wrapper is justified, and it does not contradict
+decision 8: it wraps *configuration*, which is per-entity, not call sites.
+
+**Migration.** `interior_hum_leakage` and `interior_hum_leakage_volume` carry across rather than resetting;
+anyone who changed them did so deliberately. `sh_icons.lua:405` is the working precedent - read the old key
+off `LocalSettings`, set the new one, nil the old. Gate at `"2026.1.0"`: that version has not shipped (no
+tag contains the bump commit `f8139798`, newest released is 2025.5.0), so every upgrader from 2025.x picks
+it up. `SaveSettings` only persists non-default values, so a `~= nil` check is the right test and untouched
+users simply get the new defaults.
+
 ## Settled while building
 
 - **The aperture curve and its coefficients.** Tuned by ear; the numbers are at the top of this file.
@@ -326,34 +433,19 @@ A wrapper would add a layer while eliminating none of the existing checks.
   point on its own doorway, plus the listener's doorway to the listener.
 - **Which space the listener is in** is `ply.doori`, not `LocalPlayerInside()`. Interiors nest, so the
   latter is true all the way up the chain - it answers "somewhere within" rather than "which space".
-  Verified live with one TARDIS parked inside another.
+  Verified live with one TARDIS parked inside another. **Superseded by decision 9** - the right answer is
+  the space containing the *camera*, not the body; `ply.doori` remains correct only while the two agree.
 
 ## Open questions
 
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
-- Whether the alternates link is declared in metadata or inferred from the interior/exterior counterpart
-  fields (which are already paired by construction), and what the API looks like. It must not be `tag`.
-- **The leak setting is now misnamed.** `interior_hum_leakage` / `interior_hum_leakage_volume` drive
-  `GetCrossBoundaryVolume`, which covers everything crossing a doorway in either direction - the flight
-  loop heard from inside included, not just hums. It should become one generic cross-boundary audio
-  setting. Renaming means carrying existing values across rather than resetting to the default; anyone
-  who changed it did so deliberately.
-- **Should the tuning be per interior, and per direction?** Today `Doors.SoundTuning` is four numbers
-  shared by every doorway in the game, and `GetCrossBoundaryVolume` is a single scalar per boundary
-  covering both directions at once. Neither is obviously right:
-  - **Per interior.** Interiors differ enormously in how enclosed they read - a cupboard and a cathedral
-    should not leak alike, and mouth area only captures part of that. Against it: the size term already
-    varies the falloff per doorway from geometry that is authored anyway, four numbers per interior is
-    a lot of surface to expose, and 275 interiors will mostly never set it. A consumer-side override on
-    top of the global default is the shape that costs least - the same provider-hook pattern as
-    openness and volume, not a new metadata block.
-  - **Per direction.** Genuinely asymmetric in the fiction as well as the physics: a TARDIS interior is
-    meant to be sealed from the world, while the world is meant to be plainly audible from just inside
-    an open door. The model is symmetric by construction (decision 2) and this is the first concrete
-    reason to break that, so it wants to be a deliberate asymmetry rather than two independent sets of
-    numbers that drift. `res.inside` already says which way a given sound is travelling, so the hook
-    can simply take it.
+- The **counterpart inventory** - which fields actually pair. Confirmed so far:
+  `Interior.Sounds.FlightLoop` against `Exterior.Sounds.FlightLoop` (plus the `Damaged` and `Broken`
+  variants), `Interior.Sounds.Idle` against `Exterior.Sounds.Hum`, and the teleport set
+  (`demat_int` / `mat_int` / `full_int` against `demat` / `mat` / `fullflight`). Worth deriving the full
+  list from the metadata schema rather than from the three these notes tripped over.
+- How the **opt-out is declared** per pair, now that the pairing itself is inferred (decision 3).
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
@@ -371,7 +463,9 @@ A wrapper would add a layer while eliminating none of the existing checks.
    table.~~ **Done**, along with `cl_idlesound.lua`'s `PlayerEnter` ramp, which existed only to hand
    over from that copy. Leaking is a property of the geometry now.
 4. **Exterior hum dedup** (decision 4).
-5. **Alternates** - same-asset collapse, then declared pairs with a gain-only crossfade.
+5. **Counterpart pairs** - one side audible at a time, fading across the boundary. **Design settled
+   2026-07-19; see decision 3.** The rungs below are the reasoning that got there, kept because the
+   default reversed twice on the way.
 
    **This one is now urgent rather than nice-to-have.** The resolver made leakage symmetric, so the
    *exterior* flight loop is newly audible from inside, on top of the interior's own - 105 interiors
@@ -390,7 +484,21 @@ A wrapper would add a layer while eliminating none of the existing checks.
    - Similarity is the actual predicate and nothing currently measures it. Same asset is the trivially
      detectable end of it (13 interiors, step 4); "different file, same idea" is the common case and
      may just have to be authored.
-6. **Virtualisation** on top of the resolver's perceived distance.
+
+   **Resolved: assume it, do not detect it.** Similarity being unmeasurable is not a reason to fall back
+   to summing - it is the reason the *default* has to be blend. Any counterpart pair is assumed to sound
+   wrong played together unless the author declares otherwise, so inference is right after all: it decides
+   the default, and the opt-out handles Jodie. The earlier objection only held while inference was the
+   sole mechanism. Detecting same-asset was then dropped too, since it earns nothing once both branches
+   behave identically.
+
+   **Step 4 is subsumed by this.** Dropping a duplicate exterior hum is the general rule applied to the
+   `Idle` / `Hum` counterpart, and decision 4's own scan agrees with it: 22 interiors have both (pair -
+   swap), 247 have an interior idle only (no counterpart - leaks as now), and **0 have an exterior hum
+   alone**, which is what guarantees no TARDIS can be left silent outside. Implement the general rule; do
+   not implement step 4 separately.
+6. **Virtualisation** on top of the resolver's perceived distance. Promoted from "can wait" - decision 3
+   keeps both members of every pair playing whether or not the far side is audible.
 
 ## Which addon this belongs in
 
