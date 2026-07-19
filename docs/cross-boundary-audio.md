@@ -543,8 +543,21 @@ content.
   where you stand in it.
 - **Crossfading the in-space gain against the cross-boundary one** to smooth a space change. Each term
   is only valid in its own space, so the moment you cross, one of them is measuring across the void -
-  the blend dives to the noise floor and climbs back over the transition time. Capture the step in dB
-  at the instant it happens and heal that instead; see decision 1.
+  the blend dives to the noise floor and climbs back over the transition time. Glide from the level the
+  sound was already at instead; see decision 1.
+- **Holding that glide as a fixed dB step captured once.** The obvious way to write it, and it shipped
+  briefly and hurt: crossing a doorway *moves the listener*, so the gain it was calibrated against is
+  gone by the very next frame and the offset multiplies whatever replaced it. Measured over 12
+  crossings, the exterior flight loop reached a x922 multiplier and a channel volume of **323** against
+  a ceiling of 1 - about 50 dB into a hard clip, which is heard as a burst of noise rather than as
+  something loud, and is genuinely painful. Re-measure the ratio against the *current* gain every frame
+  so the result is an interpolation between two attenuations and cannot leave that range. The
+  multiplier itself then looks absurd (750,000x is normal when the raw gain has collapsed toward zero)
+  and that is fine - the product is what is bounded, not the ratio.
+- **Trusting a probe that never saw the event.** The first attempt at measuring this reported a peak
+  multiplier of x1.00 and a peak volume of 0.49, which reads as complete exoneration and was nothing of
+  the sort: zero crossings happened in its window. Count the *triggering event* alongside the symptom,
+  or a quiet result is indistinguishable from a clean one.
 - **Raising SNDLVL to tighten falloff.** It does the opposite - a higher sound level travels *further*
   (75 -> 85 took a 600u reading from -11.4 dB to -1.2 dB). Extra attenuation is applied as its own dB
   term, not by moving the level.
