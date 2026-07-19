@@ -206,6 +206,46 @@ coarser granularity - `"flight"` covers 9 call sites including three mutually ex
 and tags can coincide without meaning anything (`"damage"` covers 5 independent one-shots). Fusing them
 means never being able to stop at one granularity and blend at another.
 
+#### The counterpart inventory
+
+Audited 2026-07-19 across every play site. **Every pair below is currently both-audible** - none is gated
+by occupancy, view, or mutually exclusive settings. Where two settings exist (`flight-internalsound` and
+`flight-externalsound`) they are independent and both default true.
+
+| Pair | Played at | Kind | Note |
+|---|---|---|---|
+| `Teleport` (demat/mat/fullflight/fail/interrupt) | `sh_tp_main.lua:325-427`, `sh_tp_interrupt.lua:135`, `sh_tp_failed.lua:196` | one-shot | The set that motivated start-together alignment |
+| `FlightLoop` / `Damaged` / `Broken` | int `cl_flight.lua:11-43`, ext `sh_flight.lua:568-590` | **loop** | The flying doubles |
+| `Idle` (int) / `Hum` (ext) | `cl_idlesound.lua:17`, `cl_externalhum.lua:23` | **loop** | Only pair not name-matched |
+| `Door` (open/close) | `sh_doors.lua:362-382` | one-shot | Whole sub-table falls back at once |
+| `Door.locked` | `parts/door.lua:77-87` | one-shot | Always plays the *exterior* asset on **both** sides, so it is identical by construction - the opt-out can never apply |
+| `Lock` / `Unlock` | `sh_lock.lua:110-124` | one-shot | |
+| `Chameleon` | `sh_chameleon.lua:55-65` | one-shot | |
+| `FlightLand` / `FlightFall` | `sh_falling.lua:134-165` | one-shot | |
+
+Not pairs: `Teleport.demat_fail_loop` / `_stop` are interior-only (no exterior counterpart declared).
+
+**The `int.X or ext.X` fallback is on nearly all of them** - Teleport, Door, Lock/Unlock, Chameleon,
+FlightLand/Fall and the FlightLoop trio all resolve the interior asset as "the interior's own, else the
+exterior's". So identical-asset is what an interior gets *by default* across the whole inventory, not just
+for flight. Decision 3's note that this is structural rather than rare understates it.
+
+**This restores an intent that already existed.** `sh_tp_main.lua:316` explains the two-copy pattern as
+relying on distance: "only the copy near the current POV is audible - the same falloff and near/far
+crossfade Source gave them". That was true while the far copy sat across an unbridgeable void. The
+resolver made leakage symmetric and so made the far copy audible, which is what turned a working
+assumption into the doubling. The mechanism here is that intent made explicit rather than emergent.
+
+**Two schema faults found in passing**, both worth fixing regardless of this work:
+
+- `Interior.Sounds.FlightLoop` / `FlightLoopDamaged` / `FlightLoopBroken` are **read in code**
+  (`cl_flight.lua:18,26,30`) and **set by content** (`default.lua:108`) but are **not declared** on
+  `tardis_interior_sound_metadata`. Since those annotations are the wiki, interior authors have no
+  documentation that they can override the flight loop at all - the very field at the centre of the
+  doubling.
+- `Interior.Sounds.Hum` (`sh_metadata.lua:264`) is declared but **never read anywhere**. The interior's
+  hum-equivalent is `Idle`. Dead schema.
+
 **Both members play throughout; only audibility changes.** They start together where the event allows it,
 which is what makes a mid-sound swap safe for one-shots: a demat heard from inside and the same demat heard
 from outside stay time-aligned for their whole length, so crossing halfway through selects between two
@@ -465,12 +505,8 @@ skipping it forever. Use the date signature; there is no version to reason about
 
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
-- The **counterpart inventory** - which fields actually pair. Confirmed so far:
-  `Interior.Sounds.FlightLoop` against `Exterior.Sounds.FlightLoop` (plus the `Damaged` and `Broken`
-  variants), `Interior.Sounds.Idle` against `Exterior.Sounds.Hum`, and the teleport set
-  (`demat_int` / `mat_int` / `full_int` against `demat` / `mat` / `fullflight`). Worth deriving the full
-  list from the metadata schema rather than from the three these notes tripped over.
-- How the **opt-out is declared** per pair, now that the pairing itself is inferred (decision 3).
+- How the **opt-out is declared** per pair, now that the pairing itself is inferred (decision 3). The
+  inventory is settled (see decision 3) - this is the only piece of that design still open.
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
