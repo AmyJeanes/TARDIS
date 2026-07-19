@@ -14,9 +14,6 @@ ENT:AddHook("PlayerInitialize", "interior", function(self)
     -- The predicted unstick reads self.Fallback on the client (set server-side in init.lua).
     if self.metadata and self.metadata.Exterior then
         self.Fallback = self.metadata.Exterior.Fallback
-        -- and the doorway is needed client-side too, where anything reasoning about the boundary
-        -- runs. The interior sets its own in both realms; this side only had it on the server.
-        self.Portal = self.metadata.Exterior.Portal
     end
 end)
 
