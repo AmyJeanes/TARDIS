@@ -403,10 +403,15 @@ decision 8: it wraps *configuration*, which is per-entity, not call sites.
 
 **Migration.** `interior_hum_leakage` and `interior_hum_leakage_volume` carry across rather than resetting;
 anyone who changed them did so deliberately. `sh_icons.lua:405` is the working precedent - read the old key
-off `LocalSettings`, set the new one, nil the old. Gate at `"2026.1.0"`: that version has not shipped (no
-tag contains the bump commit `f8139798`, newest released is 2025.5.0), so every upgrader from 2025.x picks
-it up. `SaveSettings` only persists non-default values, so a `~= nil` check is the right test and untouched
-users simply get the new defaults.
+off `LocalSettings`, set the new one, nil the old. `SaveSettings` only persists non-default values, so a
+`~= nil` check is the right test and untouched users simply get the new defaults.
+
+This was briefly blocked and no longer is. Migrations used to gate on a version comparison, which meant a
+migration written here would never have run for beta users - `2026.1.0` was already published to the beta
+item, so their stored version already equalled any gate we could author. That was fixed on `main` (issue
+#1151): `AddMigration(name, date, func)` now takes an ISO `YYYY-MM-DD` authoring date, records each
+migration in `tardis/migrations_{sv,cl}.txt` as it succeeds, and retries a failure on next load instead of
+skipping it forever. Use the date signature; there is no version to reason about.
 
 ## Settled while building
 
