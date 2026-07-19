@@ -487,6 +487,15 @@ That also makes **n the one number that generalises across consumers** - Safe-Sp
 consumer and populates the same `Portal` dimensions, so it gets this for free, at whatever sizes its
 own doorways happen to be. Which is an argument for not over-fitting n to TARDIS's narrow spread.
 
+**Interior volumes above 1 are common and were always being clamped.** A scan of 137 registered idle and
+hum entries found **24 above 1** - `tuat`, `dwebradley`, `ruth`, `nova`, `artonym`, `wooden`,
+`slickwine*` at 10, and `witsetardis` / `sellingrope` / `silence` / `spaceshit` at **50**. Source stores
+channel volume as a byte and caps it at full scale, so an author who wrote 10 heard exactly the same as
+1 and had no reason to notice. A managed channel amplifies instead, which made those interiors 20-34 dB
+too loud until the library started reproducing the cap. Worth remembering before trusting any authored
+number in an interior definition: the engine has been quietly correcting content for years, and each
+place the port replaces the engine has to correct it too.
+
 `rtd60` is the one to test with: its idle hum is audible both inside and (via leakage) outside, so it
 exercises the resolver on both sides of the same sound.
 
@@ -503,6 +512,9 @@ content.
 - **Keying cross-boundary audio off the portal entity.** It is a client-side perf optimisation; making audio
   depend on it means two players in the same spot hear different things.
 - **Culling on world distance.** That is the original bug.
+- **Assuming an authored volume is already in range.** The engine caps volume at full scale, so content
+  carries values like 10 and 50 that have never once been heard as written. Anywhere the library
+  replaces an engine behaviour, check whether that behaviour was silently correcting the input.
 - **Deriving which way a doorway faces from its geometry.** Pointing the normal away from the middle
   of the entity the doorway sits in looks more robust than trusting the authored angle, and is worse
   in both directions. A free-standing doorframe has its mouth essentially at its own centre, so there
