@@ -27,3 +27,11 @@ function ENT:GetDoorOpenness()
     end
     return self:DoorOpen(true) and 1 or 0
 end
+
+-- Leakage stopped being hum-specific once sound crossing the doorway became a property of the geometry,
+-- so the hum setting is now the volume for all of it - the flight loop heard from inside included.
+---@return number
+function ENT:GetCrossBoundaryVolume()
+    if not TARDIS:GetSetting("interior_hum_leakage") then return 0 end
+    return TARDIS:GetSetting("interior_hum_leakage_volume") / 100
+end

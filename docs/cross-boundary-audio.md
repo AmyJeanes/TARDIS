@@ -4,9 +4,24 @@ Phase 3 of the sound rework ([#382](https://github.com/AmyJeanes/TARDIS/issues/3
 the **Doors** addon (`lua/doors/libraries/sh_sound.lua`); this document is the plan, so it may name TARDIS.
 Doors' own code and docs stay consumer-agnostic - generic interior / exterior / portal vocabulary only.
 
-Status: **design agreed, not yet built.** Done and on the `sound-rework` branch of both repos: managed BASS
-channels, the central hub, looping with mid-file handover, and all 13 loop call sites migrated onto it.
-What remains of phase 3 is everything below.
+Status: **the resolver is built and tuned.** Done and on the `sound-rework` branch: managed BASS channels,
+the central hub, looping with mid-file handover, all 13 loop call sites migrated onto it, and then steps
+1-3 below - the resolver itself, the consumer volume scalar, and the deletion of the hand-built leak.
+What remains is the exterior-hum dedup, alternates, and virtualisation.
+
+The tuned numbers live in `Doors.SoundTuningDefaults` (`sh_sound.lua`), reached by ear against a real
+interior hum through `doors_debug_sound`:
+
+```lua
+closed  = 0.250   -- fully open is 1 by construction
+curve   = 1.00
+falloff = 25.00   -- dB per 1000u, per halving of the doorway below 16384 square units
+aim     = 0.50
+```
+
+`curve` landing on exactly 1 is worth noting: the aperture is plain linear in how open the door is, so
+the sound tracks the animation with no shaping at all. The exponent stays a setting because it costs
+nothing and the next consumer's door may not be a hinged pair.
 
 ## Why
 
@@ -107,9 +122,10 @@ past a doorway lag behind you. The discontinuity risk is the topology changing, 
 so the sound finishes settling as the screen clears. Tying it to the visual rather than picking a
 number by ear means the two stay together if the fade is ever changed.
 
-Currently **half** that fade, 0.5s, on trial. A full 1.0s felt slow: the fade is linear from full
-black, so it reads as over around its midpoint, and matching its nominal length left the audio still
-settling well after the picture had arrived.
+Shipped at **half** that fade, 0.5s. A full 1.0s felt slow: the fade is linear from full black, so it
+reads as over around its midpoint, and matching its nominal length left the audio still settling well
+after the picture had arrived. It is a constant in `sh_sound.lua` rather than a slider - the panel
+never offered it, because it is answered by the visual and not by ear.
 
 **Openness is never a call-site parameter.** It is read per-frame inside the gain path, which already
 recomputes distance, pan and occlusion for every channel every frame. Passing it in would be impossible
@@ -285,48 +301,59 @@ with how that gate is actually used. 25 gate sites across 15 files against 68 pl
 
 A wrapper would add a layer while eliminating none of the existing checks.
 
+## Settled while building
+
+- **The aperture curve and its coefficients.** Tuned by ear; the numbers are at the top of this file.
+  Most of it settled by construction rather than by ear: **open is 1** because every doorway term
+  vanishes at the mouth, and **size feeds the falloff, not the gain** (see Do not re-attempt).
+- **Resolving an arbitrary emitter to its space.** `spaceOf` walks the parent chain: an interior emits
+  from itself, and anything a consumer builds onto either side is parented to it (TARDIS parts at
+  `sh_parts.lua:792`). An exterior stands in the world unless parked inside another interior, which
+  Doors already tracks as `insideof`. Only an unparented emitter or a fixed `pos` falls through to a
+  containment scan over `Doors:GetInteriors()`, which is why that comes last. Not cached: the walk is
+  two hops for every real case, and an emitter can change space at any time.
+- **Which boundary a sound is resolved through**, once both listener and emitter can be in interiors.
+  Always the **sound's own** interior when it has one, because a sound radiates out through the doorway
+  of the space it is in; only a sound already in the open world uses the listener's doorway instead.
+  That rule also gets nesting right for free - a shell parked inside another interior has its far
+  doorway genuinely opening into the room the listener is standing in, so the second leg is a real short
+  distance rather than a void crossing.
+- **The exterior's doorway transform client-side.** Doors now networks both sides' geometry at player
+  init (`sh_portals.lua`) and answers from it through `GetDoorway()`, so the resolver never reads a
+  consumer's metadata. A consumer only overrides `GetDoorway` if its doorway *changes* - Safe-Space
+  does, since its portals are resizable.
+- **Path distance is the true path through the mouth**, not a straight line: emitter to the nearest
+  point on its own doorway, plus the listener's doorway to the listener.
+- **Which space the listener is in** is `ply.doori`, not `LocalPlayerInside()`. Interiors nest, so the
+  latter is true all the way up the chain - it answers "somewhere within" rather than "which space".
+  Verified live with one TARDIS parked inside another.
+
 ## Open questions
 
-- The exact aperture curve and its coefficients (open vs closed), how doorway size feeds in, and the
-  minimum transition time. The tuning rig is built (see Testing) and these are now ear judgements.
-
-  Most of it is settled now, and by construction rather than by ear. **Open is 1** - both doorway terms
-  vanish at the mouth, so there is no coefficient to get wrong. **Size feeds the falloff, not the gain**
-  (see Do not re-attempt). **The floor is the Alt+E fade, 1.0s.** And **a shut door needs no falloff term
-  of its own** - the closed coefficient alone carries it, so the tilt depends only on mouth size.
-
-  What is left for ears: the closed coefficient, the curve between shut and open, the dB-per-1000-units
-  tilt, and how strongly mouth size should steepen it. Four numbers.
 - How the blend factor is exposed. It replaces today's **binary occupancy check** with a continuous value,
   and a few call sites currently branch on occupancy - they need auditing.
-- **Resolving an arbitrary emitter to its space** - now mostly answered. Every sound emitter is an
-  interior, an exterior, or something parented to one (parts are parented at `sh_parts.lua:792`), so a
-  `GetParent()` walk resolves all of them with no consumer hook and no positional fallback. The one
-  ad-hoc case, a clientside prop the halloween corridor sound used as an emitter, has been removed. What
-  remains is only whether to cache the result on the handle and when to invalidate it.
-- Whether path distance is transformed straight-line or true path-through-the-mouth.
-- **The exterior's doorway transform is not available client-side.** The interior sets `self.Portal` in
-  both realms, the exterior only server-side - and the resolver runs client-side. Either the consumer
-  mirrors the field, or Doors reads it from wherever the consumer already holds it. The rig sidesteps
-  this by reading TARDIS's metadata directly, which the shipping resolver cannot do.
-- **Interiors nest, so "which space is the listener in" is not `LocalPlayerInside()`.** A shell parked
-  inside another interior makes that true all the way up the chain - it answers "somewhere within". The
-  immediate space is `ply.doori`. Verified live: with one TARDIS parked inside another, both interiors
-  reported the local player inside. Nesting also means a sound can be more than one doorway away, which
-  the two-stage model does not currently express; resolving only the immediate boundary is the sane
-  first cut.
 - Whether the alternates link is declared in metadata or inferred from the interior/exterior counterpart
   fields (which are already paired by construction), and what the API looks like. It must not be `tag`.
+- **The leak setting is now misnamed.** `interior_hum_leakage` / `interior_hum_leakage_volume` drive
+  `GetCrossBoundaryVolume`, which covers everything crossing a doorway in either direction - the flight
+  loop heard from inside included, not just hums. Renaming means carrying existing values across rather
+  than resetting to the default; anyone who changed it did so deliberately.
+- **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
+  `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
+  out is one-shots - which is the "capturing arbitrary sounds" section below.
 
 ## Implementation order
 
 0. ~~**Tuning rig** for the aperture curve and minimum transition time, before the defaults get baked
    in.~~ **Built** - see Testing.
-1. **Resolver core** in Doors: `sourcePos` resolves through the doorway transform, two-stage aperture,
-   symmetric in both directions, independent of the portal entity.
-2. **Consumer scalar** so the aperture/leak volume is driven by a TARDIS setting.
-3. **Delete `cl_externalhum.lua`'s hand-built leak** - the second copy and its `LeakedInteriorHums` table.
-   Leaking becomes a property of the geometry rather than a maintained feature.
+1. ~~**Resolver core** in Doors: `sourcePos` resolves through the doorway transform, two-stage aperture,
+   symmetric in both directions, independent of the portal entity.~~ **Built** - `resolve()` in
+   `sh_sound.lua`, computed once per frame per handle and left on it for the panel to read.
+2. ~~**Consumer scalar** so the aperture/leak volume is driven by a TARDIS setting.~~ **Built** -
+   `gmod_door_exterior:GetCrossBoundaryVolume()`, the same provider-hook shape as `GetDoorOpenness`.
+3. ~~**Delete `cl_externalhum.lua`'s hand-built leak** - the second copy and its `LeakedInteriorHums`
+   table.~~ **Done**, along with `cl_idlesound.lua`'s `PlayerEnter` ramp, which existed only to hand
+   over from that copy. Leaking is a property of the geometry now.
 4. **Exterior hum dedup** (decision 4).
 5. **Alternates** - same-asset collapse, then declared pairs with a gain-only crossfade.
 6. **Virtualisation** on top of the resolver's perceived distance.
@@ -373,22 +400,29 @@ managed channel's async load latency may be audible where a loop's is not.
 
 ## Testing
 
-### The tuning rig
+### The tuning panel
 
-`doors_aperture_rig.lua`, a throwaway client-side panel. Open with:
+`doors_debug_sound`, a Doors debug module that ships (`lua/doors/libraries/cl_debug_sound.lua`). It
+lives in the context menu, so holding C adjusts and releasing C walks. Everything keeps updating either
+way - it is driven by a global Think hook rather than by the panel - which is what makes it usable while
+moving, and moving is how falloff is judged.
 
-```
-lua_run_cl RunString(file.Read("doors_aperture_rig.lua","DATA"))
-```
+**It is a viewer, not a prototype.** The model lives in `sh_sound.lua` and leaves its per-frame result
+on each handle as `handle.res`; the panel only reads that, so what it shows is exactly what is playing.
+Its sliders write `Doors.SoundTuning` live and every managed sound picks that up on its next frame, so
+the numbers get judged against a real interior hum rather than a test tone. The list is
+`Doors.ActiveManagedSounds`, and picking a row points the readouts, the plot and the world marker at
+that sound. A test sound is there for when nothing else is playing; its SNDLVL and volume sliders are
+the only ones that touch a handle directly, and they grey out unless it is the one in focus.
 
-It lives in the context menu, so holding C adjusts and releasing C walks. The sound keeps resolving
-either way - it is driven by a global Think hook rather than by the panel - which is what makes it
-tunable while moving, and moving is how the falloff is judged.
+It started life as a prototype that owned a real handle's `pos`/`base` and cleared its `level`, which is
+what let the model be developed before it existed anywhere. Once the model shipped, keeping that would
+have meant two implementations drifting apart.
 
-It prototypes the resolver rather than mocking it: it plays a real `Doors:PlaySound` handle and then
-each frame owns that handle's `pos` and `base` and clears its `level`. So the rig computes the whole
-distance chain - which is the part that moves into `targetVolume` - while pan, occlusion, the mixer
-constant and master volume stay the shipping code underneath.
+Holding the door part-open is done by overriding `GetDoorOpenness` on that one exterior instance and
+clearing it on close, rather than by adding a debug path to the library. The doorway-size knob is gone
+with it: a Safe-Space doorway is resizable over four orders of magnitude, so size is better exercised
+with real geometry than with a faked number.
 
 **Everything is measured from the sound, along the path it actually travels** - straight when you share
 a space, out to the mouth and on to you when you do not. This is the one decision that makes the panel
@@ -412,16 +446,10 @@ the faint line is the extra attenuation - both tunables visible at once. dB up t
 gain squashes everything interesting into the bottom pixel. Verified monotonic across the boundary:
 `-0.0 / -0.4 / -3.3 / -6.0` in the room, a -0.5 dB step, then `-6.6 / -8.2 / -16.9 / -21.7` outside.
 
-Sliders cover the aperture coefficients, the
-openness curve, the doorway-size exponent, the extra attenuation when shut, and the transition floor;
-a plot draws gain against distance for both paths so the falloff tightening is visible rather than
-walked. Openness can be driven by hand to hold the door part-open, and a **space swap** button flips
-which side the listener counts as being on with the door untouched - the discontinuity the door
-animation cannot cover. Measured live, the blend crosses fully in exactly the configured floor.
-
-There is also a mode selector: `resolver` against `today` (the raw world position, i.e. the bug) and
-`leak` (the hand-built second copy at the current setting), so the new behaviour can be A/B'd against
-what actually ships.
+A plot draws gain against distance for both paths, so the falloff tightening is visible rather than
+walked, and a world marker sits on the sound's **true origin** - not the doorway the model resolves it
+to, which across a boundary is a different room. It draws inside portal passes, so from outside it shows
+through the doorway, sitting where the sound really is.
 
 ### Content
 
@@ -456,8 +484,10 @@ own doorways happen to be. Which is an argument for not over-fitting n to TARDIS
 `rtd60` is the one to test with: its idle hum is audible both inside and (via leakage) outside, so it
 exercises the resolver on both sides of the same sound.
 
-Note the file the tuning rig used, `FuzzyLeo/fuzzyscrap/beee/loudflight.wav`, is referenced by **no
-interior** - an orphan asset picked purely because it had a marker.
+The panel's own test sounds are `p00gie/tardis/default/hum.wav` and `drmatt/tardis/flight_loop.wav`,
+picked as two long loops that were to hand. They are the only TARDIS-specific thing in a Doors module,
+and deliberately so: any other path can be typed into the box, and nothing there reads a consumer's
+content.
 
 ## Do not re-attempt
 
@@ -494,6 +524,13 @@ interior** - an orphan asset picked purely because it had a marker.
   term, not by moving the level.
 - **Writing a channel's volume from anywhere but `applyGain`.** A caller's volume is the pre-distance one;
   writing it straight to the channel plays far-off sounds at full volume.
+- **Resolving through the listener's boundary when the sound has one of its own.** It looks symmetric
+  and breaks nesting: a shell parked inside another interior has a sound two doorways from a listener
+  outside, and only the sound's own doorway leads anywhere real. Its far side then opens into whatever
+  room the shell is standing in, which is the answer either way.
+- **Calling `sourcePos` more than once a frame.** It is not a getter - it carries the pin-on-teleport
+  and attach handovers, which must happen exactly once. `resolve()` caches on `FrameNumber()` for that
+  reason as much as for cost, and everything downstream reads its result rather than re-deriving.
 - **Phase-syncing paired interior/exterior loops.** 33 of 38 measurable pairs have mismatched lengths (see
   decision 5); there is no shared timeline to align to. Crossfade gains only.
 - **A TARDIS-side wrapper over `Doors:PlaySound`.** Rejected twice; see decision 8. Consumer-specific

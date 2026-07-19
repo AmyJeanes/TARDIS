@@ -11,7 +11,6 @@
 ---@field interior gmod_tardis_interior?
 ---@field pilot Player?
 ---@field occupants table<Player, true>
----@field LeakedInteriorHums table<any, doors_managed_sound>
 ---@field environment sb_resource_environment?
 ---@field environment_old sb_resource_environment?
 ---@field music IGModAudioChannel?
