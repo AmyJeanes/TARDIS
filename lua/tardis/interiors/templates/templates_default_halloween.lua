@@ -303,7 +303,8 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
                 local state = ext:GetData("halloween-state", HALLOWEEN_STATE_DISABLED)
                 if state == HALLOWEEN_STATE_CORRIDOR_SOUNDS then
                     local loopsound = ext:GetData("halloween-loopsound", nil)
-                    if loopsound and not int.halloween_corridor_sound then
+                    local existing = int.halloween_corridor_sound
+                    if loopsound and (not existing or not existing:IsAlive()) then
                         debug_print("Creating corridor looped sound")
                         ---@type string, number
                         local loop_path, loop_level = loopsound[1], loopsound[2]

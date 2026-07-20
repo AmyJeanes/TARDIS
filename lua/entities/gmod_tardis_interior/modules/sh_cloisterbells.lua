@@ -30,7 +30,7 @@ if CLIENT then
 
         if TARDIS:GetSetting("cloistersound") and TARDIS:GetSetting("sound") then
             if shouldon and (not shouldoff) then
-                if not self.CloisterLoop and sound then
+                if (not self.CloisterLoop or not self.CloisterLoop:IsAlive()) and sound then
                     self.CloisterLoop = Doors:PlaySound({ path = sound, ent = self, loop = true,
                         owner = self.exterior, tag = "cloister" })
                 end

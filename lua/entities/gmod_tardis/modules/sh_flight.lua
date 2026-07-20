@@ -601,9 +601,9 @@ else
     ENT:AddHook("Think", "flight", function(self)
         if self:GetData("flight") and ShouldPlayFlightSounds(self) then
             local snd = self.flightsound
-            -- a managed channel loads asynchronously, so track it by whether we hold one rather than
-            -- by IsPlaying - the load frames would otherwise look like a dead sound and restart it
-            if snd then
+            -- IsAlive rather than IsPlaying: a managed channel loads asynchronously, and the load
+            -- frames would otherwise look like a dead sound and restart it every one of them
+            if snd and snd:IsAlive() then
                 local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
                 local ply=LocalPlayer()
                 local e=ply:GetViewEntity()

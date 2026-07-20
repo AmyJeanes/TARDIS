@@ -230,7 +230,8 @@ else -- CLIENT
             local setting = TARDIS:GetSetting("teleport_warning_infinite", self)
             local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop
             if setting and sound then
-                if not interior.dematfailsound then
+                local existing = interior.dematfailsound
+                if not existing or not existing:IsAlive() then
                     interior.dematfailsound = Doors:PlaySound({ path = sound, ent = interior,
                         loop = true, level = 90, owner = self, tag = "demat-fail" })
                 end
