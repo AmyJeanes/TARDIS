@@ -368,7 +368,7 @@ the TARDIS you move with it, so there is physically no doppler. With sync droppe
 
 ### 6. The handle owns a logical timeline; BASS is a renderer
 
-Settled 2026-07-20. Design complete, not yet built; the reliability groundwork it rests on *is* built (below).
+Settled 2026-07-20, built and verified in-game 2026-07-21 (Doors `bcfd73c` on `sound-rework`). The reliability groundwork it rests on shipped first (below).
 
 A managed channel currently plays forever at negligible volume however far away. Culling is wanted, but
 **destroying fights the ownership pattern**: loops poll `if not held then create`, so a library-side stop is
@@ -416,6 +416,15 @@ lifecycle depends on.
   frame (cheap, no channel work) to watch for the unpark condition.
 
 The numbers - the cull floor in dB and the N-second delay - tune by ear like the closed-door coefficient.
+The shipped defaults are a park floor of -54 dB, an unpark floor of -50 dB (the hysteresis gap), and a
+3-second delay. The floor has to clear Source's own distance-gain clamp: `sndLevelGain` floors an
+open-world sound's `res.applied` at exactly 0.001 (the engine does the same at extreme range), so a park
+floor at or below that never fires for a plain open-world sound - it rests forever on the clamp. A
+boundary-crossing sound multiplies that clamp by the tiny doorway gain and reaches ~1e-5, far below any
+usable floor; a hum heard faintly just outside an open door measures ~0.007, which the floor stays below.
+Note `res.applied` is the positional attenuation only (no caller volume, no mixer), so the floor is
+base-independent by design: it culls on how much the environment hides a sound, not on how loud its author
+made it.
 
 **The groundwork, already built and shipped (2026-07-20).** Three reliability fixes landed while proving
 this ownership model, and virtualisation extends the same machinery rather than adding new:
