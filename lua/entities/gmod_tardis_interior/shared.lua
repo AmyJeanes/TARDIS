@@ -14,8 +14,8 @@
 ---@field metadata tardis_metadata
 ---@field exterior gmod_tardis
 ---@field tips tardis_tip[]
----@field idlesounds table<any, CSoundPatch>
----@field dematfailsound CSoundPatch?
+---@field idlesounds table<any, doors_managed_sound>
+---@field dematfailsound doors_managed_sound?
 ---@field spacebuild_env sb_resource_environment?
 ---@field light_data tardis_interior_light_data?
 ---@field lamps_data table<string, tardis_lamp_complete>?

@@ -565,20 +565,30 @@ else
         end
     end)
 
-    function ENT:ChooseFlightSound()
+    function ENT:StartFlightSound()
+        local sounds = self.metadata.Exterior.Sounds
+        local path
         if self:GetData("broken_flight") then
-            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopBroken)
+            path = sounds.FlightLoopBroken
             self.flightsounddamaged = false
             self.flightsoundbroken = true
         elseif self:IsLowHealth() then
-            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoopDamaged)
+            path = sounds.FlightLoopDamaged
             self.flightsounddamaged = true
             self.flightsoundbroken = false
         else
-            self.flightsound = CreateSound(self, self.metadata.Exterior.Sounds.FlightLoop)
+            path = sounds.FlightLoop
             self.flightsounddamaged = false
             self.flightsoundbroken = false
         end
+        local entry = TARDIS:SoundEntry(path)
+        if not entry then
+            self.flightsound = nil
+            return
+        end
+        self.flightsound = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
+            volume = entry.volume or 0.75, level = 90, owner = self, tag = "flight",
+            pair = "flight", through_doors = entry.through_doors })
     end
 
     ---@param self gmod_tardis
@@ -590,7 +600,10 @@ else
 
     ENT:AddHook("Think", "flight", function(self)
         if self:GetData("flight") and ShouldPlayFlightSounds(self) then
-            if self.flightsound and self.flightsound:IsPlaying() then
+            local snd = self.flightsound
+            -- IsAlive rather than IsPlaying: a managed channel loads asynchronously, and the load
+            -- frames would otherwise look like a dead sound and restart it every one of them
+            if snd and snd:IsAlive() then
                 local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
                 local ply=LocalPlayer()
                 local e=ply:GetViewEntity()
@@ -604,12 +617,12 @@ else
                     end
                 end
                 if ply:GetTardisExterior()==self and e==self.thpprop and ply:GetTardisData("outside") then
-                    self.flightsound:ChangePitch(95+p,0.1)
+                    snd:SetPitch(95+p,0.1)
                 else
                     local pos = e:GetPos()
                     local spos = self:GetPos()
                     local doppler = (pos:Distance(spos+e:GetVelocity())-pos:Distance(spos+self:GetVelocity()))/200
-                    self.flightsound:ChangePitch(math.Clamp(95+p+doppler,80,120),0.1)
+                    snd:SetPitch(math.Clamp(95+p+doppler,80,120),0.1)
                 end
 
                 local vol = 0.75
@@ -621,18 +634,14 @@ else
                     local volscale = norm ^ 2
                     vol = vol * volscale
                 end
-                self.flightsound:ChangeVolume(vol)
+                snd:SetVolume(vol)
 
                 if IsFlightSoundWrong(self) then
-                    self.flightsound:Stop()
-                    self:ChooseFlightSound()
-                    self.flightsound:SetSoundLevel(90)
-                    self.flightsound:Play()
+                    snd:Stop()
+                    self:StartFlightSound()
                 end
             else
-                self:ChooseFlightSound()
-                self.flightsound:SetSoundLevel(90)
-                self.flightsound:Play()
+                self:StartFlightSound()
             end
         elseif self.flightsound then
             self.flightsound:Stop()
@@ -654,26 +663,27 @@ else
     ENT:AddHook("FlightToggled", "broken_flight", function(self,on)
         if ShouldPlayFlightSounds(self) and not on and self:IsBroken() then
             local snd = self.metadata.Exterior.Sounds.BrokenFlightDisable
-            self:EmitSound(snd)
+            Doors:PlaySound({ path = snd, owner = self, tag = "flight", ent = self, resumable = true })
         end
     end)
 
     ENT:OnMessage("BrokenFlightEnable", function(self, data, ply)
         if not ShouldPlayFlightSounds(self) then return end
         local snd = self.metadata.Exterior.Sounds.BrokenFlightEnable
-        self:EmitSound(snd)
+        Doors:PlaySound({ path = snd, owner = self, tag = "flight", ent = self, resumable = true })
     end)
 
     ENT:OnMessage("BrokenFlightExplosion", function(self, data, ply)
         if not ShouldPlayFlightSounds(self) then return end
-        self:EmitSound(self.metadata.Exterior.Sounds.BrokenFlightExplosion)
+        Doors:PlaySound({ path = self.metadata.Exterior.Sounds.BrokenFlightExplosion,
+            owner = self, tag = "flight", ent = self, resumable = true })
     end)
 
     ENT:OnMessage("BrokenFlightTurn", function(self, data, ply)
         local snds = self.metadata.Exterior.Sounds
         if snds and istable(snds.BrokenFlightTurn) and ShouldPlayFlightSounds(self) then
             local snd = table.Random(snds.BrokenFlightTurn)
-            self:EmitSound(snd)
+            Doors:PlaySound({ path = snd, ent = self })
         end
         if math.random(3) ~= 1 then
             self:ExteriorSparks(1)

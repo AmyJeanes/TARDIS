@@ -123,29 +123,10 @@ if SERVER then
     end
 else
     function ENT:StopTeleportSounds()
-        local ext = self.metadata.Exterior.Sounds.Teleport
-        local int = self.metadata.Interior.Sounds.Teleport
-
-        self:StopSound(ext.demat_damaged)
-        self:StopSound(ext.demat)
-        self:StopSound(ext.demat_fail)
-        self:StopSound(ext.mat_damaged)
-        self:StopSound(ext.mat)
-        self:StopSound(ext.fullflight)
-        self:StopSound(ext.fullflight_damaged)
+        Doors:StopSounds(self, "teleport")
 
         local interior = self.interior
-        if not IsValid(interior) then return end
-
-        interior:StopSound(int.demat_damaged or ext.demat_damaged)
-        interior:StopSound(int.demat or ext.demat)
-        interior:StopSound(int.demat_fail or ext.demat_fail)
-        interior:StopSound(int.mat_damaged or ext.mat_damaged)
-        interior:StopSound(int.mat or ext.mat)
-        interior:StopSound(int.fullflight or ext.fullflight)
-        interior:StopSound(int.fullflight_damaged or ext.fullflight_damaged)
-
-        if interior.dematfailsound then
+        if IsValid(interior) and interior.dematfailsound then
             interior.dematfailsound:Stop()
             interior.dematfailsound = nil
         end
@@ -156,11 +137,7 @@ else
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
-            self:EmitSound(ext.interrupt)
-            local interior = self.interior
-            if IsValid(interior) then
-                interior:EmitSound(int.interrupt or ext.interrupt)
-            end
+            self:PlayTeleportSound(ext.interrupt, int.interrupt or ext.interrupt, true, true)
         end
     end)
 end

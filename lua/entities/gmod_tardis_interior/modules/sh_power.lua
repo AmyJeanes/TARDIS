@@ -43,19 +43,8 @@ else
             local sound_off = self.metadata.Interior.Sounds.Power.Off
             if TARDIS:GetExteriorEnt() == self.exterior then
                 if not TARDIS:GetSetting("sound") then return end
-                self:EmitSound(state and sound_on or sound_off)
-            end
-            local idle_sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
-            if idle_sounds and self.idlesounds then
-                for k,v in pairs(idle_sounds) do
-                    if self.idlesounds[k] then
-                        if state then
-                            self.idlesounds[k]:PlayEx(v.volume or 1, 100)
-                        else
-                            self.idlesounds[k]:Stop()
-                        end
-                    end
-                end
+                Doors:PlaySound({ path = state and sound_on or sound_off,
+                    owner = self.exterior, tag = "power", ent = self, resumable = true })
             end
         end
     end)

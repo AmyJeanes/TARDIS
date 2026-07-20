@@ -261,47 +261,53 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Lock string?
 ---@field Unlock string?
 ---@field Idle tardis_sound_entry[]?
----@field Hum string?
+---@field Door tardis_sound_door?
+---@field Chameleon string?
+---@field FlightLoop string|tardis_sound_entry|nil
+---@field FlightLoopDamaged string|tardis_sound_entry|nil
+---@field FlightLoopBroken string|tardis_sound_entry|nil
+---@field FlightLand string?
+---@field FlightFall string?
 
 ---@class tardis_exterior_sound_metadata
 ---@field Teleport tardis_exterior_sound_teleport
 ---@field Door tardis_sound_door
----@field RepairFinish string?
+---@field Idle tardis_sound_entry[]?
+---@field RepairFinish string
 ---@field RepairLoop string?
----@field Lock string?
----@field Unlock string?
----@field Spawn string?
----@field Delete string?
----@field FlightLoop string?
----@field FlightLoopDamaged string?
----@field FlightLoopBroken string?
----@field FlightLand string?
----@field FlightFall string?
----@field BrokenFlightTurn string[]?
----@field BrokenFlightExplosion string?
----@field BrokenFlightEnable string?
----@field BrokenFlightDisable string?
----@field Cloak string?
----@field CloakOff string?
----@field Chameleon string?
----@field Hum tardis_sound_entry?
+---@field Lock string
+---@field Unlock string
+---@field Spawn string
+---@field Delete string
+---@field FlightLoop string|tardis_sound_entry
+---@field FlightLoopDamaged string|tardis_sound_entry
+---@field FlightLoopBroken string|tardis_sound_entry
+---@field FlightLand string
+---@field FlightFall string
+---@field BrokenFlightTurn string[]
+---@field BrokenFlightExplosion string
+---@field BrokenFlightEnable string
+---@field BrokenFlightDisable string
+---@field Cloak string
+---@field CloakOff string
+---@field Chameleon string
 
 ---@class tardis_sound_damage
----@field Crash string?
----@field BigCrash string?
----@field Explosion string?
----@field Death string?
----@field Artron string?
+---@field Crash string
+---@field BigCrash string
+---@field Explosion string
+---@field Death string
+---@field Artron string
 
 ---@class tardis_sound_door
 ---@field enabled boolean?
----@field open string?
----@field close string?
----@field locked string?
+---@field open string
+---@field close string
+---@field locked string
 
 ---@class tardis_sound_power
----@field On string?
----@field Off string?
+---@field On string
+---@field Off string
 
 ---@class tardis_interior_sound_teleport
 ---@field demat string?
@@ -321,21 +327,21 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field interrupt string?
 
 ---@class tardis_exterior_sound_teleport
----@field demat string?
----@field demat_damaged string?
----@field demat_fast string?
----@field demat_hads string?
----@field demat_fail string?
+---@field demat string
+---@field demat_damaged string
+---@field demat_fast string
+---@field demat_hads string
+---@field demat_fail string
 ---@field demat_fail_loop string?
 ---@field demat_fail_loop_stop string?
----@field mat string?
----@field mat_damaged string?
----@field mat_fail string?
----@field mat_fast string?
----@field mat_damaged_fast string?
----@field fullflight string?
----@field fullflight_damaged string?
----@field interrupt string?
+---@field mat string
+---@field mat_damaged string
+---@field mat_fail string
+---@field mat_fast string
+---@field mat_damaged_fast string
+---@field fullflight string
+---@field fullflight_damaged string
+---@field interrupt string
 
 ---@class tardis_version_entry
 ---@field id string
@@ -367,6 +373,24 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_sound_entry
 ---@field path string
 ---@field volume number?
+---@field through_doors number?
+
+-- A sound is authored either as a plain path or as an entry with settings on it, so every read goes
+-- through here rather than each site testing the shape for itself. Normalising at the read rather than at
+-- merge time keeps the stored metadata exactly as its author wrote it, which anything reading it directly
+-- still expects.
+---@param entry string|tardis_sound_entry|nil
+---@return tardis_sound_entry?
+function TARDIS:SoundEntry(entry)
+    if entry == nil then return nil end
+    if isstring(entry) then
+        ---@cast entry string
+        return { path = entry }
+    end
+    ---@cast entry tardis_sound_entry
+    -- an entry with no path is malformed; treat it as absent rather than playing a nil
+    return entry.path and entry or nil
+end
 
 ---@class tardis_matproxy
 ---@field Color1 Color

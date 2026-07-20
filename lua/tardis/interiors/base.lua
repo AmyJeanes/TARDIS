@@ -137,7 +137,6 @@ T.Exterior = {
         BrokenFlightDisable = "p00gie/tardis/flight_broken_stop.wav",
         Cloak = "drmatt/tardis/phase_enable.wav",
         CloakOff = "drmatt/tardis/phase_disable.wav",
-        Hum = nil,
         Chameleon = "drmatt/tardis/chameleon_circuit.wav",
     },
     Chameleon = {

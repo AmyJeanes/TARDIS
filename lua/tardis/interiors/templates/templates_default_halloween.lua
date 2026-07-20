@@ -19,6 +19,9 @@ local HALLOWEEN_TIME_BEFORE_CORRIDOR_SOUNDS_MAX = 15
 local HALLOWEEN_TIME_RETRY_CORRIDOR_CHECK_MIN = 5
 local HALLOWEEN_TIME_RETRY_CORRIDOR_CHECK_MAX = 10
 
+-- where down the corridor the sounds come from, in the interior's local space
+local HALLOWEEN_CORRIDOR_SOUND_POS = Vector(190.887, -1104.175, 81.385)
+
 local HALLOWEEN_USE_LOOPED_SOUND_CHANCE = 0
 
 local HALLOWEEN_TIME_BETWEEN_NON_LOOPED_SOUNDS_MIN = 2
@@ -299,50 +302,22 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             func = function(ext,int,id)
                 local state = ext:GetData("halloween-state", HALLOWEEN_STATE_DISABLED)
                 if state == HALLOWEEN_STATE_CORRIDOR_SOUNDS then
-                    local soundent = int.halloween_corridor_sound_ent
-                    if not IsValid(soundent) then
-                        debug_print("Creating corridor sound entity")
-                        soundent = ents.CreateClientProp("models/props_junk/PopCan01a.mdl")
-                        soundent:SetPos(int:LocalToWorld(Vector(190.887, -1104.175, 81.385)))
-                        soundent:SetParent(int)
-                        soundent:Spawn()
-                        soundent:Activate()
-                        soundent:SetNoDraw(true)
-                        int.halloween_corridor_sound_ent = soundent
-                    end
                     local loopsound = ext:GetData("halloween-loopsound", nil)
-                    if loopsound then
-                        local soundentloopsound = soundent.sound
-                        if not soundentloopsound then
-                            debug_print("Creating corridor looped sound")
-                            soundentloopsound = CreateSound(soundent, loopsound[1])
-                            soundentloopsound:SetSoundLevel(loopsound[2])
-                            soundent.sound = soundentloopsound
-                        end
-                        if not soundentloopsound:IsPlaying() then
-                            debug_print("Playing corridor looped sound")
-                            soundentloopsound:PlayEx(0, 100)
-                            soundentloopsound:ChangeVolume(1, 1)
-                        end
+                    local existing = int.halloween_corridor_sound
+                    if loopsound and (not existing or not existing:IsAlive()) then
+                        debug_print("Creating corridor looped sound")
+                        ---@type string, number
+                        local loop_path, loop_level = loopsound[1], loopsound[2]
+                        local snd = Doors:PlaySound({ path = loop_path, ent = int,
+                            offset = HALLOWEEN_CORRIDOR_SOUND_POS, loop = true,
+                            level = loop_level, volume = 0, owner = ext, tag = "halloween" })
+                        int.halloween_corridor_sound = snd
+                        if snd then snd:SetVolume(1, 1) end
                     end
-                else
-                    local soundent = int.halloween_corridor_sound_ent
-                    if not IsValid(soundent) then return end
-                    if soundent.sound then
-                        if not soundent.soundfading then
-                            debug_print("Fading out corridor sound")
-                            soundent.sound:FadeOut(1)
-                            soundent.soundfading = CurTime() + 1
-                        elseif CurTime() - soundent.soundfading > 0 then
-                            debug_print("Removing faded out corridor sound")
-                            soundent.sound:Stop()
-                            soundent.sound = nil
-                        end
-                    else
-                        debug_print("Removing corridor sound entity")
-                        soundent:Remove()
-                        int.halloween_corridor_sound_ent = nil
-                    end
+                elseif int.halloween_corridor_sound then
+                    debug_print("Fading out corridor sound")
+                    int.halloween_corridor_sound:FadeOut(1)
+                    int.halloween_corridor_sound = nil
                 end
             end,
         },
@@ -399,8 +374,10 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if IsValid(extdoor) and IsValid(intdoor) then
                 local soundnum = data[1]
                 local sound = "drmatt/tardis/events/knock" .. soundnum .. ".wav"
-                intdoor:EmitSound(sound)
-                intdoor.lastknocksound = sound
+                -- resumable so the knock can be stopped by handle; a player crossing the
+                -- threshold mid-knock would otherwise have it culled anyway
+                Doors:PlaySound({ path = sound, ent = intdoor, resumable = true,
+                    owner = self, tag = "knock" })
                 intdoor.cancelknock = false
                 local lockanim = function()
                     if IsValid(extdoor) and not intdoor.cancelknock then
@@ -420,9 +397,9 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
         end,
         ["halloween-stopknock"] = function(self, data, ply)
             if not IsValid(self.interior) then return end
+            Doors:StopSounds(self, "knock")
             local intdoor = self.interior:GetPart("door")
-            if IsValid(intdoor) and intdoor.lastknocksound then
-                intdoor:StopSound(intdoor.lastknocksound)
+            if IsValid(intdoor) then
                 intdoor.cancelknock = true
             end
         end,
@@ -430,7 +407,7 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if not IsValid(self.interior) then return end
             local intdoor = self.interior:GetPart("door")
             if IsValid(intdoor) then
-                intdoor:EmitSound("hl1/ambience/des_wind2.wav", 55)
+                Doors:PlaySound({ path = "hl1/ambience/des_wind2.wav", ent = intdoor, level = 55 })
             end
         end,
         ["halloween-corridorsound"] = function(self, data, ply)
@@ -439,37 +416,32 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if IsValid(corridors) then
                 local sound = data[1]
                 local soundlvl = data[2]
-                local soundent = self.interior.halloween_corridor_sound_ent
-                if not IsValid(soundent) then
-                    debug_print("Client corridor sound entity invalid, not playing sound")
-                    return
+                local int = self.interior
+                if int.halloween_corridor_sound then
+                    int.halloween_corridor_sound:Stop()
                 end
-                if soundent.sound then
-                    soundent.sound:Stop()
-                    soundent.sound = nil
-                end
-                soundent.sound = CreateSound(soundent, sound)
-                soundent.sound:SetSoundLevel(soundlvl)
                 debug_print("Playing corridor sound: " .. sound)
-                soundent.sound:Play()
+                int.halloween_corridor_sound = Doors:PlaySound({ path = sound, ent = int,
+                    offset = HALLOWEEN_CORRIDOR_SOUND_POS, resumable = true,
+                    level = soundlvl, owner = self, tag = "halloween" })
             end
         end,
         ["halloween-stopcorridorsound"] = function(self, data, ply)
-            local soundent = self.interior.halloween_corridor_sound_ent
-            if IsValid(soundent) then
-                if soundent.sound then
-                    debug_print("Stopping corridor sound")
-                    soundent.sound:Stop()
-                    soundent.sound = nil
-                end
-                debug_print("Removing corridor sound entity")
-                soundent:Remove()
-                self.interior.halloween_corridor_sound_ent = nil
+            local int = self.interior
+            if IsValid(int) and int.halloween_corridor_sound then
+                debug_print("Stopping corridor sound")
+                int.halloween_corridor_sound:Stop()
+                int.halloween_corridor_sound = nil
             end
         end,
-        ["halloween-finishwarning"] = function(self, data, ply)
+        ["halloween-finishwarning"] =
+            ---@param self gmod_tardis
+            function(self, data, ply)
             if not IsValid(self.interior) then return end
-            self.interior:EmitSound(self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop)
+            local snd = self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop
+            if snd then
+                Doors:PlaySound({ path = snd, ent = self.interior })
+            end
         end,
     }
 }))

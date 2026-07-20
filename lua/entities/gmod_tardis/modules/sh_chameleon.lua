@@ -54,12 +54,13 @@ else
 
     ENT:OnMessage("chameleon_exterior_animation", function(self,data,ply)
         local csound = self.metadata.Exterior.Sounds.Chameleon
-        local csound_int = self.metadata.Interior.Sounds.Chameleon or csound
 
         if TARDIS:GetSetting("sound") and csound then
-            self:EmitSound(csound)
+            local csound_int = self.metadata.Interior.Sounds.Chameleon or csound
+            Doors:PlaySound({ path = csound, owner = self, tag = "chameleon", ent = self, resumable = true })
             if IsValid(self.interior) then
-                self.interior:EmitSound(csound_int)
+                Doors:PlaySound({ path = csound_int, owner = self, tag = "chameleon",
+                    ent = self.interior, resumable = true })
             end
         end
 

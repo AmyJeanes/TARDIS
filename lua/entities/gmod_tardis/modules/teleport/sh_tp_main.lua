@@ -313,6 +313,30 @@ if SERVER then
         end
     end)
 else
+    -- Occupant teleport sounds play through managed BASS channels (see sh_sound.lua) so they survive the
+    -- listener crossing the interior<->exterior void on a view toggle or portal teleport, which culls a
+    -- normal EmitSound. Interior and exterior copies attenuate by real listener distance, so only the
+    -- copy near the current POV is audible - the same falloff and near/far crossfade Source gave them.
+    -- Stopped as a group on interrupt via StopSounds.
+    ---@param extpath string?
+    ---@param intpath string?
+    ---@param shouldext boolean
+    ---@param shouldint boolean
+    function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint)
+        if shouldint and intpath and IsValid(self.interior) then
+            Doors:PlaySound({ path = intpath, owner = self, tag = "teleport", ent = self.interior, resumable = true })
+        end
+        if shouldext and extpath then
+            Doors:PlaySound({ path = extpath, owner = self, tag = "teleport", ent = self, resumable = true })
+        end
+    end
+
+    -- Bystander copies follow the exterior (a flight demat carries its sound along), then pin where the
+    -- box vanished when it relocates at demat end - the echo tail must not teleport away with it. A speed
+    -- in units/second: real movement tops out around 2-3k, an interpolated teleport reads as tens of
+    -- thousands.
+    local BYSTANDER_PIN_JUMP = 6000
+
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
         self:SetData("step",1)
@@ -349,45 +373,27 @@ else
 
             if LocalPlayer():GetTardisExterior()==self then
                 if self:GetFastRemat() then
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        self.interior:EmitSound(sound_fullflight_int)
-                    end
-                    if shouldPlayExterior then
-                        self:EmitSound(sound_fullflight_ext)
-                    end
+                    self:PlayTeleportSound(sound_fullflight_ext, sound_fullflight_int, shouldPlayExterior, shouldPlayInterior)
+                elseif self:GetData("hads-demat") then
+                    self:PlayTeleportSound(sound_demat_hads_ext, sound_demat_hads_int, shouldPlayExterior, shouldPlayInterior)
                 else
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        if self:GetData("hads-demat") then
-                            self.interior:EmitSound(sound_demat_hads_int)
-                        else
-                            self.interior:EmitSound(sound_demat_int)
-                        end
-                    end
-                    if shouldPlayExterior then
-                        if self:GetData("hads-demat") then
-                            self:EmitSound(sound_demat_hads_ext)
-                        else
-                            self:EmitSound(sound_demat_ext)
-                        end
-                    end
+                    self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif shouldPlayExterior then
+                local dematsnd = sound_demat_ext
                 if self:GetFastRemat() then
-                    sound.Play(sound_demat_fast_ext,self:GetPos())
-                else
-                    if self:GetData("hads-demat") then
-                        sound.Play(sound_demat_hads_ext,self:GetPos())
-                    else
-                        sound.Play(sound_demat_ext,self:GetPos())
-                    end
+                    dematsnd = sound_demat_fast_ext
+                elseif self:GetData("hads-demat") then
+                    dematsnd = sound_demat_hads_ext
                 end
+                Doors:PlaySound({ path = dematsnd, owner = self, tag = "teleport",
+                    ent = self, pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
                 if pos and self:GetFastRemat() then
-                    if not IsValid(self) then return end
-                    if self:IsLowHealth() and self:GetFastRemat() then
-                        sound.Play(ext.mat_damaged_fast, pos)
-                    else
-                        sound.Play(ext.mat_fast, pos)
-                    end
+                    -- fast remat: the landing sound starts at the destination before the box is there,
+                    -- attaching to it once it arrives
+                    local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
+                    Doors:PlaySound({ path = matsnd, owner = self, tag = "teleport",
+                        pos = pos, attach = self, resumable = true })
                 end
             end
         end
@@ -406,26 +412,15 @@ else
             local pos=data[1]
             if LocalPlayer():GetTardisExterior()==self and (not self:GetFastRemat()) then
                 if self:IsLowHealth() then
-                    if shouldPlayExterior then
-                        self:EmitSound(ext.mat_damaged)
-                    end
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
-                    end
+                    self:PlayTeleportSound(ext.mat_damaged, int.mat_damaged or ext.mat_damaged, shouldPlayExterior, shouldPlayInterior)
                 else
-                    if shouldPlayExterior then
-                        self:EmitSound(ext.mat)
-                    end
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        self.interior:EmitSound(int.mat or ext.mat)
-                    end
+                    self:PlayTeleportSound(ext.mat, int.mat or ext.mat, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif not self:GetFastRemat() and shouldPlayExterior then
-                if self:IsLowHealth() then
-                    sound.Play(ext.mat_damaged,pos)
-                else
-                    sound.Play(ext.mat,pos)
-                end
+                -- Bystander copy: pinned at the landing spot (the box isn't there yet), attaching to the
+                -- exterior once it arrives so it isn't left behind if the box flies off mid-materialise
+                Doors:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat,
+                    owner = self, tag = "teleport", pos = pos, attach = self, resumable = true })
             end
         end
         self:CallCommonHook("PreMatStart")

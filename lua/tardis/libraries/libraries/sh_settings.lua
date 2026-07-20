@@ -263,11 +263,15 @@ function TARDIS:SaveSettings()
 
     ---@param settings_table table
     ---@param settings_file string
+    -- A key this build has no setting for is written back untouched rather than dropped. Dropping it
+    -- erased settings belonging to a *different* build the moment this one loaded - LoadSettings saves
+    -- immediately, so moving from beta back to release silently destroyed anything only beta knew about,
+    -- including whatever a rename had just migrated to. Carrying them costs a few dead keys in the file.
     local function SaveSettingsToFile(settings_table, settings_file)
         local settings={}
         for k,v in pairs(settings_table) do
             local data = self.SettingsData[k]
-            if data and (data.value ~= v or type(v) == "table") then
+            if data == nil or data.value ~= v or type(v) == "table" then
                 settings[k] = v
             end
         end
