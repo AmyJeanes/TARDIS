@@ -644,7 +644,7 @@
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Sonido interno del Modo de Vuelo",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal.Description": "Si el sonido del vuelo se puede escuchar en el interior o no",
     "Settings.Sections.SoundsAndMusic.Sounds.Idle": "Sonidos en descanso",
-    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Si los sonidos en descanso se pueden escuchar en el interior o no",
+    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Si se pueden oír o no los sonidos de ambiente dentro y fuera de la TARDIS.",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Sonido de cerrojos",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Controla si se hace un sonido al alternar los cerrojos",
     "Settings.Sections.SoundsAndMusic.Sounds.SoundThroughDoors": "Sonido a través de las puertas",

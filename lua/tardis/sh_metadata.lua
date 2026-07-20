@@ -272,6 +272,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_exterior_sound_metadata
 ---@field Teleport tardis_exterior_sound_teleport
 ---@field Door tardis_sound_door
+---@field Idle tardis_sound_entry[]?
 ---@field RepairFinish string
 ---@field RepairLoop string?
 ---@field Lock string

@@ -644,7 +644,7 @@
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Interní zvuk letu",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal.Description": "Zda lze slyšet zvuk letu uvnitř nebo ne",
     "Settings.Sections.SoundsAndMusic.Sounds.Idle": "Nečinné zvuky",
-    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Zda lze slyšet nečinné zvuky uvnitř nebo ne",
+    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Zda lze slyšet nečinné zvuky uvnitř a vně TARDIS nebo ne",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Zvuk zámku",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Zda se přehrává zvuk při přepnutí zámku nebo ne",
     "Settings.Sections.SoundsAndMusic.Sounds.SoundThroughDoors": "Zvuk skrz dveře",

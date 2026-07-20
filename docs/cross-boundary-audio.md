@@ -314,14 +314,22 @@ that for 11 interiors whose authors only ever wanted "the hum, but quieter from 
 the doorway produces by itself.
 
 Keeping the field for two interiors means keeping a whole authoring concept, a player setting and a module
-alive to serve content that would be better expressed as an exterior-owned ambient sound with
-`through_doors` set - which is decision 3's mechanism, not this one's. If that need is confirmed it comes
-back under a field that means what it says, rather than one named for a hum.
-
-**Known consequence, accepted.** `trakenclock` and `assassinclock` lose their ticks. Both are from
+alive to serve content that would be better expressed as an exterior-owned ambient sound. That need was
+confirmed the same day - `trakenclock` and `assassinclock` are from
 [Torrent's Classic TARDIS Pack](https://steamcommunity.com/sharedfiles/filedetails/?id=2931571340)
-(`2931571340`), whose author has been contacted; the deletion stands unless he says otherwise. Every other
-affected interior gains the door-dependent swell it never had.
+(`2931571340`), and its author offered to update them - so it came back immediately, as
+**`Exterior.Sounds.Idle`**.
+
+**Why a new field rather than renaming `Hum`.** A rename would silently re-enable it for the 11 authors who
+only ever wanted a quiet duplicate, which is the exact thing being deleted. A new name means only content
+that opts in gets it, and the 11 keep the doorway behaviour they should have had all along.
+
+It is the exterior twin of `Interior.Sounds.Idle`, same shape and same list-of-entries type, played by a
+mirrored `cl_idlesound.lua` on the exterior. Since neither side is paired any more, the two are exactly
+symmetric: each is heard in its own space and carries through the doorway into the other. It gates on
+`idlesounds` + `sound` + power like the interior's, plus a vortex check the interior has no need for - a
+shell in flight is not there to be heard. Migration for an author is `Hum = {...}` to
+`Idle = { {...} }`, the extra braces being the one real trap: `Idle` is a *list*.
 
 The interior side keeps its `Idle` sounds and loses only its `pair`/`through_doors` arguments, which
 addressed a counterpart that no longer exists - a pair of one is inert (`#group < 2`), and

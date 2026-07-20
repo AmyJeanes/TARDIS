@@ -644,7 +644,7 @@
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Εσωτερικός ήχος λειτουργίας πτήσης",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal.Description": "Αν ο ήχος της πτήσης ακούγεται εσωτερικά ή όχι",
     "Settings.Sections.SoundsAndMusic.Sounds.Idle": "Ήχοι αδράνειας",
-    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Εάν οι ήχοι αδράνειας ακούγονται στο εσωτερικό",
+    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Το αν οι ήχοι αδράνειας μέσα και έξω από το TARDIS μπορούν να ακουστούν ή όχι.",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Ήχος κλειδώματος",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Εάν θα ακούγεται ήχος κατά το κλείδωμα",
     "Settings.Sections.SoundsAndMusic.Sounds.SoundThroughDoors": "Ήχος Μέσα Από Πόρτες",

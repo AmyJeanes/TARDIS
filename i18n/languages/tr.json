@@ -644,7 +644,7 @@
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Uçuş Modu Dahili Ses",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal.Description": "Uçuş sesinin içeriden duyulup duyulmayacağı",
     "Settings.Sections.SoundsAndMusic.Sounds.Idle": "Boşta Sesler",
-    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "Boşta kalan seslerin içeriden duyulup duyulmadığı",
+    "Settings.Sections.SoundsAndMusic.Sounds.Idle.Description": "TARDIS'in içindeki ve dışındaki boşta kalan seslerin duyulup duyulamayacağı",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock": "Kilit Sesi",
     "Settings.Sections.SoundsAndMusic.Sounds.Lock.Description": "Kilidi değiştirirken ses çıkarılıp çıkarılmadığı",
     "Settings.Sections.SoundsAndMusic.Sounds.SoundThroughDoors": "Kapılardan Gelen Ses",
