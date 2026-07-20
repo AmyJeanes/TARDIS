@@ -28,10 +28,13 @@ function ENT:GetDoorOpenness()
     return self:DoorOpen(true) and 1 or 0
 end
 
--- Leakage stopped being hum-specific once sound crossing the doorway became a property of the geometry,
--- so the hum setting is now the volume for all of it - the flight loop heard from inside included.
+-- How much of it carries is content rather than a preference - an interior owns that the way it owns
+-- every other sound's volume - so the player setting only switches it on and off. This is the value the
+-- removed slider defaulted to, held here until interiors can state their own.
+local CROSS_BOUNDARY_VOLUME = 0.5
+
 ---@return number
 function ENT:GetCrossBoundaryVolume()
-    if not TARDIS:GetSetting("interior_hum_leakage") then return 0 end
-    return TARDIS:GetSetting("interior_hum_leakage_volume") / 100
+    if not TARDIS:GetSetting("sound_through_doors") then return 0 end
+    return CROSS_BOUNDARY_VOLUME
 end

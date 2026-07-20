@@ -496,10 +496,20 @@ costs nothing. TARDIS-side, a module reads the interior metadata, applies the pl
 the profile. That is the one place a consumer-side wrapper is justified, and it does not contradict
 decision 8: it wraps *configuration*, which is per-entity, not call sites.
 
-**Migration.** `interior_hum_leakage` and `interior_hum_leakage_volume` carry across rather than resetting;
-anyone who changed them did so deliberately. `sh_icons.lua:405` is the working precedent - read the old key
-off `LocalSettings`, set the new one, nil the old. `SaveSettings` only persists non-default values, so a
-`~= nil` check is the right test and untouched users simply get the new defaults.
+**Migration** (done 2026-07-20, `sound-through-doors`). Only the switch carries: once amounts are content
+there is nowhere for a customised volume to go, so the slider is simply removed. The one exception is a
+volume of **0**, which said the same thing as switching it off and would otherwise hand back a sound the
+player had silenced - it migrates to `sound_through_doors = false`.
+
+Unlike `sh_icons.lua:405`, the old keys are **not** cleared. Moving between beta and release is a normal
+thing for this addon's users to do, and leaving `interior_hum_leakage` in place means release keeps a
+working setting while beta uses the new one. A few dead keys is the cost.
+
+That flow also turned up a latent data-loss bug worth knowing about, now fixed: `SaveSettings` used to skip
+any key with no registered `SettingsData`, and `LoadSettings` saves immediately on load - so booting a build
+that did not know a setting **erased it from disk at once**. Every rename the addon has ever shipped lost
+its migrated value for anyone who went beta -> release -> beta, silently. Unknown keys are now written back
+untouched.
 
 This was briefly blocked and no longer is. Migrations used to gate on a version comparison, which meant a
 migration written here would never have run for beta users - `2026.1.0` was already published to the beta
