@@ -811,6 +811,20 @@ content.
 - **Calling `sourcePos` more than once a frame.** It is not a getter - it carries the pin-on-teleport
   and attach handovers, which must happen exactly once. `resolve()` caches on `FrameNumber()` for that
   reason as much as for cost, and everything downstream reads its result rather than re-deriving.
+- **Caching anything view-derived on `FrameNumber()` alone.** `EyePos()` is not stable across a frame:
+  crossing a doorway teleports the camera *between* two of the same frame's `resolve` calls, measured
+  directly - one call saw the camera inside and the next two saw it outside, same frame number. The
+  listener-space cache was keyed on the frame, so the sounds resolved after the teleport were told the
+  listener was still in the room they had just left. Listener and sound then read as sharing a space,
+  which takes the doorway out of the path and measures the sound straight to its own room thousands of
+  units away - one frame of silence, which the glide then starts from, so a crossfade plays only its
+  second half. Key such a cache on the values it was computed from (camera and body), not on the frame.
+  Note the body is *not* the culprit: `ply.doori` had already cleared on the first call.
+- **Diagnosing this class of bug from a neighbouring hook.** Six consecutive wrong diagnoses here, each
+  from deriving what a value "must have been" out of quantities sampled in a `Think` probe beside the
+  code. It resolved on the first look at the values *where they are computed*. Where a per-frame cache
+  or hook ordering is in play, an outside sampler cannot tell a stale read from a fresh one - log inside
+  the function, and A/B the fix by reverting only it and re-running the same automated repro.
 - **Phase-syncing paired interior/exterior loops.** 33 of 38 measurable pairs have mismatched lengths (see
   decision 5); there is no shared timeline to align to. Crossfade gains only.
 - **A TARDIS-side wrapper over `Doors:PlaySound`.** Rejected twice; see decision 8. Consumer-specific
