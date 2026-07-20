@@ -366,20 +366,77 @@ range, same divisor, and the interior reads velocity off `self.exterior` - liter
 only divergence is the exterior's **doppler** term, which must *not* be forced onto the interior: inside
 the TARDIS you move with it, so there is physically no doppler. With sync dropped there is no reason to.
 
-### 6. Virtualise at distance rather than destroy
+### 6. The handle owns a logical timeline; BASS is a renderer
 
-A managed channel currently plays forever, at negligible volume, however far away. Culling is wanted - but
-**destroying fights the ownership pattern**: loops poll `if not self.flightsound then start it`, so a
-library-side stop is recreated by the owner's next Think, giving create/destroy every frame at range.
+Settled 2026-07-20. Design complete, not yet built; the reliability groundwork it rests on *is* built (below).
 
-So **virtualise**: keep the handle (the owner sees it and does not recreate), free the BASS channel, reload
-on return. The SP-pause watcher already parks and unparks channels this way. Culling stays entirely inside
-the library; no call site learns about distance.
+A managed channel currently plays forever at negligible volume however far away. Culling is wanted, but
+**destroying fights the ownership pattern**: loops poll `if not held then create`, so a library-side stop is
+remade by the owner's next Think - create/destroy every frame at range. So **virtualise**: keep the handle
+(the owner sees it, does not recreate), free the BASS channel, reload on return. The SP-pause watcher
+already parks and unparks channels this way. Culling stays inside the library; no call site learns of it.
 
-The trigger must be **perceived** distance from the resolver, never world distance - culling on world
-distance would re-break the original bug. Needs hysteresis (a gain floor sustained for N seconds, unpark
-nearer than you park) so it does not chatter at the boundary. Restart-at-0 on return is fine: at that gain
-it is inaudible either way.
+The principle the whole lifecycle rests on: **the handle is a logical sound with its own clock; the BASS
+channel is a rendering of it, attached only while audible.** The channel's existence is never what the
+lifecycle depends on.
+
+- **Gate on gain, not distance.** The resolver already computes `res.applied` every frame - the final
+  perceived loudness, distance and doorway and directivity folded in. Cull when it has sat below an
+  imperceptible floor for N seconds. Strictly better than distance: it catches a shut door right next to
+  you (near but inaudible), and it **cannot re-break the original bug by construction** - `res.applied` is
+  already the perceived quantity, so there is no world-distance to reach for by mistake. It also
+  virtualises the yielded half of every counterpart pair for free, since that sits at gain ~0 continuously.
+- **Born parked.** The gain math runs before any channel is created, so a sound that starts already below
+  the floor never loads a channel at all - not create-then-free. It stays a live handle (`IsAlive` true)
+  with no channel, costing only the per-frame gain math, until the listener nears or it is stopped. A loop
+  started 16000u away is one handle and zero audio decode.
+- **Resume by role.** The logical clock advances every frame whether or not a channel exists. On unpark a
+  one-shot `SetTime()`s to the clock - a demat you fly to at the six-second mark renders from six seconds,
+  not the start - while a loop starts fresh (no phase to align, decision 5). Frame-level accuracy is plenty:
+  you unpark because it just crossed into audible, so a few ms is inaudible.
+- **Done by the clock, not the channel.** A one-shot is finished when `clock >= duration`, computed with no
+  channel in sight - so one that ends while parked far away cleans up and never unparks. Today's
+  done-detection reads `chan:GetState() == STOPPED`, which a parked sound cannot answer; this replaces it.
+- **BASS is the length oracle.** Rather than parse a WAV header for duration (and have nothing for OGG),
+  learn it from `chan:GetLength()` the first time a path loads and cache it per-path beside the
+  omni/loop-start already cached. Uniform across formats, no per-format parser. Trust `chan:GetLength()`
+  whenever a channel exists; the cache serves only the born-parked-never-loaded case, and any real load
+  refreshes it, so its only staleness is a file physically changing under its path (a remount, not a
+  restart - see the snd_restart note below).
+- **Game clock, not wall clock.** The logical clock advances on `FrameTime()`, zero during a pause and
+  while Think is stalled. Deliberate, and the *opposite* of the watchdog rule: the audio itself freezes on
+  pause (the watcher parks the channels), so the clock must freeze with it - else a parked one-shot crosses
+  its duration and cleans up mid-pause before it actually finished.
+- **Unpark timing vs the crossfade.** A channel loads async (a frame or two). Put the unpark threshold in
+  the inaudible range - park at -X dB, unpark a little earlier at -Y dB with Y still below hearing - so the
+  channel finishes loading while the sound is still too quiet to notice. This matters because counterpart
+  pairs make the yielded half a prime park target, and it must be back before it becomes audible on return.
+- **One Think-loop change it needs:** parked handles have no channel, so the `if chan ~= nil` guard skips
+  them entirely - they would never recompute gain to know when to wake. They need `resolve()` run each
+  frame (cheap, no channel work) to watch for the unpark condition.
+
+The numbers - the cull floor in dB and the N-second delay - tune by ear like the closed-door coefficient.
+
+**The groundwork, already built and shipped (2026-07-20).** Three reliability fixes landed while proving
+this ownership model, and virtualisation extends the same machinery rather than adding new:
+
+- Managed channels no longer play their first frames at full volume - `sound.PlayFile` is opened `noplay`
+  so the gain is applied before the channel starts (`start()` already did, it just was not given `noplay`).
+  This was an audible blip on *every* managed sound, worst at distance: a TARDIS spawned far away announced
+  itself, then faded to the silence it should have started at.
+- `handle:IsAlive()` lets an owner tell a dead handle (failed load, ended channel) from a live one, so a
+  corpse left in the owner's field no longer blocks recreation forever. This *is* the "keep the handle,
+  swap the channel under it" contract virtualisation needs - a parked handle reports alive with no channel,
+  and the owner does not remake it. Seven TARDIS consumers poll it now instead of testing for nil.
+- A failed load is rate-limited (a 5s cooldown, warned once per path) so a genuinely missing file is not
+  reloaded hundreds of times a second; a channel that was *playing* and got stopped instead comes straight
+  back, since a loop never ends on its own so a stopped one was killed from outside.
+
+**Validated against `snd_restart` and `stopsound`.** Both *stop* BASS channels (state -> STOPPED, object
+still valid) rather than destroy them; the Think loop drops the handle and the owner remakes it in two
+frames. Before `IsAlive` this was a permanent-silence bug - the corpse read as held forever. `stopsound` is
+therefore a near no-op on ambient loops, which matches how persistent GMod loops behave (the sound settings
+remain the real off-switch). Duration caching is unaffected: `snd_restart` does not change file lengths.
 
 ### 7. Where the user setting lives
 
@@ -627,8 +684,11 @@ skipping it forever. Use the date signature; there is no version to reason about
    pair, but the exterior half turned out to be a quieter copy of the interior one in 11 of 13 cases and
    was deleted rather than paired (decision 4). Interior idle hums now have no counterpart at all and
    simply leak.
-6. **Virtualisation** on top of the resolver's perceived distance. Promoted from "can wait" - decision 3
-   keeps both members of every pair playing whether or not the far side is audible.
+6. **Virtualisation** - gate on the resolver's perceived *gain*, not distance. Promoted from "can wait" -
+   decision 3 keeps both members of every pair playing whether or not the far side is audible, so there are
+   more permanently-silent channels than before. **Design settled 2026-07-20; see decision 6.** The
+   reliability groundwork (noplay gain, `IsAlive`, the load-failure cooldown) is built and shipped; the
+   parking/logical-clock lifecycle on top of it is not yet built.
 
 ## Which addon this belongs in
 
