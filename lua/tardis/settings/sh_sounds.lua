@@ -29,19 +29,6 @@ if CLIENT then
     })
 
     TARDIS:AddSetting({
-        id="external_hum",
-        type="bool",
-        value=true,
-
-        class="local",
-
-        option=true,
-        section=SETTING_SECTION,
-        subsection="Sounds",
-        name="ExternalHum",
-    })
-
-    TARDIS:AddSetting({
         id = "cloaksound-enabled",
         type = "bool",
         value = true,

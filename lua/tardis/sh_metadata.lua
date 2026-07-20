@@ -290,7 +290,6 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Cloak string
 ---@field CloakOff string
 ---@field Chameleon string
----@field Hum tardis_sound_entry?
 
 ---@class tardis_sound_damage
 ---@field Crash string

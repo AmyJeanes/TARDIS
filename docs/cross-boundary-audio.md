@@ -36,10 +36,11 @@ A managed sound's perceived position is currently just its emitter's world posit
 thousands of units away in the void, so a sound inside the interior computes as inaudible from outside the
 door - and vice versa. Nothing about the doorway enters the calculation.
 
-Every "leak" feature therefore has to be hand-built to compensate. `cl_externalhum.lua` plays a **second,
-independent copy** of each interior idle hum from the exterior, so that standing outside sounds right.
-Measured live, the two copies drift: interior instance at `t=3.371` against leak copy at `t=2.133`, 1.24s
-apart, on the same file. Crossing the threshold hands you a different copy at a different point in the loop.
+Every "leak" feature therefore had to be hand-built to compensate. `cl_externalhum.lua` played a **second,
+independent copy** of each interior idle hum from the exterior, so that standing outside sounded right.
+Measured live, the two copies drifted: interior instance at `t=3.371` against leak copy at `t=2.133`, 1.24s
+apart, on the same file. Crossing the threshold handed you a different copy at a different point in the loop.
+That file is now deleted outright (decision 4), along with the exterior hum field itself.
 
 ## The model
 
@@ -216,7 +217,7 @@ by occupancy, view, or mutually exclusive settings. Where two settings exist (`f
 |---|---|---|---|
 | `Teleport` (demat/mat/fullflight/fail/interrupt) | `sh_tp_main.lua:325-427`, `sh_tp_interrupt.lua:135`, `sh_tp_failed.lua:196` | one-shot | The set that motivated start-together alignment |
 | `FlightLoop` / `Damaged` / `Broken` | int `cl_flight.lua:11-43`, ext `sh_flight.lua:568-590` | **loop** | The flying doubles |
-| `Idle` (int) / `Hum` (ext) | `cl_idlesound.lua:17`, `cl_externalhum.lua:23` | **loop** | Only pair not name-matched |
+| ~~`Idle` (int) / `Hum` (ext)~~ | `cl_idlesound.lua:17` | **loop** | No longer a pair - the exterior half is deleted (decision 4) |
 | `Door` (open/close) | `sh_doors.lua:362-382` | one-shot | Whole sub-table falls back at once |
 | `Door.locked` | `parts/door.lua:77-87` | one-shot | Always plays the *exterior* asset on **both** sides, so it is identical by construction - the opt-out can never apply |
 | `Lock` / `Unlock` | `sh_lock.lua:110-124` | one-shot | |
@@ -289,35 +290,42 @@ they have no meaningful position, which is decision 5. One mechanism covers both
 pair whether or not the far side is ever heard, which is the first real argument for virtualisation
 (decision 6).
 
-### 4. Drop the exterior hum when it duplicates an interior hum
+### 4. The exterior hum is deleted, not deduplicated
 
-**Subsumed by decision 3** - `Idle` / `Hum` is just one counterpart pair, and the general rule covers it.
-Do not implement this separately. Kept for the scan below, which is what proves the general rule safe.
+Settled 2026-07-20, replacing a plan to drop it only where it duplicated an interior hum. The field
+`Exterior.Sounds.Hum`, its `external_hum` setting, and `cl_externalhum.lua` are gone.
 
-Generalises the existing hand-written check in `cl_externalhum.lua`:
+**The scan, of all 275 registered interiors.** 128 set an interior hum; 13 set an exterior one; none set an
+exterior hum without an interior one, so removing it can never leave a TARDIS silent outside. Of the 13,
+only 4 name the same file as their own interior hum - but heard side by side, **11 of the 13 are the same
+sound rendered quieter**, including every one that names a separate file. Only `trakenclock` and
+`assassinclock` are genuinely different material: a clock face ticking, which is the shell's own voice and
+not the interior at any volume.
 
-```lua
-if snd.path ~= hum_sound_path and not self.LeakedInteriorHums[k] then
-```
+**So the same-asset predicate is dead.** It catches 4 of the 11, and nothing else measurable separates a
+re-exported copy from a distinct sound. Only ears did. Do not rebuild it - a heuristic here either silences
+a clock or leaves a duplicate, and there is no third outcome.
 
-Evidence - scan of all 275 registered interiors, resolving through `Base` chains:
+**Why deleting beats keeping it for the two.** Both members were already declared a counterpart pair, so
+standing outside suppressed the interior hum in favour of the exterior one. For all 13 that meant opening
+the door did nothing: a static quiet hum from the shell instead of the interior swelling through the
+doorway. The field was not merely redundant, it stood in front of the feature that replaces it - and it did
+that for 11 interiors whose authors only ever wanted "the hum, but quieter from outside", which is now what
+the doorway produces by itself.
 
-| | count |
-|---|---|
-| exterior hum **and** interior idle | 22 |
-| **exterior-hum-only** | **0** |
-| interior-idle-only | 247 |
+Keeping the field for two interiors means keeping a whole authoring concept, a player setting and a module
+alive to serve content that would be better expressed as an exterior-owned ambient sound with
+`through_doors` set - which is decision 3's mechanism, not this one's. If that need is confirmed it comes
+back under a field that means what it says, rather than one named for a hum.
 
-Of the 22, **13 share the asset** (`hartnelltardis` x5 variants, `ruth` x2, `tuat` x2,
-`backroomstardisint` - about four distinct TARDISes) and 9 use different files, so those 9 just sum.
+**Known consequence, accepted.** `trakenclock` and `assassinclock` lose their ticks. Both are from
+[Torrent's Classic TARDIS Pack](https://steamcommunity.com/sharedfiles/filedetails/?id=2931571340)
+(`2931571340`), whose author has been contacted; the deletion stands unless he says otherwise. Every other
+affected interior gains the door-dependent swell it never had.
 
-The zero settles it: no interior anywhere relies on the exterior hum alone, so dropping it where it
-duplicates can never leave a TARDIS silent outside.
-
-**Known consequence:** for those 13, the exterior hum currently plays at full volume *regardless of door
-state*. Leakage is quieter and door-dependent, so a shut TARDIS will be noticeably quieter outside than it
-is today. Judged more correct, but it is a real audible change and it lands entirely on the closed-door
-coefficient.
+The interior side keeps its `Idle` sounds and loses only its `pair`/`through_doors` arguments, which
+addressed a counterpart that no longer exists - a pair of one is inert (`#group < 2`), and
+`through_doors` exists only to override pair suppression.
 
 ### 5. No phase sync - the content has no phase to align
 
@@ -380,9 +388,9 @@ on rename** rather than resetting to the default; anyone who changed it did so d
 
 A solid default matters more than the knob. Tune it in a rig first, then expose it.
 
-**Tune the closed-door coefficient early and by ear.** 247 of 275 interiors have no exterior hum at all, so
-leakage is the *only* way they are ever heard from outside - it is the dominant path for ~90% of TARDISes,
-not an edge case.
+**Tune the closed-door coefficient early and by ear.** No interior has an exterior hum any more
+(decision 4), so leakage is the *only* way any of them is ever heard from outside - it is the sole path for
+every TARDIS, not an edge case.
 
 ### 8. Consumer-specific logic goes in provider hooks, not a TARDIS wrapper
 
@@ -577,7 +585,7 @@ skipping it forever. Use the date signature; there is no version to reason about
 3. ~~**Delete `cl_externalhum.lua`'s hand-built leak** - the second copy and its `LeakedInteriorHums`
    table.~~ **Done**, along with `cl_idlesound.lua`'s `PlayerEnter` ramp, which existed only to hand
    over from that copy. Leaking is a property of the geometry now.
-4. **Exterior hum dedup** (decision 4).
+4. ~~**Exterior hum dedup**~~ **Done** - deleted the feature outright instead; see decision 4.
 5. **Counterpart pairs** - one side audible at a time, fading across the boundary. **Design settled
    2026-07-19; see decision 3.** The rungs below are the reasoning that got there, kept because the
    default reversed twice on the way.
@@ -607,11 +615,10 @@ skipping it forever. Use the date signature; there is no version to reason about
    sole mechanism. Detecting same-asset was then dropped too, since it earns nothing once both branches
    behave identically.
 
-   **Step 4 is subsumed by this.** Dropping a duplicate exterior hum is the general rule applied to the
-   `Idle` / `Hum` counterpart, and decision 4's own scan agrees with it: 22 interiors have both (pair -
-   swap), 247 have an interior idle only (no counterpart - leaks as now), and **0 have an exterior hum
-   alone**, which is what guarantees no TARDIS can be left silent outside. Implement the general rule; do
-   not implement step 4 separately.
+   **Step 4 no longer overlaps this.** The plan was for `Idle` / `Hum` to be the general rule's easiest
+   pair, but the exterior half turned out to be a quieter copy of the interior one in 11 of 13 cases and
+   was deleted rather than paired (decision 4). Interior idle hums now have no counterpart at all and
+   simply leak.
 6. **Virtualisation** on top of the resolver's perceived distance. Promoted from "can wait" - decision 3
    keeps both members of every pair playing whether or not the far side is audible.
 

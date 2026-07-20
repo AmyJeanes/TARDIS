@@ -639,8 +639,6 @@
     "Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description": "Whether the warning bells can be heard on the interior or not",
     "Settings.Sections.SoundsAndMusic.Sounds.Door": "Door Sound",
     "Settings.Sections.SoundsAndMusic.Sounds.Door.Description": "Whether a sound is made when toggling the door or not",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum": "External Hum",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description": "Whether the hum on the outside of the TARDIS can be heard if it exists",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal": "Flightmode External Sound",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description": "Whether the flight sound can be heard on the outside or not",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Flightmode Internal Sound",

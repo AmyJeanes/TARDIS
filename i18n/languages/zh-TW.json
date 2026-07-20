@@ -639,8 +639,6 @@
     "Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description": "緊急狀況下是否響起修道院鐘聲",
     "Settings.Sections.SoundsAndMusic.Sounds.Door": "門音效",
     "Settings.Sections.SoundsAndMusic.Sounds.Door.Description": "開關門時是否發出聲音",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum": "外部的嗡嗡聲",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description": "是否能聽到塔迪斯外部的嗡嗡聲（如果存在）",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal": "飛行模式音效（外部）",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description": "是否在外部播放飛行音效",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "飛行模式音效（內部）",

@@ -639,8 +639,6 @@
     "Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description": "紧急状况下是否响起修道院钟声",
     "Settings.Sections.SoundsAndMusic.Sounds.Door": "门音效",
     "Settings.Sections.SoundsAndMusic.Sounds.Door.Description": "开关门时是否发出声音",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum": "外部的嗡嗡声",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description": "是否能听到 TARDIS 外部的嗡嗡声（如果有的话）",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal": "飞行模式音效（外部）",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description": "是否在外部播放飞行音效",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "飞行模式音效（内部）",

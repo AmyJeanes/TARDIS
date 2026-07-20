@@ -639,8 +639,6 @@
     "Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description": "Ob die Warnglocken im Inneren zu hören sind oder nicht",
     "Settings.Sections.SoundsAndMusic.Sounds.Door": "Türgeräusch",
     "Settings.Sections.SoundsAndMusic.Sounds.Door.Description": "Ob beim Umschalten der Tür ein Ton ertönt oder nicht",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum": "Externes Brummen",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description": "Ob das Brummen an der Außenseite der TARDIS zu hören ist, wenn es existiert",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal": "Flugmodus Externer Ton",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description": "Ob das Fluggeräusch von außen zu hören ist oder nicht",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Flugmodus Interner Ton",

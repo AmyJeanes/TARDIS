@@ -639,8 +639,6 @@
     "Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description": "Voiko varoituskelloja kuulla sisätiloissa",
     "Settings.Sections.SoundsAndMusic.Sounds.Door": "Oven ääni",
     "Settings.Sections.SoundsAndMusic.Sounds.Door.Description": "Kuuluuko ääntä ovea avattaessa vai ei",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum": "Ulkoinen hurina",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description": "Voiko TARDISin ulkopuolella kuulla hurinaa, jos sellainen on",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal": "Lennon ulkoinen ääni",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description": "Voiko lentämisen ääniä kuulla ulkopuolella",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Lennon sisäinen ääni",

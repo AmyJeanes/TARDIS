@@ -639,8 +639,6 @@
     "Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description": "Si les cloches d'avertissement peuvent être entendues à l'intérieur ou non",
     "Settings.Sections.SoundsAndMusic.Sounds.Door": "Son des portes",
     "Settings.Sections.SoundsAndMusic.Sounds.Door.Description": "Si les portes émettent un son ou non",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum": "Bourdonnement extérieur",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description": "Si le bourdonnement à l'extérieur du TARDIS peut être entendu s'il existe",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal": "Son externe du mode vol",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description": "Si le son du vol peut être entendu à l'extérieur ou non",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Son interne du mode vol",

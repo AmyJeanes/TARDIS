@@ -639,8 +639,6 @@
     "Settings.Sections.SoundsAndMusic.Sounds.CloisterBells.Description": "İç mekanda uyarı zillerinin duyulup duyulmadığı\nİçerik Taalebi",
     "Settings.Sections.SoundsAndMusic.Sounds.Door": "Kapı Sesi",
     "Settings.Sections.SoundsAndMusic.Sounds.Door.Description": "Kapıyı değiştirirken ses gelip gelmediği",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum": "Dış Vızıltı",
-    "Settings.Sections.SoundsAndMusic.Sounds.ExternalHum.Description": "TARDIS'in dışındaki uğultu varsa duyulabilir mi?\nİÇERİK TALEBİ",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal": "Uçuş Modu Harici Ses",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightExternal.Description": "Uçuş sesinin dışarıdan duyulup duyulmayacağı",
     "Settings.Sections.SoundsAndMusic.Sounds.FlightInternal": "Uçuş Modu Dahili Ses",
