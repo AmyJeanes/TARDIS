@@ -267,7 +267,8 @@ function TARDIS:SaveSettings()
         local settings={}
         for k,v in pairs(settings_table) do
             local data = self.SettingsData[k]
-            if data and (data.value ~= v or type(v) == "table") then
+            -- Keep missing settings in case they come back later e.g. disabled extension / switching branches
+            if data == nil or data.value ~= v or type(v) == "table" then
                 settings[k] = v
             end
         end
