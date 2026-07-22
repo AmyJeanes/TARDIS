@@ -33,7 +33,7 @@ if CLIENT then
         label:SetText("  " .. TARDIS:GetPhrase(text))
         label:SetTextColor(Color(0,0,0))
         -- stub types AddPanel as a class-name factory, but it also accepts a panel instance
-        ---@diagnostic disable-next-line: param-type-mismatch
+        ---@diagnostic disable-next-line: param-type-mismatch, generic-constraint-mismatch
         dmenu:AddPanel(label)
     end
 

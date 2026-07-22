@@ -1008,9 +1008,11 @@ function TARDIS:CustomizeIconPack()
                 end
             end
             icon.DoClick = function() end
-            ---@param self Panel
+            -- The annotations type this hook's self oddly and require a boolean
+            -- return; the override intentionally returns nothing (Linux-only firing).
             ---@param mc number
-            icon.OnMousePressed = function(self, mc)
+            ---@diagnostic disable-next-line: assign-type-mismatch, duplicate-set-field
+            function icon:OnMousePressed(mc)
                 if mc == MOUSE_RIGHT then self:OpenMenu() end
             end
             ---@param self Panel

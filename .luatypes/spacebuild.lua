@@ -42,3 +42,9 @@
 
 -- The spacebuild environment SENT we spawn by classname.
 ---@class base_cube_environment : Entity
+
+-- The simpler base environment SENT definition whose methods the cube env
+-- borrows (scripted_ents.Get returns the definition table, not an entity).
+---@class base_sb_environment
+---@field OnEnvironment function
+---@field GetTemperature function
