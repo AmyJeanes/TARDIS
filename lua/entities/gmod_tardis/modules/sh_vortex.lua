@@ -124,7 +124,7 @@ else
         if TARDIS:GetExteriorEnt()==self and enabled then
             if alpha ~= target then
                 if alpha==0 and target==1 then
-                    self:SetData("lockedang",Angle(0,self:LocalToWorldAngles(self:GetPart("vortex").ang).y,0))
+                    self:SetData("lockedang",Angle(0,self:LocalToWorldAngles(self:GetPart("vortex").Ang).y,0))
                 end
                 alpha = math.Approach(alpha,self:GetData("vortex") and 1 or 0,FrameTime()*0.5)
                 self:SetData("vortexalpha",alpha)
@@ -200,7 +200,7 @@ else
 
     function ENT:RefreshVortexModelValid()
         local vortex=self:GetPart("vortex")
-        local valid = IsValid(vortex) and util.IsValidModel(vortex.model)
+        local valid = IsValid(vortex) and util.IsValidModel(vortex.Model)
         if not valid and self:GetData("hasvortex") and (not self:GetData("vortexmodelwarn")) then
             TARDIS:Message(LocalPlayer(), "Vortex.ModelMissing")
             self:SetData("vortexmodelwarn",true)
