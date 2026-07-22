@@ -9,6 +9,8 @@ if SERVER then
             force = tostring(magnitude)
         end
         local explode = ents.Create("env_explosion")
+        -- Creation only fails on edict exhaustion, where spawning is already broken.
+        ---@cast explode Entity
         explode:SetPos( self:LocalToWorld(Vector(0,0,50)) )
         explode:SetOwner( self )
         explode:Spawn()
@@ -38,6 +40,8 @@ if SERVER then
 
     function ENT:StartSmoke()
         local smoke = ents.Create("env_smokestack")
+        -- Creation only fails on edict exhaustion, where spawning is already broken.
+        ---@cast smoke Entity
         smoke:SetPos(self:LocalToWorld(Vector(0,0,80)))
         smoke:SetAngles(self:GetAngles()+Angle(90,0,0))
         smoke:SetKeyValue("InitialState", "1")
@@ -71,19 +75,22 @@ if SERVER then
     end
 
     function ENT:StartFire()
-        self.fire = ents.Create("env_fire")
-        self.fire:SetKeyValue("firesize", "500")
-        self.fire:SetKeyValue("spawnflags", "29")
-        self.fire:SetKeyValue("StartDisabled", "0")
-        self.fire:SetKeyValue("damagescale", "0")
-        self.fire:SetKeyValue("firedamage", "0")
-        self.fire:SetKeyValue("fireradius", "0")
-        self.fire:SetKeyValue("Speed", "50")
-        self.fire:SetPos(self:LocalToWorld(Vector(0,0,30)))
+        local fire = ents.Create("env_fire")
+        -- Creation only fails on edict exhaustion, where spawning is already broken.
+        ---@cast fire Entity
+        self.fire = fire
+        fire:SetKeyValue("firesize", "500")
+        fire:SetKeyValue("spawnflags", "29")
+        fire:SetKeyValue("StartDisabled", "0")
+        fire:SetKeyValue("damagescale", "0")
+        fire:SetKeyValue("firedamage", "0")
+        fire:SetKeyValue("fireradius", "0")
+        fire:SetKeyValue("Speed", "50")
+        fire:SetPos(self:LocalToWorld(Vector(0,0,30)))
 
-        self.fire:SetParent(self)
-        self.fire:Spawn()
-        self.fire:Activate()
+        fire:SetParent(self)
+        fire:Spawn()
+        fire:Activate()
     end
 
     function ENT:StopFire()
@@ -97,7 +104,7 @@ if SERVER then
         if self:CallHook("ShouldStartFire") and self:CallHook("ShouldStopFire")~=true then
             if IsValid(self.fire) then return end
             self:StartFire()
-        elseif self.fire then
+        elseif IsValid(self.fire) then
             if not self:GetTimer("fire_stop") then
                 self:Timer("fire_stop", 2, function()
                     if not self:CallHook("ShouldStartFire") or self:CallHook("ShouldStopFire") then
@@ -112,10 +119,13 @@ if SERVER then
 
     function ENT:CreateRotorWash()
         if IsValid(self.rotorwash) then return end
-        self.rotorwash = ents.Create("env_rotorwash_emitter")
-        self.rotorwash:SetPos(self:GetPos())
-        self.rotorwash:SetParent(self)
-        self.rotorwash:Activate()
+        local rotorwash = ents.Create("env_rotorwash_emitter")
+        -- Creation only fails on edict exhaustion, where spawning is already broken.
+        ---@cast rotorwash Entity
+        self.rotorwash = rotorwash
+        rotorwash:SetPos(self:GetPos())
+        rotorwash:SetParent(self)
+        rotorwash:Activate()
     end
 
     function ENT:RemoveRotorWash()
@@ -130,10 +140,10 @@ if SERVER then
         local shouldoff=(not TARDIS:GetSetting("extrotorwash-enabled", self)) or self:CallHook("ShouldTurnOffRotorwash")
 
         if shouldon and (not shouldoff) then
-            if not self.rotorwash then
+            if not IsValid(self.rotorwash) then
                 self:CreateRotorWash()
             end
-        elseif self.rotorwash then
+        elseif IsValid(self.rotorwash) then
             self:RemoveRotorWash()
         end
     end)

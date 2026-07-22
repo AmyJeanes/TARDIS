@@ -1,10 +1,16 @@
 matproxy.Add({
     name = "TARDIS_DefaultInt_EnvColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
@@ -28,10 +34,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_DefaultInt_FloorLightsColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
@@ -49,10 +61,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_DefaultInt_RotorInColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
@@ -70,10 +88,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_DefaultInt_TelepathicsAddColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not IsValid(ent.interior) or not ent.TardisPart then return end
 
@@ -100,6 +124,9 @@ matproxy.Add({
         self.on_var = values.onvar
         self.off_var = values.offvar
     end,
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
 
@@ -130,6 +157,9 @@ matproxy.Add({
         self.on_var3 = values.onvar3
         self.off_var3 = values.offvar3
     end,
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart or not IsValid(ent.interior) or ent.ID ~= "default_throttle_lights" then
             if not self.last_on then

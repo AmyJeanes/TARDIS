@@ -133,7 +133,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_exterior_light
 ---@field enabled boolean?
 ---@field pos Vector?
----@field color Color?
+---@field color Color
 ---@field warncolor Color?
 ---@field dynamicpos Vector?
 ---@field dynamicbrightness number?

@@ -20,7 +20,7 @@ end)
 ---@param VTable table
 function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable )
     local ent = ents.Create( Class )
-    if not ent then return NULL end
+    if not IsValid(ent) then return NULL end
 
     ent:SetModel( Model )
 

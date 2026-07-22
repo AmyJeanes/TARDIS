@@ -1,66 +1,21 @@
 ---@meta
+-- Local annotation overrides for gaps in the provisioned GLua annotations.
 
--- glua-api-snippets types enum-parameter functions (Panel:Dock, SetCollisionGroup,
--- GetRenderTargetEx, ...) and the Trace.mask field with strict literal-union aliases
--- (DOCK, COLLISION_GROUP, MASK, ...) but types the matching constants as plain `integer`,
--- so passing them trips param-type-mismatch / assign-type-mismatch. Re-type each constant
--- we use as its alias so call sites match. Add a line here when a new strictly-typed enum
--- constant gets used - the LSP flags it the moment it does.
----@type DOCK
-FILL = 1
----@type DOCK
-LEFT = 2
----@type DOCK
-RIGHT = 3
----@type DOCK
-TOP = 4
----@type DOCK
-BOTTOM = 5
----@type COLLISION_GROUP
-COLLISION_GROUP_NONE = 0
----@type COLLISION_GROUP
-COLLISION_GROUP_DEBRIS = 1
----@type COLLISION_GROUP
-COLLISION_GROUP_IN_VEHICLE = 10
----@type DMG
-DMG_BLAST = 64
----@type DMG
-DMG_BURN = 8
----@type DMG
-DMG_SLOWBURN = 2097152
----@type DMG
-DMG_DIRECT = 268435456
----@type MASK
-MASK_NPCWORLDSTATIC = 131083
----@type MASK
-MASK_PLAYERSOLID = 33636363
----@type RT_SIZE
-RT_SIZE_LITERAL = 8
----@type MATERIAL_RT_DEPTH
-MATERIAL_RT_DEPTH_SEPARATE = 1
----@type CREATERENDERTARGETFLAGS
-CREATERENDERTARGETFLAGS_UNFILTERABLE_OK = 4
----@type EF
-EF_BONEMERGE = 1
-
--- glua-api-snippets types debug.getinfo's first param as `function`, but the
--- runtime accepts a stack-level number too (and that's how TARDIS uses it).
+-- The annotations model stock Lua's 3-arg debug.getinfo(thread, f, what); GMod's
+-- takes (funcOrStackLevel, fields) - a stack-level number is how TARDIS uses it.
+---@diagnostic disable-next-line: duplicate-set-field
 ---@param funcOrStackLevel function|integer
 ---@param fields? string
----@param _function? function
----@return DebugInfo
-function debug.getinfo(funcOrStackLevel, fields, _function) end
+---@return debuglib.DebugInfo
+function debug.getinfo(funcOrStackLevel, fields) end
 
--- glua-api-snippets only declares the 3-arg signature of table.insert; without
--- a 2-arg overload, the analyzer flags every `table.insert(t, value)` call as
--- passing a non-number where it expects `position`. Re-declare with both forms.
+-- MatProxyData.bind's second argument is typed as the material NAME string
+-- upstream (faithfully scraped from wiki prose), but the engine passes the
+-- IMaterial itself - the wiki's own example calls SetVector on it. The ent
+-- argument is also nil for world materials. Re-declare with the real types.
 ---@diagnostic disable-next-line: duplicate-set-field
----@overload fun(tbl: table, value: any): integer
----@param tbl table
----@param position integer
----@param value any
----@return integer
-function table.insert(tbl, position, value) end
+---@param matProxyData { name: string, init: (fun(self: table, mat: IMaterial, values: table)), bind: fun(self: table, mat: IMaterial, ent: Entity?) }
+function matproxy.Add(matProxyData) end
 
 -- DModelPanel internal fields/methods that GMod sets at runtime but
 -- glua-api-snippets only exposes via getter/setter pairs. We rely on

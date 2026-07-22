@@ -892,6 +892,8 @@ if SERVER then
 
             if part_data.Enabled ~= false then
                 local e=ents.Create(v)
+                -- Creation only fails on edict exhaustion, where spawning is already broken.
+                ---@cast e gmod_tardis_part
                 Doors:SetupOwner(e,ent:GetCreator())
                 e.exterior=(ent.TardisExterior and ent or ent.exterior)
                 e.interior=(ent.TardisInterior and ent or ent.interior)

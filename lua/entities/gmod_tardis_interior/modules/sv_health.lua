@@ -12,6 +12,8 @@ function ENT:Explode(magnitude)
         force = tostring(magnitude)
     end
     local explode = ents.Create("env_explosion")
+    -- Creation only fails on edict exhaustion, where spawning is already broken.
+    ---@cast explode Entity
 
     local console = self:GetPart("console")
     if console and IsValid(console) then

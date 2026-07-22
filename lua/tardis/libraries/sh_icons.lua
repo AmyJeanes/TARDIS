@@ -61,7 +61,7 @@ local function build_pack_index(pack)
     -- Index keys are stored lowercase so lookups survive Workshop's
     -- filename-lowercasing pass — a pack that works locally with mixed-case
     -- filenames still resolves once it's served from the workshop VPK.
-    for cat in pairs(index.icons) do
+    for cat, cat_icons in pairs(index.icons) do
         local cat_root = pack_root .. cat .. "/"
         local by_id = {}
         for _, name in ipairs(scan_dir(cat_root)) do
@@ -80,7 +80,7 @@ local function build_pack_index(pack)
                 if id == "missing" then
                     index.missing[cat] = cat_root .. picked
                 else
-                    index.icons[cat][id] = cat_root .. picked
+                    cat_icons[id] = cat_root .. picked
                 end
             end
         end

@@ -20,9 +20,29 @@ local function getdynamicproxyvars(ent, mat, name, default)
     return TARDIS.DynamicProxyVars[ent][mat][name]
 end
 
+---@class tardis_state_texture_matproxy
+---@field Texture string
+---@field FrameNo string
+---@field Textures table<any, string>
+---@field FrameRates table<any, number>
+---@field AnimateTextures table<any, boolean>
+---@field FrameDurations table<any, number>
+---@field FrameNumbers table
+---@field next_update number
+---@field last_update number
+---@field current_frame number
+---@field anim boolean?
+---@field anim_num_frames number
+---@field anim_frame_rate number
+---@field anim_frame_dur number
+---@field last_state any?
+
 matproxy.Add({
     name = "TARDIS_State_Texture",
 
+    ---@param self tardis_state_texture_matproxy
+    ---@param mat IMaterial
+    ---@param values { resulttexturevar: string, resultframevar: string, textures: table }
     init = function(self, mat, values)
         self.Texture = values.resulttexturevar
         self.FrameNo = values.resultframevar
@@ -49,10 +69,11 @@ matproxy.Add({
         self.FrameNumbers = {}
 
         for k,_ in pairs(self.Textures) do
-            local animate = (self.FrameRates[k] and self.FrameRates[k] > 0)
+            local rate = self.FrameRates[k]
+            local animate = rate ~= nil and rate > 0
             self.AnimateTextures[k] = animate
-            if animate then
-                self.FrameDurations[k] = 1.0 / self.FrameRates[k]
+            if rate and animate then
+                self.FrameDurations[k] = 1.0 / rate
             end
         end
 
@@ -61,6 +82,9 @@ matproxy.Add({
         self.current_frame = 0
     end,
 
+    ---@param self tardis_state_texture_matproxy
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
         local ext = ent.exterior
@@ -74,6 +98,8 @@ matproxy.Add({
             if not self.Textures or not self.Textures[s] then return end
 
             if mat:GetTexture(self.Texture):GetName() ~= self.Textures[s] then
+                -- SetTexture accepts a texture name string as well as an ITexture
+                ---@diagnostic disable-next-line: param-type-mismatch
                 mat:SetTexture(self.Texture, self.Textures[s])
             end
 
@@ -188,10 +214,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_InteriorBaseLight",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function( self, mat, values )
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function( self, mat, ent )
         if not IsValid(ent) or not ent.TardisPart then return end
 
@@ -203,10 +235,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_Interior_Color1",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then
@@ -227,10 +265,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_Interior_Color2",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then
@@ -251,10 +295,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_Interior_Color3",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then
@@ -350,9 +400,19 @@ matproxy.Add({
 
 local vortexfallbackcol = Color(0, 0, 0) -- Uses black if no custom colour is set since that can fit for any tardis
 
+---@class tardis_dynamic_light_matproxy
+---@field name string
+---@field ResultTo string
+---@field DefaultColor Vector
+---@field LastColor Vector
+---@field TransitionSpeed number
+
 matproxy.Add({
     name = "TARDIS_ExteriorWindowLight",
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.DefaultColor = mat:GetVector(values.defaultcolor)
@@ -360,6 +420,9 @@ matproxy.Add({
         self.TransitionSpeed = values.transitionspeed or 0
     end,
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.TardisPart and ent.InteriorPart then
@@ -398,6 +461,9 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_ExteriorBaseLight",
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.DefaultColor = mat:GetVector(values.defaultcolor)
@@ -405,6 +471,9 @@ matproxy.Add({
         self.TransitionSpeed = values.transitionspeed or 2
     end,
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then

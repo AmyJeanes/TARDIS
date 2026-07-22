@@ -437,15 +437,18 @@ if SERVER then
 
         if TRACKING_DEBUG then
             if not IsValid(self.trackingdebugprop) then
-                self.trackingdebugprop = ents.Create("prop_physics")
-                self.trackingdebugprop:SetModel("models/hunter/blocks/cube05x05x05.mdl")
-                self.trackingdebugprop:SetColor(Color(255,0,0))
-                self.trackingdebugprop:SetRenderMode(RENDERMODE_TRANSALPHA)
-                self.trackingdebugprop:SetMoveType(MOVETYPE_NONE)
-                self.trackingdebugprop:SetSolid(SOLID_NONE)
-                self.trackingdebugprop:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-                self.trackingdebugprop:Activate()
-                self.trackingdebugprop:Spawn()
+                local prop = ents.Create("prop_physics")
+                -- Creation only fails on edict exhaustion, where spawning is already broken.
+                ---@cast prop Entity
+                self.trackingdebugprop = prop
+                prop:SetModel("models/hunter/blocks/cube05x05x05.mdl")
+                prop:SetColor(Color(255,0,0))
+                prop:SetRenderMode(RENDERMODE_TRANSALPHA)
+                prop:SetMoveType(MOVETYPE_NONE)
+                prop:SetSolid(SOLID_NONE)
+                prop:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+                prop:Activate()
+                prop:Spawn()
             end
 
             self.trackingdebugprop:SetPos(targetpredicted)

@@ -440,7 +440,7 @@ function TARDIS:CustomizeIconPack()
         active_tab = tab
         selected_pack_id = nil
         for _, t in ipairs(TABS) do
-            tab_buttons[t.id]:SetEnabled(t ~= tab)
+            assert(tab_buttons[t.id]):SetEnabled(t ~= tab)
         end
         refresh_pack_list()
         if refresh_missing_grid then refresh_missing_grid() end

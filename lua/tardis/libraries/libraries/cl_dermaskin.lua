@@ -313,6 +313,9 @@ local function loadskin()
 
     SKIN.Colours.TooltipText = GWEN.TextureColor( 4 + 8 * 26, 500 )
 
+    -- The annotations require the full skin interface, but derma falls back to
+    -- the default skin for any paint function a registered skin omits.
+    ---@diagnostic disable-next-line: param-type-mismatch
     derma.DefineSkin( "TARDIS", "TARDIS GUI", SKIN )
 
     SKIN=oldskin

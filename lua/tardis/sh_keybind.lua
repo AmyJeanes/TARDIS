@@ -13,7 +13,10 @@ if SERVER then
             local bind=TARDIS.binds[id]
             if bind then
                 local b=net.ReadBool()
-                bind.b[ply]=b
+                -- AddKeyBind always creates the per-player state table
+                ---@type table<Player, boolean>
+                local pressed = bind.b
+                pressed[ply]=b
                 if bind.func then
                     if bind.exterior then
                         bind.func(ext,b,ply)

@@ -3,6 +3,12 @@
 
 ---@class gmod_tardis_debug_pointer : Entity
 ---@field debug_window Panel?
+---@field model string?
+---@field scale number?
+---@field SetOther fun(self: gmod_tardis_debug_pointer, other: Entity) NetworkVar accessor added in SetupDataTables
+---@field GetOther fun(self: gmod_tardis_debug_pointer): Entity
+---@field SetDrawAABox fun(self: gmod_tardis_debug_pointer, draw: boolean)
+---@field GetDrawAABox fun(self: gmod_tardis_debug_pointer): boolean
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
@@ -31,6 +37,8 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
     if not (ply:IsAdmin() and gamemode.Call("PlayerSpawnSENT", ply, "gmod_tardis_debug_pointer")) then return end
 
     local ent = ents.Create("gmod_tardis_debug_pointer")
+    -- Creation only fails on edict exhaustion, where spawning is already broken.
+    ---@cast ent gmod_tardis_debug_pointer
     ent:SetCreator(ply)
 
     local tr = util.TraceLine({
@@ -58,7 +66,7 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
             local part = TARDIS:GetRegisteredPart(args[i + 1])
             if part then ent.model = part.Model end
         elseif v == "scale" then
-            ent.scale = args[i + 1]
+            ent.scale = tonumber(args[i + 1])
         elseif v == "pos" or v == "ang" or v == "worldpos" then
             local a = tonumber(args[i + 1])
             local b = tonumber(args[i + 2])
@@ -164,8 +172,11 @@ else
             return
         end
 
+        ---@type Panel?, Panel?, Panel?, Panel?, Panel?, Panel?
         local x, x2, y, y2, z, z2
+        ---@type Panel?, Panel?, Panel?, Panel?, Panel?, Panel?
         local xr, xr2, yr, yr2, zr, zr2
+        ---@type Panel?, Panel?, Panel?, Panel?, Panel?, Panel?
         local xpv, xpv2, ypv, ypv2, zpv, zpv2
 
         local px, py, pz = ent:WorldToLocal(p:GetPos()):Unpack()
@@ -190,16 +201,19 @@ else
             prx, pry, prz = (B_inv * pos):Unpack()
 
             if xr then
+                local xr_precise = assert(xr2)
                 xr:SetValue(prx)
-                xr2:SetValue(prx)
+                xr_precise:SetValue(prx)
             end
             if yr then
+                local yr_precise = assert(yr2)
                 yr:SetValue(pry)
-                yr2:SetValue(pry)
+                yr_precise:SetValue(pry)
             end
             if zr then
+                local zr_precise = assert(zr2)
                 zr:SetValue(prz)
-                zr2:SetValue(prz)
+                zr_precise:SetValue(prz)
             end
         end
 
@@ -331,6 +345,7 @@ else
         ---@param b number|fun(val: number)
         ---@param c (fun(val: number))|nil
         ---@param d string|nil
+        ---@return Panel row, Panel preciseRow
         local function SetupProperty(category, name, value, a, b, c, d)
             local vmin, vmax, update_func
             local vtype = "Float"

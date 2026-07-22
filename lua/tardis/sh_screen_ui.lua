@@ -94,6 +94,12 @@ if SERVER then
     return
 end
 
+-- A screen font definition: standard FontData, but size is required because
+-- GetScreenFont scales it per screen resolution.
+---@class tardis_screen_font : FontData
+---@field size number
+
+---@type table<string, tardis_screen_font>
 TARDIS.fonts = {}
 TARDIS.fontcache = {}
 ---@api
@@ -119,7 +125,7 @@ end
 
 ---@api
 ---@param name string
----@param font table
+---@param font tardis_screen_font
 function TARDIS:CreateScreenFont(name, font)
     self.fonts[name] = font
 end
