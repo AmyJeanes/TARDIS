@@ -698,7 +698,8 @@ local function GetData(self,e,id)
             data=self.metadata.Interior.Parts[id]
         end
     end
-    return data
+    -- a Parts/self-attach slot may hold a bare `true` membership marker, not override data
+    return istable(data) and data or {}
 end
 
 -- Swept-shadow collision: a part's own physobj follows the shell so it pushes props as
