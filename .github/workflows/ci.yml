@@ -75,7 +75,7 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.28.2
+          ref: v0.28.3
           path: gmod-addon-tools
 
       - name: Run glua_check
@@ -140,7 +140,7 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.28.2
+          ref: v0.28.3
           path: gmod-addon-tools
 
       - name: Run typing check
@@ -170,7 +170,7 @@ jobs:
   publish:
     name: Publish to workshop
     needs: [setup, glua-check, typing-check]
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@2d6fd313362d074b692004942eb3c3ef4597b77a # v0.28.2
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@b30868e4407424ab4f05448f3e0323ec7955214e # v0.28.3
     with:
       addon: TARDIS
       workshop_id: ${{ needs.setup.outputs.id }}
