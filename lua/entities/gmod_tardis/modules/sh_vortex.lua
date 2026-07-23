@@ -111,9 +111,11 @@ if SERVER then
     end)
 else
     ENT:AddHook("Think","vortex",function(self)
+        local vortex = self:GetPart("vortex")
+
         -- Ensure vortexmodelvalid is set even if the client missed the StopDemat message
         if self:GetData("vortex") and self:GetData("vortexmodelvalid") == nil
-            and IsValid(self:GetPart("vortex"))
+            and IsValid(vortex)
         then
             self:RefreshVortexModelValid()
         end
@@ -121,10 +123,11 @@ else
         local alpha = self:GetData("vortexalpha",0)
         local enabled = self:IsVortexEnabled()
         local target = (self:GetData("vortex") and enabled) and 1 or 0
-        if TARDIS:GetExteriorEnt()==self and enabled then
+        local visible = TARDIS:GetExteriorEnt()==self and enabled
+        if visible then
             if alpha ~= target then
                 if alpha==0 and target==1 then
-                    self:SetData("lockedang",Angle(0,self:LocalToWorldAngles(self:GetPart("vortex").Ang).y,0))
+                    self:SetData("lockedang",Angle(0,self:LocalToWorldAngles(vortex.Ang).y,0))
                 end
                 alpha = math.Approach(alpha,self:GetData("vortex") and 1 or 0,FrameTime()*0.5)
                 self:SetData("vortexalpha",alpha)
@@ -133,6 +136,14 @@ else
             if alpha~=target then
                 alpha = target
                 self:SetData("vortexalpha",alpha)
+            end
+        end
+
+        if IsValid(vortex) then
+            -- Lamp/flashlight shadow passes ignore both zero blend and NoShadow, and this prop is huge
+            local hidden = not (visible and alpha > 0)
+            if vortex:GetNoDraw() ~= hidden then
+                vortex:SetNoDraw(hidden)
             end
         end
     end)

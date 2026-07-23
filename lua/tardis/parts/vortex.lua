@@ -23,6 +23,10 @@ if SERVER then
         self:SetParent(self.exterior)
     end
 else
+    function PART:Initialize()
+        self:SetNoDraw(true)
+    end
+
     function PART:PreDraw()
         if self:GetData("vortexalpha",0)>0 then
             self:SetRenderOrigin(self.exterior:LocalToWorld(self.Pos))
