@@ -2,6 +2,7 @@ local HIDE_COLLISIONS = true
 -- Default monitors
 ---@class part_default_monitors : gmod_tardis_part
 ---@field MonitorID string?
+---@field screen_pose_fn (fun(): Vector?, Angle?)?
 local PART = TARDIS:NewPart()
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
@@ -124,6 +125,8 @@ function PART:CanFlip()
     return self:GetBodygroup(0) == 2
 end
 
+---@return Vector? pos
+---@return Angle? ang
 function PART:GetScreenPosition()
     local matrix = self:GetBoneMatrix(4)
     if not matrix then return end
@@ -361,6 +364,22 @@ if SERVER then
         self:UpdateHitboxCollision()
     end
 else
+    -- Where the screen panel sits in front of the monitor face. Resolved at draw
+    -- time rather than in Think: the bones are posed during the draw, so a pose
+    -- read a frame earlier trails the face mid-move and z-fights it.
+    ---@return Vector? pos
+    ---@return Angle? ang
+    function PART:GetScreenPose3D()
+        self:SetupBones()
+        local scr_pos, scr_ang = self:GetScreenPosition()
+        if not scr_pos then return end
+        if not scr_ang then return end
+
+        local offset = self:GetBodygroup(0) == 2 and Vector(-11.5, 6.8, 6.8) or Vector(-11.5, 6.8, 5.8)
+        offset:Rotate(scr_ang)
+        return scr_pos + offset, scr_ang
+    end
+
     function PART:Think()
         if self.pending_update and not self:IsAnimationPlaying() then
             self:SendMonitorsUpdate(self.pending_update_pos, self.pending_update_hitbox)
@@ -368,29 +387,11 @@ else
 
         local ply = self:GetData(self.data_rotated_by)
 
-        if self.ScreenID then
-
-            if self.interior:GetScreensOn() and self:GetData(self.data_screen_enabled) then
-
-                self:SetSubMaterial(2, "models/molda/toyota_int/screen_loading")
-                self.loading_mat = true
-
-                scr_pos, scr_ang = self:GetScreenPosition()
-
-                if scr_pos and self.interior.screens3D then
-                    local offset = Vector(-11.5, 6.8, 5.8)
-
-                    if self:GetBodygroup(0) == 2 then
-                        offset = Vector(-11.5, 6.8, 6.8)
-                    end
-
-                    offset:Rotate(scr_ang)
-                    self.interior.screens3D[self.ScreenID].pos3D = scr_pos + offset
-                    self.interior.screens3D[self.ScreenID].ang3D = scr_ang
-                end
-            elseif self.loading_mat then
-                self.loading_mat = nil
-                self:SetSubMaterial(2, nil)
+        if self.ScreenID and self.interior.screens3D then
+            local screen = self.interior.screens3D[self.ScreenID]
+            if screen then
+                self.screen_pose_fn = self.screen_pose_fn or function() return self:GetScreenPose3D() end
+                screen.GetPose3D = self.screen_pose_fn
             end
         end
 

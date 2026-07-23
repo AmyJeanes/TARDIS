@@ -112,20 +112,33 @@ end)
 function ENT:ShouldRenderScreen(screen)
     if self:CallHook("ShouldDraw") == false then return false end
 
+    -- A screen carried by a moving part supplies its pose here, in the frame it
+    -- is drawn; taken any earlier it trails the part it is mounted on.
+    if screen.GetPose3D then
+        local p, a = screen.GetPose3D()
+        if p and a then
+            screen.pos3D = p
+            screen.ang3D = a
+        end
+    end
+
     local pos3D = screen.pos3D
     local ang3D = screen.ang3D
     if not pos3D or not ang3D then return false end
 
-    -- The interior doesn't move, so the world transform is cached per screen;
-    -- the render hook drops the caches if it ever does.
+    -- Cached per screen, rebuilt when the pose it was built from changes - a
+    -- monitor part rewrites its screen's local pose as it moves. The render
+    -- hook drops the caches too, for the interior itself moving.
     local pos, ang, up = screen.worldpos, screen.worldang, screen.worldup
-    if pos == nil or ang == nil or up == nil then
+    if pos == nil or pos3D ~= screen.worldsrcpos or ang3D ~= screen.worldsrcang then
         pos = self:LocalToWorld(pos3D)
         ang = self:LocalToWorldAngles(ang3D)
         up = ang:Up()
         screen.worldpos = pos
         screen.worldang = ang
         screen.worldup = up
+        screen.worldsrcpos = pos3D
+        screen.worldsrcang = ang3D
     end
 
     --don't render if the view is behind the portal

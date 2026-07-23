@@ -42,9 +42,12 @@
 ---@field gap number
 ---@field gap2 number
 ---@field gui_rows number?
----@field worldpos Vector? cached world anchor; the screens render hook drops it when the interior moves
+---@field worldpos Vector? cached world anchor, rebuilt when the local pose below or the interior moves
 ---@field worldang Angle?
 ---@field worldup Vector?
+---@field worldsrcpos Vector? the local pose the world anchor was built from
+---@field worldsrcang Angle?
+---@field GetPose3D (fun(): Vector?, Angle?)? supplies pos3D/ang3D at draw time, for a screen mounted on a moving part
 ---@field scannerang Angle?
 ---@field scannerfov number?
 ---@field scanner ITexture?

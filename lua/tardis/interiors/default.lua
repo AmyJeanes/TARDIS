@@ -600,10 +600,6 @@ T.CustomHooks = {
             if not IsValid(m) then return true end
 
             if id == 1 or id == 2 then
-                if m:IsAnimationPlaying() then
-                    return true
-                end
-
                 if m:IsStatic() then
                     return true
                 end
