@@ -849,7 +849,6 @@ function ENT:GetGroundedPos(point, get_angle)
         RunConsoleCommand("tardis2_debug_pointer", "worldpos", best_c.x, best_c.y, best_c.z)
     end
 
-    ---@type Vector -- ca/cb are inferred as `unknown` because the analyzer drops Vector's @operator sub after narrowing through Vector?
     local normal = ca:Cross(cb):GetNormalized()
 
     if normal.z < 0 then

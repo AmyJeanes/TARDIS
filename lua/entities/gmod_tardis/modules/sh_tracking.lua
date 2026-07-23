@@ -562,7 +562,7 @@ else
     end)
 
     ENT:OnMessage("tracking-pilotwarning", function(self)
-        local keyName = input.GetKeyName(TARDIS:GetBindKey("tracking") --[[@as BUTTON_CODE]])
+        local keyName = input.GetKeyName(TARDIS:GetBindKey("tracking"))
         TARDIS:Message(LocalPlayer(), "Controls.Tracking.PilotWarning", string.upper(keyName))
     end)
 

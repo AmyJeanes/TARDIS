@@ -236,11 +236,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
                 alpha = (tip.colors.current.background.a) * normalised
             end
 
-            -- ColorAlpha is stubbed to return table, not Color, so :Unpack() reads as a nil method
-            -- here; assert Color. (text_color needs no assert - it is only passed as a draw arg.)
-            ---@type Color
             local background_color = ColorAlpha(tip.colors.current.background, alpha)
-            ---@type Color
             local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
             local text_color = ColorAlpha(tip.colors.current.text, alpha)
 
