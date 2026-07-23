@@ -302,6 +302,19 @@ function TARDIS.InitAnimation(self, anim)
     return a
 end
 
+---@param ply Player
+---@param looked_at boolean?
+---@return boolean
+local function isSonicPressed(ply, looked_at)
+    if not looked_at then
+        return false
+    end
+    if ply:GetActiveWeapon() ~= ply:GetWeapon("swep_sonicsd") then
+        return false
+    end
+    return ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
+end
+
 ---@param self gmod_tardis_part
 ---@param a tardis_part_animation_state
 function TARDIS.ProcessAnimation(self, a)
@@ -326,19 +339,9 @@ function TARDIS.ProcessAnimation(self, a)
             local ply = LocalPlayer()
             local looked_at = self:BeingLookedAtByLocalPlayer()
 
-            local function is_sonic_pressed()
-                if not looked_at then
-                    return false
-                end
-                if ply:GetActiveWeapon() ~= ply:GetWeapon("swep_sonicsd") then
-                    return false
-                end
-                return ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
-            end
-
             local moving = looked_at and ply:KeyDown(IN_USE)
 
-            if is_sonic_pressed() then
+            if isSonicPressed(ply, looked_at) then
                 self.sonic_activation_start = self.sonic_activation_start or CurTime()
                 if CurTime() - self.sonic_activation_start > 0.5 then
                     moving = true
@@ -385,6 +388,35 @@ end
 ---@field Think fun(self: gmod_tardis_part)
 ---@field Draw fun(self: gmod_tardis_part, flags?: number)
 ---@field Use fun(self: gmod_tardis_part, activator: Entity, caller?: Entity, useType?: number, value?: number)
+
+---@class gmod_tardis_interior
+---@field _partThinkFrame integer?
+---@field _partThinkOK boolean
+
+-- Asked by every part each Think; the answer can't change within a frame.
+---@param int gmod_tardis_interior
+---@return boolean
+local function interiorShouldThink(int)
+    local fn = FrameNumber()
+    if int._partThinkFrame ~= fn then
+        int._partThinkFrame = fn
+        int._partThinkOK = int:CallHook("ShouldThink") ~= false
+    end
+    return int._partThinkOK
+end
+
+---@param self gmod_tardis_part
+---@param ext gmod_tardis
+---@return boolean
+local function partVisibleThroughDoor(self, ext)
+    if not ext:DoorOpen() then return false end
+    if not self.ClientThinkOverride then return false end
+    local ply_pos = LocalPlayer():GetPos()
+    local ext_pos = ext:GetPos()
+    local close_dist = TARDIS:GetSetting("portals-closedist")
+
+    return ply_pos:Distance(ext_pos) < close_dist
+end
 
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
@@ -438,17 +470,7 @@ local overrides={
         local int=self.interior
         local ext=self.exterior
         if self._init and IsValid(ext) then
-            local function is_visible_through_door()
-                if not ext:DoorOpen() then return false end
-                if not self.ClientThinkOverride then return false end
-                local ply_pos = LocalPlayer():GetPos()
-                local ext_pos = ext:GetPos()
-                local close_dist = TARDIS:GetSetting("portals-closedist")
-
-                return ply_pos:Distance(ext_pos) < close_dist
-            end
-
-            if (IsValid(int) and (int:CallHook("ShouldThink") ~= false)) or self.ExteriorPart or self.AllowThroughPortals or is_visible_through_door() then
+            if (IsValid(int) and interiorShouldThink(int)) or self.ExteriorPart or self.AllowThroughPortals or partVisibleThroughDoor(self, ext) then
                 if self.Animate then
                     TARDIS.ProcessAnimation(self, self.animation)
 
