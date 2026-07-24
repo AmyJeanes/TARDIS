@@ -144,9 +144,9 @@ jobs:
     name: Publish to beta workshop
     needs: [glua-check, typing-check]
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.publish == 'true'
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@b30868e4407424ab4f05448f3e0323ec7955214e # v0.28.3
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@b9dce16368c6fe9ba55db3834b0a27b610dd1643 # v0.29.0
     with:
-      addon: TARDIS
+      addon: "TARDIS (Beta)"
       workshop_id: ${{ vars.BETA_WORKSHOP_ID }}
       mfa: false
       dry_run: ${{ vars.BETA_WORKSHOP_ID == '' }}
@@ -154,3 +154,4 @@ jobs:
       STEAM_USERNAME: ${{ vars.STEAM_USERNAME }}
       STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
       HA_WEBHOOK_URL: ${{ secrets.HA_WEBHOOK_URL }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.STEAM_WEBHOOK_URL }}
