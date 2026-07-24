@@ -93,15 +93,16 @@ The `.luarc.json` `disable` list is empty — every flow rule is enforced and fi
 
 ## Build / publish
 
-No local build step - GMod loads `lua/` in place. CI publishes to three Steam Workshop items via the shared `gmod-addon-tools/publish-workshop.yml` reusable workflow:
+No local build step - GMod loads `lua/` in place. CI publishes to two Steam Workshop items via the shared `gmod-addon-tools/publish-workshop.yml` reusable workflow. Which item a run targets is decided by the branch alone, so each publish job names its workshop id inline from a repo variable - there is no id-resolving job:
 
-- **Beta (`2649683927`)** - every push to `main` (after GLua Check passes) republishes the beta item from `ci.yml`'s `publish` job: silent login, `mfa: false`. The "latest `main`" channel.
-- **Alpha (`2650203837`)** - pushes to the `alpha` branch publish the alpha item through the *same* `publish` job the same silent way (`mfa: false`); the `setup` job just resolves `vars.ALPHA_WORKSHOP_ID` instead of beta. Also reachable via `ci.yml`'s `workflow_dispatch` (`addon: alpha`, `publish: true`). The branch is **currently dormant** - it does not exist on origin - but the path stays wired for it to be resurrected; recreating the branch is all that's needed.
+- **Beta (`2649683927`, `vars.BETA_WORKSHOP_ID`)** - every push to `main` (after GLua Check passes) republishes the beta item from `ci.yml`'s `publish` job: silent login, `mfa: false`. The "latest `main`" channel. Also reachable via `ci.yml`'s `workflow_dispatch` (`publish: true`).
 - **Stable (`307175678`)** - publishing a full GitHub **release** fires `release.yml` (same reusable workflow, `mfa: true`, phone-gated Steam Guard). A **bare tag ships nothing** (the trigger is `release: published`, not the tag) - cut a release to publish stable.
 
-**Versioning.** There is no `version.json` to bump - the version comes from the git tag, so the tag you pick when cutting a release *is* `TARDIS.Version`. Beta/alpha builds report the last release they descend from, plus channel/commits/sha in `TARDIS.Build` (`TARDIS:GetBuildString()` renders e.g. `2025.5.0-beta.47+g1a2b3c4`). Release tags must be plain `X.Y.Z`; the legacy `release-NN-*` tags are deliberately excluded by the generator's `--match`.
+There was a third **alpha** item (`2650203837`, `vars.ALPHA_WORKSHOP_ID`) fed by an `alpha` branch. That branch no longer exists on origin, so the wiring was removed rather than left dead; reviving it means re-adding the branch to `ci.yml`'s triggers and a second publish job pointed at the alpha variable.
 
-**Change notes.** The Steam note for a stable release is composed from the release body: the **first paragraph** of a `## Summary` section becomes the note (Steam is BBCode, not Markdown - keep it plain prose), under an automatic version link. Beta/alpha builds get a commit link instead (no `## Summary`). Draft releases from `RELEASE_TEMPLATE.md`.
+**Versioning.** There is no `version.json` to bump - the version comes from the git tag, so the tag you pick when cutting a release *is* `TARDIS.Version`. Beta builds report the last release they descend from, plus channel/commits/sha in `TARDIS.Build` (`TARDIS:GetBuildString()` renders e.g. `2025.5.0-beta.47+g1a2b3c4`). Release tags must be plain `X.Y.Z`; the legacy `release-NN-*` tags are deliberately excluded by the generator's `--match`.
+
+**Change notes.** The Steam note for a stable release is composed from the release body: the **first paragraph** of a `## Summary` section becomes the note (Steam is BBCode, not Markdown - keep it plain prose), under an automatic version link. Beta builds get a commit link instead (no `## Summary`). Draft releases from `RELEASE_TEMPLATE.md`.
 
 Test without shipping via `release.yml`'s `workflow_dispatch`: `dry_run: true` (real pack + Steam login, skip upload) or `tag: <version>` (preview - log the composed note only, no login). Note `dry_run` still fires the phone (the Steam Guard step gates on `mfa`, not `dry_run`); use `tag:` for a phone-free note preview.
 

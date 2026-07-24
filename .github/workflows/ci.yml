@@ -4,23 +4,15 @@ on:
   pull_request:
     branches:
       - main
-      - alpha
   push:
     branches:
       - main
-      - alpha
       - renovate/*
   workflow_dispatch:
     inputs:
       publish:
         type: boolean
         description: Publish to workshop
-      addon:
-        type: choice
-        description: Workshop addon
-        options:
-        - beta
-        - alpha
 
 jobs:
   glua-check:
@@ -148,34 +140,16 @@ jobs:
         shell: pwsh
         run: ./scripts/typing-check.ps1
 
-  setup:
-    name: Resolve workshop target
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/main", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
-    outputs:
-      id: ${{ steps.pick.outputs.id }}
-    steps:
-      - name: Pick workshop id
-        id: pick
-        run: |
-          if [[ "${{ github.event.inputs.addon }}" == "beta" || "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "id=${{ vars.BETA_WORKSHOP_ID }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event.inputs.addon }}" == "alpha" || "${{ github.ref }}" == "refs/heads/alpha" ]]; then
-            echo "id=${{ vars.ALPHA_WORKSHOP_ID }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "Unknown workshop ID" 1>&2
-            exit 1
-          fi
-
   publish:
-    name: Publish to workshop
-    needs: [setup, glua-check, typing-check]
+    name: Publish to beta workshop
+    needs: [glua-check, typing-check]
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.publish == 'true'
     uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@b30868e4407424ab4f05448f3e0323ec7955214e # v0.28.3
     with:
       addon: TARDIS
-      workshop_id: ${{ needs.setup.outputs.id }}
+      workshop_id: ${{ vars.BETA_WORKSHOP_ID }}
       mfa: false
-      dry_run: ${{ needs.setup.outputs.id == '' }}
+      dry_run: ${{ vars.BETA_WORKSHOP_ID == '' }}
     secrets:
       STEAM_USERNAME: ${{ vars.STEAM_USERNAME }}
       STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
