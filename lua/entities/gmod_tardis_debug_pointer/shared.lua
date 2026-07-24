@@ -11,10 +11,6 @@
 ---@field debug_window Panel?
 ---@field model string?
 ---@field scale number?
----@field SetOther fun(self: gmod_tardis_debug_pointer, other: Entity) NetworkVar accessor added in SetupDataTables
----@field GetOther fun(self: gmod_tardis_debug_pointer): Entity
----@field SetDrawAABox fun(self: gmod_tardis_debug_pointer, draw: boolean)
----@field GetDrawAABox fun(self: gmod_tardis_debug_pointer): boolean
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
