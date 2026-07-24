@@ -34,8 +34,9 @@ if SERVER then
     ---@param data table
     function TARDIS:AddKeyBind(id,data)
         if not data.clientonly then
-            self.binds[id]=table.Copy(data)
-            self.binds[id].b={}
+            local bind = table.Copy(data) --[[@as table]]
+            bind.b = {}
+            self.binds[id] = bind
         end
     end
 

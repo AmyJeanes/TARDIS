@@ -35,10 +35,6 @@ hook.Add("RenderScene", "TARDISI_Scanner", function(pos,ang)
                     int.scannerrender=true
                     int:CallHook("PreScannerRender")
                 end
-                -- The annotations mark ViewData's remaining fields required, but the
-                -- engine defaults any missing field to the current view.
-                -- Fixed on the wiki (2026-07-22); removable once the annotations re-scrape it.
-                ---@diagnostic disable-next-line: missing-fields, param-type-mismatch
                 render.RenderView({
                     x = 0,
                     y = 0,

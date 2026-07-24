@@ -16,7 +16,6 @@ local function resolveTardis(entindex)
     if not IsValid(ent) or not ent.TardisExterior then
         return nil, "no TARDIS at entindex " .. entindex
     end
-    ---@cast ent gmod_tardis -- narrowed via the TardisExterior flag field, not a class-narrowing check the analyzer follows
     return ent
 end
 
@@ -206,7 +205,6 @@ local function tardisFromPlayer(steamid)
     if not IsValid(ext) or not ext.TardisExterior then
         return nil, "player " .. ply:Nick() .. " is not currently inside a TARDIS"
     end
-    ---@cast ext gmod_tardis -- narrowed via the TardisExterior flag field, not a class-narrowing check the analyzer follows
     return ext
 end
 

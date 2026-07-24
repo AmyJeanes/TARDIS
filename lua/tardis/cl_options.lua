@@ -19,12 +19,13 @@ function TARDIS:CreateOptionInterface(id, data)
 
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
+        ---@param self DCheckBoxLabel
         ---@param val boolean
-        function elem:OnChange(val)
+        elem.OnChange = function(self, val)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
         end
-        ---@param self Panel
+        ---@param self DCheckBoxLabel
         elem.Think = function(self)
             if self.lastchange and CurTime() - self.lastchange > 0.2 then
                 self.lastchange = nil
@@ -67,7 +68,7 @@ function TARDIS:CreateOptionInterface(id, data)
             self.lastchange = CurTime()
             self.lastchange_val = val
         end
-        ---@param self Panel
+        ---@param self DNumSlider
         elem2.Think = function(self)
             if self.lastchange_val and self.lastchange and CurTime() - self.lastchange > 0.1 then
                 TARDIS:SetSetting(id, self.lastchange_val)
@@ -107,8 +108,8 @@ function TARDIS:CreateOptionInterface(id, data)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
         end
-        ---@param self Panel
-        elem.Think = function(self)
+        ---@param self DColorMixer
+        mixer.Think = function(self)
             if self.lastchange and CurTime() - self.lastchange > 0.2 then
                 self.lastchange = nil
                 self:SetColor(TARDIS:GetSetting(id))
@@ -154,7 +155,7 @@ function TARDIS:CreateOptionInterface(id, data)
             TARDIS:SetSetting(id, selected_data)
             self.lastchange = CurTime()
         end
-        ---@param self Panel
+        ---@param self DComboBox
         elem2.Think = function(self)
             if self.lastchange and CurTime() - self.lastchange > 0.2 then
                 self.lastchange = nil

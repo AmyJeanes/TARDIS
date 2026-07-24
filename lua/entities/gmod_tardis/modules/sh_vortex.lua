@@ -173,6 +173,7 @@ else
 
     ENT:AddHook("Draw","vortex",function(self)
         if TARDIS:GetExteriorEnt()==self then
+            ---@type table<Entity, number>?
             local attached = self:GetData("demat-attached")
             if attached then
                 local oldblend = render.GetBlend()

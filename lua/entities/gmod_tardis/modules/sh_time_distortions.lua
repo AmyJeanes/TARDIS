@@ -37,6 +37,8 @@ local function DistortionsInside(ent)
         end
         return false
     end
+    -- glua_ls 1.1.1: GetSphere's declared @return Vector still reads as inferred here.
+    ---@type Vector
     local center,radius = interior:GetSphere()
     return TimeDistortionsPresent(interior:LocalToWorld(center), false, radius)
 end

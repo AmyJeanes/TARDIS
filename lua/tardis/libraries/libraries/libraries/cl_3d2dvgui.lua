@@ -58,6 +58,7 @@ local function getCursorPos()
     return pos.x, -pos.y
 end
 
+---@param pnl Panel
 local function absolutePanelPos(pnl)
     local x, y = pnl:GetPos()
     local parent = pnl:GetParent()
@@ -71,6 +72,9 @@ local function absolutePanelPos(pnl)
     return x, y
 end
 
+---@param pnl Panel
+---@param x number?
+---@param y number?
 local function pointInsidePanel(pnl, x, y)
     local px, py = absolutePanelPos(pnl)
     local sx, sy = pnl:GetSize()
@@ -86,8 +90,12 @@ end
 -- Input
 
 local inputWindows = {}
+---@type table<Panel, any[]>
 local usedpanel = {}
 
+---@param pnl Panel
+---@param event string
+---@param ... any
 local function postPanelEvent(pnl, event, ...)
     if not IsValid(pnl) or not pnl:IsVisible() or not pointInsidePanel(pnl, getCursorPos()) then return false end
 
@@ -111,6 +119,10 @@ local function postPanelEvent(pnl, event, ...)
 end
 
 -- Always have issue, but less
+---@param pnl Panel
+---@param x number?
+---@param y number?
+---@param found boolean?
 local function checkHover(pnl, x, y, found)
     if not (x and y) then
         x, y = getCursorPos()

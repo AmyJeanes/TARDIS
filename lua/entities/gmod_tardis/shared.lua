@@ -41,9 +41,10 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "AlphaTranslucentChanged", id: string, func: fun(self: gmod_tardis, arg1: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "ArtronDepleted", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanChangeDestination", id: string, func: fun(self: gmod_tardis, pos: Vector?, ang: Angle?, ...))
----@overload fun(self: gmod_tardis, name: "CanChangeExterior", id: string, func: fun(self: gmod_tardis, target: false, arg2: boolean, ...))
+---@overload fun(self: gmod_tardis, name: "CanChangeExterior", id: string, func: fun(self: gmod_tardis, target: false|string, arg2: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "CanChangePilot", id: string, func: fun(self: gmod_tardis, ply: Player, ...))
 ---@overload fun(self: gmod_tardis, name: "CanDemat", id: string, func: fun(self: gmod_tardis, force: boolean?, arg2: boolean, ...))
+---@overload fun(self: gmod_tardis, name: "CanEnableScreens", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanIncreaseArtron", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanLock", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanMat", id: string, func: fun(self: gmod_tardis, pos: Vector?, ang: Angle?, arg3: boolean, ...))
@@ -56,22 +57,28 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "CanToggleHandbrake", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTogglePower", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "CanToggleRedecoration", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
+---@overload fun(self: gmod_tardis, name: "CanToggleScreens", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanToggleShields", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
----@overload fun(self: gmod_tardis, name: "CanTrack", id: string, func: fun(self: gmod_tardis, ent: any, ply: any, ...))
+---@overload fun(self: gmod_tardis, name: "CanTrack", id: string, func: fun(self: gmod_tardis, ent: Entity|gmod_tardis_part, ply: Player, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTriggerHads", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOffFlight", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOffFloat", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOffPhyslock", id: string, func: fun(self: gmod_tardis, ...))
+---@overload fun(self: gmod_tardis, name: "CanTurnOffScanner", id: string, func: fun(self: gmod_tardis, id: integer, ...))
+---@overload fun(self: gmod_tardis, name: "CanTurnOffScanners", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOnFlight", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOnFloat", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOnPhyslock", id: string, func: fun(self: gmod_tardis, ...))
----@overload fun(self: gmod_tardis, name: "CanUsePart", id: string, func: fun(self: gmod_tardis, arg1: gmod_tardis_part, a: any, ...))
+---@overload fun(self: gmod_tardis, name: "CanTurnOnScanner", id: string, func: fun(self: gmod_tardis, id: integer, ...))
+---@overload fun(self: gmod_tardis, name: "CanTurnOnScanners", id: string, func: fun(self: gmod_tardis, ...))
+---@overload fun(self: gmod_tardis, name: "CanUsePart", id: string, func: fun(self: gmod_tardis, arg1: gmod_tardis_part, a: Entity|NULL, ...))
 ---@overload fun(self: gmod_tardis, name: "CanUseTardisControl", id: string, func: fun(self: gmod_tardis, control: tardis_control, ply: Player, part: gmod_tardis_part, ...))
 ---@overload fun(self: gmod_tardis, name: "ChameleonAnimationFinished", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "ChameleonAnimationStarted", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CloakAnimationFinished", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CloakAnimationStarted", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CloakToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
+---@overload fun(self: gmod_tardis, name: "ConsoleToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "DataChanged", id: string, func: fun(self: gmod_tardis, key: string, value: any, ...))
 ---@overload fun(self: gmod_tardis, name: "DataLoaded", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "DematFailed", id: string, func: fun(self: gmod_tardis, ...))
@@ -94,6 +101,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "ForceDematStart", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "HadsToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "HADSTrigger", id: string, func: fun(self: gmod_tardis, ...))
+---@overload fun(self: gmod_tardis, name: "HandbrakeControlToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "HandbrakeToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "HandleE2", id: string, func: fun(self: gmod_tardis, cmd: string, arg2: any, ...))
 ---@overload fun(self: gmod_tardis, name: "HandleNoMat", id: string, func: fun(self: gmod_tardis, pos: Vector?, ang: Angle?, callback: any, ...))
@@ -101,6 +109,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "InterruptTeleport", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "IsTravelling", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "LanguageChanged", id: string, func: fun(self: gmod_tardis, langCode: any, oldLangCode: string, ...))
+---@overload fun(self: gmod_tardis, name: "LightStateChanged", id: string, func: fun(self: gmod_tardis, state: string, ...))
 ---@overload fun(self: gmod_tardis, name: "LockedUse", id: string, func: fun(self: gmod_tardis, ply: Player, ...))
 ---@overload fun(self: gmod_tardis, name: "MatFailed", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "MatFailStopped", id: string, func: fun(self: gmod_tardis, ...))
@@ -115,7 +124,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "Outside-PosAng", id: string, func: fun(self: gmod_tardis, ply: Player, pos: Vector, ang: Angle, ...))
 ---@overload fun(self: gmod_tardis, name: "Outside-StartCommand", id: string, func: fun(self: gmod_tardis, ply: Player, cmd: CUserCmd, ...))
 ---@overload fun(self: gmod_tardis, name: "PartBodygroupChanged", id: string, func: fun(self: gmod_tardis, ent: gmod_tardis_part, bodygroup: number, value: number, ...))
----@overload fun(self: gmod_tardis, name: "PartUsed", id: string, func: fun(self: gmod_tardis, arg1: gmod_tardis_part, a: any, ...))
+---@overload fun(self: gmod_tardis, name: "PartUsed", id: string, func: fun(self: gmod_tardis, arg1: gmod_tardis_part, a: Entity|NULL, ...))
 ---@overload fun(self: gmod_tardis, name: "PhysicsCollide", id: string, func: fun(self: gmod_tardis, colData: CollisionData, collider: Entity, ...))
 ---@overload fun(self: gmod_tardis, name: "PhyslockToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "PilotChanged", id: string, func: fun(self: gmod_tardis, arg1: any, ply: Player, ...))
@@ -132,6 +141,8 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "RepairFinished", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "RepairStarted", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "RepairToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
+---@overload fun(self: gmod_tardis, name: "ScannerToggled", id: string, func: fun(self: gmod_tardis, k: integer, on: boolean, ...))
+---@overload fun(self: gmod_tardis, name: "ScreensToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "SecurityToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "SettingChanged", id: string, func: fun(self: gmod_tardis, id: string, value: any, old_value: any, ply: Player, ...))
 ---@overload fun(self: gmod_tardis, name: "SetupMMenuButtons", id: string, func: fun(self: gmod_tardis, screen: TardisScreen, frame: Panel, layout: HexagonalLayout, ...))
@@ -176,6 +187,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "StopDemat", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "StopMat", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "TardisControlUsed", id: string, func: fun(self: gmod_tardis, control_id: string, ply: Player, part: gmod_tardis_part, ...))
+---@overload fun(self: gmod_tardis, name: "TeleportControlToggled", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "TeleportPositionChanged", id: string, func: fun(self: gmod_tardis, pos: Vector, ang: Angle, phys_enable: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "ThirdPerson", id: string, func: fun(self: gmod_tardis, ply: Player, arg2: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "ToggleDoor", id: string, func: fun(self: gmod_tardis, arg1: boolean, ...))
@@ -233,9 +245,13 @@ end
 
 ---@api
 ---@param name string
+---@param ... any
 ---@return any
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
+    -- glua_ls 1.1.1: a base method defined with `:` has no declared self, so the analyzer
+    -- infers its type from what we pass and flags its own guess. Declaring ours doesn't help.
+    ---@diagnostic disable-next-line: infer-unknown
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
     if a~=nil then
         return a,b,c,d,e,f

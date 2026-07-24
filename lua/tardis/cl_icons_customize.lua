@@ -192,7 +192,7 @@ function TARDIS:CustomizeIconPack()
     ---@param panel Panel
     local function clear_on_blank_click(panel)
         ---@param mc number
-        panel.OnMousePressed = function(_, mc)
+        function panel:OnMousePressed(mc)
             if mc == MOUSE_LEFT then clear_selection() end
         end
     end
@@ -217,8 +217,9 @@ function TARDIS:CustomizeIconPack()
         if update_dirty then update_dirty() end
     end
 
+    ---@type fun(self: DFrame)
     local original_close = frame.Close
-    ---@param self Panel
+    ---@param self DFrame
     frame.Close = function(self)
         if not is_dirty() then
             return original_close(self)
@@ -392,7 +393,9 @@ function TARDIS:CustomizeIconPack()
                 total_lines = total_lines + 1
             else
                 local current_line = ""
-                for word in para:gmatch("%S+") do
+                ---@type fun(): string
+                local next_word = para:gmatch("%S+")
+                for word in next_word do
                     local candidate = current_line == "" and word or (current_line .. " " .. word)
                     local w = surface.GetTextSize(candidate)
                     if w > text_w and current_line ~= "" then
@@ -669,11 +672,12 @@ function TARDIS:CustomizeIconPack()
 
         list_inner:Receiver("tardis_iconpack", function(receiver, dropped, is_drop, _, _, my)
             if not is_drop then return end
+            ---@type DPanel?
             local row = dropped[1]
-            if not row or not row.pack_index then return end
+            local from = row and row.pack_index
+            if not row or not from then return end
 
             local current = active_list()
-            local from = row.pack_index
             local target = compute_target_index(receiver, my, row)
 
             if target == from or target == from + 1 then return end
@@ -819,7 +823,7 @@ function TARDIS:CustomizeIconPack()
             ---@param self Panel
             ---@param mouse_code number
             row.OnMouseReleased = function(self, mouse_code)
-                if mouse_code == MOUSE_LEFT and pressed_row == self and press_x then
+                if mouse_code == MOUSE_LEFT and pressed_row == self and press_x and press_y then
                     -- Treat as a click (not drag) if cursor barely moved.
                     local dx = gui.MouseX() - press_x
                     local dy = gui.MouseY() - press_y
@@ -849,7 +853,7 @@ function TARDIS:CustomizeIconPack()
             number_label:SetWide(28)
             number_label:DockMargin(2, 0, 0, 0)
             number_label.display_num = index
-            ---@param self Panel
+            ---@param self DPanel
             ---@param w number
             ---@param h number
             number_label.Paint = function(self, w, h)
@@ -993,7 +997,7 @@ function TARDIS:CustomizeIconPack()
                     local border_color = won and WIN_COLOR or LOSE_COLOR
                     ---@param w number
                     ---@param h number
-                    icon.PaintOver = function(_, w, h)
+                    function icon:PaintOver(w, h)
                         surface.SetDrawColor(border_color)
                         surface.DrawOutlinedRect(0, 0, w, h, BORDER_THICKNESS)
                     end
@@ -1001,17 +1005,14 @@ function TARDIS:CustomizeIconPack()
                     -- Dim icons not in the selected pack (overlay handles $alphatest).
                     ---@param w number
                     ---@param h number
-                    icon.PaintOver = function(_, w, h)
+                    function icon:PaintOver(w, h)
                         surface.SetDrawColor(20, 20, 20, 220)
                         surface.DrawRect(0, 0, w, h)
                     end
                 end
             end
             icon.DoClick = function() end
-            -- The annotations type this hook's self oddly and require a boolean
-            -- return; the override intentionally returns nothing (Linux-only firing).
             ---@param mc number
-            ---@diagnostic disable-next-line: assign-type-mismatch, duplicate-set-field
             function icon:OnMousePressed(mc)
                 if mc == MOUSE_RIGHT then self:OpenMenu() end
             end

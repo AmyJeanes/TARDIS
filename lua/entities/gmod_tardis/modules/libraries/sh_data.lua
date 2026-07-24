@@ -26,7 +26,7 @@ if SERVER then
     end)
 else
     net.Receive("TARDIS-Data", function()
-        local ent=net.ReadEntity()
+        local ent=net.ReadEntity() --[[@as gmod_tardis]]
         local mode=net.ReadBool()
         if mode then
             if IsValid(ent) then
@@ -43,7 +43,7 @@ else
     end)
 
     net.Receive("TARDIS-DataClear", function()
-        local ent=net.ReadEntity()
+        local ent=net.ReadEntity() --[[@as gmod_tardis]]
         ent:ClearData()
     end)
 end

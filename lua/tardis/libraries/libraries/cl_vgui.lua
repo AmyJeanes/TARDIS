@@ -1,13 +1,13 @@
 -- VGUI overrides
 
----@param pnl Panel
+---@param pnl DTextEntry
 ---@param text string
 local function number_ok(pnl, text)
     return (not pnl:GetNumeric()) or (text == "") or (tonumber(text) ~= nil)
 end
 
 local textpnl
----@param pnl Panel
+---@param pnl DTextEntry
 local function RequestInput( pnl )
     if not textpnl then
         textpnl=pnl
@@ -22,7 +22,7 @@ local function RequestInput( pnl )
                     pnl:OnChange()
                 end
                 pnl:SetCaretPos(0)
-                pnl:OnEnter()
+                pnl:OnEnter(pnl:GetValue())
                 textpnl=nil
             end,
             function()
@@ -40,9 +40,8 @@ tbl.Init = function(self,...)
     local oldInit = old and old.Init
     if oldInit then oldInit(self,...) end
     self.OldOnMousePressed = self.OnMousePressed
-    ---@param self DTextEntry3D2D
     ---@param key integer
-    self.OnMousePressed = function(self,key)
+    function self:OnMousePressed(key)
         if self.is3D2D and self:IsEnabled() then
             RequestInput(self)
         end

@@ -345,6 +345,7 @@ else
             local sound_demat_hads_ext = ext.demat_hads
             local sound_demat_hads_int = int.demat_hads or sound_demat_hads_ext
 
+            ---@type Vector
             local pos = data[1]
 
             if LocalPlayer():GetTardisExterior()==self then
@@ -403,6 +404,7 @@ else
             if not (shouldPlayExterior or shouldPlayInterior) then return end
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
+            ---@type Vector
             local pos=data[1]
             if LocalPlayer():GetTardisExterior()==self and (not self:GetFastRemat()) then
                 if self:IsLowHealth() then

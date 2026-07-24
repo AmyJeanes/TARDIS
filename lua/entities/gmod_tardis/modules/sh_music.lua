@@ -80,6 +80,7 @@ function ENT:PlayMusic(url,resolved)
 end
 
 ENT:OnMessage("play-music", function(self, data, ply)
+    ---@type string
     local url = data[1]
 
     self:StopMusic(false)

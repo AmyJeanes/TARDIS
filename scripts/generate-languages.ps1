@@ -126,7 +126,7 @@ Get-ChildItem $sourceLanguageFolder | ForEach-Object {
     $null = $content.AppendLine("-- AUTO GENERATED FILE - DO NOT EDIT --")
     $null = $content.AppendLine("-- SOURCE FILE: i18n/languages/$($_.Name) --")
     $null = $content.AppendLine()
-    $null = $content.AppendLine("local T = {}")
+    $null = $content.AppendLine("local T = TARDIS:NewLanguage()")
     $null = $content.AppendLine("T.Code = `"$code`"")
     $null = $content.AppendLine("T.Name = `"$($language.Name)`"")
     $null = $content.AppendLine("T.Phrases = {")

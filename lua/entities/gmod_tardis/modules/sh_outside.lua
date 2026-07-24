@@ -145,7 +145,9 @@ else
         return oldgetviewentity(...)
     end
 
+    ---@class Player
     local meta=assert(FindMetaTable("Player"))
+    ---@type fun(self: Player): Entity
     oldgetviewentity2=oldgetviewentity2 or meta.GetViewEntity
     function meta:GetViewEntity(...)
         if not self then return oldgetviewentity2(self,...) end
@@ -161,6 +163,7 @@ else
         if ply:GetTardisData("outside") then
             local ext=ply:GetTardisExterior()
             if IsValid(ext) then
+                ---@type Vector?, Angle?
                 local newPos, newAng = ext:CallHook("Outside-PosAng", ply, pos, ang)
                 if newPos then
                     pos = newPos
@@ -200,9 +203,9 @@ else
 
     hook.Add("Initialize", "tardis-outside", function()
         oldtargetid=oldtargetid or GAMEMODE.HUDDrawTargetID
-        GAMEMODE.HUDDrawTargetID = function(...)
-            if LocalPlayer():GetTardisData("outside") then return end
-            oldtargetid(...)
+        GAMEMODE.HUDDrawTargetID = function(self)
+            if LocalPlayer():GetTardisData("outside") then return false end
+            return oldtargetid(self)
         end
     end)
 

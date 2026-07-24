@@ -155,7 +155,7 @@ ENT:AddHook("Initialize", "tips", function(self)
     if self.metadata.Interior.PartTips ~= nil then
         for part_id, part_tip in pairs(self.metadata.Interior.PartTips) do
             if istable(part_tip) then
-                local tip = table.Copy(part_tip)
+                local tip = table.Copy(part_tip) --[[@as tardis_tip]]
                 tip.part = part_id
                 table.insert(self.alltips, tip)
             end
@@ -163,7 +163,7 @@ ENT:AddHook("Initialize", "tips", function(self)
     end
     for part_id,part in pairs(self.metadata.Interior.Parts) do
         if istable(part) and part.tip then
-            local tip = table.Copy(part.tip)
+            local tip = table.Copy(part.tip) --[[@as tardis_tip]]
             tip.part = part_id
             table.insert(self.alltips, tip)
         end

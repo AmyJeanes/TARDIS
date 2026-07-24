@@ -167,6 +167,7 @@ function ENT:Think()
 
         sound.Play("drmatt/tardis/power_on.wav", self:GetPos())
         
+        ---@type gmod_tardis_interior?
         local int
         for _,ent in ipairs(TARDIS:GetInteriorEnts()) do
             local size = ent.metadata.Interior.Size

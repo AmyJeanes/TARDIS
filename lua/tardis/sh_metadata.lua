@@ -39,7 +39,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field TipSettings tardis_tip_settings
 ---@field LightOverride tardis_light_override
 ---@field Light tardis_interior_light?
----@field Lights table<string, tardis_interior_light_state>?
+---@field Lights table<string, tardis_interior_light>?
 ---@field ScreensEnabled boolean?
 ---@field UseFullName boolean
 ---@field Screens tardis_screen[]?
@@ -470,7 +470,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 
 ---@class tardis_interior_template
 ---@field override boolean?
----@field condition function?
+---@field condition (fun(id: string, ply: Player, ent: gmod_tardis|gmod_tardis_interior): boolean?)?
 ---@field ignore_missing boolean?
 ---@field fail_msg string?
 ---@field fail function?
@@ -663,7 +663,7 @@ function TARDIS:SetupFalseWorlds(int_id)
     if locals then
         for k, world in pairs(locals) do
             local fw_id = "tardis_" .. tostring(int_id) .. "_" .. tostring(k)
-            local copy = table.Copy(world)
+            local copy = table.Copy(world) --[[@as worldportals_false_world]]
             copy.id = fw_id
             wp.addfalseworld(copy)
         end
@@ -697,7 +697,7 @@ end
 ---@api
 ---@param interior tardis_metadata
 function TARDIS:AddInterior(interior)
-    interior = table.Copy(interior)
+    interior = table.Copy(interior) --[[@as tardis_metadata]]
 
     local id = interior.ID
 

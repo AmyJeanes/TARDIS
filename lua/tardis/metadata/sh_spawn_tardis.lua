@@ -56,11 +56,10 @@ if SERVER then
             trace.filter = ply
 
             -- Realm-mismatch heuristic false positive: util.TraceLine is shared and we are inside if SERVER then.
-            ---@diagnostic disable-next-line: gmod-realm-mismatch-heuristic
             tr = util.TraceLine(trace)
         end
 
-        local sent = scripted_ents.GetStored(entityName).t
+        local sent = assert(scripted_ents.GetStored(entityName)).t
         ClassName = entityName
         local SpawnFunction = scripted_ents.GetMember(entityName, "SpawnFunction")
         if not SpawnFunction then
@@ -121,7 +120,6 @@ if SERVER then
 else -- CLIENT
 
     -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Spawn-Delete-Sound", function()
         local ent
         local pos

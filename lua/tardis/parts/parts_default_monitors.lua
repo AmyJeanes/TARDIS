@@ -37,7 +37,7 @@ end
 -- Getting other monitor and parts
 
 function PART:GetOther()
-    return self.interior:GetPart(self.OtherID)
+    return self.interior:GetPart(self.OtherID) --[[@as part_default_monitors]]
 end
 
 ---@param r number
@@ -52,15 +52,15 @@ function PART:GetOtherRotation()
 end
 
 function PART:GetHitboxScreen()
-    return self.interior:GetPart(self.screen_hitbox_id)
+    return self.interior:GetPart(self.screen_hitbox_id) --[[@as part_default_monitors]]
 end
 
 function PART:GetHitboxHandles()
-    return self.interior:GetPart(self.handles_hitbox_id)
+    return self.interior:GetPart(self.handles_hitbox_id) --[[@as part_default_monitors]]
 end
 
 function PART:GetHitboxStatic()
-    return self.interior:GetPart(self.static_hitbox_id)
+    return self.interior:GetPart(self.static_hitbox_id) --[[@as part_default_monitors]]
 end
 
 
@@ -449,9 +449,8 @@ if SERVER then
     function PART:RequestFullUpdate(ply) self:RequestUpdate(true, true, ply) end
 
     -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS_DefaultMonitorsUpdate", function(len,ply)
-        local part = net.ReadEntity()
+        local part = net.ReadEntity() --[[@as part_default_monitors]]
         local update_pos = net.ReadBool()
         local update_hitbox = net.ReadBool()
 
@@ -503,7 +502,7 @@ else
     end
 
     net.Receive("TARDIS_DefaultMonitorsRequestUpdate", function(len,ply)
-        local part = net.ReadEntity()
+        local part = net.ReadEntity() --[[@as part_default_monitors]]
 
         local update_pos = net.ReadBool()
         local update_hitbox = net.ReadBool()
@@ -616,7 +615,7 @@ local function Setup_Hitbox_Parts(MonitorID)
 
     ---@param self part_default_monitors
     PART.GetMonitor = function(self)
-        return self.interior:GetPart(self.MonitorID)
+        return self.interior:GetPart(self.MonitorID) --[[@as part_default_monitors]]
     end
 
 

@@ -35,6 +35,7 @@ end
 local function drawFrustum(self)
     -- Use the live light when it's emitting, otherwise reconstruct where it would be from metadata.
     local pl = self.projectedlight
+    ---@type Vector, Angle, number, number, number, number
     local origin, ang, hfov, vfov, nearz, farz
     if IsValid(pl) then
         origin, ang = pl:GetPos(), pl:GetAngles()

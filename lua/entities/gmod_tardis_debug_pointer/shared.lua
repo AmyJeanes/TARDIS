@@ -1,6 +1,12 @@
 -- TARDIS debug pointer
 -- Creators: Brundoob, Parar020100 and RyanM2711
 
+-- DProperties:CreateRow's row panel: typed as a plain Panel upstream, its own methods only described in prose.
+---@class dproperties_row : Panel
+---@field Setup fun(self: dproperties_row, type: string, vars: table?)
+---@field SetValue fun(self: dproperties_row, value: any)
+---@field DataChanged fun(self: dproperties_row, value: any)
+
 ---@class gmod_tardis_debug_pointer : Entity
 ---@field debug_window Panel?
 ---@field model string?
@@ -107,7 +113,6 @@ if SERVER then
     util.AddNetworkString("TARDIS-Pointer-Use")
 
     -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Pointer-Debug-Update",function(len,ply)
         if not ply:IsAdmin() then return end
 
@@ -362,8 +367,8 @@ else
                 vtype = d
             end
 
-            local row1 = pr:CreateRow( category, name )
-            local row2 = pr:CreateRow( category, name .. " (precise)" )
+            local row1 = pr:CreateRow( category, name ) --[[@as dproperties_row]]
+            local row2 = pr:CreateRow( category, name .. " (precise)" ) --[[@as dproperties_row]]
 
             row1:Setup( vtype, { min = vmin, max = vmax } )
             row1:SetValue(value)
@@ -424,7 +429,7 @@ else
             UpdatePointerPos(false, true)
         end)
 
-        local pv_iva = pr:CreateRow( "Player view position", "Ignore vertical angle" )
+        local pv_iva = pr:CreateRow( "Player view position", "Ignore vertical angle" ) --[[@as dproperties_row]]
         pv_iva:Setup( "Bool" )
         pv_iva:SetValue(pv_ignore_vertical_angle)
         ---@param val boolean
@@ -465,7 +470,7 @@ else
             end
         end
 
-        local inv = pr:CreateRow( "Actions", "Print" )
+        local inv = pr:CreateRow( "Actions", "Print" ) --[[@as dproperties_row]]
         inv:Setup( "Bool" )
         inv:SetValue(false)
         ---@param val boolean

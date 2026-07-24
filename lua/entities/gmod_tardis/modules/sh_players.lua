@@ -104,9 +104,10 @@ else
     -- predict isn't enough; without it the interior stays hidden until the server's
     -- TARDIS-PlayerData broadcast re-sets it.
     ENT:AddHook("PostTeleportPortal", "predict-tardisdata", function(self, portal, ent)
-        if ent ~= LocalPlayer() then return end
-        ent:SetTardisData("exterior", self)
-        ent:SetTardisData("interior", self.interior)
+        local ply = LocalPlayer()
+        if ent ~= ply then return end
+        ply:SetTardisData("exterior", self)
+        ply:SetTardisData("interior", self.interior)
     end)
 end
 

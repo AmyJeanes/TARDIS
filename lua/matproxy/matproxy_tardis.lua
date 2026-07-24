@@ -3,12 +3,20 @@ fallbackcol = Color(fallbackcol.r, fallbackcol.g, fallbackcol.b):ToVector()
 
 TARDIS.DynamicProxyVars = TARDIS.DynamicProxyVars or {}
 
+---@class tardis_dynamic_proxy_vars
+---@field LastValue Vector?
+---@field value_cached Vector?
+---@field var_cached string?
+---@field light_col Vector?
+---@field light_frame number?
+---@field LastColor Vector?
+
 -- Runs per material bind per frame, so no argument may allocate - callers
 -- seed first-use defaults on the returned table instead of passing them in.
 ---@param ent gmod_tardis
 ---@param mat IMaterial
 ---@param name string
----@return table
+---@return tardis_dynamic_proxy_vars
 local function getdynamicproxyvars(ent, mat, name)
     local byent = TARDIS.DynamicProxyVars[ent]
     if not byent then
@@ -107,8 +115,6 @@ matproxy.Add({
 
             if mat:GetTexture(self.Texture):GetName() ~= self.Textures[s] then
                 -- SetTexture accepts a texture name string as well as an ITexture
-                -- Fixed on the wiki (2026-07-22); removable once the annotations re-scrape it.
-                ---@diagnostic disable-next-line: param-type-mismatch
                 mat:SetTexture(self.Texture, self.Textures[s])
             end
 

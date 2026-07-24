@@ -1,5 +1,8 @@
 -- Door
 
+-- glua_ls 1.1.1: the hook overload already types these, but only as inferred.
+---@param self gmod_tardis_interior
+---@param part gmod_tardis_part
 ENT:AddHook("PartBodygroupChanged", "doors", function(self, part, bodygroup, value)
     if not self.metadata.SyncDoorBodygroups then return end
     if self.exterior:IsChameleonActive() then return end

@@ -782,12 +782,16 @@ T.Templates = {
     },
     default_halloween = {
         override = true,
+        -- glua_ls 1.1.1: the condition @field declares this signature, but the literal's params don't inherit it.
+        ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsHalloweenEvent()
         end,
     },
     default_christmas = {
         override = true,
+        -- glua_ls 1.1.1: the condition @field declares this signature, but the literal's params don't inherit it.
+        ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsChristmasEvent()
         end,

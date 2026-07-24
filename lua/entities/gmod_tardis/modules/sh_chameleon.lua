@@ -182,6 +182,7 @@ function ENT:ChangeExterior(id, animate, ply, retry)
         id = false
     end
 
+    ---@type boolean?, boolean?, string?, boolean?
     local can_apply,select_failed,msg,msg_is_err = self:CallCommonHook("CanChangeExterior", id, retry)
 
     if can_apply == false then

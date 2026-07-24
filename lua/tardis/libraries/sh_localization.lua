@@ -16,6 +16,7 @@ TARDIS.Languages = TARDIS.Languages or {}
 TARDIS.LanguageExtensions = TARDIS.LanguageExtensions or {}
 ---@type table<string, table<string, string>>
 TARDIS.LanguageCache = TARDIS.LanguageCache or {}
+---@type string
 TARDIS.CurrentLanguage = TARDIS.CurrentLanguage
 TARDIS.DefaultLanguage = "en"
 
@@ -77,6 +78,13 @@ function TARDIS:GetPhraseIfExists(phrase, ...)
         return str
     end
     return string.format(str, ...)
+end
+
+-- Functionally identical to {} but gives proper type checking for languages
+---@api
+---@return tardis_language
+function TARDIS:NewLanguage()
+    return {}
 end
 
 ---@api

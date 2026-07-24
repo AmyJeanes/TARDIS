@@ -74,7 +74,7 @@ if SERVER then
     ---@param ent? Entity
     ---@param ply? Player
     function ENT:SetTracking(ent, ply)
-        if not ply then ply = self:GetData("pilot") end
+        if not ply then ply = self:GetData("pilot") --[[@as Player]] end
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = wasTrackingEnt ~= nil
         if not IsValid(ent) then
@@ -107,6 +107,7 @@ if SERVER then
 
         local entSize = get_ent_size(ent)
 
+        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
         if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent --[[@as Player]]))) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
             return false
@@ -157,13 +158,15 @@ if SERVER then
             self:SetData("tracking-ent-size", entSize)
             self:SetData("tracking-ent",ent,true)
             if IsValid(ent) and ent.TardisExterior then
-                ---@cast ent gmod_tardis
-                ent:SetData("tracking-tracked-by", self)
+                -- glua_ls 1.1.1: the TardisExterior marker guard above does not narrow.
+                local tracked = ent --[[@as gmod_tardis]]
+                tracked:SetData("tracking-tracked-by", self)
             end
             self:SetTrackRotationAuto()
         end
 
         if wasTrackingEnt ~= ent then
+            -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
             local name = ent.PrintName or (ent:IsPlayer() and (ent --[[@as Player]]):Nick()) or ent:GetModel() or ent:GetClass()
             if ent.GetCreator then
                 local creator = ent:GetCreator()
@@ -238,8 +241,10 @@ if SERVER then
     end)
 
     ENT:AddHook("HandleE2", "tracking", function(self, name, e2, ...)
+        ---@type any[]
         local args = {...}
         if name == "Track" and (args[1] == e2.player or TARDIS:CheckPP(e2.player, self)) then
+            ---@type Entity
             local ent = args[1]
             local success = self:SetTracking(ent, e2.player)
             return success and 1 or 0
@@ -359,7 +364,8 @@ if SERVER then
             if adjustedOffset ~= vector_origin then
                 adjustedOffset:Mul(phm)
                 if trackrotation then
-                    offset:Add(WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles()))
+                    local localOffset = WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles())
+                    offset:Add(localOffset)
                 else
                     offset:Add(adjustedOffset)
                 end
@@ -374,6 +380,7 @@ if SERVER then
 
         local tvel = ent:GetVelocity()
         local tfwd = tvel:Angle():Forward()
+        ---@type Vector
         local target
         if trackrotation then
             target = ent:LocalToWorld(offset)
@@ -385,6 +392,8 @@ if SERVER then
         local targetpredicted = target+(tfwd*tvel:Length()*phm)
         local vel = ph:GetVelocity()
         local velnorm = vel:GetNormalized()
+        -- glua_ls 1.1.1: Length's declared @return still reads as inferred here.
+        ---@type number
         local len = vel:Length()
 
         local entSize = self:GetData("tracking-ent-size")
@@ -522,6 +531,7 @@ if SERVER then
     end)
 
     ENT:OnMessage("tracking-set", function(self,data,ply)
+        ---@type Entity
         local ent = data[1]
 
         if self:GetData("pilot") ~= ply then return end

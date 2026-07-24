@@ -17,7 +17,7 @@ ENT:AddHook("PostInitialize", "spacebuild", function(self)
     self.spacebuild_env:CreateEnvironment(self, radius)
 
     -- override functions on the cube environment to the simpler base ones
-    local baseEnt = scripted_ents.Get("base_sb_environment")
+    local baseEnt = assert(scripted_ents.Get("base_sb_environment"))
     self.spacebuild_env.OnEnvironment = baseEnt.OnEnvironment -- uses radius like the exit distance
     self.spacebuild_env.GetTemperature = baseEnt.GetTemperature -- ignores sunburn damage
 

@@ -289,6 +289,9 @@ if SERVER then
         end
     end)
 
+    -- glua_ls 1.1.1: the hook overload already types these, but only as inferred.
+    ---@param self gmod_tardis
+    ---@param part gmod_tardis_part
     ENT:AddHook("PartBodygroupChanged", "doors", function(self, part, bodygroup, value)
         if not IsValid(part) or part ~= self:GetPart("door") then return end
 
@@ -305,6 +308,7 @@ if SERVER then
             if self:IsChameleonActive() then return end
 
             if not IsValid(self.interior) then return end
+            ---@type gmod_tardis_part
             local intdoor = self.interior:GetPart("door")
             if not IsValid(intdoor) then return end
 
@@ -333,7 +337,7 @@ else
     ---@api
     ---@param real boolean?
     function ENT:DoorOpen(real)
-        local door=self:GetPart("door")
+        local door=self:GetPart("door") --[[@as part_door]]
         if real and IsValid(door) and not self:Locked() then
             return door.DoorPos ~= 0
         else
@@ -343,7 +347,7 @@ else
 
     ---@api
     function ENT:DoorMoving()
-        local door=self:GetPart("door")
+        local door=self:GetPart("door") --[[@as part_door]]
         if IsValid(door) then
             return door.DoorPos ~= door.DoorTarget
         else

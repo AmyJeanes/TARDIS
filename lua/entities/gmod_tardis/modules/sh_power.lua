@@ -34,12 +34,19 @@ end)
 
 if SERVER then
     ---@api
-    ---@return boolean
+    ---@return boolean toggled
+    ---@return string? reason
+    ---@return any arg1
+    ---@return any arg2
     function ENT:TogglePower()
         return self:SetPower(not self:GetPower())
     end
     ---@api
     ---@param on boolean
+    ---@return boolean toggled
+    ---@return string? reason
+    ---@return any arg1
+    ---@return any arg2
     function ENT:SetPower(on)
         local cantoggle, reason, arg1, arg2 = self:CallCommonHook("CanTogglePower", on)
         if cantoggle == false then return false, reason, arg1, arg2 end

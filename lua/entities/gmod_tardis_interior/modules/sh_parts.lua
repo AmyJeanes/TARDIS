@@ -16,6 +16,7 @@ end)
 
 ---@api
 ---@param id string
+---@return gmod_tardis_part
 function ENT:GetPart(id)
     return self.parts and self.parts[id] or NULL
 end

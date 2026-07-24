@@ -40,6 +40,9 @@ function ENT:Initialize()
         self.Model=self.metadata.Exterior.Model
         self.Portal=self.metadata.Exterior.Portal
         self.Fallback=self.metadata.Exterior.Fallback
+        -- glua_ls 1.1.1: a base method defined with `:` has no declared self, so the analyzer
+        -- infers its type from what we pass and flags its own guess. Declaring ours doesn't help.
+        ---@diagnostic disable-next-line: infer-unknown
         self.BaseClass.Initialize(self)
     end
 end

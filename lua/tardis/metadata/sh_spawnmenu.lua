@@ -33,7 +33,6 @@ if CLIENT then
         label:SetText("  " .. TARDIS:GetPhrase(text))
         label:SetTextColor(Color(0,0,0))
         -- stub types AddPanel as a class-name factory, but it also accepts a panel instance
-        ---@diagnostic disable-next-line: param-type-mismatch, generic-constraint-mismatch
         dmenu:AddPanel(label)
     end
 
@@ -133,7 +132,9 @@ if CLIENT then
         local option_buttons = {}
 
         if not options then return end
-        for option_value, option_text in SortedPairsByValue(options) do
+        ---@type fun(): any, string
+        local next_option = SortedPairsByValue(options)
+        for option_value, option_text in next_option do
 
             local option_button = submenu:AddOption(TARDIS:GetPhrase(option_text), function(self)
                 TARDIS:SetCustomSetting(int_id, setting_id, option_value)
@@ -217,12 +218,16 @@ if CLIENT then
             end
 
             if other_versions_exist then
-                for _,v in SortedPairs(versions.other) do
+                ---@type fun(): integer, tardis_version_entry
+                local next_version = SortedPairs(versions.other)
+                for _,v in next_version do
                     add_version_option(v.name, v, 3)
                 end
             end
             if custom_versions_exist then
-                for _,v in SortedPairs(versions.custom) do
+                ---@type fun(): string, tardis_version_entry
+                local next_custom = SortedPairs(versions.custom)
+                for _,v in next_custom do
                     add_version_option(v.name, v, 4)
                 end
             end
@@ -274,7 +279,9 @@ if CLIENT then
         if custom_settings then
             local custom_categories = {}
 
-            for cust_setting_id, custom_setting in SortedPairs(custom_settings) do
+            ---@type fun(): string, table
+            local next_setting = SortedPairs(custom_settings)
+            for cust_setting_id, custom_setting in next_setting do
                 local custom_dmenu = dmenu
 
                 if custom_setting.category then
@@ -303,11 +310,25 @@ if CLIENT then
     local MODE = TARDIS.SpawnmenuIconMode
 
     -- Primary face: what shows when not hovered.
+    ---@class TardisSpawnIcon : ContentIcon
+    ---@field is_tardis_icon boolean?
+    ---@field original_spawnname string
+    ---@field spawn_icon string?
+    ---@field interior_icon string?
+    ---@field missing_spawn string?
+    ---@field missing_interior string?
+
+    ---@class TardisSpawnIconContainer : Panel
+    ---@field tardis_icons TardisSpawnIcon[]
+    ---@field hovered TardisSpawnIcon?
+    ---@field iconpack_applied table?
+    ---@field iconmode_applied integer?
+
     -- "Only" modes are strict — they fall back straight to the matching
     -- missing icon without trying the other type. Hover modes fall through
     -- to the other type first, since both faces are part of the experience,
     -- and only resort to the missing icon when neither real icon exists.
-    ---@param v table
+    ---@param v TardisSpawnIcon
     ---@param mode integer
     local function get_primary(v, mode)
         if mode == MODE.InteriorOnly then
@@ -326,7 +347,7 @@ if CLIENT then
     -- Hover face: only the icon type the mode swaps to, no fallback. If that
     -- icon doesn't exist for this entity, hover does nothing (caller treats
     -- nil as "leave material alone").
-    ---@param v table
+    ---@param v TardisSpawnIcon
     ---@param mode integer
     local function get_hover(v, mode)
         if mode == MODE.InteriorOnHover then return v.interior_icon end
@@ -334,7 +355,7 @@ if CLIENT then
         return nil
     end
 
-    ---@param container Panel
+    ---@param container TardisSpawnIconContainer
     ---@param update_current boolean?
     function TARDIS.Spawnmenu.UpdateIconMaterial(container, update_current)
         local mode = TARDIS:GetSetting("spawnmenu_icon_mode")
@@ -371,7 +392,7 @@ if CLIENT then
 
         if mode == MODE.InteriorOnly or mode == MODE.SpawniconOnly then return end
 
-        local hovered = vgui.GetHoveredPanel()
+        local hovered = vgui.GetHoveredPanel() --[[@as TardisSpawnIcon?]]
         if hovered == container.hovered and not update_current then return end
 
         if container.hovered then
@@ -380,7 +401,7 @@ if CLIENT then
         end
 
         local hover_mat = hovered and hovered.is_tardis_icon and get_hover(hovered, mode) or nil
-        if hover_mat then
+        if hovered and hover_mat then
             container.hovered = hovered
             hovered:SetMaterial(hover_mat)
         else
@@ -407,7 +428,9 @@ if CLIENT then
 
             if not table.IsEmpty(versions.other) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.AlternativeVersions")
-                for _,v in SortedPairs(versions.other) do
+                ---@type fun(): integer, tardis_version_entry
+                local next_version = SortedPairs(versions.other)
+                for _,v in next_version do
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
                 dmenu:AddSpacer()
@@ -415,7 +438,9 @@ if CLIENT then
 
             if not table.IsEmpty(versions.custom) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.CustomVersions")
-                for _,v in SortedPairs(versions.custom) do
+                ---@type fun(): string, tardis_version_entry
+                local next_custom = SortedPairs(versions.custom)
+                for _,v in next_custom do
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
                 dmenu:AddSpacer()
@@ -453,14 +478,14 @@ if CLIENT then
         TARDIS.Spawnmenu.OpenRightClickMenu(obj)
     end
 
-    ---@param container Panel
+    ---@param container TardisSpawnIconContainer
     ---@param obj table
     function TARDIS.Spawnmenu.CreateIcon(container, obj)
         if not obj.material then return end
         if not obj.nicename then return end
         if not obj.spawnname then return end
 
-        local icon = vgui.Create("ContentIcon", container)
+        local icon = vgui.Create("ContentIcon", container) --[[@as TardisSpawnIcon]]
         icon:SetContentType("entity")
         icon:SetSpawnName(obj.spawnname)
         icon:SetName(obj.nicename)
@@ -528,6 +553,7 @@ if CLIENT then
 end
 
 TARDIS_OVERRIDES = TARDIS_OVERRIDES or {}
+---@type table<string, string[]>
 local c_overrides = TARDIS_OVERRIDES.Categories or {}
 local n_overrides = TARDIS_OVERRIDES.Names or {}
 

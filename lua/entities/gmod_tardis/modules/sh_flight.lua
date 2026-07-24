@@ -513,6 +513,7 @@ if SERVER then
     end)
 
     ENT:AddHook("HandleE2", "flight", function(self, name, e2, ...)
+        ---@type any[]
         local args = {...}
         if name == "Flightmode" and TARDIS:CheckPP(e2.player, self) then
             local on = args[1]

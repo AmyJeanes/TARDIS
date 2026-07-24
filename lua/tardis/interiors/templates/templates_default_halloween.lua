@@ -299,6 +299,7 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             func = function(ext,int,id)
                 local state = ext:GetData("halloween-state", HALLOWEEN_STATE_DISABLED)
                 if state == HALLOWEEN_STATE_CORRIDOR_SOUNDS then
+                    ---@type Entity
                     local soundent = int.halloween_corridor_sound_ent
                     if not IsValid(soundent) then
                         debug_print("Creating corridor sound entity")
@@ -437,7 +438,9 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if not IsValid(self.interior) then return end
             local corridors = self.interior:GetPart("default_corridors")
             if IsValid(corridors) then
+                ---@type string
                 local sound = data[1]
+                ---@type number
                 local soundlvl = data[2]
                 local soundent = self.interior.halloween_corridor_sound_ent
                 if not IsValid(soundent) then
@@ -457,9 +460,10 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
         ["halloween-stopcorridorsound"] = function(self, data, ply)
             local soundent = self.interior.halloween_corridor_sound_ent
             if IsValid(soundent) then
-                if soundent.sound then
+                local corridor_sound = soundent.sound
+                if corridor_sound then
                     debug_print("Stopping corridor sound")
-                    soundent.sound:Stop()
+                    corridor_sound:Stop()
                     soundent.sound = nil
                 end
                 debug_print("Removing corridor sound entity")

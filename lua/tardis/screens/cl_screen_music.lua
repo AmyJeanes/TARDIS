@@ -87,7 +87,11 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
 --------------------------------------------------------------------------------
 -- Layout calculations
 --------------------------------------------------------------------------------
+    -- glua_ls 1.1.1: GetWide's declared @return still reads as inferred here.
+    ---@type number
     local frW = frame:GetWide()
+    -- glua_ls 1.1.1: GetTall's declared @return still reads as inferred here.
+    ---@type number
     local frT = frame:GetTall()
 
     local gap = math.min(frT, frW) * 0.06

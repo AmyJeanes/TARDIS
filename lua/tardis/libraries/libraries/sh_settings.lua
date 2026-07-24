@@ -58,10 +58,11 @@ function TARDIS:AddSetting(data)
                 local set_value = TARDIS:SetSetting(data.id, value, true)
 
                 if set_value ~= value then
+                    local cvar = assert(GetConVar(convar.name))
                     if data.type == "integer" then
-                        GetConVar(convar.name):SetInt(set_value)
+                        cvar:SetInt(set_value)
                     else
-                        GetConVar(convar.name):SetFloat(set_value)
+                        cvar:SetFloat(set_value)
                     end
                 end
             elseif data.type == "bool" then
@@ -119,7 +120,7 @@ function TARDIS:SetSetting(id, value, ignore_convar)
             self.GlobalSettings[id]=value
 
             if data.convar and not ignore_convar then
-                local convar = GetConVar(data.convar.name)
+                local convar = assert(GetConVar(data.convar.name))
                 if data.type == "integer" then
                     convar:SetInt(value)
                 elseif data.type == "number" then
@@ -185,10 +186,10 @@ function TARDIS:GetSetting(id, src, no_default)
     ---@type Entity?
     local ent = src
     if IsValid(ent) and not ent:IsPlayer() and not ent.TardisExterior then
-        ent = ent.exterior
+        ent = (ent --[[@as gmod_tardis_interior|gmod_tardis_part]]).exterior
     end
     if IsValid(ent) and isentity(ent) then
-        ---@cast ent Entity
+        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
         ply = ent:IsPlayer() and ent --[[@as Player]] or ent:GetCreator()
     end
 
@@ -294,6 +295,7 @@ function TARDIS:LoadSettings()
     local function LoadSettingsFromFile(settings_table, settings_file)
         if file.Exists(settings_file, "DATA") then
             local file_contents = file.Read(settings_file, "DATA")
+            ---@type table
             local loaded_settings = self.von.deserialize(file_contents)
 
             table.Merge(settings_table, loaded_settings)
@@ -431,7 +433,6 @@ else
     end)
 
     -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-ClientSettings",function(len)
         local userID=net.ReadInt(8)
         if not TARDIS.ClientSettings[userID] then TARDIS.ClientSettings[userID]={} end

@@ -91,6 +91,7 @@ if SERVER then
     end)
 
     ENT:AddHook("HandleE2", "spin", function(self, name, e2, ...)
+        ---@type any[]
         local args = {...}
         if name == "SetSpinmode" and TARDIS:CheckPP(e2.player, self) then
             local spinmode = args[1]

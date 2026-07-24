@@ -1,7 +1,7 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
 -- SOURCE FILE: i18n/languages/cy.json --
 
-local T = {}
+local T = TARDIS:NewLanguage()
 T.Code = "cy"
 T.Name = "Saesneg"
 T.Phrases = {

@@ -1,7 +1,7 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
 -- SOURCE FILE: i18n/languages/ru.json --
 
-local T = {}
+local T = TARDIS:NewLanguage()
 T.Code = "ru"
 T.Name = "Русский"
 T.Phrases = {

@@ -67,6 +67,8 @@
 ---@field screens tardis_screen_entry[]
 ---@field is3D2D boolean?
 ---@field power_off_black boolean?
+---@field draw boolean?
+---@field black boolean?
 ---@field pos3D Vector?
 ---@field ang3D Angle?
 ---@field RestoreHexLayout function
@@ -120,7 +122,7 @@ function TARDIS:GetScreenFont(screen, name)
     if not fontCached then
         local font = self.fonts[name]
         if not font then error("TARDIS font '"..name.."' is not defined") end
-        local fontCopy = table.Copy(font)
+        local fontCopy = table.Copy(font) --[[@as tardis_screen_font]]
         fontCopy.size = math.Round(font.size * scale, 2)
         --TARDIS:Debug("Generating TARDIS font ".. name .. " with size " .. tostring(fontCopy.size))
         surface.CreateFont(fontName, fontCopy)
@@ -180,15 +182,19 @@ TARDIS:AddKeyBind("tp-openscreen",{
     exterior=true
 })
 
----@type table<string, {[1]: tardis_screen_options, [2]: function}>
+---@class tardis_screen_registration
+---@field options tardis_screen_options
+---@field func fun(self: TARDIS, ext: gmod_tardis, int: gmod_tardis_interior, frame: tardis_screen_frame, screen: TardisScreen)
+
+---@type table<string, tardis_screen_registration>
 local screens={}
 ---@api
 ---@param name string
----@param options table
----@param func fun(self, ext, int, frame, screen: TardisScreen)
+---@param options tardis_screen_options
+---@param func fun(self: TARDIS, ext: gmod_tardis, int: gmod_tardis_interior, frame: tardis_screen_frame, screen: TardisScreen)
 function TARDIS:AddScreen(name,options,func)
     if options.id == nil then options.id = name end
-    screens[name]={options,func}
+    screens[name]={options=options,func=func}
 end
 TARDIS:LoadFolder("screens")
 
@@ -594,18 +600,17 @@ function TARDIS:LoadScreenUI(screen)
     local ext=screen.ext
     local int=screen.int
     for k,v in pairs(screens) do
-        ---@cast v { [1]: tardis_screen_options, [2]: function } -- glua_ls reads loop-var indices as nilable
-        if not ((v[1].intonly and (not IsValid(int)))
-            or (v[1].menu==false and (not (IsValid(ext)))))
+        if not ((v.options.intonly and (not IsValid(int)))
+            or (v.options.menu==false and (not (IsValid(ext)))))
         then
             local screen_frame = vgui.Create("DPanel",main)
             screen_frame:SetVisible(false)
             screen_frame:SetSize(main:GetSize())
             screen_frame:SetPos(0,0)
             screen_frame._name=k
-            screen_frame._text=v[1].text or k
+            screen_frame._text=v.options.text or k
             screen_frame._loaded=false
-            table.insert(screen.screens,{name=k,frame=screen_frame,options=v[1],func=v[2]})
+            table.insert(screen.screens,{name=k,frame=screen_frame,options=v.options,func=v.func})
         end
     end
     table.SortByMember(screen.screens,"name",true)
@@ -638,7 +643,7 @@ end
 
 ---@param screen TardisScreen
 ---@param frame Panel
----@param func function
+---@param func fun(parent: Panel): Panel[]
 ---@param isvgui boolean?
 function TARDIS:LoadButtons(screen, frame, func, isvgui)
     if isvgui ~= nil and isvgui then
@@ -753,6 +758,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
     else
         ---@type Panel[]
         local pages={}
+        ---@type Panel
         local page
         local spacew,spaceh = 0,0
         local function newpage()
@@ -809,6 +815,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
             label:SetText(TARDIS:GetPhrase("Screens.Common.CurrentPage", curpage, #pages))
             label:DoLayout()
 
+            ---@type Panel
             local nxt
 
             local back=vgui.Create("DButton",frame)
@@ -891,9 +898,8 @@ function TARDIS:LoadScreen(id, options)
     frame:SetPos(screen.gap,screen.gap)
     frame:SetAlpha(230)
 
-    ---@param self Panel
+    ---@param self TardisScreen
     screen.Think = function(self)
-        ---@type gmod_tardis_interior
         local int = self.int
         if not IsValid(int) then return end
         local shouldDraw = not (int:CallHook("ShouldNotDrawScreen", self.id) or false)

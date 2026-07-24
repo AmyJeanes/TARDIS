@@ -1,3 +1,7 @@
+---@class ListView3DRow : DLabel
+---@field panel DPanel
+---@field index integer
+
 ---@class ListView3D
 ---@field parent Panel
 ---@field screen TardisScreen
@@ -8,7 +12,7 @@
 ---@field elem_h number
 ---@field lines string[]
 ---@field elements Panel[]
----@field line_elements DLabel[]
+---@field line_elements ListView3DRow[]
 ---@field selected_line integer?
 ---@field bgcolor Color
 ---@field scroll number
@@ -120,7 +124,7 @@ function ListView3D:UpdateLayout()
         bp:SetPos(0, (i - 1) * (d + self.elem_h))
         bp:SetSize(w, self.elem_h)
         bp:SetBackgroundColor(Color(255,255,255))
-        local b = vgui.Create("DLabel", bp)
+        local b = vgui.Create("DLabel", bp) --[[@as ListView3DRow]]
         b.panel = bp
         b:SetSize(w, self.elem_h)
         b:SetPos(0,0)
@@ -130,7 +134,7 @@ function ListView3D:UpdateLayout()
         b:SetIsToggle(true)
         b.index = i
 
-        ---@param this Panel
+        ---@param this ListView3DRow
         ---@param state boolean
         b.OnToggled = function(this, state)
             if state then
@@ -156,7 +160,7 @@ function ListView3D:UpdateLayout()
             end
         end
 
-        ---@param this Panel
+        ---@param this ListView3DRow
         b.DoDoubleClick = function(this)
             self:DoDoubleClick(this.index, this)
         end

@@ -1,7 +1,7 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
 -- SOURCE FILE: i18n/languages/fi.json --
 
-local T = {}
+local T = TARDIS:NewLanguage()
 T.Code = "fi"
 T.Name = "suomi"
 T.Phrases = {

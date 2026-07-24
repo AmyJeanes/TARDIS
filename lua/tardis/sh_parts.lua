@@ -501,6 +501,7 @@ local overrides={
     ["Use"]={
         ---@param self gmod_tardis_part
         ---@param a Entity
+        ---@param ... any
         function(self,a,...)
         if SERVER and TARDIS.debug_tips and self.InteriorPart then
             return TARDIS.DebugTipsFunction(self, a, ...)
@@ -511,7 +512,8 @@ local overrides={
         end
 
         local res
-        if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
+        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
+        if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and (a --[[@as Player]]):GetEyeTraceNoCursor().Entity~=self then return end
         local allowed, animate
         if self.ExteriorPart then
             allowed, animate = self.exterior:CallHook("CanUsePart",self,a)
@@ -534,9 +536,10 @@ local overrides={
                     blockuse=true
                 end
 
+                -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
                 if SERVER and self.Motion and IsValid(a) and a:IsPlayer() and (self.parent:CheckSecurity(a) or self.BypassIsomorphic) then
                     local phys = self:GetPhysicsObject()
-                    local walk = a:KeyDown(IN_WALK)
+                    local walk = (a --[[@as Player]]):KeyDown(IN_WALK)
                     if walk and self.StartFrozen and IsValid(phys) and not phys:IsMoveable() and not self.unfrozen then
                         phys:EnableMotion(true)
                         phys:Wake()
@@ -583,13 +586,15 @@ local overrides={
             end
         end
 
+        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
         if SERVER and self.Motion and IsValid(a) and a:IsPlayer()
-            and not (self.ResetPositionOnUse and a:KeyDown(IN_WALK))
+            and not (self.ResetPositionOnUse and (a --[[@as Player]]):KeyDown(IN_WALK))
             and not self:IsPlayerHolding() then
 
             local phys = self:GetPhysicsObject()
             if IsValid(phys) and phys:IsMoveable() then 
-                a:PickupObject(self)
+                local ply = a --[[@as Player]]
+                ply:PickupObject(self)
             end
         end
         return res
@@ -626,7 +631,7 @@ local parts={}
 ---@api
 ---@param ent Entity
 ---@param id string
----@return Entity
+---@return gmod_tardis_part
 function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
@@ -642,7 +647,7 @@ end
 ---@param ent Entity
 ---@return table<string, gmod_tardis_part>|false|nil
 function TARDIS:GetParts(ent)
-    return IsValid(ent) and ent.parts
+    return IsValid(ent) and (ent --[[@as gmod_tardis|gmod_tardis_interior]]).parts
 end
 
 local overridequeue={}
@@ -665,7 +670,7 @@ function TARDIS:AddPart(part)
         part.Name = part.ID -- most creators just copy the ID anyway
     end
 
-    part=table.Copy(part)
+    part=table.Copy(part) --[[@as gmod_tardis_part]]
     part.HasUseBasic = part.UseBasic ~= nil
     part.HasUse = part.Use ~= nil
     part.Base = "gmod_tardis_part"
@@ -910,7 +915,8 @@ if SERVER then
         end
         ent.controlparts = {}
         for k,v in pairs(tempparts) do
-            local part_data = table.Copy(GetData(ent, scripted_ents.GetStored(v).t, k))
+            local stored = assert(scripted_ents.GetStored(v), "unregistered part class: " .. v)
+            local part_data = table.Copy(GetData(ent, stored.t, k)) --[[@as table]]
             NormalizePartFields(part_data)
 
             if part_data.Enabled ~= false then
@@ -998,6 +1004,7 @@ else
     ---@param parent Entity
     function TARDIS:SetupPart(ent,name,ext,int,parent)
         if IsValid(ent) and IsValid(parent) then
+            ---@cast ent gmod_tardis_part
             ent.exterior=ext
             ent.interior=int
             ent.parent=parent

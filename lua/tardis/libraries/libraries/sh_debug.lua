@@ -62,7 +62,7 @@ local function CreateBoolDebugConVar(name, desc)
     CreateConVar(id, 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, desc)
 
     local function convar_update()
-        TARDIS[name] = GetConVar(id):GetBool()
+        TARDIS[name] = assert(GetConVar(id)):GetBool()
     end
 
     cvars.AddChangeCallback(id, function()
