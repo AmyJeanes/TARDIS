@@ -45,6 +45,7 @@ function ENT:MakeVehicle( Pos, Ang, Model, Class, VName, VTable )
     ent.ClassOverride   = Class
 
     ent.TardisPart=true
+    ent.DoNotDuplicate=true
     ent:GetPhysicsObject():EnableMotion(false)
     ent:SetNoDraw(true)
     self:DeleteOnRemove(ent)

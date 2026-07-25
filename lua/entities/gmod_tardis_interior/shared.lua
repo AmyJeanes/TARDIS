@@ -26,6 +26,7 @@
 
 ENT.Base="gmod_door_interior"
 ENT.TardisInterior=true
+ENT.DoNotDuplicate=true
 ENT.Exterior="gmod_tardis"
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
