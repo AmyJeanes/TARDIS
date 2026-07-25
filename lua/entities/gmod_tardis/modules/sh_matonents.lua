@@ -16,8 +16,6 @@ if SERVER then
         if #entities ~= 0 then
             for _,v in pairs(entities) do
                 if v:IsPlayer() then
-                    -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow a pairs() loop variable.
-                    ---@cast v Player
                     if v:GetTardisExterior()~=self then
                         self:PlayerEnter(v)
                         v:ScreenFade(SCREENFADE.IN, Color(255,255,255,200), 1, 0.1)
@@ -49,8 +47,6 @@ if SERVER then
         if #entities ~= 0 then
             for _,v in pairs(entities) do
                 if v:IsPlayer() then
-                    -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow a pairs() loop variable.
-                    ---@cast v Player
                     if v:GetTardisExterior()~=self then
                         v:ScreenFade(SCREENFADE.IN, Color(255, 255, 255, math.max(self:GetData("alpha", 255) - 30, 0)), 0.1, 0.1)
                     end

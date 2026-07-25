@@ -107,8 +107,7 @@ if SERVER then
 
         local entSize = get_ent_size(ent)
 
-        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
-        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent --[[@as Player]]))) then
+        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
             return false
         elseif ent == self then
@@ -166,8 +165,7 @@ if SERVER then
         end
 
         if wasTrackingEnt ~= ent then
-            -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
-            local name = ent.PrintName or (ent:IsPlayer() and (ent --[[@as Player]]):Nick()) or ent:GetModel() or ent:GetClass()
+            local name = ent.PrintName or (ent:IsPlayer() and (ent):Nick()) or ent:GetModel() or ent:GetClass()
             if ent.GetCreator then
                 local creator = ent:GetCreator()
                 if IsValid(creator) then

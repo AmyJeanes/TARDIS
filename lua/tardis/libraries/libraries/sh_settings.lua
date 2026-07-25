@@ -189,8 +189,7 @@ function TARDIS:GetSetting(id, src, no_default)
         ent = (ent --[[@as gmod_tardis_interior|gmod_tardis_part]]).exterior
     end
     if IsValid(ent) and isentity(ent) then
-        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
-        ply = ent:IsPlayer() and ent --[[@as Player]] or ent:GetCreator()
+        ply = ent:IsPlayer() and ent or ent:GetCreator()
     end
 
     if not id then error("Requested setting with no id") end

@@ -512,8 +512,7 @@ local overrides={
         end
 
         local res
-        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
-        if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and (a --[[@as Player]]):GetEyeTraceNoCursor().Entity~=self then return end
+        if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and (a):GetEyeTraceNoCursor().Entity~=self then return end
         local allowed, animate
         if self.ExteriorPart then
             allowed, animate = self.exterior:CallHook("CanUsePart",self,a)
@@ -536,10 +535,9 @@ local overrides={
                     blockuse=true
                 end
 
-                -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
                 if SERVER and self.Motion and IsValid(a) and a:IsPlayer() and (self.parent:CheckSecurity(a) or self.BypassIsomorphic) then
                     local phys = self:GetPhysicsObject()
-                    local walk = (a --[[@as Player]]):KeyDown(IN_WALK)
+                    local walk = (a):KeyDown(IN_WALK)
                     if walk and self.StartFrozen and IsValid(phys) and not phys:IsMoveable() and not self.unfrozen then
                         phys:EnableMotion(true)
                         phys:Wake()
@@ -586,14 +584,13 @@ local overrides={
             end
         end
 
-        -- glua_ls 1.1.1: IsPlayer's @return_cast doesn't narrow past the guard.
         if SERVER and self.Motion and IsValid(a) and a:IsPlayer()
-            and not (self.ResetPositionOnUse and (a --[[@as Player]]):KeyDown(IN_WALK))
+            and not (self.ResetPositionOnUse and (a):KeyDown(IN_WALK))
             and not self:IsPlayerHolding() then
 
             local phys = self:GetPhysicsObject()
             if IsValid(phys) and phys:IsMoveable() then 
-                local ply = a --[[@as Player]]
+                local ply = a
                 ply:PickupObject(self)
             end
         end

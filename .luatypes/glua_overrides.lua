@@ -33,3 +33,10 @@ function debug.getinfo(funcOrStackLevel, fields) end
 ---@field Angle Angle
 ---@field Normal Vector
 
+-- Stock engine entities with no annotation entry, reached through ents.Create or
+-- FindByClass. Without these the analyzer auto-creates the class and warns.
+---@class sky_camera : Entity
+---@class env_explosion : Entity
+---@class env_smokestack : Entity
+---@class env_rotorwash_emitter : Entity
+

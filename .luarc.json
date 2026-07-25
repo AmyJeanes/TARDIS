@@ -9,10 +9,14 @@
         "library": [
             "./.tools/glua-api",
             "./.luatypes",
-            "../Doors",
-            "../world-portals",
-            "../Sonic-Screwdriver",
-            "../GMod-MCP-Server",
+            "../Doors/lua",
+            "../Doors/.luatypes",
+            "../world-portals/lua",
+            "../world-portals/.luatypes",
+            "../Sonic-Screwdriver/lua",
+            "../Sonic-Screwdriver/.luatypes",
+            "../GMod-MCP-Server/lua",
+            "../GMod-MCP-Server/.luatypes",
             "../wire/lua/wire"
         ],
         "ignoreGlobs": [
