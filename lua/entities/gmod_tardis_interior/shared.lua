@@ -104,7 +104,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis_interior, name: "OnHealthDepleted", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "OnTakeDamage", id: string, func: fun(self: gmod_tardis_interior, dmginfo: CTakeDamageInfo, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "OnWireInput", id: string, func: fun(self: gmod_tardis_interior, name: string, value: any, ...))
----@overload fun(self: gmod_tardis_interior, name: "PartBodygroupChanged", id: string, func: fun(self: gmod_tardis_interior, ent: gmod_tardis_part, bodygroup: number, value: number, ...))
+---@overload fun(self: gmod_tardis_interior, name: "PartBodygroupChanged", id: string, func: fun(self: gmod_tardis_interior, ent: gmod_tardis_part, bodygroup: any, value: any, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PartUsed", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, a: Entity|NULL|Player, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PhysicsCollide", id: string, func: fun(self: gmod_tardis_interior, colData: CollisionData, collider: Entity, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PhyslockToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
