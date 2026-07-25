@@ -59,8 +59,21 @@ function ENT:OnTakeDamage(dmginfo)
 end
 
 duplicator.RegisterEntityClass("gmod_tardis", function(ply, data)
-    local ent = duplicator.GenericDuplicatorFunction(ply, data)
+    -- The generic pass runs pre-spawn, so withhold skin and bodygroups from it and set them below -
+    -- the hooks they fire need a TARDIS that already has its metadata
+    local generic = {}
+    for k, v in pairs(data) do generic[k] = v end
+    generic.Skin, generic.BodyG = nil, nil
+
+    local ent = duplicator.GenericDuplicatorFunction(ply, generic)
+    if not IsValid(ent) then return end
+
     ent:SetCreator(ply)
     ent:Initialize()
+
+    if data.Skin then ent:SetSkin(data.Skin) end
+    for id, value in pairs(data.BodyG or {}) do
+        ent:SetBodygroup(id, value)
+    end
     return ent
 end, "Data")
