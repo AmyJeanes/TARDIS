@@ -102,9 +102,18 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer:SetAlphaBar(false)
         mixer:SetWangs(true)
 
+        -- SetColor re-fires ValueChanged; flag our own writes so they don't read as a user edit.
+        ---@param col Color
+        local function sync_mixer(col)
+            mixer.syncing = true
+            mixer:SetColor(col)
+            mixer.syncing = nil
+        end
+
         ---@param self Panel
         ---@param val Color
         mixer.ValueChanged = function(self, val)
+            if self.syncing then return end
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
         end
@@ -112,7 +121,7 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer.Think = function(self)
             if self.lastchange and CurTime() - self.lastchange > 0.2 then
                 self.lastchange = nil
-                self:SetColor(TARDIS:GetSetting(id))
+                sync_mixer(TARDIS:GetSetting(id))
             end
         end
 
@@ -124,8 +133,7 @@ function TARDIS:CreateOptionInterface(id, data)
 
         ---@param self Panel
         elem.RefreshVal = function(self)
-            local setting = TARDIS:GetSetting(id)
-            mixer:SetColor(setting)
+            sync_mixer(TARDIS:GetSetting(id))
         end
 
 
