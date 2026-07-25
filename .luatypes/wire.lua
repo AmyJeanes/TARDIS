@@ -1,4 +1,11 @@
 ---@meta
+
+-- Type annotations only - never executed. The declarations below define real
+-- globals and library functions with empty bodies, so loading this file at
+-- runtime would replace working functions with stubs rather than declare them.
+-- It lives outside lua/ so the game cannot reach it; this is the backstop.
+error("wire.lua contains type annotations only and must never be executed")
+
 -- Wiremod's port helpers take an untyped `ent`, so the analyzer back-infers it
 -- from every addon that calls them. Declare the entity argument here instead.
 
