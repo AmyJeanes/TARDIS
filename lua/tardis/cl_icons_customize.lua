@@ -217,7 +217,7 @@ function TARDIS:CustomizeIconPack()
         if update_dirty then update_dirty() end
     end
 
-    -- glua_ls 1.1.1: the field read drops the self param a ':' declaration implies.
+    -- glua_ls 1.1.1: declared, else the saved method reads as inferred at its call sites.
     ---@type fun(self: DFrame)
     local original_close = frame.Close
     ---@param self DFrame

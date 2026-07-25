@@ -147,7 +147,7 @@ else
 
     ---@class Player
     local meta=assert(FindMetaTable("Player"))
-    -- glua_ls 1.1.1: the field read drops the self param a ':' declaration implies.
+    -- glua_ls 1.1.1: declared, else the saved method reads as inferred at its call sites.
     ---@type fun(self: Player): Entity
     oldgetviewentity2=oldgetviewentity2 or meta.GetViewEntity
     function meta:GetViewEntity(...)

@@ -198,7 +198,7 @@ end
 -- from the model returned by GetWeaponWorldModel if the weapon overrides DrawWorldModel.
 -- This is hacky but necessary as some weapons e.g. the Sonic Screwdriver use a placeholder
 -- model and then draw the actual model dynamically in DrawWorldModel.
----@param wep Entity
+---@param wep Weapon
 ---@return string?
 ---@return number?
 local function resolveWeaponWorldModel(wep)
@@ -216,8 +216,9 @@ local function resolveWeaponWorldModel(wep)
     meta.SetSkin = function(s, k) if s == wep then skin = k return end return oSkin(s, k) end
     ---@param s Entity
     meta.DrawModel = function(s, ...) if s == wep then return end return oDraw(s, ...) end
-    -- glua_ls 1.1.1: the field read drops the self param a ':' declaration implies.
-    pcall(wep.DrawWorldModel --[[@as fun(wep: Entity)]], wep)
+    -- The cast picks an arm (our SWEPs declare no params, the annotations flags); a SWEP that
+    -- reads nil flags would error, aborting the dry run through the pcall.
+    pcall(wep.DrawWorldModel --[[@as fun(self: Weapon, flags: number)]], wep, STUDIO_RENDER)
     meta.SetModel, meta.SetSkin, meta.DrawModel = oSet, oSkin, oDraw
     return model or wep:GetModel(), skin or wep:GetSkin()
 end
