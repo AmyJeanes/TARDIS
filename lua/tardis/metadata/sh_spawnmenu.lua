@@ -132,10 +132,11 @@ if CLIENT then
         local option_buttons = {}
 
         if not options then return end
-        ---@type fun(): any, string
-        local next_option = SortedPairsByValue(options)
-        for option_value, option_text in next_option do
+        for option_value, option_text in SortedPairsByValue(options) do
 
+            -- glua_ls 1.1.1: the sorted-pairs globals are annotated as returning a
+            -- bare `function`, so their loop variables can't resolve to a type.
+            ---@diagnostic disable-next-line: infer-unknown
             local option_button = submenu:AddOption(TARDIS:GetPhrase(option_text), function(self)
                 TARDIS:SetCustomSetting(int_id, setting_id, option_value)
             end)
@@ -218,16 +219,16 @@ if CLIENT then
             end
 
             if other_versions_exist then
-                ---@type fun(): integer, tardis_version_entry
-                local next_version = SortedPairs(versions.other)
-                for _,v in next_version do
+                for _,v in SortedPairs(versions.other) do
+                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    ---@diagnostic disable-next-line: infer-unknown
                     add_version_option(v.name, v, 3)
                 end
             end
             if custom_versions_exist then
-                ---@type fun(): string, tardis_version_entry
-                local next_custom = SortedPairs(versions.custom)
-                for _,v in next_custom do
+                for _,v in SortedPairs(versions.custom) do
+                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    ---@diagnostic disable-next-line: infer-unknown
                     add_version_option(v.name, v, 4)
                 end
             end
@@ -279,9 +280,7 @@ if CLIENT then
         if custom_settings then
             local custom_categories = {}
 
-            ---@type fun(): string, table
-            local next_setting = SortedPairs(custom_settings)
-            for cust_setting_id, custom_setting in next_setting do
+            for cust_setting_id, custom_setting in SortedPairs(custom_settings) do
                 local custom_dmenu = dmenu
 
                 if custom_setting.category then
@@ -292,9 +291,12 @@ if CLIENT then
                     custom_dmenu = custom_categories[custom_setting.category]
                 end
 
+                -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
                 if custom_setting.value_type == "bool" then
+                    ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddBoolSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text)
                 elseif custom_setting.value_type == "list" then
+                    ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddListSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text, custom_setting.options)
                 end
             end
@@ -428,9 +430,9 @@ if CLIENT then
 
             if not table.IsEmpty(versions.other) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.AlternativeVersions")
-                ---@type fun(): integer, tardis_version_entry
-                local next_version = SortedPairs(versions.other)
-                for _,v in next_version do
+                for _,v in SortedPairs(versions.other) do
+                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
                 dmenu:AddSpacer()
@@ -438,9 +440,9 @@ if CLIENT then
 
             if not table.IsEmpty(versions.custom) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.CustomVersions")
-                ---@type fun(): string, tardis_version_entry
-                local next_custom = SortedPairs(versions.custom)
-                for _,v in next_custom do
+                for _,v in SortedPairs(versions.custom) do
+                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
                 dmenu:AddSpacer()
