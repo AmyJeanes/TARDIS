@@ -128,6 +128,14 @@ pwsh -File scripts/install-tools.ps1
 
 It is idempotent - re-running is a no-op when the pinned versions are already present, so it is also the recovery path when diagnostics look wrong. After a fresh install, run `/reload-plugins` so Claude Code re-launches the LSP against the new binary.
 
+### Never point a workspace library at a sibling addon's repository root
+
+In `.luarc.json`, reference a sibling's **subdirectories** - `../Doors/lua` and `../Doors/.luatypes` - never `../Doors` itself. Every addon provisions its own `.tools/glua-api`, so a root-level entry silently loads a second copy of the entire annotation set. The analyzer then holds two declarations of every class and function and stops applying `@return_cast`, so type narrowing fails at sites with no visible connection to libraries: guards stop narrowing, and diagnostics appear on code that is perfectly correct. The two copies are not even interchangeable, because each addon's generated hook overloads are spliced into its own `hook.lua`.
+
+Nothing about the symptom points at the cause, which is what makes this worth knowing rather than discovering. Reported upstream as [gmod-glua-ls#48](https://github.com/Pollux12/gmod-glua-ls/issues/48).
+
+`Initialize-GmodTools` warns when it spots one, and because `scripts/glua-check.ps1` provisions before it scans, that warning appears in CI too. Note the asymmetry though: CI checks out siblings as fresh clones and `.tools/` is gitignored, so CI sees the *misconfiguration* but never suffers the *duplication* - the broken narrowing is a developer-machine symptom. A green CI run is not evidence your local diagnostics are trustworthy.
+
 ## Claude Code LSP integration (`glua-lsp` plugin)
 
 Diagnostics, hover, and jump-to-definition come from the [`glua-lsp` plugin](https://github.com/AmyJeanes/gmod-claude-plugins) (marketplace `AmyJeanes/gmod-claude-plugins`), which wraps the [`glua_ls`](https://github.com/Pollux12/gmod-glua-ls) server - the same EmmyLua-Analyzer-Rust engine as `glua_check`, running long-lived. Diagnostics arrive automatically after every edit; no hook involvement. `.claude/settings.json` declares the marketplace so contributors get prompted to install on first open, and the plugin auto-resolves `glua_ls` from this project's `.tools/bin/` at launch (no global install, no PATH plumbing). The `glua-lsp:install-glua-ls` skill covers the same recovery flow if symptoms appear later. Treat reported diagnostics as actionable only if your edit caused them - pre-existing noise on unrelated lines is not in scope for the current change.
