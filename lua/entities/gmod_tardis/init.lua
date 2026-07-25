@@ -58,6 +58,12 @@ function ENT:OnTakeDamage(dmginfo)
     self:CallHook("OnTakeDamage", dmginfo)
 end
 
+-- Not our constraints - GMod copies them in from the TARDIS being duplicated, and they still point at it
+---@param data table
+function ENT:OnEntityCopyTableFinish(data)
+    data.Constraints = nil
+end
+
 duplicator.RegisterEntityClass("gmod_tardis", function(ply, data)
     -- The generic pass runs pre-spawn, so withhold skin and bodygroups from it and set them below -
     -- the hooks they fire need a TARDIS that already has its metadata
