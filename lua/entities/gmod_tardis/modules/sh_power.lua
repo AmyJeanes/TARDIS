@@ -56,12 +56,6 @@ if SERVER then
         return true
     end
 
-    ENT:AddHook("PostInitialize","power-init", function(self)
-        if self:GetData("power_disabled_first") then
-            self:SetPower(false)
-        end
-    end)
-
     ENT:AddHook("CanTogglePower", "vortex", function(self, on)
         if self:GetData("teleport") or self:GetData("vortex") then
             return false, "Controls.Power.FailedToggle.Travelling"
