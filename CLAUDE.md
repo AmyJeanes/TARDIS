@@ -116,6 +116,7 @@ _Shared conventions for my GMod addons - generated from [`gmod-addon-tools/docs/
 - **Comments: concise, the _why_ not the _what_.** A couple of lines at most; reserve length for genuinely non-obvious rationale and bias toward cutting - match the surrounding density, don't pad to essay length. Don't restate the code, don't explain it by what it replaced, and keep the _why_ self-contained (no pointers to external docs or fragile cross-file references). Keep comments ASCII: `->` not an arrow, a single spaced hyphen for a dash (never a double `--`, which reads as a second comment marker, nor an em-dash).
 - **Drop the loop variable you don't use** rather than naming it: `for _, v in pairs(t)`, `for k in pairs(t)`, `for _ = 1, n do`. The `unused` lint is on - keep the noise floor at zero.
 - **Every `---@diagnostic disable` needs a paired reason** on the same or preceding line naming _why_ the rule is suppressed. The default is to fix the issue, not suppress it.
+- **If that reason is an analyzer or annotations defect rather than our code, start it `glua_ls <version>:`** - and do the same for a `---@cast` / `---@type` / `--[[@as]]` that only exists to work around one. `grep -rn "glua_ls <version>"` is then the complete list to re-test on a toolchain bump, and anything unmarked is a genuine local decision. Without it there is no way to tell the two apart, and a workaround outlives the bug it was written for.
 
 ## First-time setup (before touching `.lua` files)
 
