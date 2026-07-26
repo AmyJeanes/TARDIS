@@ -157,9 +157,7 @@ if SERVER then
             self:SetData("tracking-ent-size", entSize)
             self:SetData("tracking-ent",ent,true)
             if IsValid(ent) and ent.TardisExterior then
-                -- glua_ls 1.1.1: the TardisExterior marker guard above does not narrow.
-                local tracked = ent --[[@as gmod_tardis]]
-                tracked:SetData("tracking-tracked-by", self)
+                ent:SetData("tracking-tracked-by", self)
             end
             self:SetTrackRotationAuto()
         end
