@@ -1,6 +1,6 @@
 -- Door
 
--- glua_ls 1.1.1: the hook overload already types these, but only as inferred.
+-- glua_ls upstream: hook overload types these, but as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
 ---@param self gmod_tardis_interior
 ---@param part gmod_tardis_part
 ENT:AddHook("PartBodygroupChanged", "doors", function(self, part, bodygroup, value)

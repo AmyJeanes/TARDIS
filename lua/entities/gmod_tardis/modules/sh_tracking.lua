@@ -388,7 +388,7 @@ if SERVER then
         local targetpredicted = target+(tfwd*tvel:Length()*phm)
         local vel = ph:GetVelocity()
         local velnorm = vel:GetNormalized()
-        -- glua_ls 1.1.1: Length's declared @return still reads as inferred here.
+        -- glua_ls upstream: Length's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
         ---@type number
         local len = vel:Length()
 

@@ -782,7 +782,7 @@ T.Templates = {
     },
     default_halloween = {
         override = true,
-        -- glua_ls 1.1.1: the condition @field declares this signature, but the literal's params don't inherit it.
+        -- glua_ls upstream: field-typed literal params not inherited -- https://github.com/Pollux12/gmod-glua-ls/issues/53
         ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsHalloweenEvent()
@@ -790,7 +790,7 @@ T.Templates = {
     },
     default_christmas = {
         override = true,
-        -- glua_ls 1.1.1: the condition @field declares this signature, but the literal's params don't inherit it.
+        -- glua_ls upstream: field-typed literal params not inherited -- https://github.com/Pollux12/gmod-glua-ls/issues/53
         ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsChristmasEvent()

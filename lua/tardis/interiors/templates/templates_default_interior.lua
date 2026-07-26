@@ -89,7 +89,7 @@ TARDIS:AddInteriorTemplate("default_dynamic_color", TARDIS:NewInteriorTemplate({
                 if SERVER then
                     local speed = 0.001
 
-                    -- glua_ls 1.1.1: GetData's default resolves the generic but still reads as inferred.
+                    -- glua_ls upstream: GetData's generic resolves but reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
                     ---@type number
                     local k = ext:GetData("default_int_color_mult", math.Rand(0,1))
                     ---@type number?

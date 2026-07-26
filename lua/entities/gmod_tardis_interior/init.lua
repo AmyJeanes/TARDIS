@@ -77,8 +77,7 @@ function ENT:Initialize()
         self.mins=self.metadata.Interior.Size.Min
         self.maxs=self.metadata.Interior.Size.Max
     end
-    -- glua_ls 1.1.1: a base method defined with `:` has no declared self, so the analyzer
-    -- infers its type from what we pass and flags its own guess. Declaring ours doesn't help.
+    -- glua_ls upstream: undeclared base-method self -- https://github.com/Pollux12/gmod-glua-ls/issues/51
     ---@diagnostic disable-next-line: infer-unknown
     self.BaseClass.Initialize(self)
 end

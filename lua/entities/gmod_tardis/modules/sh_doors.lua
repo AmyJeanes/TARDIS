@@ -289,7 +289,7 @@ if SERVER then
         end
     end)
 
-    -- glua_ls 1.1.1: the hook overload already types these, but only as inferred.
+    -- glua_ls upstream: hook overload types these, but as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
     ---@param self gmod_tardis
     ---@param part gmod_tardis_part
     ENT:AddHook("PartBodygroupChanged", "doors", function(self, part, bodygroup, value)
@@ -308,7 +308,7 @@ if SERVER then
             if self:IsChameleonActive() then return end
 
             if not IsValid(self.interior) then return end
-            -- glua_ls 1.1.1: GetPart's declared @return still reads as inferred here.
+            -- glua_ls upstream: GetPart's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
             ---@type gmod_tardis_part
             local intdoor = self.interior:GetPart("door")
             if not IsValid(intdoor) then return end

@@ -134,8 +134,7 @@ if CLIENT then
         if not options then return end
         for option_value, option_text in SortedPairsByValue(options) do
 
-            -- glua_ls 1.1.1: the sorted-pairs globals are annotated as returning a
-            -- bare `function`, so their loop variables can't resolve to a type.
+            -- glua_ls upstream: sorted-pairs returns bare `function` -- https://github.com/Pollux12/annotations-gmod-glua-ls/pull/6
             ---@diagnostic disable-next-line: infer-unknown
             local option_button = submenu:AddOption(TARDIS:GetPhrase(option_text), function(self)
                 TARDIS:SetCustomSetting(int_id, setting_id, option_value)
@@ -220,14 +219,14 @@ if CLIENT then
 
             if other_versions_exist then
                 for _,v in SortedPairs(versions.other) do
-                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    -- glua_ls upstream: sorted-pairs returns bare `function` -- https://github.com/Pollux12/annotations-gmod-glua-ls/pull/6
                     ---@diagnostic disable-next-line: infer-unknown
                     add_version_option(v.name, v, 3)
                 end
             end
             if custom_versions_exist then
                 for _,v in SortedPairs(versions.custom) do
-                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    -- glua_ls upstream: sorted-pairs returns bare `function` -- https://github.com/Pollux12/annotations-gmod-glua-ls/pull/6
                     ---@diagnostic disable-next-line: infer-unknown
                     add_version_option(v.name, v, 4)
                 end
@@ -291,13 +290,12 @@ if CLIENT then
                     custom_dmenu = custom_categories[custom_setting.category]
                 end
 
-                -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
                 if custom_setting.value_type == "bool" then
-                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    -- glua_ls upstream: sorted-pairs returns bare `function` -- https://github.com/Pollux12/annotations-gmod-glua-ls/pull/6
                     ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddBoolSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text)
                 elseif custom_setting.value_type == "list" then
-                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    -- glua_ls upstream: sorted-pairs returns bare `function` -- https://github.com/Pollux12/annotations-gmod-glua-ls/pull/6
                     ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddListSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text, custom_setting.options)
                 end
@@ -433,7 +431,7 @@ if CLIENT then
             if not table.IsEmpty(versions.other) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.AlternativeVersions")
                 for _,v in SortedPairs(versions.other) do
-                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    -- glua_ls upstream: sorted-pairs returns bare `function` -- https://github.com/Pollux12/annotations-gmod-glua-ls/pull/6
                     ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
@@ -443,7 +441,7 @@ if CLIENT then
             if not table.IsEmpty(versions.custom) then
                 TARDIS.Spawnmenu.AddLabel(dmenu, "Spawnmenu.CustomVersions")
                 for _,v in SortedPairs(versions.custom) do
-                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
+                    -- glua_ls upstream: sorted-pairs returns bare `function` -- https://github.com/Pollux12/annotations-gmod-glua-ls/pull/6
                     ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddVersionSubMenu(dmenu, v)
                 end
