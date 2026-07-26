@@ -293,9 +293,11 @@ if CLIENT then
 
                 -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
                 if custom_setting.value_type == "bool" then
+                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
                     ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddBoolSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text)
                 elseif custom_setting.value_type == "list" then
+                    -- glua_ls 1.1.1: sorted-pairs loop variable, untyped at source.
                     ---@diagnostic disable-next-line: infer-unknown
                     TARDIS.Spawnmenu.AddListSetting(custom_dmenu, int_id, cust_setting_id, custom_setting.text, custom_setting.options)
                 end
