@@ -157,6 +157,14 @@ Diagnostics, hover, and jump-to-definition come from the [`glua-lsp` plugin](htt
 
 Where an addon fires its own hooks, callback payload params are typed by a generated `---@overload` catalogue (`scripts/generate-hook-types.ps1`, CI: `generate-hook-types.yml`) - do not hand-edit it; retype a payload at its `CallHook` / `hook.Run` site instead. Custom global-hook overloads are spliced into the provisioned `hook.lua` by `Initialize-GmodTools`, so after pulling a change to a generated fragment mid-session, re-run `scripts/install-tools.ps1` (it re-syncs) then `/reload-plugins` to refresh live types.
 
+## Before reporting a `glua_ls` bug
+
+The two gates disagree by design: `Test-GmodTyping` only asks whether a param is typed at all, which an `---@overload` match satisfies; `infer-unknown` additionally asks whether it was _declared_, which an overload match is not. So a hook callback can pass typing-check and still trip `infer-unknown` on values derived from its params - an explicit `---@param` above the `hook.Add` clears it. This hits stock GMod hooks too, not just generated catalogues.
+
+A committed `---@diagnostic disable` marks a genuine analyzer bug - it fired, and was suppressed. A `---@cast` / `---@type` / `--[[@as]]` frequently does not; it is often a redundant defensive leftover. Remove it in the real workspace and re-check before concluding anything. Suppressions tracking an upstream report carry a `glua_ls upstream:` comment with the issue URL, so grep that to find what to retire when one closes.
+
+Already investigated and **not** bugs, so do not re-derive them: `pcall` never narrows on `ok` (a limitation every Lua type system shares); `table.Copy` is genuinely generic, and its casts suppress `need-check-nil` because the return is honestly `T?`; `string.gmatch`'s bare `---@return function` makes a local `---@type fun(): string` a real tightening rather than a workaround; the undocumented Derma / `DModelPanel` getters are correctly omitted from the stubs; and a runtime-conditional `ENT.Base` (Wire mounted or not) cannot be resolved statically - an explicit `---@cast` does not clear it either, so the suppression stays.
+
 ## Bumping the shared tooling
 
 Tool versions and this conventions block are pinned to a `gmod-addon-tools` tag. Bump the version constants in `gmod-addon-tools/src/install.ps1` (or edit the shared docs); merging to the module's `main` auto-cuts a new tag, and Renovate then raises a pin-bump PR here that regenerates the affected artifacts and runs GLua Check before it merges. CI pins the module by tag (the `ref:` in each workflow); a local sibling checkout uses whatever branch it is on, so keep it on the pinned tag to mirror CI exactly.
