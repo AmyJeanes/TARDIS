@@ -417,7 +417,9 @@ lifecycle depends on.
 
 The numbers - the cull floor in dB and the N-second delay - tune by ear like the closed-door coefficient.
 The shipped defaults are a park floor of -54 dB, an unpark floor of -50 dB (the hysteresis gap), and a
-3-second delay. The floor has to clear Source's own distance-gain clamp: `sndLevelGain` floors an
+3-second delay, **ear-tested 2026-07-27 and settled**: park and unpark are inaudible in play, so the
+tuning pass is closed unless new content contradicts it. The floor has to clear Source's own
+distance-gain clamp: `sndLevelGain` floors an
 open-world sound's `res.applied` at exactly 0.001 (the engine does the same at extreme range), so a park
 floor at or below that never fires for a plain open-world sound - it rests forever on the clamp. A
 boundary-crossing sound multiplies that clamp by the tiny doorway gain and reaches ~1e-5, far below any
