@@ -373,14 +373,16 @@ else
                 local extpart = self:GetPart("door")
                 local extsnd = open and extsnds.open or extsnds.close
                 if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
-                    Doors:PlaySound({ path = extsnd, owner = self, tag = "door", ent = extpart, resumable = true })
+                    Doors:PlaySound({ path = extsnd, owner = self, tag = "door", pair = "door",
+                        ent = extpart, resumable = true })
                 end
             end
             if intsnds.enabled and IsValid(self.interior) then
                 local intpart = self.interior:GetPart("door")
                 local intsnd = open and intsnds.open or intsnds.close
                 if IsValid(intpart) then
-                    Doors:PlaySound({ path = intsnd, owner = self, tag = "door", ent = intpart, resumable = true })
+                    Doors:PlaySound({ path = intsnd, owner = self, tag = "door", pair = "door",
+                        ent = intpart, resumable = true })
                 end
             end
         end

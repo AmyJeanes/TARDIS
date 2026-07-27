@@ -315,8 +315,8 @@ if SERVER then
 else
     -- Occupant teleport sounds play through managed BASS channels (see sh_sound.lua) so they survive the
     -- listener crossing the interior<->exterior void on a view toggle or portal teleport, which culls a
-    -- normal EmitSound. Interior and exterior copies attenuate by real listener distance, so only the
-    -- copy near the current POV is audible - the same falloff and near/far crossfade Source gave them.
+    -- normal EmitSound. Paired so only the copy on the listener's side is audible: both run the whole
+    -- time, so crossing mid-demat picks between two renderings of it that stayed time-aligned.
     -- Stopped as a group on interrupt via StopSounds.
     ---@param extpath string?
     ---@param intpath string?
@@ -324,10 +324,12 @@ else
     ---@param shouldint boolean
     function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint)
         if shouldint and intpath and IsValid(self.interior) then
-            Doors:PlaySound({ path = intpath, owner = self, tag = "teleport", ent = self.interior, resumable = true })
+            Doors:PlaySound({ path = intpath, owner = self, tag = "teleport", pair = "teleport",
+                ent = self.interior, resumable = true })
         end
         if shouldext and extpath then
-            Doors:PlaySound({ path = extpath, owner = self, tag = "teleport", ent = self, resumable = true })
+            Doors:PlaySound({ path = extpath, owner = self, tag = "teleport", pair = "teleport",
+                ent = self, resumable = true })
         end
     end
 

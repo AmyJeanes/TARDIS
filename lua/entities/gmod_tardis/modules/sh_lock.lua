@@ -114,12 +114,13 @@ else
         local extsoundoff = self.metadata.Exterior.Sounds.Unlock
         local intsoundon = self.metadata.Interior.Sounds.Lock or extsoundon
         local intsoundoff = self.metadata.Interior.Sounds.Unlock or extsoundoff
-        Doors:PlaySound({ path = locked and extsoundon or extsoundoff, ent = self })
-        -- the interior copy plays right as players head through the door, so it's managed (the exterior
-        -- clicks are too short to cut)
+        -- Both copies are managed so the pair can fade between them: the resolver only sees managed
+        -- channels, so an engine-side half would carry on sounding while the other faded away.
+        Doors:PlaySound({ path = locked and extsoundon or extsoundoff,
+            owner = self, tag = "lock", pair = "lock", ent = self, resumable = true })
         if IsValid(self.interior) then
             Doors:PlaySound({ path = locked and intsoundon or intsoundoff,
-                owner = self, tag = "lock", ent = self.interior, resumable = true })
+                owner = self, tag = "lock", pair = "lock", ent = self.interior, resumable = true })
         end
     end)
 

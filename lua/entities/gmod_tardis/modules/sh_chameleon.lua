@@ -57,9 +57,10 @@ else
 
         if TARDIS:GetSetting("sound") and csound then
             local csound_int = self.metadata.Interior.Sounds.Chameleon or csound
-            Doors:PlaySound({ path = csound, owner = self, tag = "chameleon", ent = self, resumable = true })
+            Doors:PlaySound({ path = csound, owner = self, tag = "chameleon", pair = "chameleon",
+                ent = self, resumable = true })
             if IsValid(self.interior) then
-                Doors:PlaySound({ path = csound_int, owner = self, tag = "chameleon",
+                Doors:PlaySound({ path = csound_int, owner = self, tag = "chameleon", pair = "chameleon",
                     ent = self.interior, resumable = true })
             end
         end
