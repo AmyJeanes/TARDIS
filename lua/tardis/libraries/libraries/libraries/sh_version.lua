@@ -6,7 +6,7 @@
 ---@field Patch number
 
 ---@class tardis_build
----@field Channel "release"|"beta"|"alpha"|"source"
+---@field Channel "release"|"beta"|"source"
 ---@field Commits number?
 ---@field Sha string?
 

@@ -1,7 +1,7 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
 -- SOURCE FILE: i18n/languages/el.json --
 
-local T = {}
+local T = TARDIS:NewLanguage()
 T.Code = "el"
 T.Name = "Αγγλικά"
 T.Phrases = {

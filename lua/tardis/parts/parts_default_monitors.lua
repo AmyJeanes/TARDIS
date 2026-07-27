@@ -2,6 +2,7 @@ local HIDE_COLLISIONS = true
 -- Default monitors
 ---@class part_default_monitors : gmod_tardis_part
 ---@field MonitorID string?
+---@field screen_pose_fn (fun(): Vector?, Angle?)?
 local PART = TARDIS:NewPart()
 PART.Model = "models/molda/toyota_int/monitor.mdl"
 PART.AutoSetup = true
@@ -36,7 +37,7 @@ end
 -- Getting other monitor and parts
 
 function PART:GetOther()
-    return self.interior:GetPart(self.OtherID)
+    return self.interior:GetPart(self.OtherID) --[[@as part_default_monitors]]
 end
 
 ---@param r number
@@ -51,15 +52,15 @@ function PART:GetOtherRotation()
 end
 
 function PART:GetHitboxScreen()
-    return self.interior:GetPart(self.screen_hitbox_id)
+    return self.interior:GetPart(self.screen_hitbox_id) --[[@as part_default_monitors]]
 end
 
 function PART:GetHitboxHandles()
-    return self.interior:GetPart(self.handles_hitbox_id)
+    return self.interior:GetPart(self.handles_hitbox_id) --[[@as part_default_monitors]]
 end
 
 function PART:GetHitboxStatic()
-    return self.interior:GetPart(self.static_hitbox_id)
+    return self.interior:GetPart(self.static_hitbox_id) --[[@as part_default_monitors]]
 end
 
 
@@ -124,6 +125,8 @@ function PART:CanFlip()
     return self:GetBodygroup(0) == 2
 end
 
+---@return Vector? pos
+---@return Angle? ang
 function PART:GetScreenPosition()
     local matrix = self:GetBoneMatrix(4)
     if not matrix then return end
@@ -361,6 +364,22 @@ if SERVER then
         self:UpdateHitboxCollision()
     end
 else
+    -- Where the screen panel sits in front of the monitor face. Resolved at draw
+    -- time rather than in Think: the bones are posed during the draw, so a pose
+    -- read a frame earlier trails the face mid-move and z-fights it.
+    ---@return Vector? pos
+    ---@return Angle? ang
+    function PART:GetScreenPose3D()
+        self:SetupBones()
+        local scr_pos, scr_ang = self:GetScreenPosition()
+        if not scr_pos then return end
+        if not scr_ang then return end
+
+        local offset = self:GetBodygroup(0) == 2 and Vector(-11.5, 6.8, 6.8) or Vector(-11.5, 6.8, 5.8)
+        offset:Rotate(scr_ang)
+        return scr_pos + offset, scr_ang
+    end
+
     function PART:Think()
         if self.pending_update and not self:IsAnimationPlaying() then
             self:SendMonitorsUpdate(self.pending_update_pos, self.pending_update_hitbox)
@@ -368,29 +387,11 @@ else
 
         local ply = self:GetData(self.data_rotated_by)
 
-        if self.ScreenID then
-
-            if self.interior:GetScreensOn() and self:GetData(self.data_screen_enabled) then
-
-                self:SetSubMaterial(2, "models/molda/toyota_int/screen_loading")
-                self.loading_mat = true
-
-                scr_pos, scr_ang = self:GetScreenPosition()
-
-                if scr_pos and self.interior.screens3D then
-                    local offset = Vector(-11.5, 6.8, 5.8)
-
-                    if self:GetBodygroup(0) == 2 then
-                        offset = Vector(-11.5, 6.8, 6.8)
-                    end
-
-                    offset:Rotate(scr_ang)
-                    self.interior.screens3D[self.ScreenID].pos3D = scr_pos + offset
-                    self.interior.screens3D[self.ScreenID].ang3D = scr_ang
-                end
-            elseif self.loading_mat then
-                self.loading_mat = nil
-                self:SetSubMaterial(2, nil)
+        if self.ScreenID and self.interior.screens3D then
+            local screen = self.interior.screens3D[self.ScreenID]
+            if screen then
+                self.screen_pose_fn = self.screen_pose_fn or function() return self:GetScreenPose3D() end
+                screen.GetPose3D = self.screen_pose_fn
             end
         end
 
@@ -448,9 +449,8 @@ if SERVER then
     function PART:RequestFullUpdate(ply) self:RequestUpdate(true, true, ply) end
 
     -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS_DefaultMonitorsUpdate", function(len,ply)
-        local part = net.ReadEntity()
+        local part = net.ReadEntity() --[[@as part_default_monitors]]
         local update_pos = net.ReadBool()
         local update_hitbox = net.ReadBool()
 
@@ -502,7 +502,7 @@ else
     end
 
     net.Receive("TARDIS_DefaultMonitorsRequestUpdate", function(len,ply)
-        local part = net.ReadEntity()
+        local part = net.ReadEntity() --[[@as part_default_monitors]]
 
         local update_pos = net.ReadBool()
         local update_hitbox = net.ReadBool()
@@ -615,7 +615,7 @@ local function Setup_Hitbox_Parts(MonitorID)
 
     ---@param self part_default_monitors
     PART.GetMonitor = function(self)
-        return self.interior:GetPart(self.MonitorID)
+        return self.interior:GetPart(self.MonitorID) --[[@as part_default_monitors]]
     end
 
 

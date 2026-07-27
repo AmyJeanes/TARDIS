@@ -12,6 +12,7 @@ function ENT:Explode(magnitude)
         force = tostring(magnitude)
     end
     local explode = ents.Create("env_explosion")
+    if not IsValid(explode) then error("entity creation failed: env_explosion") end
 
     local console = self:GetPart("console")
     if console and IsValid(console) then

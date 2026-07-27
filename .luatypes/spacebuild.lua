@@ -1,5 +1,11 @@
 ---@meta
 
+-- Type annotations only - never executed. The declarations below define real
+-- globals and library functions with empty bodies, so loading this file at
+-- runtime would replace working functions with stubs rather than declare them.
+-- It lives outside lua/ so the game cannot reach it; this is the backstop.
+error("spacebuild.lua contains type annotations only and must never be executed")
+
 -- Spacebuild resource environment (legacy SB3 dependency, not a sibling addon).
 -- Covers only the env-entity surface TARDIS touches in sv_spacebuild.lua.
 
@@ -39,3 +45,12 @@
 ---@field GetNPercentage fun(self: sb_resource_environment): number
 ---@field GetHPercentage fun(self: sb_resource_environment): number
 ---@field GetEmptyAirPercentage fun(self: sb_resource_environment): number
+
+-- The spacebuild environment SENT we spawn by classname.
+---@class base_cube_environment : Entity
+
+-- The simpler base environment SENT definition whose methods the cube env
+-- borrows (scripted_ents.Get returns the definition table, not an entity).
+---@class base_sb_environment
+---@field OnEnvironment function
+---@field GetTemperature function

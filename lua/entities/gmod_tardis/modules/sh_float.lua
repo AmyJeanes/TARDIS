@@ -121,6 +121,7 @@ if SERVER then
             end
             if (not self:GetData("flight")) and self.pilot and IsValid(self.pilot) then
                 local p=self.pilot
+                ---@type Angle?
                 local eye=p:GetTardisData("viewang")
                 if not eye then
                     eye=angle_zero

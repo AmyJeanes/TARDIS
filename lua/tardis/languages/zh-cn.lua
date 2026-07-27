@@ -1,7 +1,7 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
 -- SOURCE FILE: i18n/languages/zh-CN.json --
 
-local T = {}
+local T = TARDIS:NewLanguage()
 T.Code = "zh-CN"
 T.Name = "简体中文"
 T.Phrases = {

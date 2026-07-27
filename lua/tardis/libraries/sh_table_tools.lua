@@ -8,6 +8,9 @@ function TARDIS:CopyTable(tbl, lookup_table)
     if not tbl or not istable(tbl) then return nil end
 
     local copy = {}
+    -- debug.getmetatable deliberately (flagged deprecated upstream): it reads through
+    -- __metatable protection, so a protected source still copies its real metatable.
+    ---@diagnostic disable-next-line: deprecated
     setmetatable(copy, debug.getmetatable(tbl))
 
     for i,v in pairs(tbl) do

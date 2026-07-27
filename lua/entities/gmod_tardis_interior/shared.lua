@@ -12,6 +12,7 @@
 ---@field roundthings table<integer, integer>
 ---@field owner Player?
 ---@field metadata tardis_metadata
+---@field Fallback tardis_interior_fallback
 ---@field exterior gmod_tardis
 ---@field tips tardis_tip[]
 ---@field idlesounds table<any, doors_managed_sound>
@@ -25,6 +26,7 @@
 
 ENT.Base="gmod_door_interior"
 ENT.TardisInterior=true
+ENT.DoNotDuplicate=true
 ENT.Exterior="gmod_tardis"
 
 local class=string.sub(ENT.Folder,string.find(ENT.Folder, "/[^/]*$")+1) -- only works if in a folder
@@ -38,37 +40,61 @@ local hooks={}
 ---@param func fun(self: gmod_tardis_interior, ...)
 -- >>> GENERATED hook overloads - do not edit; regen: scripts/generate-hook-types.ps1 >>>
 ---@overload fun(self: gmod_tardis_interior, name: "AllowInteriorPos", id: string, func: fun(self: gmod_tardis_interior, arg1: any, saved_pos: any, arg3: any, arg4: any, ...))
+---@overload fun(self: gmod_tardis_interior, name: "ArtronDepleted", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanChangeDestination", id: string, func: fun(self: gmod_tardis_interior, pos: Vector?, ang: Angle?, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanChangeExterior", id: string, func: fun(self: gmod_tardis_interior, target: false, arg2: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanEnableScreens", id: string, func: fun(self: gmod_tardis_interior, ...))
----@overload fun(self: gmod_tardis_interior, name: "CanStartControlSequence", id: string, func: fun(self: gmod_tardis_interior, id: string?, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanLock", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanStartControlSequence", id: string, func: fun(self: gmod_tardis_interior, id: string, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanToggleCloak", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanToggleFastRemat", id: string, func: fun(self: gmod_tardis_interior, force: boolean?, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanToggleHandbrake", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanTogglePower", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanToggleRedecoration", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanToggleScreens", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanToggleShields", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTrack", id: string, func: fun(self: gmod_tardis_interior, ent: Entity|Player|gmod_tardis_part, ply: Player, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTriggerHads", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTurnOffFlight", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTurnOffFloat", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTurnOffPhyslock", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanTurnOffScanner", id: string, func: fun(self: gmod_tardis_interior, id: integer, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanTurnOffScanners", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTurnOnFlight", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTurnOnFloat", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanTurnOnPhyslock", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanTurnOnScanner", id: string, func: fun(self: gmod_tardis_interior, id: integer, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanTurnOnScanners", id: string, func: fun(self: gmod_tardis_interior, ...))
----@overload fun(self: gmod_tardis_interior, name: "CanUsePart", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, a: Entity, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CanUsePart", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, a: Entity|NULL|Player, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "CanUseTardisControl", id: string, func: fun(self: gmod_tardis_interior, control: tardis_control, ply: Player, part: gmod_tardis_part, ...))
+---@overload fun(self: gmod_tardis_interior, name: "CloakToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ConsoleToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
----@overload fun(self: gmod_tardis_interior, name: "DataLoaded", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "DataChanged", id: string, func: fun(self: gmod_tardis_interior, key: string, value: any, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "DematFailed", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "DematFailStopped", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "DematInterrupted", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "DematStart", id: string, func: fun(self: gmod_tardis_interior, ...))
----@overload fun(self: gmod_tardis_interior, name: "DestinationChanged", id: string, func: fun(self: gmod_tardis_interior, pos: Vector?, ang: Angle?, ...))
+---@overload fun(self: gmod_tardis_interior, name: "DestinationChanged", id: string, func: fun(self: gmod_tardis_interior, pos: Vector, ang: Angle, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "DestinationOverride", id: string, func: fun(self: gmod_tardis_interior, pos: Vector?, ang: Angle?, ...))
+---@overload fun(self: gmod_tardis_interior, name: "DoorLockToggled", id: string, func: fun(self: gmod_tardis_interior, locked: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ExteriorChanged", id: string, func: fun(self: gmod_tardis_interior, id: any, ...))
+---@overload fun(self: gmod_tardis_interior, name: "FailedPhyslockEnable", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "FastDemat", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "FastRematToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "FastReturnTriggered", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "FlightInterrupted", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "FlightToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "FloatToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "ForceDematStart", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "HadsToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "HADSTrigger", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "HandbrakeControlToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "HandbrakeToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "HandleE2", id: string, func: fun(self: gmod_tardis_interior, cmd: string, arg2: any, ...))
+---@overload fun(self: gmod_tardis_interior, name: "HandleNoMat", id: string, func: fun(self: gmod_tardis_interior, pos: Vector?, ang: Angle?, callback: any, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "HealthWarningToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "InterruptTeleport", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "IsTravelling", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "LanguageChanged", id: string, func: fun(self: gmod_tardis_interior, langCode: any, oldLangCode: string, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "LightStateChanged", id: string, func: fun(self: gmod_tardis_interior, state: string, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "MatFailed", id: string, func: fun(self: gmod_tardis_interior, ...))
@@ -77,8 +103,10 @@ local hooks={}
 ---@overload fun(self: gmod_tardis_interior, name: "OnHealthChange", id: string, func: fun(self: gmod_tardis_interior, new_health: number, old_health: integer, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "OnHealthDepleted", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "OnTakeDamage", id: string, func: fun(self: gmod_tardis_interior, dmginfo: CTakeDamageInfo, ...))
+---@overload fun(self: gmod_tardis_interior, name: "OnWireInput", id: string, func: fun(self: gmod_tardis_interior, name: string, value: any, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PartBodygroupChanged", id: string, func: fun(self: gmod_tardis_interior, ent: gmod_tardis_part, bodygroup: number, value: number, ...))
----@overload fun(self: gmod_tardis_interior, name: "PartUsed", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, a: Entity, ...))
+---@overload fun(self: gmod_tardis_interior, name: "PartUsed", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, a: Entity|NULL|Player, ...))
+---@overload fun(self: gmod_tardis_interior, name: "PhysicsCollide", id: string, func: fun(self: gmod_tardis_interior, colData: CollisionData, collider: Entity, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PhyslockToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PostDrawPart", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PostScannerRender", id: string, func: fun(self: gmod_tardis_interior, ...))
@@ -86,25 +114,34 @@ local hooks={}
 ---@overload fun(self: gmod_tardis_interior, name: "PowerToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PreDrawPart", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PreMatStart", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "PreMetadataInitialize", id: string, func: fun(self: gmod_tardis_interior, arg1: string, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "PreScannerRender", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "PreTeleportPositionChange", id: string, func: fun(self: gmod_tardis_interior, pos: Vector, ang: Angle, phys_enable: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "RandomDestinationSet", id: string, func: fun(self: gmod_tardis_interior, randomLocation: Vector, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "RandomizeTips", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "RedecorateToggled", id: string, func: fun(self: gmod_tardis_interior, on: true, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "RepairCancelled", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "RepairFinished", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "RepairStarted", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "RepairToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ScannersToggled", id: string, func: fun(self: gmod_tardis_interior, state: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ScannerToggled", id: string, func: fun(self: gmod_tardis_interior, k: integer, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ScreensToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "SecurityToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "SettingChanged", id: string, func: fun(self: gmod_tardis_interior, id: string, value: any, old_value: any, ply: Player, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "SetupMMenuButtons", id: string, func: fun(self: gmod_tardis_interior, screen: TardisScreen, frame: Panel, layout: HexagonalLayout, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "SetupVirtualConsole", id: string, func: fun(self: gmod_tardis_interior, screen: TardisScreen, frame: tardis_screen_frame, layout: HexagonalLayout, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShieldsToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldDraw", id: string, func: fun(self: gmod_tardis_interior, ...))
----@overload fun(self: gmod_tardis_interior, name: "ShouldDrawBlackScreen", id: string, func: fun(self: gmod_tardis_interior, arg1: any, ...))
+---@overload fun(self: gmod_tardis_interior, name: "ShouldDrawBlackScreen", id: string, func: fun(self: gmod_tardis_interior, arg1: string, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldDrawLight", id: string, func: fun(self: gmod_tardis_interior, arg1: any, lt: tardis_interior_light_state_complete, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldDrawPart", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_part, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldDrawScanner", id: string, func: fun(self: gmod_tardis_interior, k: integer, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldDrawScanners", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "ShouldDrawShadow", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldDrawTips", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldForceDemat", id: string, func: fun(self: gmod_tardis_interior, pos: Vector?, ang: Angle?, ...))
----@overload fun(self: gmod_tardis_interior, name: "ShouldNotDrawScreen", id: string, func: fun(self: gmod_tardis_interior, arg1: any, ...))
+---@overload fun(self: gmod_tardis_interior, name: "ShouldNotDrawScreen", id: string, func: fun(self: gmod_tardis_interior, arg1: string, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldNotRenderPortal", id: string, func: fun(self: gmod_tardis_interior, arg1: gmod_tardis_interior, portal: linked_portal_door, exit: linked_portal_door, origin: Vector, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldRegenShields", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldTakeDamage", id: string, func: fun(self: gmod_tardis_interior, dmginfo: CTakeDamageInfo, ...))
@@ -113,8 +150,13 @@ local hooks={}
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldTurnOffFlightSound", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldTurnOnCloisters", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ShouldWarningBeEnabled", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "SpinChanged", id: string, func: fun(self: gmod_tardis_interior, arg1: integer, ...))
+---@overload fun(self: gmod_tardis_interior, name: "StopDemat", id: string, func: fun(self: gmod_tardis_interior, ...))
+---@overload fun(self: gmod_tardis_interior, name: "StopMat", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "TardisControlUsed", id: string, func: fun(self: gmod_tardis_interior, control_id: string, ply: Player, part: gmod_tardis_part, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "TeleportControlToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "TeleportPositionChanged", id: string, func: fun(self: gmod_tardis_interior, pos: Vector, ang: Angle, phys_enable: boolean, ...))
+---@overload fun(self: gmod_tardis_interior, name: "VortexEnabled", id: string, func: fun(self: gmod_tardis_interior, pilot: Player, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "WarningToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 -- <<< END GENERATED hook overloads <<<
 function ENT:AddHook(name,id,func)
@@ -153,9 +195,12 @@ end
 
 ---@api
 ---@param name string
+---@param ... any
 ---@return any
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
+    -- glua_ls upstream: undeclared base-method self -- https://github.com/Pollux12/gmod-glua-ls/issues/51
+    ---@diagnostic disable-next-line: infer-unknown
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
     if a~=nil then
         return a,b,c,d,e,f

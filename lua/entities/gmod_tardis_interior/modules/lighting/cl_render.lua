@@ -198,8 +198,11 @@ end
 -- from the model returned by GetWeaponWorldModel if the weapon overrides DrawWorldModel.
 -- This is hacky but necessary as some weapons e.g. the Sonic Screwdriver use a placeholder
 -- model and then draw the actual model dynamically in DrawWorldModel.
----@param wep Entity
+---@param wep Weapon
+---@return string?
+---@return number?
 local function resolveWeaponWorldModel(wep)
+    if not IsValid(wep) then return end
     if not isfunction(wep.DrawWorldModel) then
         return wep:GetModel(), wep:GetSkin()
     end
@@ -213,7 +216,9 @@ local function resolveWeaponWorldModel(wep)
     meta.SetSkin = function(s, k) if s == wep then skin = k return end return oSkin(s, k) end
     ---@param s Entity
     meta.DrawModel = function(s, ...) if s == wep then return end return oDraw(s, ...) end
-    pcall(wep.DrawWorldModel, wep)
+    -- The cast picks an arm (our SWEPs declare no params, the annotations flags); a SWEP that
+    -- reads nil flags would error, aborting the dry run through the pcall.
+    pcall(wep.DrawWorldModel --[[@as fun(self: Weapon, flags: number)]], wep, STUDIO_RENDER)
     meta.SetModel, meta.SetSkin, meta.DrawModel = oSet, oSkin, oDraw
     return model or wep:GetModel(), skin or wep:GetSkin()
 end
@@ -310,6 +315,8 @@ local function ensureWeaponClone(ply, int)
 end
 
 ENT:AddHook("Think", "weaponworldmodel", function(self)
+    -- glua_ls upstream: occupants @field reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
+    ---@type table<Player, true>
     local occupants = self.occupants
     if not occupants then return end
     local active = TARDIS:GetSetting("lightoverride-enabled") and self.metadata.Interior.LightOverride

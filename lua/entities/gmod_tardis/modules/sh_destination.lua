@@ -317,7 +317,9 @@ if SERVER then
             TARDIS:Message(ply, "Security.ControlUseDenied")
             return
         end
+        ---@type Vector
         local pos = data[1]
+        ---@type Angle
         local ang = data[2]
         local ext = data[3]
 
@@ -364,6 +366,7 @@ else
     ---@param pos Vector?
     ---@param ang Angle
     function ENT:GetDestinationPropPos(ply, pos, ang)
+        ---@type Entity
         local prop = self:GetData("destinationprop")
         if not IsValid(prop) then return end
         local trace_pos=prop:LocalToWorld(Vector(0,0,60))
@@ -849,7 +852,6 @@ function ENT:GetGroundedPos(point, get_angle)
         RunConsoleCommand("tardis2_debug_pointer", "worldpos", best_c.x, best_c.y, best_c.z)
     end
 
-    ---@type Vector -- ca/cb are inferred as `unknown` because the analyzer drops Vector's @operator sub after narrowing through Vector?
     local normal = ca:Cross(cb):GetNormalized()
 
     if normal.z < 0 then

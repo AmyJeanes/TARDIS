@@ -1,4 +1,7 @@
 ---@class part_door : gmod_tardis_part
+---@field posoffset Vector?
+---@field angoffset Angle?
+---@field use_exit_point_offset boolean?
 local PART={}
 PART.ID = "door"
 PART.Name = "Door"

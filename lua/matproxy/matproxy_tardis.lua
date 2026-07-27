@@ -3,26 +3,62 @@ fallbackcol = Color(fallbackcol.r, fallbackcol.g, fallbackcol.b):ToVector()
 
 TARDIS.DynamicProxyVars = TARDIS.DynamicProxyVars or {}
 
+---@class tardis_dynamic_proxy_vars
+---@field LastValue Vector?
+---@field value_cached Vector?
+---@field var_cached string?
+---@field light_col Vector?
+---@field light_frame number?
+---@field LastColor Vector?
+
+-- Runs per material bind per frame, so no argument may allocate - callers
+-- seed first-use defaults on the returned table instead of passing them in.
 ---@param ent gmod_tardis
 ---@param mat IMaterial
 ---@param name string
----@param default any
-local function getdynamicproxyvars(ent, mat, name, default)
-    if not TARDIS.DynamicProxyVars[ent] then
-        TARDIS.DynamicProxyVars[ent] = {}
+---@return tardis_dynamic_proxy_vars
+local function getdynamicproxyvars(ent, mat, name)
+    local byent = TARDIS.DynamicProxyVars[ent]
+    if not byent then
+        byent = {}
+        TARDIS.DynamicProxyVars[ent] = byent
     end
-    if not TARDIS.DynamicProxyVars[ent][mat] then
-        TARDIS.DynamicProxyVars[ent][mat] = {}
+    local bymat = byent[mat]
+    if not bymat then
+        bymat = {}
+        byent[mat] = bymat
     end
-    if not TARDIS.DynamicProxyVars[ent][mat][name] then
-        TARDIS.DynamicProxyVars[ent][mat][name] = default
+    local vars = bymat[name]
+    if not vars then
+        vars = {}
+        bymat[name] = vars
     end
-    return TARDIS.DynamicProxyVars[ent][mat][name]
+    return vars
 end
+
+---@class tardis_state_texture_matproxy
+---@field Texture string
+---@field FrameNo string
+---@field Textures table<any, string>
+---@field FrameRates table<any, number>
+---@field AnimateTextures table<any, boolean>
+---@field FrameDurations table<any, number>
+---@field FrameNumbers table
+---@field next_update number
+---@field last_update number
+---@field current_frame number
+---@field anim boolean?
+---@field anim_num_frames number
+---@field anim_frame_rate number
+---@field anim_frame_dur number
+---@field last_state any?
 
 matproxy.Add({
     name = "TARDIS_State_Texture",
 
+    ---@param self tardis_state_texture_matproxy
+    ---@param mat IMaterial
+    ---@param values { resulttexturevar: string, resultframevar: string, textures: table }
     init = function(self, mat, values)
         self.Texture = values.resulttexturevar
         self.FrameNo = values.resultframevar
@@ -49,10 +85,11 @@ matproxy.Add({
         self.FrameNumbers = {}
 
         for k,_ in pairs(self.Textures) do
-            local animate = (self.FrameRates[k] and self.FrameRates[k] > 0)
+            local rate = self.FrameRates[k]
+            local animate = rate ~= nil and rate > 0
             self.AnimateTextures[k] = animate
-            if animate then
-                self.FrameDurations[k] = 1.0 / self.FrameRates[k]
+            if rate and animate then
+                self.FrameDurations[k] = 1.0 / rate
             end
         end
 
@@ -61,6 +98,9 @@ matproxy.Add({
         self.current_frame = 0
     end,
 
+    ---@param self tardis_state_texture_matproxy
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
         local ext = ent.exterior
@@ -74,6 +114,7 @@ matproxy.Add({
             if not self.Textures or not self.Textures[s] then return end
 
             if mat:GetTexture(self.Texture):GetName() ~= self.Textures[s] then
+                -- SetTexture accepts a texture name string as well as an ITexture
                 mat:SetTexture(self.Texture, self.Textures[s])
             end
 
@@ -144,9 +185,20 @@ local function matproxy_tardis_power_bind(self, mat, ent)
         local var = on and self.on_var or self.off_var
         if not var then return end
 
-        local value = mat:GetVector(var)
+        local dynvars = getdynamicproxyvars(ext, mat, self.name)
+        if dynvars.LastValue == nil then dynvars.LastValue = self.LastValue end
+        -- The on/off source vars are material constants, so read once per var
+        -- flip; an external write to them between flips won't be seen.
+        local cached = dynvars.value_cached
+        local value ---@type Vector
+        if cached ~= nil and dynvars.var_cached == var then
+            value = cached
+        else
+            value = mat:GetVector(var)
+            dynvars.var_cached = var
+            dynvars.value_cached = value
+        end
 
-        local dynvars = getdynamicproxyvars(ext, mat, self.name, { LastValue = self.LastValue })
         if var ~= self.last_var or value ~= self.last_value or value ~= dynvars.LastValue then
              -- Smoothly transition the color
             local transition_speed = on and self.TransitionSpeedOn or self.TransitionSpeedOff
@@ -188,25 +240,40 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_InteriorBaseLight",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function( self, mat, values )
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function( self, mat, ent )
         if not IsValid(ent) or not ent.TardisPart then return end
 
         local col = ent:GetData("interior_base_light_color_vec", TARDIS.color_white_vector)
-        mat:SetVector(self.ResultTo, col)
+        if col ~= self.last_col then
+            self.last_col = col
+            mat:SetVector(self.ResultTo, col)
+        end
     end
 })
 
 matproxy.Add({
     name = "TARDIS_Interior_Color1",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then
@@ -215,10 +282,13 @@ matproxy.Add({
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
                 local col = ent.metadata.Interior.MatProxy.Color1 --[[@as Color]]
-                col = Color(col.r, col.g, col.b):ToVector()
-                mat:SetVector(self.ResultTo, col)
+                if col ~= self.last_col then
+                    self.last_col = col
+                    mat:SetVector(self.ResultTo, Color(col.r, col.g, col.b):ToVector())
+                end
             end
-        else
+        elseif self.last_col ~= false then
+            self.last_col = false
             mat:SetVector(self.ResultTo, fallbackcol);
         end
     end
@@ -227,10 +297,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_Interior_Color2",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then
@@ -239,10 +315,13 @@ matproxy.Add({
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
                 local col = ent.metadata.Interior.MatProxy.Color2 --[[@as Color]]
-                col = Color(col.r, col.g, col.b):ToVector()
-                mat:SetVector(self.ResultTo, col)
+                if col ~= self.last_col then
+                    self.last_col = col
+                    mat:SetVector(self.ResultTo, Color(col.r, col.g, col.b):ToVector())
+                end
             end
-        else
+        elseif self.last_col ~= false then
+            self.last_col = false
             mat:SetVector(self.ResultTo, fallbackcol);
         end
     end
@@ -251,10 +330,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_Interior_Color3",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then
@@ -263,10 +348,13 @@ matproxy.Add({
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
                 local col = ent.metadata.Interior.MatProxy.Color3 --[[@as Color]]
-                col = Color(col.r, col.g, col.b):ToVector()
-                mat:SetVector(self.ResultTo, col)
+                if col ~= self.last_col then
+                    self.last_col = col
+                    mat:SetVector(self.ResultTo, Color(col.r, col.g, col.b):ToVector())
+                end
             end
-        else
+        elseif self.last_col ~= false then
+            self.last_col = false
             mat:SetVector(self.ResultTo, fallbackcol);
         end
     end
@@ -350,9 +438,21 @@ matproxy.Add({
 
 local vortexfallbackcol = Color(0, 0, 0) -- Uses black if no custom colour is set since that can fit for any tardis
 
+---@class tardis_dynamic_light_matproxy
+---@field name string
+---@field ResultTo string
+---@field DefaultColor Vector
+---@field LastColor Vector
+---@field TransitionSpeed number
+---@field last_vortex_col Color?
+---@field vortex_vec Vector
+
 matproxy.Add({
     name = "TARDIS_ExteriorWindowLight",
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.DefaultColor = mat:GetVector(values.defaultcolor)
@@ -360,6 +460,9 @@ matproxy.Add({
         self.TransitionSpeed = values.transitionspeed or 0
     end,
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.TardisPart and ent.InteriorPart then
@@ -369,22 +472,35 @@ matproxy.Add({
             if ext.metadata.Interior.MatProxy and ext.metadata.Interior.MatProxy.VortexColor then -- Making sure a vortex colour is set in the first place since people tend to re-use door on multiple tardises
                 vortexcol = ext.metadata.Interior.MatProxy.VortexColor
             end
-            vortexcol = (Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()*2.5)
-            local col = render.ComputeLighting((ext:GetPos()+Vector(0, 0, 80)),ext:GetForward()) -- Gets the lighting from the perspective of the doors
+            if vortexcol ~= self.last_vortex_col then
+                self.last_vortex_col = vortexcol
+                self.vortex_vec = Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()*2.5
+            end
+            local dynvars = getdynamicproxyvars(ext, mat, self.name)
+            -- Sample the engine lighting query once per frame, not per bind.
+            local fn = FrameNumber()
+            local col = dynvars.light_col
+            if dynvars.light_frame ~= fn or col == nil then
+                col = render.ComputeLighting((ext:GetPos()+Vector(0, 0, 80)),ext:GetForward()) -- Gets the lighting from the perspective of the doors
+                dynvars.light_frame = fn
+                dynvars.light_col = col
+            end
             if ext:GetData("teleport") or ext:GetData("vortex") then
                 local exterioralpha = (ext:GetData("alpha",255)/255)
                 local exterioralphainvert = ((exterioralpha - 1)*-1)
-                col = ((col*exterioralpha) + (vortexcol*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
+                col = ((col*exterioralpha) + (self.vortex_vec*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
             end
 
             -- Smoothly transition the color
             if self.TransitionSpeed > 0 then
-                local dynvars = getdynamicproxyvars(ext, mat, self.name, { LastColor = self.DefaultColor })
-                local dir  = col - dynvars.LastColor
-                local dist = dir:Length()
-                if dist > 1e-6 then -- Avoids floating point errors
-                    local step = math.min(dist, self.TransitionSpeed * FrameTime())
-                    col = dynvars.LastColor + dir:GetNormalized() * step
+                if dynvars.LastColor == nil then dynvars.LastColor = self.DefaultColor end
+                if col ~= dynvars.LastColor then
+                    local dir  = col - dynvars.LastColor
+                    local dist = dir:Length()
+                    if dist > 1e-6 then -- Avoids floating point errors
+                        local step = math.min(dist, self.TransitionSpeed * FrameTime())
+                        col = dynvars.LastColor + dir:GetNormalized() * step
+                    end
                 end
                 dynvars.LastColor = col
             end
@@ -398,6 +514,9 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_ExteriorBaseLight",
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
         self.DefaultColor = mat:GetVector(values.defaultcolor)
@@ -405,6 +524,9 @@ matproxy.Add({
         self.TransitionSpeed = values.transitionspeed or 2
     end,
 
+    ---@param self tardis_dynamic_light_matproxy
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) then return end
         if ent.interior then
@@ -416,22 +538,35 @@ matproxy.Add({
             if ext.metadata.Interior.MatProxy and ext.metadata.Interior.MatProxy.VortexColor then -- Making sure a vortex colour is set in the first place since people tend to re-use door on multiple tardises
                 vortexcol = ext.metadata.Interior.MatProxy.VortexColor
             end
-            vortexcol = (Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()*2.5)
-            local col = render.ComputeLighting((ext:GetPos()+Vector(0, 0, 10)),Vector(0, 0, 1)) -- Gets the lighting from near the origin of the tardis
+            if vortexcol ~= self.last_vortex_col then
+                self.last_vortex_col = vortexcol
+                self.vortex_vec = Color(vortexcol.r, vortexcol.g, vortexcol.b):ToVector()*2.5
+            end
+            local dynvars = getdynamicproxyvars(ext, mat, self.name)
+            -- Sample the engine lighting query once per frame, not per bind.
+            local fn = FrameNumber()
+            local col = dynvars.light_col
+            if dynvars.light_frame ~= fn or col == nil then
+                col = render.ComputeLighting((ext:GetPos()+Vector(0, 0, 10)),Vector(0, 0, 1)) -- Gets the lighting from near the origin of the tardis
+                dynvars.light_frame = fn
+                dynvars.light_col = col
+            end
             if ext:GetData("teleport") or ext:GetData("vortex") then
                 local exterioralpha = (ext:GetData("alpha",255)/255)
                 local exterioralphainvert = ((exterioralpha - 1)*-1)
-                col = ((col*exterioralpha) + (vortexcol*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
+                col = ((col*exterioralpha) + (self.vortex_vec*exterioralphainvert)) -- Essentially calculates how dematerialised it is and fades the colour accordingly
             end
 
             -- Smoothly transition the color
             if self.TransitionSpeed > 0 then
-                local dynvars = getdynamicproxyvars(ext, mat, self.name, { LastColor = self.DefaultColor })
-                local dir  = col - dynvars.LastColor
-                local dist = dir:Length()
-                if dist > 1e-6 then -- Avoids floating point errors
-                    local step = math.min(dist, self.TransitionSpeed * FrameTime())
-                    col = dynvars.LastColor + dir:GetNormalized() * step
+                if dynvars.LastColor == nil then dynvars.LastColor = self.DefaultColor end
+                if col ~= dynvars.LastColor then
+                    local dir  = col - dynvars.LastColor
+                    local dist = dir:Length()
+                    if dist > 1e-6 then -- Avoids floating point errors
+                        local step = math.min(dist, self.TransitionSpeed * FrameTime())
+                        col = dynvars.LastColor + dir:GetNormalized() * step
+                    end
                 end
                 dynvars.LastColor = col
             end

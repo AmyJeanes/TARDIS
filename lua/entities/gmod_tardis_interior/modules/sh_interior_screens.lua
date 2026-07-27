@@ -45,6 +45,9 @@ if SERVER then
     return
 end
 
+---@class gmod_tardis_interior
+---@field screensWorldOrigin Vector?
+
 function ENT:RemoveScreens()
     if self.screens3D then
         for _,v in pairs(self.screens3D) do
@@ -109,29 +112,58 @@ end)
 function ENT:ShouldRenderScreen(screen)
     if self:CallHook("ShouldDraw") == false then return false end
 
+    -- A screen carried by a moving part supplies its pose here, in the frame it
+    -- is drawn; taken any earlier it trails the part it is mounted on.
+    if screen.GetPose3D then
+        local p, a = screen.GetPose3D()
+        if p and a then
+            screen.pos3D = p
+            screen.ang3D = a
+        end
+    end
+
     local pos3D = screen.pos3D
     local ang3D = screen.ang3D
     if not pos3D or not ang3D then return false end
 
-    local camOrigin = EyePos()
-    local pos = self:LocalToWorld(pos3D)
-    local ang = self:LocalToWorldAngles(ang3D)
+    -- Cached per screen, rebuilt when the pose it was built from changes - a
+    -- monitor part rewrites its screen's local pose as it moves. The render
+    -- hook drops the caches too, for the interior itself moving.
+    local pos, ang, up = screen.worldpos, screen.worldang, screen.worldup
+    if pos == nil or pos3D ~= screen.worldsrcpos or ang3D ~= screen.worldsrcang then
+        pos = self:LocalToWorld(pos3D)
+        ang = self:LocalToWorldAngles(ang3D)
+        up = ang:Up()
+        screen.worldpos = pos
+        screen.worldang = ang
+        screen.worldup = up
+        screen.worldsrcpos = pos3D
+        screen.worldsrcang = ang3D
+    end
 
     --don't render if the view is behind the portal
-    local behind = TARDIS:IsBehind( camOrigin, pos, ang:Up() )
+    local behind = TARDIS:IsBehind( EyePos(), pos, up )
     if behind then return false end
 
     return true, pos, ang
 end
 
+local COL_CLEAR = Color(0, 0, 0, 0)
+
 ENT:AddHook("PreDrawTranslucentRenderables", "screens", function(self)
     if self.screens3D then
+        local int_pos = self:GetPos()
+        if self.screensWorldOrigin ~= int_pos then
+            self.screensWorldOrigin = int_pos
+            for _,v in pairs(self.screens3D) do
+                v.worldpos = nil
+            end
+        end
         for _,v in pairs(self.screens3D) do
             local should,pos,ang = self:ShouldRenderScreen(v)
             if should then
-                local col=Color(0,0,0,0)
                 vgui.Start3D2D(pos,ang,0.0624*(1/v.res))
-                    draw.RoundedBox(0,0,0,v.width,v.height,col)
+                    draw.RoundedBox(0,0,0,v.width,v.height,COL_CLEAR)
                     v:Paint3D2D()
                 vgui.End3D2D()
             end

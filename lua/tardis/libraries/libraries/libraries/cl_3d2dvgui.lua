@@ -31,47 +31,50 @@ local maxrange = 0
 
 -- Helper functions
 
+local ANGLE_ZERO = Angle(0, 0, 0)
+
 local function getCursorPos()
-    local p = util.IntersectRayWithPlane(LocalPlayer():EyePos(), LocalPlayer():GetAimVector(), origin, normal)
+    local ply = LocalPlayer()
+    local eyePos = ply:EyePos()
+    local p = util.IntersectRayWithPlane(eyePos, ply:GetAimVector(), origin, normal)
 
     -- if there wasn't an intersection, don't calculate anything.
     if not p then return end
-    if WorldToLocal(LocalPlayer():GetShootPos(), Angle(0,0,0), origin, angle).z < 0 then return end
+    -- Behind the plane when the eye sits on the normal's negative side
+    -- (the scalar form of WorldToLocal(...).z < 0).
+    local sp = ply:GetShootPos()
+    if (sp.x - origin.x) * normal.x
+        + (sp.y - origin.y) * normal.y
+        + (sp.z - origin.z) * normal.z < 0 then return end
 
     if maxrange > 0 then
-        if p:Distance(LocalPlayer():EyePos()) > maxrange then
+        if p:Distance(eyePos) > maxrange then
             return
         end
     end
 
-    local pos = WorldToLocal(p, Angle(0,0,0), origin, angle)
+    local pos = WorldToLocal(p, ANGLE_ZERO, origin, angle)
 
     return pos.x, -pos.y
 end
 
-local function getParents(pnl)
-    local parents = {}
-    local parent = pnl:GetParent()
-    while parent do
-        table.insert(parents, parent)
-        parent = parent:GetParent()
-    end
-    return parents
-end
-
+---@param pnl Panel
 local function absolutePanelPos(pnl)
     local x, y = pnl:GetPos()
-    local parents = getParents(pnl)
-
-    for _, parent in ipairs(parents) do
+    local parent = pnl:GetParent()
+    while parent do
         local px, py = parent:GetPos()
         x = x + px
         y = y + py
+        parent = parent:GetParent()
     end
 
     return x, y
 end
 
+---@param pnl Panel
+---@param x number?
+---@param y number?
 local function pointInsidePanel(pnl, x, y)
     local px, py = absolutePanelPos(pnl)
     local sx, sy = pnl:GetSize()
@@ -87,15 +90,20 @@ end
 -- Input
 
 local inputWindows = {}
+---@type table<Panel, any[]>
 local usedpanel = {}
 
+---@param pnl Panel
+---@param event string
+---@param ... any
 local function postPanelEvent(pnl, event, ...)
     if not IsValid(pnl) or not pnl:IsVisible() or not pointInsidePanel(pnl, getCursorPos()) then return false end
 
     local handled = false
 
-    for _, child in pairs(table.Reverse(pnl:GetChildren())) do
-        if postPanelEvent(child, event, ...) then
+    local children = pnl:GetChildren()
+    for i = #children, 1, -1 do
+        if postPanelEvent(children[i], event, ...) then
             handled = true
             break
         end
@@ -111,14 +119,19 @@ local function postPanelEvent(pnl, event, ...)
 end
 
 -- Always have issue, but less
+---@param pnl Panel
+---@param x number?
+---@param y number?
+---@param found boolean?
 local function checkHover(pnl, x, y, found)
     if not (x and y) then
         x, y = getCursorPos()
     end
 
     local validchild = false
-    for _, child in pairs(table.Reverse(pnl:GetChildren())) do
-        local check = checkHover(child, x, y, found or validchild)
+    local children = pnl:GetChildren()
+    for i = #children, 1, -1 do
+        local check = checkHover(children[i], x, y, found or validchild)
 
         if check then
             validchild = true
@@ -212,6 +225,16 @@ function vgui.IsPointingPanel(pnl)
 end
 
 local Panel = assert(FindMetaTable("Panel"))
+
+-- Shared gui.MouseX/MouseY overrides, fed per paint via upvalues.
+local curX, curY = 0, 0
+local function mouse3D2DX()
+    return curX / scale
+end
+local function mouse3D2DY()
+    return curY / scale
+end
+
 function Panel:Paint3D2D()
     if not self then return end
     if not self:IsValid() then return end
@@ -223,13 +246,10 @@ function Panel:Paint3D2D()
     local oldMouseX = gui.MouseX
     local oldMouseY = gui.MouseY
     local cx, cy = getCursorPos()
+    curX, curY = cx or 0, cy or 0
 
-    function gui.MouseX()
-        return (cx or 0) / scale
-    end
-    function gui.MouseY()
-        return (cy or 0) / scale
-    end
+    gui.MouseX = mouse3D2DX
+    gui.MouseY = mouse3D2DY
 
     -- Override think of DFrame's to correct the mouse pos by changing the active orientation
     if self.Think then
@@ -247,8 +267,13 @@ function Panel:Paint3D2D()
         end
     end
 
-    -- Update the hover state of controls
-    checkHover(self)
+    -- Update the hover state of controls: walk only while the cursor is over
+    -- the panel, plus one pass after it leaves so OnCursorExited still fires.
+    local inRoot = cx ~= nil and pointInsidePanel(self, cx, cy)
+    if inRoot or self.Hover3D2DArmed then
+        checkHover(self, cx, cy)
+        self.Hover3D2DArmed = inRoot or nil
+    end
 
     -- Store the orientation of the window to calculate the position outside the render loop
     self.Origin = origin

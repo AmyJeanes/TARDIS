@@ -26,6 +26,7 @@ TARDIS.States = {
 }
 
 -- We add all the hooks here to ensure the integrity of state logic
+---@type table<string, boolean>
 TARDIS.StateUpdateHooks = {
   ["PostInitialize"] = true,
 

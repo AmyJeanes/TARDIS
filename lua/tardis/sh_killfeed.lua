@@ -4,9 +4,7 @@ if SERVER then
     --   materials/killfeed/tardis/exteriors/<exterior_id>.vmt  (chameleon-applied exterior)
     ---@param inflictor Entity
     local function resolve(inflictor)
-        if not IsValid(inflictor) then return end
-        ---@cast inflictor gmod_tardis
-        if not inflictor.TardisExterior then return end
+        if not IsValid(inflictor) or not inflictor.TardisExterior then return end
 
         local ext = inflictor:GetData("chameleon_current_exterior")
         local id = ext or inflictor.metadataID
@@ -54,7 +52,8 @@ else
     language.Add("gmod_tardis", "TARDIS")
 
     for _, sub in ipairs({ "interiors", "exteriors" }) do
-        for _, f in ipairs(file.Find("materials/killfeed/tardis/" .. sub .. "/*.vmt", "GAME")) do
+        local files = file.Find("materials/killfeed/tardis/" .. sub .. "/*.vmt", "GAME")
+        for _, f in ipairs(files) do
             local mat = "killfeed/tardis/" .. sub .. "/" .. string.StripExtension(f)
             killicon.Add(string.lower(mat), mat, Color(255,255,255,255))
         end

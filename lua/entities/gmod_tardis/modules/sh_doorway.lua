@@ -16,6 +16,7 @@ if SERVER then
     ---@param self gmod_tardis
     ---@return boolean
     local function doorway_blocked(self)
+        if not self.parts then return false end
         local portal = self.metadata.Exterior.Portal
         ---@type Entity[]
         local filter = { self }

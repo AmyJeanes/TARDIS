@@ -18,14 +18,18 @@ PART.NoCloak = true
 if SERVER then
     function PART:Initialize()
         self:SetSolid(SOLID_NONE)
-        self:SetPos(self.exterior:LocalToWorld(self.pos))
-        self:SetAngles(self.exterior:LocalToWorldAngles(self.ang))
+        self:SetPos(self.exterior:LocalToWorld(self.Pos))
+        self:SetAngles(self.exterior:LocalToWorldAngles(self.Ang))
         self:SetParent(self.exterior)
     end
 else
+    function PART:Initialize()
+        self:SetNoDraw(true)
+    end
+
     function PART:PreDraw()
         if self:GetData("vortexalpha",0)>0 then
-            self:SetRenderOrigin(self.exterior:LocalToWorld(self.pos))
+            self:SetRenderOrigin(self.exterior:LocalToWorld(self.Pos))
             self:SetRenderAngles(self:GetData("lockedang"))
         end
     end

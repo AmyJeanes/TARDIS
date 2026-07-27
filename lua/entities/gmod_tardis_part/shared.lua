@@ -14,6 +14,7 @@ ENT.AdminSpawnable  = false
 ENT.Category        = "Doctor Who"
 ENT.RenderGroup     = RENDERGROUP_OPAQUE
 ENT.TardisPart      = true
+ENT.DoNotDuplicate  = true
 ENT.AllowedProperties = {
     ["skin"] = true,
     ["bodygroups"] = true

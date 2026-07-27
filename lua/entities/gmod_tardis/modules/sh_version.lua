@@ -88,7 +88,7 @@ ENT:AddHook("NewVersion", "version", function(self, newVersion, newVersionStr, o
     -- for the first update of a new major/minor version so users see them, however
     -- this should be relatively uncommon as patch versions are usually just bug fixes
     
-    local version = table.Copy(newVersion)
+    local version = table.Copy(newVersion) --[[@as tardis_version]]
     version.Patch = 0 
     local versionStr = TARDIS:GetVersionString(version)
     get_release_notes(versionStr, newVersionStr)

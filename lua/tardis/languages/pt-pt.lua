@@ -1,7 +1,7 @@
 -- AUTO GENERATED FILE - DO NOT EDIT --
 -- SOURCE FILE: i18n/languages/pt-PT.json --
 
-local T = {}
+local T = TARDIS:NewLanguage()
 T.Code = "pt-PT"
 T.Name = "Português (Portugal)"
 T.Phrases = {

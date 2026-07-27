@@ -62,7 +62,7 @@ local function CreateBoolDebugConVar(name, desc)
     CreateConVar(id, 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED}, desc)
 
     local function convar_update()
-        TARDIS[name] = GetConVar(id):GetBool()
+        TARDIS[name] = assert(GetConVar(id)):GetBool()
     end
 
     cvars.AddChangeCallback(id, function()
@@ -158,6 +158,7 @@ TARDIS.DebugTipsFunction = function(self, ply, ...)
     end
 
     local p = ents.Create("gmod_tardis_debug_pointer")
+    if not IsValid(p) then error("entity creation failed: gmod_tardis_debug_pointer") end
     p:SetCreator(ply)
     p:SetPos(p_pos)
     ---@param ptr gmod_tardis_debug_pointer
@@ -247,8 +248,10 @@ concommand.Add("tardis2_debug_minmax", function(ply,cmd,args)
     ply:ChatPrint("ExitDistance/Box disabled")
 
     ---@param pos Vector
+    ---@return gmod_tardis_debug_pointer
     local function create_pointer(pos)
         local p = ents.Create("gmod_tardis_debug_pointer")
+        if not IsValid(p) then error("entity creation failed: gmod_tardis_debug_pointer") end
         p:SetCreator(ply)
         p:SetPos(int:LocalToWorld(pos))
         int:DeleteOnRemove(p)

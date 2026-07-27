@@ -1,14 +1,26 @@
+-- GetData evaluates its default every call, so an inline Color() below would
+-- allocate one per material bind whether or not the default is used.
+local DEFAULT_ENV_COL = Color(0, 200, 255)
+local DEFAULT_FLOOR_COL = Color(230, 230, 210)
+local DEFAULT_ROTOR_COL = Color(255, 255, 255)
+
 matproxy.Add({
     name = "TARDIS_DefaultInt_EnvColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
-        local col = ent:GetData("default_int_env_color", Color(0,200,255))
+        local col = ent:GetData("default_int_env_color", DEFAULT_ENV_COL)
         local power = ent.exterior and ent.exterior:GetPower()
 
         if self.lastcol ~= col or self.lastpower ~= power then
@@ -28,14 +40,20 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_DefaultInt_FloorLightsColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
-        local col = ent:GetData("default_int_floor_lights_color", Color(230,230,210))
+        local col = ent:GetData("default_int_floor_lights_color", DEFAULT_FLOOR_COL)
 
         if self.lastcol ~= col then
             self.lastcol = col
@@ -49,14 +67,20 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_DefaultInt_RotorInColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart then return end
 
-        local col = ent:GetData("default_int_rotor_color", Color(255,255,255))
+        local col = ent:GetData("default_int_rotor_color", DEFAULT_ROTOR_COL)
 
         if self.lastcol ~= col then
             self.lastcol = col
@@ -70,10 +94,16 @@ matproxy.Add({
 matproxy.Add({
     name = "TARDIS_DefaultInt_TelepathicsAddColor",
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param values table
     init = function(self, mat, values)
         self.ResultTo = values.resultvar
     end,
 
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not IsValid(ent.interior) or not ent.TardisPart then return end
 
@@ -100,6 +130,9 @@ matproxy.Add({
         self.on_var = values.onvar
         self.off_var = values.offvar
     end,
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
 
@@ -130,6 +163,9 @@ matproxy.Add({
         self.on_var3 = values.onvar3
         self.off_var3 = values.offvar3
     end,
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
     bind = function(self, mat, ent)
         if not IsValid(ent) or not ent.TardisPart or not IsValid(ent.interior) or ent.ID ~= "default_throttle_lights" then
             if not self.last_on then

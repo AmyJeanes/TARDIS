@@ -2,6 +2,7 @@
 
 ENT:AddHook("Use", "interior", function(self,a,c)
     if a:KeyDown(IN_WALK) or not IsValid(self.interior) or self:GetData("legacy_door_type") then
+        ---@type boolean?, string?
         local allowed, reason = self:CallHook("CanPlayerEnterDoor", a)
         if allowed == false then
             if reason then TARDIS:Message(a, reason) end

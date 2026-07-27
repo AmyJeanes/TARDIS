@@ -4,23 +4,15 @@ on:
   pull_request:
     branches:
       - main
-      - alpha
   push:
     branches:
       - main
-      - alpha
       - renovate/*
   workflow_dispatch:
     inputs:
       publish:
         type: boolean
         description: Publish to workshop
-      addon:
-        type: choice
-        description: Workshop addon
-        options:
-        - beta
-        - alpha
 
 jobs:
   glua-check:
@@ -31,12 +23,12 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           path: TARDIS
 
       - name: Checkout Doors
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: AmyJeanes/Doors
           # TEMPORARY: revert to `main` before merge - the cross-boundary audio work needs
@@ -45,39 +37,39 @@ jobs:
           path: Doors
 
       - name: Checkout world-portals
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: AmyJeanes/world-portals
           ref: main
           path: world-portals
 
       - name: Checkout Sonic-Screwdriver
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: AmyJeanes/Sonic-Screwdriver
           ref: main
           path: Sonic-Screwdriver
 
       - name: Checkout wire
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: wiremod/wire
           ref: master
           path: wire
 
       - name: Checkout GMod-MCP-Server
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: AmyJeanes/GMod-MCP-Server
           ref: main
           path: GMod-MCP-Server
 
       - name: Checkout gmod-addon-tools
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.27.0
+          ref: v0.29.9
           path: gmod-addon-tools
 
       - name: Run glua_check
@@ -87,41 +79,83 @@ jobs:
 
       - name: Upload SARIF
         if: always() && hashFiles('TARDIS/results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v4
+        uses: github/codeql-action/upload-sarif@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4
         with:
           sarif_file: TARDIS/results.sarif
           checkout_path: ${{ github.workspace }}/TARDIS
           category: glua_check
 
-  setup:
-    name: Resolve workshop target
+  typing-check:
+    name: Typing Check
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && contains(fromJSON('["refs/heads/main", "refs/heads/alpha"]'), github.ref)) || github.event.inputs.publish == 'true'
-    outputs:
-      id: ${{ steps.pick.outputs.id }}
     steps:
-      - name: Pick workshop id
-        id: pick
-        run: |
-          if [[ "${{ github.event.inputs.addon }}" == "beta" || "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "id=${{ vars.BETA_WORKSHOP_ID }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event.inputs.addon }}" == "alpha" || "${{ github.ref }}" == "refs/heads/alpha" ]]; then
-            echo "id=${{ vars.ALPHA_WORKSHOP_ID }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "Unknown workshop ID" 1>&2
-            exit 1
-          fi
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          path: TARDIS
+
+      - name: Checkout Doors
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: AmyJeanes/Doors
+          # TEMPORARY: revert to `main` before merge - the cross-boundary audio work needs
+          # Doors' matching branch, and Doors merges first.
+          ref: sound-rework
+          path: Doors
+
+      - name: Checkout world-portals
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: AmyJeanes/world-portals
+          ref: main
+          path: world-portals
+
+      - name: Checkout Sonic-Screwdriver
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: AmyJeanes/Sonic-Screwdriver
+          ref: main
+          path: Sonic-Screwdriver
+
+      - name: Checkout wire
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: wiremod/wire
+          ref: master
+          path: wire
+
+      - name: Checkout GMod-MCP-Server
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: AmyJeanes/GMod-MCP-Server
+          ref: main
+          path: GMod-MCP-Server
+
+      - name: Checkout gmod-addon-tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: AmyJeanes/gmod-addon-tools
+          # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
+          ref: v0.29.9
+          path: gmod-addon-tools
+
+      - name: Run typing check
+        working-directory: TARDIS
+        shell: pwsh
+        run: ./scripts/typing-check.ps1
 
   publish:
-    name: Publish to workshop
-    needs: setup
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@971c227d02b3886fd245373f9c5d6622b21d424c # v0.27.0
+    name: Publish to beta workshop
+    needs: [glua-check, typing-check]
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.publish == 'true'
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@0ae70937141389dc78125e341161957d808eac35 # v0.29.9
     with:
-      addon: TARDIS
-      workshop_id: ${{ needs.setup.outputs.id }}
+      addon: "TARDIS (Beta)"
+      workshop_id: ${{ vars.BETA_WORKSHOP_ID }}
       mfa: false
-      dry_run: ${{ needs.setup.outputs.id == '' }}
+      dry_run: ${{ vars.BETA_WORKSHOP_ID == '' }}
     secrets:
       STEAM_USERNAME: ${{ vars.STEAM_USERNAME }}
       STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
       HA_WEBHOOK_URL: ${{ secrets.HA_WEBHOOK_URL }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.STEAM_WEBHOOK_URL }}

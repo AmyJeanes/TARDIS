@@ -19,12 +19,13 @@ function TARDIS:CreateOptionInterface(id, data)
 
     if data.type == "bool" then
         elem = vgui.Create("DCheckBoxLabel")
+        ---@param self DCheckBoxLabel
         ---@param val boolean
-        function elem:OnChange(val)
+        elem.OnChange = function(self, val)
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
         end
-        ---@param self Panel
+        ---@param self DCheckBoxLabel
         elem.Think = function(self)
             if self.lastchange and CurTime() - self.lastchange > 0.2 then
                 self.lastchange = nil
@@ -67,7 +68,7 @@ function TARDIS:CreateOptionInterface(id, data)
             self.lastchange = CurTime()
             self.lastchange_val = val
         end
-        ---@param self Panel
+        ---@param self DNumSlider
         elem2.Think = function(self)
             if self.lastchange_val and self.lastchange and CurTime() - self.lastchange > 0.1 then
                 TARDIS:SetSetting(id, self.lastchange_val)
@@ -101,17 +102,26 @@ function TARDIS:CreateOptionInterface(id, data)
         mixer:SetAlphaBar(false)
         mixer:SetWangs(true)
 
+        -- SetColor re-fires ValueChanged; flag our own writes so they don't read as a user edit.
+        ---@param col Color
+        local function sync_mixer(col)
+            mixer.syncing = true
+            mixer:SetColor(col)
+            mixer.syncing = nil
+        end
+
         ---@param self Panel
         ---@param val Color
         mixer.ValueChanged = function(self, val)
+            if self.syncing then return end
             TARDIS:SetSetting(id, val)
             self.lastchange = CurTime()
         end
-        ---@param self Panel
-        elem.Think = function(self)
+        ---@param self DColorMixer
+        mixer.Think = function(self)
             if self.lastchange and CurTime() - self.lastchange > 0.2 then
                 self.lastchange = nil
-                self:SetColor(TARDIS:GetSetting(id))
+                sync_mixer(TARDIS:GetSetting(id))
             end
         end
 
@@ -123,8 +133,7 @@ function TARDIS:CreateOptionInterface(id, data)
 
         ---@param self Panel
         elem.RefreshVal = function(self)
-            local setting = TARDIS:GetSetting(id)
-            mixer:SetColor(setting)
+            sync_mixer(TARDIS:GetSetting(id))
         end
 
 
@@ -154,7 +163,7 @@ function TARDIS:CreateOptionInterface(id, data)
             TARDIS:SetSetting(id, selected_data)
             self.lastchange = CurTime()
         end
-        ---@param self Panel
+        ---@param self DComboBox
         elem2.Think = function(self)
             if self.lastchange and CurTime() - self.lastchange > 0.2 then
                 self.lastchange = nil

@@ -26,10 +26,9 @@ $inCI = [bool]$env:GITHUB_ACTIONS
 
 # A local checkout is always "source" even when it happens to sit on a release tag - it is not
 # the artifact that shipped. Only CI produces the real channels.
-$channel = if (-not $inCI)                      { "source" }
-           elseif ($exact)                      { "release" }
-           elseif ($env:GITHUB_REF_NAME -eq 'alpha') { "alpha" }
-           else                                 { "beta" }
+$channel = if (-not $inCI) { "source" }
+           elseif ($exact) { "release" }
+           else            { "beta" }
 
 $version = if ($exact) { $exact } elseif ($base) { $base } else { $null }
 

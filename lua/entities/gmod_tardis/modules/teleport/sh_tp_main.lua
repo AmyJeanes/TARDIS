@@ -369,6 +369,7 @@ else
             local sound_demat_hads_ext = ext.demat_hads
             local sound_demat_hads_int = int.demat_hads or sound_demat_hads_ext
 
+            ---@type Vector
             local pos = data[1]
 
             if LocalPlayer():GetTardisExterior()==self then
@@ -409,6 +410,7 @@ else
             if not (shouldPlayExterior or shouldPlayInterior) then return end
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
+            ---@type Vector
             local pos=data[1]
             if LocalPlayer():GetTardisExterior()==self and (not self:GetFastRemat()) then
                 if self:IsLowHealth() then
@@ -581,7 +583,8 @@ ENT:AddHook("Think","teleport",function(self,delta)
         sequencespeed = teleport_md.SequenceSpeedHads
     end
     if istable(sequencespeed) then
-        sequencespeed = demat and sequencespeed.Demat or sequencespeed.Mat
+        local speeds = sequencespeed
+        sequencespeed = demat and speeds.Demat or speeds.Mat
     end
     alpha=math.Approach(alpha,target,delta*66*sequencespeed)
     self:SetData("alpha",alpha)

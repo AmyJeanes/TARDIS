@@ -40,6 +40,8 @@ function ENT:Initialize()
         self.Model=self.metadata.Exterior.Model
         self.Portal=self.metadata.Exterior.Portal
         self.Fallback=self.metadata.Exterior.Fallback
+        -- glua_ls upstream: undeclared base-method self -- https://github.com/Pollux12/gmod-glua-ls/issues/51
+        ---@diagnostic disable-next-line: infer-unknown
         self.BaseClass.Initialize(self)
     end
 end
@@ -55,9 +57,28 @@ function ENT:OnTakeDamage(dmginfo)
     self:CallHook("OnTakeDamage", dmginfo)
 end
 
+-- Not our constraints - GMod copies them in from the TARDIS being duplicated, and they still point at it
+---@param data table
+function ENT:OnEntityCopyTableFinish(data)
+    data.Constraints = nil
+end
+
 duplicator.RegisterEntityClass("gmod_tardis", function(ply, data)
-    local ent = duplicator.GenericDuplicatorFunction(ply, data)
+    -- The generic pass runs pre-spawn, so withhold skin and bodygroups from it and set them below -
+    -- the hooks they fire need a TARDIS that already has its metadata
+    local generic = {}
+    for k, v in pairs(data) do generic[k] = v end
+    generic.Skin, generic.BodyG = nil, nil
+
+    local ent = duplicator.GenericDuplicatorFunction(ply, generic)
+    if not IsValid(ent) then return end
+
     ent:SetCreator(ply)
     ent:Initialize()
+
+    if data.Skin then ent:SetSkin(data.Skin) end
+    for id, value in pairs(data.BodyG or {}) do
+        ent:SetBodygroup(id, value)
+    end
     return ent
 end, "Data")

@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   publish:
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@971c227d02b3886fd245373f9c5d6622b21d424c # v0.27.0
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@0ae70937141389dc78125e341161957d808eac35 # v0.29.9
     with:
       addon: "TARDIS"
       workshop_id: "307175678"
@@ -34,3 +34,4 @@ jobs:
       STEAM_PASSWORD: ${{ secrets.STEAM_RELEASE_PASSWORD }}
       HA_WEBHOOK_URL: ${{ secrets.HA_WEBHOOK_URL }}
       NTFY_CI_PASSWORD: ${{ secrets.NTFY_CI_PASSWORD }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.STEAM_WEBHOOK_URL }}

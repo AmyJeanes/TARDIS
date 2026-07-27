@@ -18,9 +18,13 @@
 ---@field view_range_max number
 ---@field style_id string?
 ---@field style_name string?
+---@field worldpos Vector? per-tip cached world anchor, dropped when the interior moves
 ---@field SetHighlight fun(self: tardis_tip, on: boolean)
 ---@field GetHighlight fun(self: tardis_tip): boolean
 ---@field ToggleHighlight fun(self: tardis_tip)
+
+---@class gmod_tardis_interior
+---@field tipWorldOrigin Vector?
 
 ---@class tardis_tip_colors
 ---@field normal tardis_tip_colorset
@@ -151,7 +155,7 @@ ENT:AddHook("Initialize", "tips", function(self)
     if self.metadata.Interior.PartTips ~= nil then
         for part_id, part_tip in pairs(self.metadata.Interior.PartTips) do
             if istable(part_tip) then
-                local tip = table.Copy(part_tip)
+                local tip = table.Copy(part_tip) --[[@as tardis_tip]]
                 tip.part = part_id
                 table.insert(self.alltips, tip)
             end
@@ -159,7 +163,7 @@ ENT:AddHook("Initialize", "tips", function(self)
     end
     for part_id,part in pairs(self.metadata.Interior.Parts) do
         if istable(part) and part.tip then
-            local tip = table.Copy(part.tip)
+            local tip = table.Copy(part.tip) --[[@as tardis_tip]]
             tip.part = part_id
             table.insert(self.alltips, tip)
         end
@@ -207,26 +211,46 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
 
     local player_pos = LocalPlayer():EyePos()
     local should_randomize = (interior:CallCommonHook("RandomizeTips") == true)
+
+    -- The interior doesn't move, so each tip's world anchor is cached; drop
+    -- them as one batch if it ever does.
+    local int_pos = interior:GetPos()
+    if interior.tipWorldOrigin ~= int_pos then
+        interior.tipWorldOrigin = int_pos
+        for _,tip in ipairs(interior.tips) do
+            tip.worldpos = nil
+        end
+    end
+
     for _,tip in ipairs(interior.tips)
     do
-        ---@cast tip tardis_tip -- glua_ls reads ipairs loop-var fields as nilable
         local view_range_min = tip.view_range_min
         local view_range_max = tip.view_range_max
 
-        local cseq_canstart = cseq_enabled and interior:CallHook("CanStartControlSequence",tip.part)~=false
-
         if not cseq_active then
-            tip:SetHighlight(cseq_enabled and cseq_sequences ~= nil and cseq_sequences[tip.part] ~= nil and cseq_canstart)
+            local highlight = cseq_enabled and cseq_sequences ~= nil and cseq_sequences[tip.part] ~= nil
+            if highlight then
+                highlight = interior:CallHook("CanStartControlSequence",tip.part)~=false
+            end
+            tip:SetHighlight(highlight)
         else
             tip:SetHighlight(cseq_enabled and tip.part == cseq_next)
         end
 
         local part = tip.part and interior:GetPart(tip.part)
-        local untraceable = part and IsValid(part) and part.scale
+        local untraceable = part and IsValid(part) and part.Scale
         local shoulddraw = tip:GetHighlight() or TARDIS:GetSetting("tips_show_all") or untraceable
         local lookedat = part and IsValid(part) and part:BeingLookedAtByLocalPlayer()
 
-        local pos = interior:LocalToWorld(tip.pos or (IsValid(part) and part.pos) or Vector(0,0,0))
+        local pos = tip.worldpos
+        if pos == nil then
+            pos = interior:LocalToWorld(tip.pos or (IsValid(part) and part.Pos) or Vector(0,0,0))
+            -- A part-anchored tip computed before its part exists resolves to the
+            -- interior origin; don't cache that placeholder.
+            if tip.pos or (part and IsValid(part)) then
+                tip.worldpos = pos
+            end
+        end
         local dist = pos:Distance(player_pos)
 
         if (shoulddraw and dist <= view_range_max) or lookedat then
@@ -237,11 +261,7 @@ hook.Add("HUDPaint", "TARDIS-DrawTips", function()
                 alpha = (tip.colors.current.background.a) * normalised
             end
 
-            -- ColorAlpha is stubbed to return table, not Color, so :Unpack() reads as a nil method
-            -- here; assert Color. (text_color needs no assert - it is only passed as a draw arg.)
-            ---@type Color
             local background_color = ColorAlpha(tip.colors.current.background, alpha)
-            ---@type Color
             local frame_color = ColorAlpha(tip.colors.current.frame, alpha)
             local text_color = ColorAlpha(tip.colors.current.text, alpha)
 

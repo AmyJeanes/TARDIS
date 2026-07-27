@@ -71,6 +71,7 @@ if SERVER then
     ENT:AddHook("PartUsed","HandleControlSequence",function(self,part,a)
         local sequences = TARDIS:GetControlSequence(self.metadata.Interior.Sequences)
         if sequences == nil then return end
+        ---@type string
         local id = part.ID
         local active = self:GetData("cseq-active",false)
         local step = self:GetData("cseq-step")

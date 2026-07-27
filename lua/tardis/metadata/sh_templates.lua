@@ -2,7 +2,7 @@
 ---@param offset Vector
 function TARDIS:AddInteriorPartsOffset(template, offset)
     ---@type tardis_metadata
-    local moved = table.Copy(template) -- table.Copy returns a bare table, dropping the class
+    local moved = table.Copy(template)
 
     if istable(moved.Interior.Parts) then
         for _,v in pairs(moved.Interior.Parts) do
@@ -46,7 +46,7 @@ end
 ---@param rotate_ang Angle
 function TARDIS:AddInteriorPartsRotation(template, rotate_ang)
     ---@type tardis_metadata
-    local rotated = table.Copy(template) -- table.Copy returns a bare table, dropping the class
+    local rotated = table.Copy(template)
 
     if istable(rotated.Interior.Parts) then
         for _,v in pairs(rotated.Interior.Parts) do
@@ -153,7 +153,9 @@ function TARDIS:MergeTemplates(metadata, ent)
             end
         end
     elseif SERVER then
-        ent.templates = {}
+        ---@type string[]
+        local templates = {}
+        ent.templates = templates
         local added_already = {}
 
         ---@param template_id string
@@ -162,7 +164,7 @@ function TARDIS:MergeTemplates(metadata, ent)
             if not template then return end
             if not istable(template) then return end
             if not template.condition or template.condition(id, ent:GetCreator(), ent) then
-                table.insert(ent.templates, template_id)
+                table.insert(templates, template_id)
             end
         end
 
@@ -179,7 +181,7 @@ function TARDIS:MergeTemplates(metadata, ent)
             end
         end
 
-        templates_todo = ent.templates
+        templates_todo = templates
     elseif CLIENT and ent.templates then
         if ent.TardisExterior and ent.interior and ent.interior.templates then
             ent.templates = ent.interior.templates
@@ -188,13 +190,14 @@ function TARDIS:MergeTemplates(metadata, ent)
             ent.templates = ent.exterior.templates
         end
 
-        templates_todo = ent.templates
+        templates_todo = (ent --[[@as gmod_tardis|gmod_tardis_interior]]).templates
     else
         error("Missing clientside template information" .. tostring(ent))
     end
 
 
     for _,template_id in ipairs(templates_todo) do
+        ---@type tardis_interior_template|false|nil
         local template = metadata.Templates[template_id]
 
         if template and template.realID then

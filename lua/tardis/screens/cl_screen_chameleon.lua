@@ -1,5 +1,9 @@
 TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=false, order=4, popuponly=false}, function(self,ext,int,frame,screen)
+    -- glua_ls upstream: GetWide's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
+    ---@type number
     local frW = frame:GetWide()
+    -- glua_ls upstream: GetTall's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
+    ---@type number
     local frT = frame:GetTall()
 
     local gap = math.min(frT, frW) * 0.06
@@ -78,7 +82,9 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     reset:SetFont(TARDIS:GetScreenFont(screen, "Default"))
 
     local categories = {}
-    local exteriors, change_id
+    ---@type { [1]: string, [2]: string }[]
+    local exteriors = {}
+    local change_id
 
     for k,v in pairs(TARDIS:GetExteriorCategories()) do
         if not table.IsEmpty(v) then
@@ -241,7 +247,8 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     ---@param rowIndex integer
     ---@param row Panel
     function list_exteriors:OnRowSelected(rowIndex, row)
-        select_exterior(exteriors[rowIndex][1])
+        local entry = exteriors[rowIndex]
+        if entry then select_exterior(entry[1]) end
     end
 
     ---@param rowIndex integer

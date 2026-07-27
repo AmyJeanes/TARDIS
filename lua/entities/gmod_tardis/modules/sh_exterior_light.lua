@@ -77,11 +77,7 @@ else
                 local pos=self:LocalToWorld(light.pos)
                 local alpha = (shouldpulse and not shouldnotpulse) and (math.sin(CurTime() * 3.7) + 0.2) * (255 / 4) + (255 / 2) - 70 or 100
                 render.SetMaterial(mat)
-                local fallback=false
-
-                if self:GetData("vortex",false) then
-                    fallback=true
-                end
+                local fallback = self:GetData("vortex",false) and LocalPlayer():GetTardisData("outside")
 
                 if fallback then
                     render.DrawSprite(pos, size, size, Color(col.r,col.g,col.b,alpha))

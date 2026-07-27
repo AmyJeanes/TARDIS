@@ -74,7 +74,7 @@ if SERVER then
     ---@param ent? Entity
     ---@param ply? Player
     function ENT:SetTracking(ent, ply)
-        if not ply then ply = self:GetData("pilot") end
+        if not ply then ply = self:GetData("pilot") --[[@as Player]] end
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = wasTrackingEnt ~= nil
         if not IsValid(ent) then
@@ -107,7 +107,7 @@ if SERVER then
 
         local entSize = get_ent_size(ent)
 
-        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent --[[@as Player]]))) then
+        if ent.TardisPart or ent.TardisInterior or (ent:IsPlayer() and IsValid(TARDIS:GetInteriorEnt(ent))) then
             TARDIS:ErrorMessage(ply, "Controls.Tracking.InteriorFail")
             return false
         elseif ent == self then
@@ -157,14 +157,13 @@ if SERVER then
             self:SetData("tracking-ent-size", entSize)
             self:SetData("tracking-ent",ent,true)
             if IsValid(ent) and ent.TardisExterior then
-                ---@cast ent gmod_tardis
                 ent:SetData("tracking-tracked-by", self)
             end
             self:SetTrackRotationAuto()
         end
 
         if wasTrackingEnt ~= ent then
-            local name = ent.PrintName or (ent:IsPlayer() and (ent --[[@as Player]]):Nick()) or ent:GetModel() or ent:GetClass()
+            local name = ent.PrintName or (ent:IsPlayer() and (ent):Nick()) or ent:GetModel() or ent:GetClass()
             if ent.GetCreator then
                 local creator = ent:GetCreator()
                 if IsValid(creator) then
@@ -238,8 +237,10 @@ if SERVER then
     end)
 
     ENT:AddHook("HandleE2", "tracking", function(self, name, e2, ...)
+        ---@type any[]
         local args = {...}
         if name == "Track" and (args[1] == e2.player or TARDIS:CheckPP(e2.player, self)) then
+            ---@type Entity
             local ent = args[1]
             local success = self:SetTracking(ent, e2.player)
             return success and 1 or 0
@@ -359,7 +360,8 @@ if SERVER then
             if adjustedOffset ~= vector_origin then
                 adjustedOffset:Mul(phm)
                 if trackrotation then
-                    offset:Add(WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles()))
+                    local localOffset = WorldToLocal(adjustedOffset, angle_zero, vector_origin, ent:GetAngles())
+                    offset:Add(localOffset)
                 else
                     offset:Add(adjustedOffset)
                 end
@@ -374,6 +376,7 @@ if SERVER then
 
         local tvel = ent:GetVelocity()
         local tfwd = tvel:Angle():Forward()
+        ---@type Vector
         local target
         if trackrotation then
             target = ent:LocalToWorld(offset)
@@ -385,6 +388,8 @@ if SERVER then
         local targetpredicted = target+(tfwd*tvel:Length()*phm)
         local vel = ph:GetVelocity()
         local velnorm = vel:GetNormalized()
+        -- glua_ls upstream: Length's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
+        ---@type number
         local len = vel:Length()
 
         local entSize = self:GetData("tracking-ent-size")
@@ -437,15 +442,17 @@ if SERVER then
 
         if TRACKING_DEBUG then
             if not IsValid(self.trackingdebugprop) then
-                self.trackingdebugprop = ents.Create("prop_physics")
-                self.trackingdebugprop:SetModel("models/hunter/blocks/cube05x05x05.mdl")
-                self.trackingdebugprop:SetColor(Color(255,0,0))
-                self.trackingdebugprop:SetRenderMode(RENDERMODE_TRANSALPHA)
-                self.trackingdebugprop:SetMoveType(MOVETYPE_NONE)
-                self.trackingdebugprop:SetSolid(SOLID_NONE)
-                self.trackingdebugprop:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-                self.trackingdebugprop:Activate()
-                self.trackingdebugprop:Spawn()
+                local prop = ents.Create("prop_physics")
+                if not IsValid(prop) then error("entity creation failed: prop_physics") end
+                self.trackingdebugprop = prop
+                prop:SetModel("models/hunter/blocks/cube05x05x05.mdl")
+                prop:SetColor(Color(255,0,0))
+                prop:SetRenderMode(RENDERMODE_TRANSALPHA)
+                prop:SetMoveType(MOVETYPE_NONE)
+                prop:SetSolid(SOLID_NONE)
+                prop:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
+                prop:Activate()
+                prop:Spawn()
             end
 
             self.trackingdebugprop:SetPos(targetpredicted)
@@ -520,6 +527,7 @@ if SERVER then
     end)
 
     ENT:OnMessage("tracking-set", function(self,data,ply)
+        ---@type Entity
         local ent = data[1]
 
         if self:GetData("pilot") ~= ply then return end
@@ -560,7 +568,7 @@ else
     end)
 
     ENT:OnMessage("tracking-pilotwarning", function(self)
-        local keyName = input.GetKeyName(TARDIS:GetBindKey("tracking") --[[@as BUTTON_CODE]])
+        local keyName = input.GetKeyName(TARDIS:GetBindKey("tracking"))
         TARDIS:Message(LocalPlayer(), "Controls.Tracking.PilotWarning", string.upper(keyName))
     end)
 

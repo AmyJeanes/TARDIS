@@ -12,6 +12,10 @@
 ---@field convar tardis_setting_convar?
 ---@field min number?
 ---@field max number?
+---@field round_func (fun(value: number): number)?
+---@field get_values_func (fun(): table[])?
+---@field sort boolean?
+---@field func (fun(self: TARDIS))?
 
 ---@class tardis_setting_convar
 ---@field name string
@@ -54,10 +58,11 @@ function TARDIS:AddSetting(data)
                 local set_value = TARDIS:SetSetting(data.id, value, true)
 
                 if set_value ~= value then
+                    local cvar = assert(GetConVar(convar.name))
                     if data.type == "integer" then
-                        GetConVar(convar.name):SetInt(set_value)
+                        cvar:SetInt(set_value)
                     else
-                        GetConVar(convar.name):SetFloat(set_value)
+                        cvar:SetFloat(set_value)
                     end
                 end
             elseif data.type == "bool" then
@@ -115,7 +120,7 @@ function TARDIS:SetSetting(id, value, ignore_convar)
             self.GlobalSettings[id]=value
 
             if data.convar and not ignore_convar then
-                local convar = GetConVar(data.convar.name)
+                local convar = assert(GetConVar(data.convar.name))
                 if data.type == "integer" then
                     convar:SetInt(value)
                 elseif data.type == "number" then
@@ -181,11 +186,10 @@ function TARDIS:GetSetting(id, src, no_default)
     ---@type Entity?
     local ent = src
     if IsValid(ent) and not ent:IsPlayer() and not ent.TardisExterior then
-        ent = ent.exterior
+        ent = (ent --[[@as gmod_tardis_interior|gmod_tardis_part]]).exterior
     end
     if IsValid(ent) and isentity(ent) then
-        ---@cast ent Entity
-        ply = ent:IsPlayer() and ent --[[@as Player]] or ent:GetCreator()
+        ply = ent:IsPlayer() and ent or ent:GetCreator()
     end
 
     if not id then error("Requested setting with no id") end
@@ -271,6 +275,7 @@ function TARDIS:SaveSettings()
         local settings={}
         for k,v in pairs(settings_table) do
             local data = self.SettingsData[k]
+            -- Keep missing settings in case they come back later e.g. disabled extension / switching branches
             if data == nil or data.value ~= v or type(v) == "table" then
                 settings[k] = v
             end
@@ -293,6 +298,7 @@ function TARDIS:LoadSettings()
     local function LoadSettingsFromFile(settings_table, settings_file)
         if file.Exists(settings_file, "DATA") then
             local file_contents = file.Read(settings_file, "DATA")
+            ---@type table
             local loaded_settings = self.von.deserialize(file_contents)
 
             table.Merge(settings_table, loaded_settings)
@@ -430,7 +436,6 @@ else
     end)
 
     -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-ClientSettings",function(len)
         local userID=net.ReadInt(8)
         if not TARDIS.ClientSettings[userID] then TARDIS.ClientSettings[userID]={} end

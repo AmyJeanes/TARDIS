@@ -1,8 +1,16 @@
 -- TARDIS debug pointer
 -- Creators: Brundoob, Parar020100 and RyanM2711
 
+-- DProperties:CreateRow's row panel: typed as a plain Panel upstream, its own methods only described in prose.
+---@class dproperties_row : Panel
+---@field Setup fun(self: dproperties_row, type: string, vars: table?)
+---@field SetValue fun(self: dproperties_row, value: any)
+---@field DataChanged fun(self: dproperties_row, value: any)
+
 ---@class gmod_tardis_debug_pointer : Entity
 ---@field debug_window Panel?
+---@field model string?
+---@field scale number?
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
@@ -31,6 +39,7 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
     if not (ply:IsAdmin() and gamemode.Call("PlayerSpawnSENT", ply, "gmod_tardis_debug_pointer")) then return end
 
     local ent = ents.Create("gmod_tardis_debug_pointer")
+    if not IsValid(ent) then error("entity creation failed: gmod_tardis_debug_pointer") end
     ent:SetCreator(ply)
 
     local tr = util.TraceLine({
@@ -58,7 +67,7 @@ concommand.Add("tardis2_debug_pointer", function(ply,cmd,args)
             local part = TARDIS:GetRegisteredPart(args[i + 1])
             if part then ent.model = part.Model end
         elseif v == "scale" then
-            ent.scale = args[i + 1]
+            ent.scale = tonumber(args[i + 1])
         elseif v == "pos" or v == "ang" or v == "worldpos" then
             local a = tonumber(args[i + 1])
             local b = tonumber(args[i + 2])
@@ -100,7 +109,6 @@ if SERVER then
     util.AddNetworkString("TARDIS-Pointer-Use")
 
     -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Pointer-Debug-Update",function(len,ply)
         if not ply:IsAdmin() then return end
 
@@ -164,8 +172,11 @@ else
             return
         end
 
+        ---@type Panel?, Panel?, Panel?, Panel?, Panel?, Panel?
         local x, x2, y, y2, z, z2
+        ---@type Panel?, Panel?, Panel?, Panel?, Panel?, Panel?
         local xr, xr2, yr, yr2, zr, zr2
+        ---@type Panel?, Panel?, Panel?, Panel?, Panel?, Panel?
         local xpv, xpv2, ypv, ypv2, zpv, zpv2
 
         local px, py, pz = ent:WorldToLocal(p:GetPos()):Unpack()
@@ -190,16 +201,19 @@ else
             prx, pry, prz = (B_inv * pos):Unpack()
 
             if xr then
+                local xr_precise = assert(xr2)
                 xr:SetValue(prx)
-                xr2:SetValue(prx)
+                xr_precise:SetValue(prx)
             end
             if yr then
+                local yr_precise = assert(yr2)
                 yr:SetValue(pry)
-                yr2:SetValue(pry)
+                yr_precise:SetValue(pry)
             end
             if zr then
+                local zr_precise = assert(zr2)
                 zr:SetValue(prz)
-                zr2:SetValue(prz)
+                zr_precise:SetValue(prz)
             end
         end
 
@@ -331,6 +345,7 @@ else
         ---@param b number|fun(val: number)
         ---@param c (fun(val: number))|nil
         ---@param d string|nil
+        ---@return Panel row, Panel preciseRow
         local function SetupProperty(category, name, value, a, b, c, d)
             local vmin, vmax, update_func
             local vtype = "Float"
@@ -348,8 +363,8 @@ else
                 vtype = d
             end
 
-            local row1 = pr:CreateRow( category, name )
-            local row2 = pr:CreateRow( category, name .. " (precise)" )
+            local row1 = pr:CreateRow( category, name ) --[[@as dproperties_row]]
+            local row2 = pr:CreateRow( category, name .. " (precise)" ) --[[@as dproperties_row]]
 
             row1:Setup( vtype, { min = vmin, max = vmax } )
             row1:SetValue(value)
@@ -410,7 +425,7 @@ else
             UpdatePointerPos(false, true)
         end)
 
-        local pv_iva = pr:CreateRow( "Player view position", "Ignore vertical angle" )
+        local pv_iva = pr:CreateRow( "Player view position", "Ignore vertical angle" ) --[[@as dproperties_row]]
         pv_iva:Setup( "Bool" )
         pv_iva:SetValue(pv_ignore_vertical_angle)
         ---@param val boolean
@@ -451,7 +466,7 @@ else
             end
         end
 
-        local inv = pr:CreateRow( "Actions", "Print" )
+        local inv = pr:CreateRow( "Actions", "Print" ) --[[@as dproperties_row]]
         inv:Setup( "Bool" )
         inv:SetValue(false)
         ---@param val boolean

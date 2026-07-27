@@ -532,7 +532,7 @@ T.Exterior = {
     },
     Parts = {
         vortex = {
-            matrixScale = Vector(0.25, 1, 1),
+            MatrixScale = Vector(0.25, 1, 1),
             ang = Angle(180, 0, 0),
             scale = 5
         },
@@ -600,10 +600,6 @@ T.CustomHooks = {
             if not IsValid(m) then return true end
 
             if id == 1 or id == 2 then
-                if m:IsAnimationPlaying() then
-                    return true
-                end
-
                 if m:IsStatic() then
                     return true
                 end
@@ -786,12 +782,16 @@ T.Templates = {
     },
     default_halloween = {
         override = true,
+        -- glua_ls upstream: field-typed literal params not inherited -- https://github.com/Pollux12/gmod-glua-ls/issues/53
+        ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsHalloweenEvent()
         end,
     },
     default_christmas = {
         override = true,
+        -- glua_ls upstream: field-typed literal params not inherited -- https://github.com/Pollux12/gmod-glua-ls/issues/53
+        ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsChristmasEvent()
         end,

@@ -367,7 +367,9 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
         },
     },
     CustomMessages = {
-        ["halloween-knock"] = function(self, data, ply)
+        ["halloween-knock"] =
+            ---@param self gmod_tardis
+            function(self, data, ply)
             if not IsValid(self.interior) then return end
             local extdoor = self:GetPart("door")
             local intdoor = self.interior:GetPart("door")
@@ -403,7 +405,9 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
                 intdoor.cancelknock = true
             end
         end,
-        ["halloween-entered"] = function(self, data, ply)
+        ["halloween-entered"] =
+            ---@param self gmod_tardis
+            function(self, data, ply)
             if not IsValid(self.interior) then return end
             local intdoor = self.interior:GetPart("door")
             if IsValid(intdoor) then
@@ -414,7 +418,9 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
             if not IsValid(self.interior) then return end
             local corridors = self.interior:GetPart("default_corridors")
             if IsValid(corridors) then
+                ---@type string
                 local sound = data[1]
+                ---@type number
                 local soundlvl = data[2]
                 local int = self.interior
                 if int.halloween_corridor_sound then

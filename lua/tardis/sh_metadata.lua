@@ -20,7 +20,9 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field CustomSettings table<string, tardis_custom_setting>?
 ---@field CustomMessages table<string, function>?
 ---@field SyncExteriorBodygroupToDoors boolean?
+---@field SyncDoorBodygroups boolean?
 ---@field EnableClassicDoors boolean?
+---@field NoSoundOnEnter boolean?
 ---@field Hidden boolean?
 
 ---@class tardis_interior_metadata
@@ -37,7 +39,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field TipSettings tardis_tip_settings
 ---@field LightOverride tardis_light_override
 ---@field Light tardis_interior_light?
----@field Lights table<string, tardis_interior_light_state>?
+---@field Lights table<string, tardis_interior_light>?
 ---@field ScreensEnabled boolean?
 ---@field UseFullName boolean
 ---@field Screens tardis_screen[]?
@@ -90,6 +92,10 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field Name string?
 ---@field Category string?
 
+---@class tardis_portal_point
+---@field pos Vector
+---@field ang Angle
+
 ---@class tardis_interior_portal
 ---@field pos Vector
 ---@field ang Angle
@@ -97,6 +103,8 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field height number
 ---@field thickness number?
 ---@field inverted boolean?
+---@field exit_point_offset tardis_portal_point?
+---@field exit_point tardis_portal_point?
 
 ---@class tardis_exterior_portal
 ---@field pos Vector
@@ -107,6 +115,8 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field model_offset tardis_model_offset
 ---@field thickness number?
 ---@field inverted boolean?
+---@field exit_point_offset tardis_portal_point?
+---@field exit_point tardis_portal_point?
 
 ---@class tardis_box
 ---@field Min Vector
@@ -123,7 +133,8 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_exterior_light
 ---@field enabled boolean?
 ---@field pos Vector?
----@field color Color?
+---@field color Color
+---@field warncolor Color?
 ---@field dynamicpos Vector?
 ---@field dynamicbrightness number?
 ---@field dynamicsize number
@@ -197,6 +208,9 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field nopowerbrightness number
 ---@field transitionspeed number
 ---@field basebrightnessRGB Vector|number[]|nil
+---@field nopowerbrightnessRGB Vector|number[]|nil
+---@field parts table<string, number>?
+---@field parts_nopower table<string, number>?
 
 ---@class tardis_projected_light
 ---@field brightness number?
@@ -216,6 +230,7 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_locked_door
 ---@field AnimPos number
 ---@field AnimTime number
+---@field AnimEnabled boolean?
 
 ---@class tardis_tip_settings
 ---@field style string?
@@ -230,12 +245,14 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field TakeOffState number
 ---@field ParkingState number
 
+---@alias tardis_sequence_speed number|{ Demat: number, Mat: number }
+
 ---@class tardis_teleport
----@field SequenceSpeed number|{ Demat: number, Mat: number }
----@field SequenceSpeedWarning number|{ Demat: number, Mat: number }
----@field SequenceSpeedFast number|{ Demat: number, Mat: number }
----@field SequenceSpeedHads number|{ Demat: number, Mat: number }
----@field SequenceSpeedWarnFast number|{ Demat: number, Mat: number }
+---@field SequenceSpeed tardis_sequence_speed
+---@field SequenceSpeedWarning tardis_sequence_speed
+---@field SequenceSpeedFast tardis_sequence_speed
+---@field SequenceSpeedHads tardis_sequence_speed
+---@field SequenceSpeedWarnFast tardis_sequence_speed
 ---@field DematInterruptSpeed number
 ---@field PrematDelayFast number
 ---@field PrematDelay number
@@ -470,7 +487,7 @@ end
 
 ---@class tardis_interior_template
 ---@field override boolean?
----@field condition function?
+---@field condition (fun(id: string, ply: Player, ent: gmod_tardis|gmod_tardis_interior): boolean?)?
 ---@field ignore_missing boolean?
 ---@field fail_msg string?
 ---@field fail function?
@@ -582,7 +599,7 @@ end
 ---@return tardis_metadata
 function TARDIS:MergeMetadata(base, override)
     ---@type tardis_metadata
-    local copy=table.Copy(base) -- table.Copy returns a bare table, dropping the class
+    local copy=table.Copy(base)
     self:PreMergeExteriorMetadata(override.Exterior)
     table.Merge(copy,override)
     self:PostMergeExteriorMetadata(copy.Exterior)
@@ -663,7 +680,7 @@ function TARDIS:SetupFalseWorlds(int_id)
     if locals then
         for k, world in pairs(locals) do
             local fw_id = "tardis_" .. tostring(int_id) .. "_" .. tostring(k)
-            local copy = table.Copy(world)
+            local copy = table.Copy(world) --[[@as worldportals_false_world]]
             copy.id = fw_id
             wp.addfalseworld(copy)
         end
@@ -697,7 +714,7 @@ end
 ---@api
 ---@param interior tardis_metadata
 function TARDIS:AddInterior(interior)
-    interior = table.Copy(interior)
+    interior = table.Copy(interior) --[[@as tardis_metadata]]
 
     local id = interior.ID
 

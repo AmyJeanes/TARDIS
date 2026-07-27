@@ -63,13 +63,20 @@
 ---@field parent gmod_tardis|gmod_tardis_interior
 ---@field o tardis_part_original
 ---@field Control string
----@field pos Vector
----@field ang Angle
+---@field Pos Vector
+---@field Ang Angle
 ---@field static boolean?
+---@field Invisible boolean?
+---@field Enabled boolean?
+---@field MatrixScale Vector?
+---@field Exteriors table<string, table>?
+---@field Interiors table<string, table>?
+---@field UseTransparencyFix boolean?
 ---@field Use fun(self: gmod_tardis_part, activator: Player, caller?: Entity, useType?: number, value?: number)?
 ---@field UseBasic fun(self: gmod_tardis_part, activator: Player)?
 ---@field PreDraw fun(self: gmod_tardis_part)?
 ---@field PostDraw fun(self: gmod_tardis_part)?
+---@field OnBodygroupChanged fun(self: gmod_tardis_part, bodygroup: number, value: number)?
 
 ---@class tardis_part_animation
 ---@field Type string?
@@ -100,6 +107,47 @@
 ---@field speed_override_func function?
 ---@field condition_func function?
 ---@field custom_func function?
+
+-- List all part fields for casing normalisation e.g. soundon -> SoundOn so interior
+-- part field overrides can be written in any casing without causing issues.
+local PART_FIELDS = {
+    "ID", "Name", "Model", "AutoSetup", "AutoPosition", "Collision", "CollisionUse",
+    "PortalNoCollide", "NoStrictUse", "ShouldTakeDamage", "BypassIsomorphic", "Motion",
+    "StartFrozen", "ResetPositionOnUse", "UnfreezeHint", "EnabledOnStart", "PowerOffUse",
+    "Animate", "AnimateSpeed", "AnimateOptions", "ExtraAnimations", "Sound", "SoundOn",
+    "SoundOff", "SoundNoPower", "SoundOnNoPower", "SoundOffNoPower", "SoundLoop",
+    "SoundLoopVolume", "SoundStop", "SoundPos", "PowerOffSound", "ClientThinkOverride",
+    "ClientDrawOverride", "ShouldDrawOverride", "Translucent", "CustomAlpha", "NoShadow",
+    "NoShadowCopy", "NoCloak", "NoDraw", "InvisibleFade", "InvisibleCollision", "FadeSpeed",
+    "Scale", "AllowThroughPortals", "DrawThroughPortal", "ShadowCollision", "Pos", "Ang",
+    "Invisible", "Enabled", "MatrixScale", "Exteriors", "Interiors", "UseTransparencyFix",
+}
+
+local PART_FIELDS_NORMALIZED = {}
+for _, name in ipairs(PART_FIELDS) do
+    PART_FIELDS_NORMALIZED[string.lower(name)] = name
+end
+
+---@param tbl table
+local function NormalizePartFields(tbl)
+    local remaps
+    for k in pairs(tbl) do
+        if isstring(k) then
+            local canon = PART_FIELDS_NORMALIZED[k:lower()]
+            if canon and canon ~= k then
+                remaps = remaps or {}
+                remaps[k] = canon
+            end
+        end
+    end
+    if not remaps then return end
+    for k, canon in pairs(remaps) do
+        if tbl[canon] == nil then
+            tbl[canon] = tbl[k]
+        end
+        tbl[k] = nil
+    end
+end
 
 if SERVER then
     util.AddNetworkString("TARDIS-SetupPart")
@@ -254,6 +302,19 @@ function TARDIS.InitAnimation(self, anim)
     return a
 end
 
+---@param ply Player
+---@param looked_at boolean?
+---@return boolean
+local function isSonicPressed(ply, looked_at)
+    if not looked_at then
+        return false
+    end
+    if ply:GetActiveWeapon() ~= ply:GetWeapon("swep_sonicsd") then
+        return false
+    end
+    return ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
+end
+
 ---@param self gmod_tardis_part
 ---@param a tardis_part_animation_state
 function TARDIS.ProcessAnimation(self, a)
@@ -278,19 +339,9 @@ function TARDIS.ProcessAnimation(self, a)
             local ply = LocalPlayer()
             local looked_at = self:BeingLookedAtByLocalPlayer()
 
-            local function is_sonic_pressed()
-                if not looked_at then
-                    return false
-                end
-                if ply:GetActiveWeapon() ~= ply:GetWeapon("swep_sonicsd") then
-                    return false
-                end
-                return ply:KeyDown(IN_ATTACK) or ply:KeyDown(IN_ATTACK2)
-            end
-
             local moving = looked_at and ply:KeyDown(IN_USE)
 
-            if is_sonic_pressed() then
+            if isSonicPressed(ply, looked_at) then
                 self.sonic_activation_start = self.sonic_activation_start or CurTime()
                 if CurTime() - self.sonic_activation_start > 0.5 then
                     moving = true
@@ -336,6 +387,35 @@ end
 ---@field Think fun(self: gmod_tardis_part)
 ---@field Draw fun(self: gmod_tardis_part, flags?: number)
 ---@field Use fun(self: gmod_tardis_part, activator: Entity, caller?: Entity, useType?: number, value?: number)
+
+---@class gmod_tardis_interior
+---@field _partThinkFrame integer?
+---@field _partThinkOK boolean
+
+-- Asked by every part each Think; the answer can't change within a frame.
+---@param int gmod_tardis_interior
+---@return boolean
+local function interiorShouldThink(int)
+    local fn = FrameNumber()
+    if int._partThinkFrame ~= fn then
+        int._partThinkFrame = fn
+        int._partThinkOK = int:CallHook("ShouldThink") ~= false
+    end
+    return int._partThinkOK
+end
+
+---@param self gmod_tardis_part
+---@param ext gmod_tardis
+---@return boolean
+local function partVisibleThroughDoor(self, ext)
+    if not ext:DoorOpen() then return false end
+    if not self.ClientThinkOverride then return false end
+    local ply_pos = LocalPlayer():GetPos()
+    local ext_pos = ext:GetPos()
+    local close_dist = TARDIS:GetSetting("portals-closedist")
+
+    return ply_pos:Distance(ext_pos) < close_dist
+end
 
 local overrides={
     ["Draw"]={TARDIS.DrawOverride, CLIENT},
@@ -389,17 +469,7 @@ local overrides={
         local int=self.interior
         local ext=self.exterior
         if self._init and IsValid(ext) then
-            local function is_visible_through_door()
-                if not ext:DoorOpen() then return false end
-                if not self.ClientThinkOverride then return false end
-                local ply_pos = LocalPlayer():GetPos()
-                local ext_pos = ext:GetPos()
-                local close_dist = TARDIS:GetSetting("portals-closedist")
-
-                return ply_pos:Distance(ext_pos) < close_dist
-            end
-
-            if (IsValid(int) and (int:CallHook("ShouldThink") ~= false)) or self.ExteriorPart or self.AllowThroughPortals or is_visible_through_door() then
+            if (IsValid(int) and interiorShouldThink(int)) or self.ExteriorPart or self.AllowThroughPortals or partVisibleThroughDoor(self, ext) then
                 if self.Animate then
                     TARDIS.ProcessAnimation(self, self.animation)
 
@@ -430,6 +500,7 @@ local overrides={
     ["Use"]={
         ---@param self gmod_tardis_part
         ---@param a Entity
+        ---@param ... any
         function(self,a,...)
         if SERVER and TARDIS.debug_tips and self.InteriorPart then
             return TARDIS.DebugTipsFunction(self, a, ...)
@@ -440,7 +511,7 @@ local overrides={
         end
 
         local res
-        if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and a:GetEyeTraceNoCursor().Entity~=self then return end
+        if (not self.NoStrictUse) and IsValid(a) and a:IsPlayer() and (a):GetEyeTraceNoCursor().Entity~=self then return end
         local allowed, animate
         if self.ExteriorPart then
             allowed, animate = self.exterior:CallHook("CanUsePart",self,a)
@@ -465,7 +536,7 @@ local overrides={
 
                 if SERVER and self.Motion and IsValid(a) and a:IsPlayer() and (self.parent:CheckSecurity(a) or self.BypassIsomorphic) then
                     local phys = self:GetPhysicsObject()
-                    local walk = a:KeyDown(IN_WALK)
+                    local walk = (a):KeyDown(IN_WALK)
                     if walk and self.StartFrozen and IsValid(phys) and not phys:IsMoveable() and not self.unfrozen then
                         phys:EnableMotion(true)
                         phys:Wake()
@@ -513,12 +584,13 @@ local overrides={
         end
 
         if SERVER and self.Motion and IsValid(a) and a:IsPlayer()
-            and not (self.ResetPositionOnUse and a:KeyDown(IN_WALK))
+            and not (self.ResetPositionOnUse and (a):KeyDown(IN_WALK))
             and not self:IsPlayerHolding() then
 
             local phys = self:GetPhysicsObject()
             if IsValid(phys) and phys:IsMoveable() then 
-                a:PickupObject(self)
+                local ply = a
+                ply:PickupObject(self)
             end
         end
         return res
@@ -555,7 +627,7 @@ local parts={}
 ---@api
 ---@param ent Entity
 ---@param id string
----@return Entity
+---@return gmod_tardis_part
 function TARDIS:GetPart(ent,id)
     return IsValid(ent) and ent.parts and ent.parts[id] or NULL
 end
@@ -571,7 +643,7 @@ end
 ---@param ent Entity
 ---@return table<string, gmod_tardis_part>|false|nil
 function TARDIS:GetParts(ent)
-    return IsValid(ent) and ent.parts
+    return IsValid(ent) and (ent --[[@as gmod_tardis|gmod_tardis_interior]]).parts
 end
 
 local overridequeue={}
@@ -594,7 +666,7 @@ function TARDIS:AddPart(part)
         part.Name = part.ID -- most creators just copy the ID anyway
     end
 
-    part=table.Copy(part)
+    part=table.Copy(part) --[[@as gmod_tardis_part]]
     part.HasUseBasic = part.UseBasic ~= nil
     part.HasUse = part.Use ~= nil
     part.Base = "gmod_tardis_part"
@@ -649,7 +721,8 @@ local function GetData(self,e,id)
             data=self.metadata.Interior.Parts[id]
         end
     end
-    return data
+    -- a Parts/self-attach slot may hold a bare `true` membership marker, not override data
+    return istable(data) and data or {}
 end
 
 -- Swept-shadow collision: a part's own physobj follows the shell so it pushes props as
@@ -729,37 +802,6 @@ end
 local function AutoSetup(self,e,id)
     local data=GetData(self,e,id)
     if not data then return end
-
-    if e.model then
-        e.Model = e.model
-    end
-    if e.motion then
-        e.Motion = e.motion
-    end
-    if e.pos then
-        e.Pos = e.pos
-    end
-    if e.ang then
-        e.Ang = e.ang
-    end
-    if e.scale then
-        e.Scale = e.scale
-    end
-    if e.invisible then
-        e.Invisible = e.invisible
-    end
-    if e.invisiblefade then
-        e.InvisibleFade = e.invisiblefade
-    end
-    if e.fadespeed then
-        e.FadeSpeed = e.fadespeed
-    end
-    if e.resetpositiononuse then
-        e.ResetPositionOnUse = e.resetpositiononuse
-    end
-    if e.startfrozen then
-        e.StartFrozen = e.startfrozen
-    end
 
     e:SetModel(e.Model)
     e:PhysicsInit( SOLID_VPHYSICS )
@@ -869,26 +911,28 @@ if SERVER then
         end
         ent.controlparts = {}
         for k,v in pairs(tempparts) do
-            local e=ents.Create(v)
-            Doors:SetupOwner(e,ent:GetCreator())
-            e.exterior=(ent.TardisExterior and ent or ent.exterior)
-            e.interior=(ent.TardisInterior and ent or ent.interior)
-            e.parent=ent
-            e.ExteriorPart=(e.parent==e.exterior)
-            e.InteriorPart=(e.parent==e.interior)
-            local part_data=GetData(ent,e,k)
-            if type(part_data)=="table" then
+            local stored = assert(scripted_ents.GetStored(v), "unregistered part class: " .. v)
+            local part_data = table.Copy(GetData(ent, stored.t, k)) --[[@as table]]
+            NormalizePartFields(part_data)
+
+            if part_data.Enabled ~= false then
+                local e=ents.Create(v)
+                if not IsValid(e) then error("entity creation failed: " .. v) end
+                -- v names a registered part class
+                ---@cast e gmod_tardis_part
+                Doors:SetupOwner(e,ent:GetCreator())
+                e.exterior=(ent.TardisExterior and ent or ent.exterior)
+                e.interior=(ent.TardisInterior and ent or ent.interior)
+                e.parent=ent
+                e.ExteriorPart=(e.parent==e.exterior)
+                e.InteriorPart=(e.parent==e.interior)
                 table.Merge(e,part_data)
-            end
 
-            SetupPartControl(e)
-            if e.EnabledOnStart then
-                e:SetOn(true)
-            end
+                SetupPartControl(e)
+                if e.EnabledOnStart then
+                    e:SetOn(true)
+                end
 
-            if e.enabled==false then
-                e:Remove()
-            else
                 ent.parts[k]=e
                 if e.AutoSetup then
                     AutoSetup(ent,e,k)
@@ -955,15 +999,15 @@ else
     ---@param parent Entity
     function TARDIS:SetupPart(ent,name,ext,int,parent)
         if IsValid(ent) and IsValid(parent) then
+            ---@cast ent gmod_tardis_part
             ent.exterior=ext
             ent.interior=int
             ent.parent=parent
             ent.ExteriorPart=(parent==ext)
             ent.InteriorPart=(parent==int)
-            local data=GetData(parent,ent,name)
-            if type(data)=="table" then
-                table.Merge(ent,data)
-            end
+            local data=table.Copy(GetData(parent,ent,name))
+            NormalizePartFields(data)
+            table.Merge(ent,data)
 
             if ent.Translucent then
                 ent.RenderGroup = RENDERGROUP_TRANSLUCENT
@@ -977,9 +1021,9 @@ else
 
             if not parent.parts then parent.parts={} end
             parent.parts[name]=ent
-            if ent.matrixScale then
+            if ent.MatrixScale then
                 local matrix = Matrix()
-                matrix:Scale(ent.matrixScale)
+                matrix:Scale(ent.MatrixScale)
                 ent:EnableMatrix("RenderMultiply",matrix)
             end
             local o = ent.o

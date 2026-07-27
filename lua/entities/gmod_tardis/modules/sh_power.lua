@@ -34,12 +34,19 @@ end)
 
 if SERVER then
     ---@api
-    ---@return boolean
+    ---@return boolean toggled
+    ---@return string? reason
+    ---@return any arg1
+    ---@return any arg2
     function ENT:TogglePower()
         return self:SetPower(not self:GetPower())
     end
     ---@api
     ---@param on boolean
+    ---@return boolean toggled
+    ---@return string? reason
+    ---@return any arg1
+    ---@return any arg2
     function ENT:SetPower(on)
         local cantoggle, reason, arg1, arg2 = self:CallCommonHook("CanTogglePower", on)
         if cantoggle == false then return false, reason, arg1, arg2 end
@@ -48,12 +55,6 @@ if SERVER then
         self:SendMessage("power_toggled", {on})
         return true
     end
-
-    ENT:AddHook("PostInitialize","power-init", function(self)
-        if self:GetData("power_disabled_first") then
-            self:SetPower(false)
-        end
-    end)
 
     ENT:AddHook("CanTogglePower", "vortex", function(self, on)
         if self:GetData("teleport") or self:GetData("vortex") then

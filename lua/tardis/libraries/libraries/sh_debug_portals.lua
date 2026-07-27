@@ -2,16 +2,20 @@
 ---@class linked_portal_door
 ---@field debug_window Panel?
 
+-- DProperties:CreateRow hands back an internal row panel that has no stub class of its own.
+---@class DPropertiesRow : Panel
+---@field Setup fun(self: DPropertiesRow, type: string, vars: table?)
+---@field SetValue fun(self: DPropertiesRow, value: any)
+---@field DataChanged fun(self: DPropertiesRow, value: any)?
+
 if SERVER then
     util.AddNetworkString("TARDIS-Debug-Portals")
     util.AddNetworkString("TARDIS-Debug-Portals-Update")
 
-    -- Dynamic read/write counts not handled by analyzer.
-    ---@diagnostic disable-next-line: gmod-net-read-write-order-mismatch
     net.Receive("TARDIS-Debug-Portals-Update",function(len,ply)
         if not ply:IsAdmin() then return end
 
-        local portal = net.ReadEntity()
+        local portal = net.ReadEntity() --[[@as linked_portal_door]]
         if not IsValid(portal) then return end
 
         local update_type = net.ReadString()
@@ -87,15 +91,15 @@ else
 
             prx, pry, prz = (B_inv * pos):Unpack()
 
-            if xr then
+            if xr and xr2 then
                 xr:SetValue(prx)
                 xr2:SetValue(prx)
             end
-            if yr then
+            if yr and yr2 then
                 yr:SetValue(pry)
                 yr2:SetValue(pry)
             end
-            if zr then
+            if zr and zr2 then
                 zr:SetValue(prz)
                 zr2:SetValue(prz)
             end
@@ -112,15 +116,15 @@ else
 
             px, py, pz = (B * posr):Unpack()
 
-            if x then
+            if x and x2 then
                 x:SetValue(px)
                 x2:SetValue(px)
             end
-            if y then
+            if y and y2 then
                 y:SetValue(py)
                 y2:SetValue(py)
             end
-            if z then
+            if z and z2 then
                 z:SetValue(pz)
                 z2:SetValue(pz)
             end
@@ -222,8 +226,8 @@ else
                 vtype = d
             end
 
-            local row1 = pr:CreateRow( category, name )
-            local row2 = pr:CreateRow( category, name .. " (precise)" )
+            local row1 = pr:CreateRow( category, name ) --[[@as DPropertiesRow]]
+            local row2 = pr:CreateRow( category, name .. " (precise)" ) --[[@as DPropertiesRow]]
 
             row1:Setup( vtype, { min = vmin, max = vmax } )
             row1:SetValue(value)
@@ -299,7 +303,7 @@ else
             UpdatePortal3D()
         end)
 
-        local inv = pr:CreateRow( "3D", "Inverted" )
+        local inv = pr:CreateRow( "3D", "Inverted" ) --[[@as DPropertiesRow]]
         inv:Setup( "Bool" )
         inv:SetValue(inverted)
         ---@param val boolean
@@ -337,7 +341,7 @@ else
         end)
 
 
-        local ep_category = pr:GetCategory(exit_point_category)
+        local ep_category = pr:GetCategory(exit_point_category) --[[@as DCollapsibleCategory]]
 
         local container = ep_category.Container
         if container then container:SetVisible(false) end
@@ -345,7 +349,7 @@ else
         if expand then expand:SetExpanded(false) end
         ep_category:InvalidateLayout()
 
-        local reset = pr:CreateRow( "Actions", "Reset" )
+        local reset = pr:CreateRow( "Actions", "Reset" ) --[[@as DPropertiesRow]]
         reset:Setup( "Bool" )
         reset:SetValue(false)
         ---@param val boolean
@@ -373,7 +377,7 @@ else
             frame:Remove()
         end
 
-        local print_row = pr:CreateRow( "Actions", "Print to console" )
+        local print_row = pr:CreateRow( "Actions", "Print to console" ) --[[@as DPropertiesRow]]
         print_row:Setup( "Bool" )
         print_row:SetValue(false)
         ---@param val boolean

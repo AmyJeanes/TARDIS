@@ -6,13 +6,8 @@ function TARDIS:SetupVersions(int_id)
         return
     end
 
-    local versions
-
-    if t.Versions then
-        versions = table.Copy(t.Versions)
-    else
-        versions = {}
-    end
+    ---@type tardis_versions
+    local versions = t.Versions and table.Copy(t.Versions) or {}
 
     versions.other = versions.other or {}
     versions.custom = versions.custom or {}
@@ -23,7 +18,7 @@ function TARDIS:SetupVersions(int_id)
     versions.list_original.main = versions.main
     versions.list_all.main = versions.main
 
-    self.MetadataVersions[int_id] = versions
+    self.MetadataVersions[int_id] = versions --[[@as tardis_versions_complete]]
 
     local custom_versions = self.MetadataCustomVersions[int_id]
     if custom_versions then
