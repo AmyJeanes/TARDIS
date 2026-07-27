@@ -219,8 +219,8 @@ by occupancy, view, or mutually exclusive settings. Where two settings exist (`f
 | `FlightLoop` / `Damaged` / `Broken` | int `cl_flight.lua:11-43`, ext `sh_flight.lua:568-590` | **loop** | The flying doubles |
 | ~~`Idle` (int) / `Hum` (ext)~~ | `cl_idlesound.lua:17` | **loop** | No longer a pair - the exterior half is deleted (decision 4) |
 | `Door` (open/close) | `sh_doors.lua:362-382` | one-shot | Whole sub-table falls back at once |
-| `Door.locked` | `parts/door.lua:77-87` | one-shot | Always plays the *exterior* asset on **both** sides, so it is identical by construction - the opt-out can never apply |
-| `Lock` / `Unlock` | `sh_lock.lua:110-124` | one-shot | |
+| `Door.locked` | `parts/door.lua:77-87` | one-shot | Always plays the *exterior* asset on **both** sides, so it is identical by construction - the opt-out can never apply. **Not actually a doubling case**: both copies are engine-side, so neither crosses the boundary and neither can be paired |
+| `Lock` / `Unlock` | `sh_lock.lua:110-124` | one-shot | Was half-managed - the exterior click played through the engine, so only the interior copy crossed. A pair can only fade between two managed channels, so the exterior half was promoted |
 | `Chameleon` | `sh_chameleon.lua:55-65` | one-shot | |
 | `FlightLand` / `FlightFall` | `sh_falling.lua:134-165` | one-shot | |
 
@@ -663,8 +663,18 @@ skipping it forever. Use the date signature; there is no version to reason about
    over from that copy. Leaking is a property of the geometry now.
 4. ~~**Exterior hum dedup**~~ **Done** - deleted the feature outright instead; see decision 4.
 5. **Counterpart pairs** - one side audible at a time, fading across the boundary. **Design settled
-   2026-07-19; see decision 3.** The rungs below are the reasoning that got there, kept because the
-   default reversed twice on the way.
+   2026-07-19; see decision 3. Built** - the loops when the resolver landed, the one-shots on
+   2026-07-27 (teleport, door, chameleon, land/fall, lock). Land and fall carry their own pair keys
+   rather than the flight loop's `"flight"`, so an overlapping landing cannot fuse with the loop.
+   Teleport's bystander copies stay unpaired: only one ever plays, and a group of one is a no-op.
+
+   **The author-facing opt-out is not built** - `through_doors` on a one-shot needs the metadata
+   fields widened to the table form, which is the author-knobs work (decision 10). Until then any
+   counterpart pair blends, with no way to declare two genuinely different sounds. That is the
+   documented default doing the right thing for unmaintained content; what it costs is the bespoke
+   case, and the case that motivated the opt-out is a loop, which already has the table form.
+
+   The rungs below are the reasoning that got there, kept because the default reversed twice on the way.
 
    **This one is now urgent rather than nice-to-have.** The resolver made leakage symmetric, so the
    *exterior* flight loop is newly audible from inside, on top of the interior's own - 105 interiors
