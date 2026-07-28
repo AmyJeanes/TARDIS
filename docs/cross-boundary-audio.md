@@ -648,25 +648,26 @@ skipping it forever. Use the date signature; there is no version to reason about
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
-- **`EyePos()` in a `Think` hook is not the player's view, and the whole resolver reads it there.**
-  Measured 2026-07-27: with the player stood still outside the box, `CalcView` reported the true eye
-  every frame while `EyePos()` sampled from `Think` returned a fixed leftover camera sitting in the
-  interior's region of the map, unchanged over 200 frames and not matching `LocalPlayer():EyePos()`.
-  `EyePos()` appears to hold whatever the last render pass left, and with a doorway on screen that pass
-  is the portal's virtual camera. `getListenerSpace()` calls it from the sound `Think`
-  (`sh_sound.lua:1596`), so the listener's space, distance and every doorway term can be measured from
-  the wrong place - intermittently, depending on where the stale value happens to land relative to an
-  interior's bounds. Observed as a crossing where the listener space stayed on the interior for ~0.85 s
-  after the body had left, far longer than the 0.5 s move transition.
+- **After leaving an interior, the listener stays inside it.** Found 2026-07-27. `EyePos()` read from a
+  `Think` hook freezes at the last interior-side position the moment the player exits, and never updates
+  again; `CalcView` tracks the real eye correctly throughout. `getListenerSpace()` reads `EyePos()` from
+  the sound `Think` (`sh_sound.lua:1596`), so it keeps resolving the listener into the interior. Measured
+  standing outside the box: `listenerState.space` = the interior, `PositionInside(frozenEye)` true while
+  `PositionInside(realEye)` false. Everything downstream - space, distance, aperture, directivity, the
+  counterpart rule - is then computed from the console room while the player stands in the world.
 
-  **Not yet established whether this affects real play**, and it is not to be assumed a bug: crossings
-  have been ear-tested repeatedly and signed off, every measurement taken with the listener and the
-  sound on the same side was correct and stable, and the end state after a crossing was always right.
-  It may be specific to a session driven by tool calls rather than played. It is also *upstream* of
-  everything here rather than part of it - the same input the earlier half-crossfade bug turned on,
-  whose fix keyed the listener cache on `(frame, body, eye)` and so inherits whatever `eye` is worth.
-  Worth settling before trusting any timing measurement of a crossing; `CalcView` is the authoritative
-  source to compare against.
+  Reproduced on both exit paths (walking out through the doorway, and a scripted teleport out), with
+  rendering confirmed running at full rate (`HUDPaint` ticks == `Think` ticks) and the window focused.
+  **Ruled out**: window focus / backgrounding, a portal being on screen, and a TARDIS merely existing -
+  a freshly spawned TARDIS that has never been entered tracks correctly for hundreds of frames. Entering
+  and leaving is what arms it. Removing the TARDIS eventually clears it.
+
+  Pre-existing and upstream of everything in this document rather than part of it, but it invalidates
+  any timing measurement of a crossing, and it is the same input the earlier half-crossfade bug turned
+  on - that fix keyed the listener cache on `(frame, body, eye)` and so inherits whatever `eye` is worth.
+  `CalcView`, or `LocalPlayer():EyePos()` when no view override is in play, is the authoritative source
+  to compare against. Not yet reconciled with crossings having been ear-tested and signed off; the
+  outstanding control is whether it reproduces for a human walking out rather than a tool-driven exit.
 
 ## Implementation order
 
