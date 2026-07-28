@@ -339,6 +339,11 @@ else
     -- thousands.
     local BYSTANDER_PIN_JUMP = 6000
 
+    -- How close the box has to get before a landing sound waiting at the destination hands over to it.
+    -- Ours to name rather than the library's default, because we also test against it to decide whether
+    -- a hop is long enough for that handover to mean anything.
+    local MAT_ATTACH_DIST = 500
+
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
         self:SetData("step",1)
@@ -392,11 +397,15 @@ else
                 Doors:PlaySound({ path = dematsnd, owner = self, tag = "teleport",
                     ent = self, pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
                 if pos and self:GetFastRemat() then
-                    -- fast remat: the landing sound starts at the destination before the box is there,
-                    -- attaching to it once it arrives
+                    -- Fast remat: the landing sound starts at the destination before the box is there,
+                    -- attaching to it once it arrives. Withheld on a hop shorter than the handover
+                    -- distance, where the box counts as arrived from the first frame and the sound would
+                    -- follow it away from the very spot it is there to mark.
                     local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
-                    Doors:PlaySound({ path = matsnd, owner = self, tag = "teleport",
-                        pos = pos, attach = self, resumable = true })
+                    local departed = self:GetPos():DistToSqr(pos) > MAT_ATTACH_DIST * MAT_ATTACH_DIST
+                    Doors:PlaySound({ path = matsnd, owner = self, tag = "teleport", pos = pos,
+                        attach = departed and self or nil, attach_dist = MAT_ATTACH_DIST,
+                        resumable = true })
                 end
             end
         end
