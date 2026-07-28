@@ -96,6 +96,11 @@ if SERVER then
 
     ENT:AddHook("InterruptTeleport", "cancel_mat", function(self)
         self:CancelTimer("matdelay")
+        -- Its callback's clears belong here too, or they outlive the teleport they describe: a stale
+        -- premat start holds the flight loop silent, a stale demat origin drags the box back on removal.
+        self:SetData("premat-start", nil, true)
+        self:SetData("demat-startpos", nil)
+        self:SetData("demat-startang", nil)
     end)
 
     ENT:AddHook("CanTogglePower", "tp_interrupt", function(self, on)
