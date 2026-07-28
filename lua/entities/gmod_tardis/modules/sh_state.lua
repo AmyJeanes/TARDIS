@@ -148,7 +148,7 @@ local function ProcessTemporaryState(self, time, data_id, hook_name)
   if time ~= 0 then
     self:SetData(data_id, true)
     self:CallHook(hook_name, true)
-    self:Timer(data_id .. "reset", time, function()
+    self:Timer(data_id .. "_reset", time, function()
       self:SetData(data_id, nil)
       self:CallHook(hook_name, false)
     end)
