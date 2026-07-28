@@ -219,7 +219,7 @@ by occupancy, view, or mutually exclusive settings. Where two settings exist (`f
 | `FlightLoop` / `Damaged` / `Broken` | int `cl_flight.lua:11-43`, ext `sh_flight.lua:568-590` | **loop** | The flying doubles |
 | ~~`Idle` (int) / `Hum` (ext)~~ | `cl_idlesound.lua:17` | **loop** | No longer a pair - the exterior half is deleted (decision 4) |
 | `Door` (open/close) | `sh_doors.lua:362-382` | one-shot | Whole sub-table falls back at once |
-| `Door.locked` | `parts/door.lua:77-87` | one-shot | Always plays the *exterior* asset on **both** sides, so it is identical by construction - the opt-out can never apply. **Not actually a doubling case**: both copies are engine-side, so neither crosses the boundary and neither can be paired |
+| `Door.locked` | `parts/door.lua:77-100` | one-shot | **Not a doubling case today**: both copies take the engine route, so neither crosses. Paired anyway, inertly, so that routing it through a managed channel later cannot silently start it doubling. Used to hardcode the exterior asset for both sides, ignoring `Interior.Sounds.Door.locked` - which 13 interiors set and 3 gave a distinct file |
 | `Lock` / `Unlock` | `sh_lock.lua:110-124` | one-shot | Was half-managed - the exterior click played through the engine, so only the interior copy crossed. A pair can only fade between two managed channels, so the exterior half was promoted |
 | `Chameleon` | `sh_chameleon.lua:55-65` | one-shot | |
 | `Cloak` / `CloakOff` | `sh_cloak.lua:197-203` | one-shot | Missed by this audit, found 2026-07-27 by listing every play site by route rather than by reading the metadata. Both copies play the *same* variable, so it is identical by construction like `Door.locked` - but unlike that one both are managed, so it really did double |
@@ -658,6 +658,15 @@ skipping it forever. Use the date signature; there is no version to reason about
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
+
+  **If that route is ever made the default**, note the switch itself is one branch in `Doors:PlaySound`
+  (`opts.resumable or opts.loop`), but the *audit* is the actual work: a sound played once per side does
+  not double today only because the engine route cannot cross, so making it managed starts it summing.
+  Every two-emitter site is paired as of 2026-07-27, including `Door.locked` which is declared inertly
+  for exactly this reason - so the flip should be safe, but re-run the check rather than trusting this
+  paragraph. Look for two `Doors:PlaySound` calls close together whose `ent` differs; that is what found
+  both `Cloak` and `Door.locked`. The other cost is load latency landing on the interaction sounds -
+  monitors, part toggles, control sequences - where immediacy matters most and nothing masks it.
 - ~~**After leaving an interior, the listener stayed inside it.**~~ **Found and fixed 2026-07-27.**
   `EyePos()` is only meaningful inside a render pass; the resolver runs from `Think`, where it returns
   whatever was last written, and leaving an interior froze it at the position you left from -
