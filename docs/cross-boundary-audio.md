@@ -648,6 +648,25 @@ skipping it forever. Use the date signature; there is no version to reason about
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
+- **`EyePos()` in a `Think` hook is not the player's view, and the whole resolver reads it there.**
+  Measured 2026-07-27: with the player stood still outside the box, `CalcView` reported the true eye
+  every frame while `EyePos()` sampled from `Think` returned a fixed leftover camera sitting in the
+  interior's region of the map, unchanged over 200 frames and not matching `LocalPlayer():EyePos()`.
+  `EyePos()` appears to hold whatever the last render pass left, and with a doorway on screen that pass
+  is the portal's virtual camera. `getListenerSpace()` calls it from the sound `Think`
+  (`sh_sound.lua:1596`), so the listener's space, distance and every doorway term can be measured from
+  the wrong place - intermittently, depending on where the stale value happens to land relative to an
+  interior's bounds. Observed as a crossing where the listener space stayed on the interior for ~0.85 s
+  after the body had left, far longer than the 0.5 s move transition.
+
+  **Not yet established whether this affects real play**, and it is not to be assumed a bug: crossings
+  have been ear-tested repeatedly and signed off, every measurement taken with the listener and the
+  sound on the same side was correct and stable, and the end state after a crossing was always right.
+  It may be specific to a session driven by tool calls rather than played. It is also *upstream* of
+  everything here rather than part of it - the same input the earlier half-crossfade bug turned on,
+  whose fix keyed the listener cache on `(frame, body, eye)` and so inherits whatever `eye` is worth.
+  Worth settling before trusting any timing measurement of a crossing; `CalcView` is the authoritative
+  source to compare against.
 
 ## Implementation order
 
