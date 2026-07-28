@@ -625,14 +625,19 @@ else
                     snd:SetPitch(math.Clamp(95+p+doppler,80,120),0.1)
                 end
 
-                -- Landing ramps the loop away across the premat wait. Every other frame leaves the volume
-                -- where creation set it, so the library's own gain path is the only thing driving it.
+                -- Landing ramps the loop away across the premat wait, and puts it back once - a wait that
+                -- ends early leaves a loop that outlives it, and nothing else writes this level.
+                -- Every other frame leaves it alone for the library's own gain path to drive.
                 if self:GetData("premat-start") then
                     local tp_metadata = self.metadata.Exterior.Teleport
                     local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
                     local timeleft = math.Clamp(timerdelay - (CurTime() - self:GetData("premat-start")), 0, timerdelay)
                     local norm = timeleft / timerdelay
                     snd:SetVolume(self.flightsoundvolume * norm ^ 2)
+                    self.flightsoundramped = true
+                elseif self.flightsoundramped then
+                    snd:SetVolume(self.flightsoundvolume)
+                    self.flightsoundramped = nil
                 end
 
                 if IsFlightSoundWrong(self) then
