@@ -648,26 +648,28 @@ skipping it forever. Use the date signature; there is no version to reason about
 - **Only managed channels cross.** The engine cannot reposition a sound already in flight, so a plain
   `EmitSound` still stops dead at the boundary. Everything long is already managed, so what this leaves
   out is one-shots - which is the "capturing arbitrary sounds" section below.
-- **After leaving an interior, the listener stays inside it.** Found 2026-07-27. `EyePos()` read from a
-  `Think` hook freezes at the last interior-side position the moment the player exits, and never updates
-  again; `CalcView` tracks the real eye correctly throughout. `getListenerSpace()` reads `EyePos()` from
-  the sound `Think` (`sh_sound.lua:1596`), so it keeps resolving the listener into the interior. Measured
-  standing outside the box: `listenerState.space` = the interior, `PositionInside(frozenEye)` true while
-  `PositionInside(realEye)` false. Everything downstream - space, distance, aperture, directivity, the
-  counterpart rule - is then computed from the console room while the player stands in the world.
+- ~~**After leaving an interior, the listener stayed inside it.**~~ **Found and fixed 2026-07-27.**
+  `EyePos()` is only meaningful inside a render pass; the resolver runs from `Think`, where it returns
+  whatever was last written, and leaving an interior froze it at the position you left from -
+  permanently. Measured standing outside: 14845 units adrift, `listenerState.space` still the interior,
+  `PositionInside(frozenEye)` true while `PositionInside(realEye)` was false. Space, distance, mouth
+  point, facing, panning and the occlusion trace were all measured from the console room while the
+  player stood in the world. Reproduced walking out and on a scripted exit, by hand and by tool.
 
-  Reproduced on both exit paths (walking out through the doorway, and a scripted teleport out), with
-  rendering confirmed running at full rate (`HUDPaint` ticks == `Think` ticks) and the window focused.
-  **Ruled out**: window focus / backgrounding, a portal being on screen, and a TARDIS merely existing -
-  a freshly spawned TARDIS that has never been entered tracks correctly for hundreds of frames. Entering
-  and leaving is what arms it. Removing the TARDIS eventually clears it.
+  Fixed by measuring from **`MainEyePos()`** throughout: it is the main view regardless of the current
+  render context, so it is valid from `Think` and is still the *camera* rather than the body, which is
+  what decision 9 wants. Verified after the change: listener resolves to the world outside and to the
+  interior inside, both with zero drift.
 
-  Pre-existing and upstream of everything in this document rather than part of it, but it invalidates
-  any timing measurement of a crossing, and it is the same input the earlier half-crossfade bug turned
-  on - that fix keyed the listener cache on `(frame, body, eye)` and so inherits whatever `eye` is worth.
-  `CalcView`, or `LocalPlayer():EyePos()` when no view override is in play, is the authoritative source
-  to compare against. Not yet reconciled with crossings having been ear-tested and signed off; the
-  outstanding control is whether it reproduces for a human walking out rather than a tool-driven exit.
+  **Do not "fix" the other `EyePos()` calls the same way.** Every remaining one across these addons sits
+  inside a render pass, and portal culling, the world-portals ghost cutaway and interior screen culling
+  specifically need the *per-pass* camera - `MainEyePos()` there would be a regression. The rule is: a
+  render pass wants `EyePos()`, anything running from `Think` wants `MainEyePos()`.
+
+  Dead ends, all disproved by measurement before the real cause was found: window focus /
+  backgrounding (rendering runs at full rate either way - `HUDPaint` ticks == `Think` ticks); a portal
+  being on screen (reproduces with zero portals in the world); and a TARDIS merely existing (a freshly
+  spawned one that has never been entered tracks correctly for hundreds of frames).
 
 ## Implementation order
 
