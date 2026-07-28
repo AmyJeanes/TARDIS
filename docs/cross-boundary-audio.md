@@ -222,6 +222,7 @@ by occupancy, view, or mutually exclusive settings. Where two settings exist (`f
 | `Door.locked` | `parts/door.lua:77-87` | one-shot | Always plays the *exterior* asset on **both** sides, so it is identical by construction - the opt-out can never apply. **Not actually a doubling case**: both copies are engine-side, so neither crosses the boundary and neither can be paired |
 | `Lock` / `Unlock` | `sh_lock.lua:110-124` | one-shot | Was half-managed - the exterior click played through the engine, so only the interior copy crossed. A pair can only fade between two managed channels, so the exterior half was promoted |
 | `Chameleon` | `sh_chameleon.lua:55-65` | one-shot | |
+| `Cloak` / `CloakOff` | `sh_cloak.lua:197-203` | one-shot | Missed by this audit, found 2026-07-27 by listing every play site by route rather than by reading the metadata. Both copies play the *same* variable, so it is identical by construction like `Door.locked` - but unlike that one both are managed, so it really did double |
 | `FlightLand` / `FlightFall` | `sh_falling.lua:134-165` | one-shot | |
 
 Not pairs: `Teleport.demat_fail_loop` / `_stop` are interior-only (no exterior counterpart declared).
