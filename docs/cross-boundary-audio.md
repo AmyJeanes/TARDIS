@@ -282,6 +282,15 @@ interior is characterised by bespoke audio, but an interior with its own flight 
 Lock and Chameleon from base as identical assets, so a blanket flag would mark those distinct and double
 them. It fails in the direction that reintroduces the bug.
 
+**Each member holds its own side's level while the weight does the mixing.** A swap is a crossfade
+between two renderings of one event, so the member going quiet stays at the level the listener already
+had and fades out on weight alone, while the one arriving renders at its new level from the start. The
+positional glide that smooths an ordinary space change must not also run here: it interpolates in dB
+toward what is effectively absence, so the outgoing half collapses at once and the incoming half only
+turns up at the very end, putting the silence back in the middle. Measured through a view cut before
+this was fixed: combined power fell from 0.93 to 0.16 halfway across, a 15 dB trough, and it was
+described by ear as "fades to nothing, then fades in from nothing".
+
 **Both members play throughout; only audibility changes.** They start together where the event allows it,
 which is what makes a mid-sound swap safe for one-shots: a demat heard from inside and the same demat heard
 from outside stay time-aligned for their whole length, so crossing halfway through selects between two
