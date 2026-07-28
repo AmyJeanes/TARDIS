@@ -585,8 +585,9 @@ else
             self.flightsound = nil
             return
         end
+        self.flightsoundvolume = entry.volume or 0.75
         self.flightsound = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
-            volume = entry.volume or 0.75, level = 90, owner = self, tag = "flight",
+            volume = self.flightsoundvolume, level = 90, owner = self, tag = "flight",
             pair = "flight", through_doors = entry.through_doors })
     end
 
@@ -624,16 +625,15 @@ else
                     snd:SetPitch(math.Clamp(95+p+doppler,80,120),0.1)
                 end
 
-                local vol = 0.75
+                -- Landing ramps the loop away across the premat wait. Every other frame leaves the volume
+                -- where creation set it, so the library's own gain path is the only thing driving it.
                 if self:GetData("premat-start") then
                     local tp_metadata = self.metadata.Exterior.Teleport
                     local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
                     local timeleft = math.Clamp(timerdelay - (CurTime() - self:GetData("premat-start")), 0, timerdelay)
                     local norm = timeleft / timerdelay
-                    local volscale = norm ^ 2
-                    vol = vol * volscale
+                    snd:SetVolume(self.flightsoundvolume * norm ^ 2)
                 end
-                snd:SetVolume(vol)
 
                 if IsFlightSoundWrong(self) then
                     snd:Stop()
