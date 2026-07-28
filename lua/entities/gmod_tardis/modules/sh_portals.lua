@@ -1,5 +1,11 @@
 -- Portals
 
+-- Chameleon swaps the whole exterior metadata, so a doorway captured once is the old shell's.
+---@return doors_portal_side
+function ENT:GetDoorway()
+    return self.metadata.Exterior.Portal
+end
+
 -- Shared so world-portals' predicted player teleport can also veto.
 ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
     if not self:DoorOpen() or (ent.TardisPart and not ent.AllowThroughPortals) then
