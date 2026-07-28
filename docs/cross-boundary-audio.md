@@ -4,17 +4,20 @@ Phase 3 of the sound rework ([#382](https://github.com/AmyJeanes/TARDIS/issues/3
 the **Doors** addon (`lua/doors/libraries/sh_sound.lua`); this document is the plan, so it may name TARDIS.
 Doors' own code and docs stay consumer-agnostic - generic interior / exterior / portal vocabulary only.
 
-Status: **the resolver is built and tuned; counterpart handling is designed but not built.** Done and on
-the `sound-rework` branch: managed BASS channels, the central hub, looping with mid-file handover, all 13
-loop call sites migrated onto it, and then steps 1-3 below - the resolver itself, the consumer volume
-scalar, and the deletion of the hand-built leak.
+Status: **the resolver, counterpart pairs and virtualisation are all built.** Done and on the
+`sound-rework` branch: managed BASS channels, the central hub, looping with mid-file handover, all 13
+loop call sites migrated onto it, steps 1-3 below - the resolver itself, the consumer volume scalar, and
+the deletion of the hand-built leak - and then counterpart pairs (decision 3, which absorbed the old
+exterior-hum dedup step), BASS virtualisation, and decision 10's player-facing `sound_through_doors` bool.
 
 **Decision 9 is built and ear-tested** (2026-07-19): the listener resolves from the camera, and a view
 change cuts in 40ms where a move still glides in 500ms.
 
-What remains: counterpart pairs (decision 3, which absorbs the old exterior-hum dedup step), the settings
-rename (decision 10), and virtualisation. Decisions 3, 9 and 10 were settled on 2026-07-19 and are the
-current design of record - where an earlier section disagrees with them, they win.
+What remains is the author half of decision 10 - the three per-interior knobs. `volume` is still one
+constant in `gmod_tardis/cl_init.lua` rather than something an interior states, and `closed` and
+`falloff` are still global in `Doors.SoundTuning`; all three are held on how they should be named to an
+extension author and whether a knob may differ per side. Decisions 3, 9 and 10 were settled on 2026-07-19
+and are the current design of record - where an earlier section disagrees with them, they win.
 
 The tuned numbers live in `Doors.SoundTuningDefaults` (`sh_sound.lua`), reached by ear against a real
 interior hum through `doors_debug_sound`:
@@ -631,8 +634,9 @@ skipping it forever. Use the date signature; there is no version to reason about
   distance rather than a void crossing.
 - **The exterior's doorway transform client-side.** Doors now networks both sides' geometry at player
   init (`sh_portals.lua`) and answers from it through `GetDoorway()`, so the resolver never reads a
-  consumer's metadata. A consumer only overrides `GetDoorway` if its doorway *changes* - Safe-Space
-  does, since its portals are resizable.
+  consumer's metadata. A consumer only overrides `GetDoorway` if its doorway *changes* - Safe-Space does,
+  since its portals are resizable, and TARDIS does, since a chameleon change swaps the whole exterior
+  metadata and a doorway captured at spawn would stay the old shell's.
 - **Path distance is the true path through the mouth**, not a straight line: emitter to the nearest
   point on its own doorway, plus the listener's doorway to the listener.
 - **Which space the listener is in** is `ply.doori`, not `LocalPlayerInside()`. Interiors nest, so the
