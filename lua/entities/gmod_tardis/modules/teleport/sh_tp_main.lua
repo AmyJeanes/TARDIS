@@ -324,12 +324,10 @@ else
     ---@param shouldint boolean
     function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint)
         if shouldint and intpath and IsValid(self.interior) then
-            Doors:PlaySound({ path = intpath, owner = self, tag = "teleport", pair = "teleport",
-                ent = self.interior, resumable = true })
+            self.interior:PlaySound({ path = intpath, tag = "teleport", pair = "teleport", resumable = true })
         end
         if shouldext and extpath then
-            Doors:PlaySound({ path = extpath, owner = self, tag = "teleport", pair = "teleport",
-                ent = self, resumable = true })
+            self:PlaySound({ path = extpath, tag = "teleport", pair = "teleport", resumable = true })
         end
     end
 
@@ -394,8 +392,7 @@ else
                 elseif self:GetData("hads-demat") then
                     dematsnd = sound_demat_hads_ext
                 end
-                Doors:PlaySound({ path = dematsnd, owner = self, tag = "teleport",
-                    ent = self, pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
+                self:PlaySound({ path = dematsnd, tag = "teleport", pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
                 if pos and self:GetFastRemat() then
                     -- Fast remat: the landing sound starts at the destination before the box is there,
                     -- attaching to it once it arrives. Withheld on a hop shorter than the handover
@@ -403,9 +400,7 @@ else
                     -- follow it away from the very spot it is there to mark.
                     local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
                     local departed = self:GetPos():DistToSqr(pos) > MAT_ATTACH_DIST * MAT_ATTACH_DIST
-                    Doors:PlaySound({ path = matsnd, owner = self, tag = "teleport", pos = pos,
-                        attach = departed and self or nil, attach_dist = MAT_ATTACH_DIST,
-                        resumable = true })
+                    self:PlaySound({ path = matsnd, tag = "teleport", pos = pos, resumable = true, attach = departed and self or nil, attach_dist = MAT_ATTACH_DIST })
                 end
             end
         end
@@ -432,8 +427,7 @@ else
             elseif not self:GetFastRemat() and shouldPlayExterior then
                 -- Bystander copy: pinned at the landing spot (the box isn't there yet), attaching to the
                 -- exterior once it arrives so it isn't left behind if the box flies off mid-materialise
-                Doors:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat,
-                    owner = self, tag = "teleport", pos = pos, attach = self, resumable = true })
+                self:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat, tag = "teleport", pos = pos, attach = self, resumable = true })
             end
         end
         self:CallCommonHook("PreMatStart")

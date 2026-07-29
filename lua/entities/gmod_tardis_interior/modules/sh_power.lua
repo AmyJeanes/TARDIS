@@ -43,8 +43,7 @@ else
             local sound_off = self.metadata.Interior.Sounds.Power.Off
             if TARDIS:GetExteriorEnt() == self.exterior then
                 if not TARDIS:GetSetting("sound") then return end
-                Doors:PlaySound({ path = state and sound_on or sound_off,
-                    owner = self.exterior, tag = "power", ent = self, resumable = true })
+                self:PlaySound({ path = state and sound_on or sound_off, tag = "power", resumable = true })
             end
         end
     end)

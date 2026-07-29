@@ -121,7 +121,7 @@ else -- CLIENT
 
     -- Dynamic read/write counts not handled by analyzer.
     net.Receive("TARDIS-Spawn-Delete-Sound", function()
-        local ent
+        local ent ---@type gmod_tardis?
         local pos
         local spawn = net.ReadBool()
         if spawn then
@@ -136,7 +136,7 @@ else -- CLIENT
         if not (TARDIS:GetSetting("spawn_delete_sound") and TARDIS:GetSetting("sound")) then return end
 
         if spawn and IsValid(ent) then
-            Doors:PlaySound({ path = snd, owner = ent, tag = "spawn", ent = ent, resumable = true })
+            ent:PlaySound({ path = snd, tag = "spawn", resumable = true })
         else
             Doors:PlaySound({ path = snd, pos = pos })
         end

@@ -139,14 +139,12 @@ else
         local snds = self.metadata.Exterior.Sounds
 
         if TARDIS:GetSetting("flight-externalsound") then
-            Doors:PlaySound({ path = snds.FlightLand, owner = self, tag = "flight", pair = "flightland",
-                ent = self, resumable = true })
+            self:PlaySound({ path = snds.FlightLand, tag = "flight", pair = "flightland", resumable = true })
         end
 
         if IsValid(self.interior) and TARDIS:GetSetting("flight-internalsound") then
             local snds_i = self.metadata.Interior.Sounds
-            Doors:PlaySound({ path = snds_i.FlightLand or snds.FlightLand,
-                owner = self, tag = "flight", pair = "flightland", ent = self.interior, resumable = true })
+            self.interior:PlaySound({ path = snds_i.FlightLand or snds.FlightLand, tag = "flight", pair = "flightland", resumable = true })
         end
     end)
 
@@ -155,14 +153,12 @@ else
         local snds = self.metadata.Exterior.Sounds
 
         if TARDIS:GetSetting("flight-externalsound") then
-            Doors:PlaySound({ path = snds.FlightFall, owner = self, tag = "flight", pair = "flightfall",
-                ent = self, resumable = true })
+            self:PlaySound({ path = snds.FlightFall, tag = "flight", pair = "flightfall", resumable = true })
         end
 
         if IsValid(self.interior) and TARDIS:GetSetting("flight-internalsound") then
             local snds_i = self.metadata.Interior.Sounds
-            Doors:PlaySound({ path = snds_i.FlightFall or snds.FlightFall,
-                owner = self, tag = "flight", pair = "flightfall", ent = self.interior, resumable = true })
+            self.interior:PlaySound({ path = snds_i.FlightFall or snds.FlightFall, tag = "flight", pair = "flightfall", resumable = true })
         end
     end)
 end

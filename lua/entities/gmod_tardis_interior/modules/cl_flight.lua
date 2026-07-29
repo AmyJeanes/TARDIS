@@ -37,9 +37,7 @@ function ENT:StartFlightSound(pitch)
         return
     end
 
-    local snd = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
-        volume = entry.volume or 0.4, owner = self.exterior, tag = "flight",
-        pair = "flight", through_doors = entry.through_doors })
+    local snd = self:PlaySound({ path = entry.path, loop = true, volume = entry.volume or 0.4, tag = "flight", pair = "flight", through_doors = entry.through_doors })
     self.flightsound = snd
     if snd then snd:SetPitch(pitch) end
 end

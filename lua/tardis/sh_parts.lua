@@ -359,14 +359,13 @@ function TARDIS.ProcessAnimation(self, a)
             local moved_recently = CurTime() - (self.last_moved or 0) < 0.1
 
             if moving and self.SoundLoop and (not self.use_sound or not self.use_sound:IsAlive()) then
-                self.use_sound = Doors:PlaySound({ path = self.SoundLoop, ent = self, loop = true,
-                    level = 90, volume = self.SoundLoopVolume or 0.75, owner = self, tag = "part_use" })
+                self.use_sound = self:PlaySound({ path = self.SoundLoop, loop = true, level = 90, volume = self.SoundLoopVolume or 0.75, owner = self, tag = "part_use" })
             elseif self.use_sound and not moved_recently then
                 self.use_sound:Stop()
                 self.use_sound = nil
 
                 if self.SoundStop then
-                    Doors:PlaySound({ path = self.SoundStop, ent = self })
+                    self:PlaySound({ path = self.SoundStop })
                 end
             end
 
@@ -986,7 +985,7 @@ if SERVER then
 
             if part_sound then
                 -- SoundPos, when the part sets one, offsets the sound from the part's own origin
-                Doors:PlaySound({ path = part_sound, ent = part, offset = part.SoundPos })
+                part:PlaySound({ path = part_sound, offset = part.SoundPos })
             end
         end
         part:SetOn(not on)

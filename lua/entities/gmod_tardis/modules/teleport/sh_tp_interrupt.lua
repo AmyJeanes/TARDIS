@@ -128,7 +128,7 @@ if SERVER then
     end
 else
     function ENT:StopTeleportSounds()
-        Doors:StopSounds(self, "teleport")
+        self:StopSounds("teleport")
 
         local interior = self.interior
         if IsValid(interior) and interior.dematfailsound then

@@ -96,11 +96,10 @@ if SERVER then
                 -- Paired though both copies take the engine route, where it does nothing at all - engine
                 -- sounds never reach the pair index. Declared anyway so that routing these through a
                 -- managed channel later is a routing change on its own, rather than one that silently
-                -- starts them doubling. The owner is what the pair is scoped by, so it has to be set too.
-                Doors:PlaySound({ path = own, ent = self, owner = self.exterior, pair = "door_locked" })
+                -- starts them doubling.
+                self:PlaySound({ path = own, pair = "door_locked" })
                 if IsValid(otherdoor) then
-                    Doors:PlaySound({ path = other, ent = otherdoor, owner = self.exterior,
-                        pair = "door_locked" })
+                    otherdoor:PlaySound({ path = other, pair = "door_locked" })
                 end
             end
         else

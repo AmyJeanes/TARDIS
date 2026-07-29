@@ -232,8 +232,7 @@ else -- CLIENT
             if setting and sound then
                 local existing = interior.dematfailsound
                 if not existing or not existing:IsAlive() then
-                    interior.dematfailsound = Doors:PlaySound({ path = sound, ent = interior,
-                        loop = true, level = 90, owner = self, tag = "demat-fail" })
+                    interior.dematfailsound = interior:PlaySound({ path = sound, loop = true, level = 90, tag = "demat-fail" })
                 end
             end
         else
@@ -256,7 +255,7 @@ else -- CLIENT
             local teleport = self:GetData("teleport", false)
             local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop
             if power and (not teleport) and sound then
-                Doors:PlaySound({ path = sound, ent = interior })
+                interior:PlaySound({ path = sound })
             end
         end
     end)

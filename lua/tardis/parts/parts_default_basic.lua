@@ -177,9 +177,9 @@ if SERVER then
                 self:SetOn(false)
                 self:SetCollide(true)
                 if self.SoundOff then
-                    Doors:PlaySound({ path = self.SoundOff, ent = self })
+                    self:PlaySound({ path = self.SoundOff })
                 elseif self.Sound then
-                    Doors:PlaySound({ path = self.Sound, ent = self })
+                    self:PlaySound({ path = self.Sound })
                 end
             end)
         else

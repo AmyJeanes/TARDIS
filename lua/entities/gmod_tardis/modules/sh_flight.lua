@@ -586,9 +586,7 @@ else
             return
         end
         self.flightsoundvolume = entry.volume or 0.75
-        self.flightsound = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
-            volume = self.flightsoundvolume, level = 90, owner = self, tag = "flight",
-            pair = "flight", through_doors = entry.through_doors })
+        self.flightsound = self:PlaySound({ path = entry.path, loop = true, level = 90, volume = self.flightsoundvolume, tag = "flight", pair = "flight", through_doors = entry.through_doors })
     end
 
     ---@param self gmod_tardis
@@ -667,27 +665,26 @@ else
     ENT:AddHook("FlightToggled", "broken_flight", function(self,on)
         if ShouldPlayFlightSounds(self) and not on and self:IsBroken() then
             local snd = self.metadata.Exterior.Sounds.BrokenFlightDisable
-            Doors:PlaySound({ path = snd, owner = self, tag = "flight", ent = self, resumable = true })
+            self:PlaySound({ path = snd, tag = "flight", resumable = true })
         end
     end)
 
     ENT:OnMessage("BrokenFlightEnable", function(self, data, ply)
         if not ShouldPlayFlightSounds(self) then return end
         local snd = self.metadata.Exterior.Sounds.BrokenFlightEnable
-        Doors:PlaySound({ path = snd, owner = self, tag = "flight", ent = self, resumable = true })
+        self:PlaySound({ path = snd, tag = "flight", resumable = true })
     end)
 
     ENT:OnMessage("BrokenFlightExplosion", function(self, data, ply)
         if not ShouldPlayFlightSounds(self) then return end
-        Doors:PlaySound({ path = self.metadata.Exterior.Sounds.BrokenFlightExplosion,
-            owner = self, tag = "flight", ent = self, resumable = true })
+        self:PlaySound({ path = self.metadata.Exterior.Sounds.BrokenFlightExplosion, tag = "flight", resumable = true })
     end)
 
     ENT:OnMessage("BrokenFlightTurn", function(self, data, ply)
         local snds = self.metadata.Exterior.Sounds
         if snds and istable(snds.BrokenFlightTurn) and ShouldPlayFlightSounds(self) then
             local snd = table.Random(snds.BrokenFlightTurn)
-            Doors:PlaySound({ path = snd, ent = self })
+            self:PlaySound({ path = snd })
         end
         if math.random(3) ~= 1 then
             self:ExteriorSparks(1)

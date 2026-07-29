@@ -203,8 +203,7 @@ if SERVER then
 else
     ENT:OnMessage("repair_finished", function(self)
         if not TARDIS:GetSetting("sound") then return end
-        Doors:PlaySound({ path = self.metadata.Exterior.Sounds.RepairFinish,
-            owner = self, tag = "repair", ent = self, resumable = true })
+        self:PlaySound({ path = self.metadata.Exterior.Sounds.RepairFinish, tag = "repair", resumable = true })
     end)
 
     ---@param self gmod_tardis
@@ -235,8 +234,7 @@ else
         if (self.repairloopsoundname ~= soundname) or (not self.repairloopsound)
             or (not self.repairloopsound:IsAlive()) then
             StopRepairLoop(self)
-            self.repairloopsound = Doors:PlaySound({ path = soundname, ent = self, loop = true,
-                level = 60, owner = self, tag = "repair" })
+            self.repairloopsound = self:PlaySound({ path = soundname, loop = true, level = 60, tag = "repair" })
             self.repairloopsoundname = soundname
         end
     end)

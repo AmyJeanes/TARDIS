@@ -37,8 +37,7 @@ ENT:AddHook("Think", "idlesound", function(self)
         if play then
             local entry = TARDIS:SoundEntry(v)
             if (not idlesnd or not idlesnd:IsAlive()) and entry then
-                self.idlesounds[k] = Doors:PlaySound({ path = entry.path, ent = self, loop = true,
-                    volume = entry.volume or 1, owner = self, tag = "idle" })
+                self.idlesounds[k] = self:PlaySound({ path = entry.path, loop = true, volume = entry.volume or 1, tag = "idle" })
             end
         elseif idlesnd then
             idlesnd:Stop()

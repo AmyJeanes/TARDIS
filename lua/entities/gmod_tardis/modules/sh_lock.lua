@@ -77,7 +77,7 @@ if SERVER then
                 TARDIS:Message(a, "Lock.Locked")
                 self.exterior:SendMessage("lockattempted", {a})
             end
-            Doors:PlaySound({ path = self.metadata.Exterior.Sounds.Door.locked, ent = self })
+            self:PlaySound({ path = self.metadata.Exterior.Sounds.Door.locked })
         end
     end)
 
@@ -116,11 +116,9 @@ else
         local intsoundoff = self.metadata.Interior.Sounds.Unlock or extsoundoff
         -- Both copies are managed so the pair can fade between them: the resolver only sees managed
         -- channels, so an engine-side half would carry on sounding while the other faded away.
-        Doors:PlaySound({ path = locked and extsoundon or extsoundoff,
-            owner = self, tag = "lock", pair = "lock", ent = self, resumable = true })
+        self:PlaySound({ path = locked and extsoundon or extsoundoff, tag = "lock", pair = "lock", resumable = true })
         if IsValid(self.interior) then
-            Doors:PlaySound({ path = locked and intsoundon or intsoundoff,
-                owner = self, tag = "lock", pair = "lock", ent = self.interior, resumable = true })
+            self.interior:PlaySound({ path = locked and intsoundon or intsoundoff, tag = "lock", pair = "lock", resumable = true })
         end
     end)
 
