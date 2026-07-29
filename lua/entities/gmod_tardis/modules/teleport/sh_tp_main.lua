@@ -313,11 +313,6 @@ if SERVER then
         end
     end)
 else
-    -- Occupant teleport sounds play through managed BASS channels (see sh_sound.lua) so they survive the
-    -- listener crossing the interior<->exterior void on a view toggle or portal teleport, which culls a
-    -- normal EmitSound. Paired so only the copy on the listener's side is audible: both run the whole
-    -- time, so crossing mid-demat picks between two renderings of it that stayed time-aligned.
-    -- Stopped as a group on interrupt via StopSounds.
     ---@param extpath string?
     ---@param intpath string?
     ---@param shouldext boolean
@@ -331,15 +326,11 @@ else
         end
     end
 
-    -- Bystander copies follow the exterior (a flight demat carries its sound along), then pin where the
-    -- box vanished when it relocates at demat end - the echo tail must not teleport away with it. A speed
-    -- in units/second: real movement tops out around 2-3k, an interpolated teleport reads as tens of
-    -- thousands.
+    -- Speed that the exterior must go for the sound to detach during a teleport
+    -- Real movement speed tops at around 2-3k, teleport reads as >10k
     local BYSTANDER_PIN_JUMP = 6000
 
-    -- How close the box has to get before a landing sound waiting at the destination hands over to it.
-    -- Ours to name rather than the library's default, because we also test against it to decide whether
-    -- a hop is long enough for that handover to mean anything.
+    -- How close the exterior must be to the sound to re-attach during materialisation
     local MAT_ATTACH_DIST = 500
 
     ENT:OnMessage("demat", function(self, data, ply)
@@ -394,10 +385,7 @@ else
                 end
                 self:PlaySound({ path = dematsnd, tag = "teleport", pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
                 if pos and self:GetFastRemat() then
-                    -- Fast remat: the landing sound starts at the destination before the box is there,
-                    -- attaching to it once it arrives. Withheld on a hop shorter than the handover
-                    -- distance, where the box counts as arrived from the first frame and the sound would
-                    -- follow it away from the very spot it is there to mark.
+                    -- Only detach/reattach the sound if the teleport distance is large enough to be noticeable
                     local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
                     local departed = self:GetPos():DistToSqr(pos) > MAT_ATTACH_DIST * MAT_ATTACH_DIST
                     self:PlaySound({ path = matsnd, tag = "teleport", pos = pos, resumable = true, attach = departed and self or nil, attach_dist = MAT_ATTACH_DIST })
@@ -425,8 +413,7 @@ else
                     self:PlayTeleportSound(ext.mat, int.mat or ext.mat, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif not self:GetFastRemat() and shouldPlayExterior then
-                -- Bystander copy: pinned at the landing spot (the box isn't there yet), attaching to the
-                -- exterior once it arrives so it isn't left behind if the box flies off mid-materialise
+                -- Attach sound to the TARDIS upon materialisation
                 self:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat, tag = "teleport", pos = pos, attach = self, resumable = true })
             end
         end

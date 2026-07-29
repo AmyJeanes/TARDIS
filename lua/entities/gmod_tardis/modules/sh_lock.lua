@@ -114,8 +114,6 @@ else
         local extsoundoff = self.metadata.Exterior.Sounds.Unlock
         local intsoundon = self.metadata.Interior.Sounds.Lock or extsoundon
         local intsoundoff = self.metadata.Interior.Sounds.Unlock or extsoundoff
-        -- Both copies are managed so the pair can fade between them: the resolver only sees managed
-        -- channels, so an engine-side half would carry on sounding while the other faded away.
         self:PlaySound({ path = locked and extsoundon or extsoundoff, tag = "lock", pair = "lock", resumable = true })
         if IsValid(self.interior) then
             self.interior:PlaySound({ path = locked and intsoundon or intsoundoff, tag = "lock", pair = "lock", resumable = true })

@@ -64,9 +64,6 @@ function ENT:GetData(key,default)
     end
 end
 
--- Owned by the TARDIS rather than the part, so a part's sound pairs and stops with its opposite number
--- on the far side of the doorway. A loop that must die with the part instead passes `owner = self`.
-
 ---@api
 ---@param opts doors_sound_opts
 ---@return doors_managed_sound?

@@ -80,8 +80,6 @@ if SERVER then
                 local metadata = self.exterior.metadata
                 local ext_locked = metadata.Exterior.Sounds.Door.locked
                 local int_door = metadata.Interior.Sounds.Door
-                -- each side plays its own, like every other twice-authored sound, falling back to the
-                -- exterior's where an interior names none
                 local int_locked = (int_door and int_door.locked) or ext_locked
                 local otherdoor, own, other
                 if self.ExteriorPart and IsValid(self.interior) then
@@ -93,10 +91,6 @@ if SERVER then
                 else
                     own = ext_locked
                 end
-                -- Paired though both copies take the engine route, where it does nothing at all - engine
-                -- sounds never reach the pair index. Declared anyway so that routing these through a
-                -- managed channel later is a routing change on its own, rather than one that silently
-                -- starts them doubling.
                 self:PlaySound({ path = own, pair = "door_locked" })
                 if IsValid(otherdoor) then
                     otherdoor:PlaySound({ path = other, pair = "door_locked" })

@@ -2,8 +2,6 @@
 ---@param id string
 function TARDIS:SpawnByID(id)
     RunConsoleCommand("tardis2_spawn", id)
-    -- An interface sound: nothing the sound library does applies to it, and a positionless
-    -- Doors:PlaySound called on the server broadcasts the click to every player.
     if CLIENT then surface.PlaySound("ui/buttonclickrelease.wav") end
 end
 

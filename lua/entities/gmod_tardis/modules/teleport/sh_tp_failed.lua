@@ -199,8 +199,7 @@ else -- CLIENT
             local infinite = TARDIS:GetSetting("teleport_warning_infinite", self)
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
-            self:PlayTeleportSound(ext.demat_fail, int.demat_fail or ext.demat_fail,
-                true, (not infinite) or (not int.demat_fail_loop))
+            self:PlayTeleportSound(ext.demat_fail, int.demat_fail or ext.demat_fail, true, (not infinite) or (not int.demat_fail_loop))
         end
         if LocalPlayer():GetTardisExterior() == self and IsValid(self.interior) then
             util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)

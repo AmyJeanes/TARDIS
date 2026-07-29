@@ -17,8 +17,6 @@ ENT:AddHook("PlayerInitialize", "interior", function(self)
     end
 end)
 
--- The exterior door's own animation position, so the boundary reads as continuous rather than as a
--- switch. Covers the ajar case for free: a locked door rattles part-open and leaks proportionally.
 ---@return number
 function ENT:GetDoorOpenness()
     local door = self:GetPart("door")
@@ -28,9 +26,7 @@ function ENT:GetDoorOpenness()
     return self:DoorOpen(true) and 1 or 0
 end
 
--- How much of it carries is content rather than a preference - an interior owns that the way it owns
--- every other sound's volume - so the player setting only switches it on and off. This is the value the
--- removed slider defaulted to, held here until interiors can state their own.
+-- Default for how much sound goes through the doors, will be configurable per interior in a later change
 local CROSS_BOUNDARY_VOLUME = 0.5
 
 ---@return number

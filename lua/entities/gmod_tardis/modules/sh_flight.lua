@@ -599,8 +599,6 @@ else
     ENT:AddHook("Think", "flight", function(self)
         if self:GetData("flight") and ShouldPlayFlightSounds(self) then
             local snd = self.flightsound
-            -- IsAlive rather than IsPlaying: a managed channel loads asynchronously, and the load
-            -- frames would otherwise look like a dead sound and restart it every one of them
             if snd and snd:IsAlive() then
                 local p=math.Clamp(self:GetVelocity():Length()/250,0,15)
                 local ply=LocalPlayer()
@@ -623,9 +621,6 @@ else
                     snd:SetPitch(math.Clamp(95+p+doppler,80,120),0.1)
                 end
 
-                -- Landing ramps the loop away across the premat wait, and puts it back once - a wait that
-                -- ends early leaves a loop that outlives it, and nothing else writes this level.
-                -- Every other frame leaves it alone for the library's own gain path to drive.
                 if self:GetData("premat-start") then
                     local tp_metadata = self.metadata.Exterior.Teleport
                     local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)

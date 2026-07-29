@@ -145,14 +145,8 @@ if CLIENT then
         name="SoundThroughDoors",
     })
 
-    -- Replaces interior_hum_leakage, which was only ever about the hum, and its volume, which is now
-    -- content: an interior owns how much of it carries, the way it already owns every other sound's
-    -- volume. The old keys are deliberately left in place rather than cleared, so a player moving
-    -- between beta and release keeps working settings on both.
     TARDIS:AddMigration("sound-through-doors", "2026-07-20", function(self)
         local enabled = self.LocalSettings["interior_hum_leakage"]
-        -- Muting it through the volume said the same thing as switching it off, so carry that across
-        -- rather than handing them back a sound they had silenced.
         if enabled == false or self.LocalSettings["interior_hum_leakage_volume"] == 0 then
             self:SetSetting("sound_through_doors", false)
         end

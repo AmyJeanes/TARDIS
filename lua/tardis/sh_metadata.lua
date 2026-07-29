@@ -392,23 +392,6 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field volume number?
 ---@field through_doors number?
 
--- A sound is authored either as a plain path or as an entry with settings on it, so every read goes
--- through here rather than each site testing the shape for itself. Normalising at the read rather than at
--- merge time keeps the stored metadata exactly as its author wrote it, which anything reading it directly
--- still expects.
----@param entry string|tardis_sound_entry|nil
----@return tardis_sound_entry?
-function TARDIS:SoundEntry(entry)
-    if entry == nil then return nil end
-    if isstring(entry) then
-        ---@cast entry string
-        return { path = entry }
-    end
-    ---@cast entry tardis_sound_entry
-    -- an entry with no path is malformed; treat it as absent rather than playing a nil
-    return entry.path and entry or nil
-end
-
 ---@class tardis_matproxy
 ---@field Color1 Color
 ---@field Color2 Color
@@ -833,6 +816,18 @@ function TARDIS:GetTARDISName(metadata)
     local name = TARDIS:GetPhrase(namekey)
     if metadata.Interior and metadata.Interior.UseFullName == false then return name end
     return TARDIS:GetPhrase("Common.TARDIS") .. " (" .. name .. ")"
+end
+
+---@param entry string|tardis_sound_entry|nil
+---@return tardis_sound_entry?
+function TARDIS:SoundEntry(entry)
+    if entry == nil then return nil end
+    if isstring(entry) then
+        ---@cast entry string
+        return { path = entry }
+    end
+    ---@cast entry tardis_sound_entry
+    return entry.path and entry or nil
 end
 
 TARDIS:LoadInteriors()
