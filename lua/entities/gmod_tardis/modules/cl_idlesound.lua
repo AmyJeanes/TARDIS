@@ -1,6 +1,4 @@
--- Idle sound - the shell's own ambient sound, the exterior twin of the interior's. Neither is a
--- counterpart of the other, so both simply carry through the doorway: this one is heard outside and
--- leaks in, the interior's is heard inside and leaks out.
+-- Idle sound
 
 ENT:AddHook("Initialize", "idlesound", function(self)
     self.idlesounds = {}
@@ -14,7 +12,6 @@ ENT:AddHook("OnRemove", "idlesound", function(self)
     end
 end)
 
--- A new shell has its own sounds, so drop the old one's and let Think read them fresh.
 ENT:AddHook("ExteriorChanged", "idlesound", function(self)
     if not self.idlesounds then return end
     for _,v in pairs(self.idlesounds) do
@@ -27,8 +24,6 @@ ENT:AddHook("Think", "idlesound", function(self)
     local sounds = self.metadata.Exterior.Sounds.Idle
     if not sounds or not self.idlesounds then return end
 
-    -- a managed loop is destroyed when stopped, so power has to gate it here rather than
-    -- pausing a channel this hook would then restart
     local play = self:GetPower() and not self:GetData("vortex")
         and TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound")
     for k,v in pairs(sounds) do
