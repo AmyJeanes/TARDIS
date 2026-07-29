@@ -508,6 +508,24 @@ with how that gate is actually used. 25 gate sites across 15 files against 68 pl
 
 A wrapper would add a layer while eliminating none of the existing checks.
 
+#### What routes through the library at all
+
+Settled 2026-07-29, auditing whether the sites that gain nothing from the library should still use it.
+**Anything placed in the world goes through `Doors:PlaySound`; a plainly 2D interface sound does not.**
+
+The repo has no raw engine sound calls left, and that is worth keeping: one grep finds everything that
+makes noise, which is what the counterpart audit under decision 3 relies on. So the bar for leaving is
+high, and "this sound gains nothing today" does not clear it - for a plain one-shot `Doors:PlaySound` *is*
+`EmitSound` (`playNative`, and the server short-circuits to it), but staying on it is what makes the
+managed-by-default flip under Open Questions reach these sites at all. That includes the two standalone
+SENTs (`gmod_artron_inhibitor`, `gmod_time_distortion_generator`), which are spawnable physics props a
+player can carry into an interior.
+
+An interface sound is the one genuine exception, and it is not a marginal call: with neither `ent` nor
+`pos` there is no position, no boundary and no virtualisation for the library to apply, and the
+positionless branch *broadcasts* - so a shared function playing a menu click on the server plays it for
+every player. `TARDIS:SpawnByID` was the only such site and now calls `surface.PlaySound` directly.
+
 ### 9. The listener is the camera, not the body
 
 `resolve()` measures everything from `EyePos()` - path distance (`sh_sound.lua:528`, `:553`), directivity
