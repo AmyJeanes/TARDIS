@@ -39,7 +39,7 @@ if SERVER then
                     endpos = start + dir * TRACE_DIST,
                     filter = filter,
                     mask = MASK_PLAYERSOLID,
-                } --[[@as Trace]])
+                })
                 if not (tr.Hit or tr.StartSolid) then
                     return false
                 end

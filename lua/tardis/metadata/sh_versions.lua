@@ -18,7 +18,7 @@ function TARDIS:SetupVersions(int_id)
     versions.list_original.main = versions.main
     versions.list_all.main = versions.main
 
-    self.MetadataVersions[int_id] = versions --[[@as tardis_versions_complete]]
+    self.MetadataVersions[int_id] = versions
 
     local custom_versions = self.MetadataCustomVersions[int_id]
     if custom_versions then

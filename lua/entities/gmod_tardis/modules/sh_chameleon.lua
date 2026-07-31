@@ -138,7 +138,7 @@ function ENT:ChangeExteriorMetadata(id)
     end
     local original_md = self.metadata.ExteriorOriginal
 
-    local ext_md = (id == false and original_md) or TARDIS:CreateExteriorMetadata(id --[[@as string]])
+    local ext_md = (id == false and original_md) or TARDIS:CreateExteriorMetadata(id)
 
     local oldvortex = self.metadata.Exterior.Parts.vortex
     if oldvortex then

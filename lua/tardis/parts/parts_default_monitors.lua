@@ -60,7 +60,7 @@ function PART:GetHitboxHandles()
 end
 
 function PART:GetHitboxStatic()
-    return self.interior:GetPart(self.static_hitbox_id) --[[@as part_default_monitors]]
+    return self.interior:GetPart(self.static_hitbox_id)
 end
 
 
@@ -601,7 +601,7 @@ end
 ---@param MonitorID string
 local function Setup_Hitbox_Parts(MonitorID)
     -- Default monitor hitboxes
-    PART = TARDIS:NewPart() --[[@as part_default_monitors]]
+    PART = TARDIS:NewPart()
     PART.MonitorID = MonitorID
     PART.AutoSetup = true
     PART.Collision = false
@@ -670,7 +670,7 @@ Setup_Hitbox_Parts("default_monitor_2")
 -- Rotor ring
 
 -- Default rotor ring
-PART = TARDIS:NewPart() --[[@as part_default_monitors]]
+PART = TARDIS:NewPart()
 PART.ID = "default_rotor_ring"
 PART.Model = "models/molda/toyota_int/rotor_ring.mdl"
 PART.AutoSetup = true

@@ -357,7 +357,7 @@ function TardisScreenButton:SetPressedStateData(ent, data)
             self:SetPressed(ent:GetData(data[1]) or ent:GetData(data[2]))
         end
     else
-        local data_id = data --[[@as string]]
+        local data_id = data
         self.Think = function()
             if not ent._init then return end
             self:SetPressed(ent:GetData(data_id))

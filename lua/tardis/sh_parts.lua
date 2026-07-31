@@ -922,7 +922,6 @@ if SERVER then
                 local e=ents.Create(v)
                 if not IsValid(e) then error("entity creation failed: " .. v) end
                 -- v names a registered part class
-                ---@cast e gmod_tardis_part
                 Doors:SetupOwner(e,ent:GetCreator())
                 e.exterior=(ent.TardisExterior and ent or ent.exterior)
                 e.interior=(ent.TardisInterior and ent or ent.interior)

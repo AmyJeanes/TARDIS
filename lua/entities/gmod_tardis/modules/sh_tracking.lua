@@ -74,7 +74,7 @@ if SERVER then
     ---@param ent? Entity
     ---@param ply? Player
     function ENT:SetTracking(ent, ply)
-        if not ply then ply = self:GetData("pilot") --[[@as Player]] end
+        if not ply then ply = self:GetData("pilot") end
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = wasTrackingEnt ~= nil
         if not IsValid(ent) then
@@ -102,7 +102,7 @@ if SERVER then
         end
 
         if ent.TardisPart and ent.ExteriorPart then
-            ent = ent.exterior --[[@as Entity]]
+            ent = ent.exterior
         end
 
         local entSize = get_ent_size(ent)

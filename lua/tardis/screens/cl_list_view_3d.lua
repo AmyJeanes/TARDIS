@@ -124,7 +124,7 @@ function ListView3D:UpdateLayout()
         bp:SetPos(0, (i - 1) * (d + self.elem_h))
         bp:SetSize(w, self.elem_h)
         bp:SetBackgroundColor(Color(255,255,255))
-        local b = vgui.Create("DLabel", bp) --[[@as ListView3DRow]]
+        local b = vgui.Create("DLabel", bp)
         b.panel = bp
         b:SetSize(w, self.elem_h)
         b:SetPos(0,0)

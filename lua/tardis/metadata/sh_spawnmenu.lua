@@ -473,7 +473,7 @@ if CLIENT then
         if not obj.nicename then return end
         if not obj.spawnname then return end
 
-        local icon = vgui.Create("ContentIcon", container) --[[@as TardisSpawnIcon]]
+        local icon = vgui.Create("ContentIcon", container)
         icon:SetContentType("entity")
         icon:SetSpawnName(obj.spawnname)
         icon:SetName(obj.nicename)

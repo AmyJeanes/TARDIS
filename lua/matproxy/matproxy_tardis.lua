@@ -281,7 +281,7 @@ matproxy.Add({
         end
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
-                local col = ent.metadata.Interior.MatProxy.Color1 --[[@as Color]]
+                local col = ent.metadata.Interior.MatProxy.Color1
                 if col ~= self.last_col then
                     self.last_col = col
                     mat:SetVector(self.ResultTo, Color(col.r, col.g, col.b):ToVector())
@@ -314,7 +314,7 @@ matproxy.Add({
         end
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
-                local col = ent.metadata.Interior.MatProxy.Color2 --[[@as Color]]
+                local col = ent.metadata.Interior.MatProxy.Color2
                 if col ~= self.last_col then
                     self.last_col = col
                     mat:SetVector(self.ResultTo, Color(col.r, col.g, col.b):ToVector())
@@ -347,7 +347,7 @@ matproxy.Add({
         end
         if ent.exterior then
             if ent.metadata.Interior.MatProxy then
-                local col = ent.metadata.Interior.MatProxy.Color3 --[[@as Color]]
+                local col = ent.metadata.Interior.MatProxy.Color3
                 if col ~= self.last_col then
                     self.last_col = col
                     mat:SetVector(self.ResultTo, Color(col.r, col.g, col.b):ToVector())

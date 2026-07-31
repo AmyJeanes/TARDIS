@@ -352,7 +352,7 @@ function TARDIS:HUDScreen(window)
         self.screen_in_context_menu = nil
     end
 
-    local frame = (window or vgui.Create("DFrame")) --[[@as DFrame]]
+    local frame = (window or vgui.Create("DFrame"))
     frame:SetSkin("TARDIS")
     frame:SetTitle(TARDIS:GetPhrase("Common.Interface"))
     frame:SetDraggable(true)
@@ -781,7 +781,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
             if spacew < 0 then
                 h=h+button:GetTall()+screen.gap
                 -- analyzer widens this to number? (screen.gap is `any`, propagating up the chain); cast keeps spaceh's type stable
-                spaceh=(page:GetTall()-h) --[[@as number]]
+                spaceh=(page:GetTall()-h)
                 spacew=page:GetWide()-screen.gap
                 w=page:GetWide()-spacew
                 spacew=page:GetWide()-w-button:GetWide()-screen.gap

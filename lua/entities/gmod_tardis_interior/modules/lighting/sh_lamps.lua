@@ -73,7 +73,7 @@ if CLIENT then
 
         for k,v in pairs(lamps) do
             -- authorable lamp -> runtime lamp: ParseLampTable fills it in place
-            local lamp = v --[[@as tardis_lamp_complete]]
+            local lamp = v
             ParseLampTable(lamp) -- only once per metadata
             local this_lamp = TARDIS:CopyTable(lamp)
             self:InitLampData(this_lamp)

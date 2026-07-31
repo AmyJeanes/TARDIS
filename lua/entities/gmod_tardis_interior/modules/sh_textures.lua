@@ -32,11 +32,11 @@ function ENT:ChangeTexture(part_id, value, material, prefix)
     if not prefix then prefix = "" end
 
     if isnumber(value) and material ~= nil then
-        ent:SetSubMaterial(value --[[@as number]], prefix .. material)
+        ent:SetSubMaterial(value, prefix .. material)
     elseif isstring(value) then
         ent:SetMaterial(prefix .. value)
     elseif isnumber(value) then
-        ent:SetSkin(value --[[@as number]])
+        ent:SetSkin(value)
     else
         ErrorNoHaltWithStack("Wrong texture parameter format: " .. value)
     end

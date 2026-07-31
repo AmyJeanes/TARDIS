@@ -823,10 +823,8 @@ end
 function TARDIS:SoundEntry(entry)
     if entry == nil then return nil end
     if isstring(entry) then
-        ---@cast entry string
         return { path = entry }
     end
-    ---@cast entry tardis_sound_entry
     return entry.path and entry or nil
 end
 

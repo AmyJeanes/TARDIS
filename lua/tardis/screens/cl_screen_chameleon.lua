@@ -140,7 +140,6 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
                 local doorpart = ext_data.Parts.door
                 -- the door part is required for a valid exterior, so it is never `false`;
                 -- the shaped cast types the fields we read off it
-                ---@cast doorpart { model: string?, Model: string?, posoffset: Vector? }
                 local doormodel = doorpart.model or doorpart.Model
                 local doorpos = ext_data.Portal.pos + (doorpart.posoffset or Vector(0,0,0))
                 local textures
