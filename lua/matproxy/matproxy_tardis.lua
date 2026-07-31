@@ -36,7 +36,7 @@ local function getdynamicproxyvars(ent, mat, name)
     return vars
 end
 
----@class tardis_state_texture_matproxy
+---@class tardis_state_texture_matproxy : MatProxyData
 ---@field Texture string
 ---@field FrameNo string
 ---@field Textures table<any, string>
@@ -146,8 +146,8 @@ matproxy.Add({
     end
 })
 
----@class tardis_matproxy
----@field name string
+-- Shared by the proxies that pick between an "on" and an "off" material var.
+---@class tardis_toggle_matproxy : MatProxyData
 ---@field ResultTo string
 ---@field on_var string?
 ---@field off_var string?
@@ -157,7 +157,7 @@ matproxy.Add({
 ---@field last_var string?
 ---@field last_value Vector?
 
----@param self tardis_matproxy
+---@param self tardis_toggle_matproxy
 ---@param mat IMaterial
 ---@param values table
 local function matproxy_tardis_power_init(self, mat, values)
@@ -169,9 +169,9 @@ local function matproxy_tardis_power_init(self, mat, values)
     self.TransitionSpeedOff = values.transitionspeedoff or 0
 end
 
----@param self tardis_matproxy
+---@param self tardis_toggle_matproxy
 ---@param mat IMaterial
----@param ent any
+---@param ent Entity?
 local function matproxy_tardis_power_bind(self, mat, ent)
     if not IsValid(ent) then return end
 
@@ -360,7 +360,7 @@ matproxy.Add({
     end
 })
 
----@param self tardis_matproxy
+---@param self tardis_toggle_matproxy
 ---@param mat IMaterial
 ---@param values table
 local function matproxy_tardis_warning_init(self, mat, values)
@@ -369,9 +369,9 @@ local function matproxy_tardis_warning_init(self, mat, values)
     self.off_var = values.offvar
 end
 
----@param self tardis_matproxy
+---@param self tardis_toggle_matproxy
 ---@param mat IMaterial
----@param ent any
+---@param ent Entity?
 local function matproxy_tardis_warning_bind(self, mat, ent)
     if not IsValid(ent) then return end
 
@@ -402,7 +402,7 @@ matproxy.Add({
 })
 
 
----@param self tardis_matproxy
+---@param self tardis_toggle_matproxy
 ---@param mat IMaterial
 ---@param values table
 local function matproxy_tardis_HDR_init(self, mat, values)
@@ -411,9 +411,9 @@ local function matproxy_tardis_HDR_init(self, mat, values)
     self.off_var = values.offvar
 end
 
----@param self tardis_matproxy
+---@param self tardis_toggle_matproxy
 ---@param mat IMaterial
----@param ent any
+---@param ent Entity?
 local function matproxy_tardis_HDR_bind(self, mat, ent)
     if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
 
@@ -438,8 +438,7 @@ matproxy.Add({
 
 local vortexfallbackcol = Color(0, 0, 0) -- Uses black if no custom colour is set since that can fit for any tardis
 
----@class tardis_dynamic_light_matproxy
----@field name string
+---@class tardis_dynamic_light_matproxy : MatProxyData
 ---@field ResultTo string
 ---@field DefaultColor Vector
 ---@field LastColor Vector
