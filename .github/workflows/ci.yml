@@ -31,9 +31,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: AmyJeanes/Doors
-          # TEMPORARY: revert to `main` before merge - the cross-boundary audio work needs
-          # Doors' matching branch, and Doors merges first.
-          ref: sound-rework
+          ref: main
           path: Doors
 
       - name: Checkout world-portals
@@ -98,9 +96,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: AmyJeanes/Doors
-          # TEMPORARY: revert to `main` before merge - the cross-boundary audio work needs
-          # Doors' matching branch, and Doors merges first.
-          ref: sound-rework
+          ref: main
           path: Doors
 
       - name: Checkout world-portals
