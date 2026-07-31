@@ -315,8 +315,6 @@ local function ensureWeaponClone(ply, int)
 end
 
 ENT:AddHook("Think", "weaponworldmodel", function(self)
-    -- glua_ls upstream: occupants @field reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@type table<Player, true>
     local occupants = self.occupants
     if not occupants then return end
     local active = TARDIS:GetSetting("lightoverride-enabled") and self.metadata.Interior.LightOverride

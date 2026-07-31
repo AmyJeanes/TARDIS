@@ -31,9 +31,18 @@ function ENT:Initialize()
         local inTypes = {"NORMAL","NORMAL"}
 
         WireLib.CreateSpecialInputs(self,inNames,inTypes)
+        -- glua_ls 1.1.2: wiremod's own untyped definition shadows the declaration in
+        -- .luatypes/wire.lua, so the entity class reads as inferred here
+        ---@diagnostic disable-next-line: infer-unknown
         Wire_CreateOutputs(self,{"Active","Radius","Health"})
 
+        -- glua_ls 1.1.2: wiremod's own untyped definition shadows the declaration in
+        -- .luatypes/wire.lua, so the entity class reads as inferred here
+        ---@diagnostic disable-next-line: infer-unknown
         Wire_TriggerOutput(self,"Radius",self.Radius)
+        -- glua_ls 1.1.2: wiremod's own untyped definition shadows the declaration in
+        -- .luatypes/wire.lua, so the entity class reads as inferred here
+        ---@diagnostic disable-next-line: infer-unknown
         Wire_TriggerOutput(self,"Health",self.EntHealth)
     end
 end
@@ -42,6 +51,9 @@ end
 ---@param value number
 function ENT:TriggerWire(tname,value)
     if WireLib then
+        -- glua_ls 1.1.2: wiremod's own untyped definition shadows the declaration in
+        -- .luatypes/wire.lua, so the entity class reads as inferred here
+        ---@diagnostic disable-next-line: infer-unknown
         Wire_TriggerOutput(self,tname,value)
     end
 end

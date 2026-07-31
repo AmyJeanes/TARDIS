@@ -87,11 +87,7 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
 --------------------------------------------------------------------------------
 -- Layout calculations
 --------------------------------------------------------------------------------
-    -- glua_ls upstream: GetWide's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@type number
     local frW = frame:GetWide()
-    -- glua_ls upstream: GetTall's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@type number
     local frT = frame:GetTall()
 
     local gap = math.min(frT, frW) * 0.06

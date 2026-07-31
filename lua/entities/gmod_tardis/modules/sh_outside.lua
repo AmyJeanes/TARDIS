@@ -147,8 +147,6 @@ else
 
     ---@class Player
     local meta=assert(FindMetaTable("Player"))
-    -- glua_ls upstream: saved method reads as inferred at its call sites -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@type fun(self: Player): Entity
     oldgetviewentity2=oldgetviewentity2 or meta.GetViewEntity
     function meta:GetViewEntity(...)
         if not self then return oldgetviewentity2(self,...) end

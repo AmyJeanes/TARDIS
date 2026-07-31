@@ -1,3 +1,7 @@
+-- glua_ls upstream: a literal assigned to a declared field is completeness-checked, so
+-- these partial definitions report fields the merge supplies at runtime -- https://github.com/Pollux12/gmod-glua-ls/issues/71
+---@diagnostic disable: missing-fields
+
 -- Default
 
 local T = TARDIS:NewInterior()
@@ -598,6 +602,7 @@ T.CustomHooks = {
 
             local m = int:GetPart("default_monitor_" .. m_id)
             if not IsValid(m) then return true end
+            ---@cast m part_default_monitors
 
             if id == 1 or id == 2 then
                 if m:IsStatic() then
@@ -782,16 +787,12 @@ T.Templates = {
     },
     default_halloween = {
         override = true,
-        -- glua_ls upstream: field-typed literal params not inherited -- https://github.com/Pollux12/gmod-glua-ls/issues/53
-        ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsHalloweenEvent()
         end,
     },
     default_christmas = {
         override = true,
-        -- glua_ls upstream: field-typed literal params not inherited -- https://github.com/Pollux12/gmod-glua-ls/issues/53
-        ---@param ent gmod_tardis|gmod_tardis_interior
         condition = function(id, ply, ent)
             return ent:IsChristmasEvent()
         end,

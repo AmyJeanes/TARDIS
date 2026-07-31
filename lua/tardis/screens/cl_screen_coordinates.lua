@@ -11,11 +11,7 @@ end
 TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", menu=false, order=2, popuponly=false}, function(self,ext,int,frame,screen)
     local map = game.GetMap()
 
-    -- glua_ls upstream: GetWide's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@type number
     local w = frame:GetWide()
-    -- glua_ls upstream: GetTall's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@type number
     local h = frame:GetTall()
     local d = 0.05 * math.min( w,h )
     local round_digits = 4

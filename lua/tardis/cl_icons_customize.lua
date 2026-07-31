@@ -217,8 +217,6 @@ function TARDIS:CustomizeIconPack()
         if update_dirty then update_dirty() end
     end
 
-    -- glua_ls upstream: saved method reads as inferred at its call sites -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@type fun(self: DFrame)
     local original_close = frame.Close
     ---@param self DFrame
     frame.Close = function(self)

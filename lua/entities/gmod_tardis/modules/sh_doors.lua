@@ -289,9 +289,6 @@ if SERVER then
         end
     end)
 
-    -- glua_ls upstream: hook overload types these, but as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-    ---@param self gmod_tardis
-    ---@param part gmod_tardis_part
     ENT:AddHook("PartBodygroupChanged", "doors", function(self, part, bodygroup, value)
         if not IsValid(part) or part ~= self:GetPart("door") then return end
 

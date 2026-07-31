@@ -313,8 +313,6 @@ local function loadskin()
 
     SKIN.Colours.TooltipText = GWEN.TextureColor( 4 + 8 * 26, 500 )
 
-    -- glua_ls upstream: a ---@class table doesn't satisfy Partial<> over its own class -- https://github.com/Pollux12/gmod-glua-ls/issues/63
-    ---@diagnostic disable-next-line: param-type-mismatch
     derma.DefineSkin( "TARDIS", "TARDIS GUI", SKIN )
 
     SKIN=oldskin

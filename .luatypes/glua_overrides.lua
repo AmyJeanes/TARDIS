@@ -8,6 +8,11 @@ error("glua_overrides.lua contains type annotations only and must never be execu
 
 -- Local annotation overrides for gaps in the provisioned GLua annotations.
 
+-- glua_ls upstream: the wiki page path leaks into the generated type, so the annotated
+-- `Structures/LocalLight[]` resolves to a bogus class `Structures` -- https://github.com/Pollux12/annotations-gmod-glua-ls/issues/16
+---@param lights? LocalLight[]
+function render.SetLocalModelLights(lights) end
+
 -- The annotations model stock Lua's 3-arg debug.getinfo(thread, f, what); GMod's
 -- takes (funcOrStackLevel, fields) - a stack-level number is how TARDIS uses it.
 ---@param funcOrStackLevel function|integer

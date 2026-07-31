@@ -199,8 +199,6 @@ end
 ---@return any
 function ENT:CallHook(name,...)
     local a,b,c,d,e,f
-    -- glua_ls upstream: undeclared base-method self -- https://github.com/Pollux12/gmod-glua-ls/issues/51
-    ---@diagnostic disable-next-line: infer-unknown
     a,b,c,d,e,f=self.BaseClass.CallHook(self,name,...)
     if a~=nil then
         return a,b,c,d,e,f
