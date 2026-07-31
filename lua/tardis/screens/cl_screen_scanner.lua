@@ -23,10 +23,12 @@ TARDIS:AddScreen("Scanner", {id="scanner",text="Screens.Scanner", menu=false, or
     local scanner=vgui.Create("DImage",frame)
     scanner:SetSize(frame:GetWide(),frame:GetTall())
     scanner:SetMaterial(mat)
-    scanner.OldPaint=scanner.Paint
-    scanner.Paint=function()
+    local oldPaint=scanner.Paint
+    ---@param w number
+    ---@param h number
+    function scanner:Paint(w, h)
         mat:SetTexture( "$basetexture", screen.scanner )
-        scanner:OldPaint()
+        return oldPaint(self, w, h)
     end
 
     local label = vgui.Create("DLabel",frame)

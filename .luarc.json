@@ -16,8 +16,7 @@
             "../Sonic-Screwdriver/lua",
             "../Sonic-Screwdriver/.luatypes",
             "../GMod-MCP-Server/lua",
-            "../GMod-MCP-Server/.luatypes",
-            "../wire/lua/wire"
+            "../GMod-MCP-Server/.luatypes"
         ],
         "ignoreGlobs": [
             ".tools/*.zip"

@@ -933,7 +933,7 @@ function TARDIS:CustomizeIconPack()
             label:SetMouseInputEnabled(true)
             label:SetCursor("sizeall")
             ---@param mc number
-            label.OnMousePressed = function(_, mc)
+            function label:OnMousePressed(mc)
                 row:OnMousePressed(mc)
             end
             ---@param w number
