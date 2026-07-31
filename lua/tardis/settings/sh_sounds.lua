@@ -29,19 +29,6 @@ if CLIENT then
     })
 
     TARDIS:AddSetting({
-        id="external_hum",
-        type="bool",
-        value=true,
-
-        class="local",
-
-        option=true,
-        section=SETTING_SECTION,
-        subsection="Sounds",
-        name="ExternalHum",
-    })
-
-    TARDIS:AddSetting({
         id = "cloaksound-enabled",
         type = "bool",
         value = true,
@@ -146,7 +133,7 @@ if CLIENT then
     })
     
     TARDIS:AddSetting({
-        id="interior_hum_leakage",
+        id="sound_through_doors",
         type="bool",
         value=true,
 
@@ -155,26 +142,15 @@ if CLIENT then
         option=true,
         section=SETTING_SECTION,
         subsection="Sounds",
-        name="InteriorHumLeakage",
+        name="SoundThroughDoors",
     })
-    
-    TARDIS:AddSetting({
-        id="interior_hum_leakage_volume",
-        type="number",
-        value=50,
-        min=0,
-        max=100,
-        round_func = function(x)
-            return (x - x % 5)
-        end,
 
-        class="local",
-
-        option=true,
-        section=SETTING_SECTION,
-        subsection="Sounds",
-        name="InteriorHumLeakageVolume",
-    })
+    TARDIS:AddMigration("sound-through-doors", "2026-07-20", function(self)
+        local enabled = self.LocalSettings["interior_hum_leakage"]
+        if enabled == false or self.LocalSettings["interior_hum_leakage_volume"] == 0 then
+            self:SetSetting("sound_through_doors", false)
+        end
+    end)
 end
 
 TARDIS:AddSetting({

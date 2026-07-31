@@ -2,7 +2,7 @@
 ---@param id string
 function TARDIS:SpawnByID(id)
     RunConsoleCommand("tardis2_spawn", id)
-    surface.PlaySound("ui/buttonclickrelease.wav")
+    if CLIENT then surface.PlaySound("ui/buttonclickrelease.wav") end
 end
 
 TARDIS.InteriorIcons = TARDIS.InteriorIcons or {}

@@ -64,6 +64,21 @@ function ENT:GetData(key,default)
     end
 end
 
+---@api
+---@param opts doors_sound_opts
+---@return doors_managed_sound?
+function ENT:PlaySound(opts)
+    opts.owner = opts.owner or self.exterior
+    if opts.ent == nil and opts.pos == nil then opts.ent = self end
+    return Doors:PlaySound(opts)
+end
+
+---@api
+---@param tag string?
+function ENT:StopSounds(tag)
+    Doors:StopSounds(self.exterior, tag)
+end
+
 hook.Add("BodygroupChanged", "tardis_parts", function(ent,bodygroup,value)
     if ent.TardisPart then
         if ent.OnBodygroupChanged then

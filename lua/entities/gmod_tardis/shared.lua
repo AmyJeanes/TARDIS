@@ -11,10 +11,10 @@
 ---@field interior gmod_tardis_interior?
 ---@field pilot Player?
 ---@field occupants table<Player, true>
----@field LeakedInteriorHums table<any, CSoundPatch>
 ---@field environment sb_resource_environment?
 ---@field environment_old sb_resource_environment?
 ---@field music IGModAudioChannel?
+---@field idlesounds table<any, doors_managed_sound>
 
 ENT.Base="gmod_door_exterior"
 ENT.Spawnable=false

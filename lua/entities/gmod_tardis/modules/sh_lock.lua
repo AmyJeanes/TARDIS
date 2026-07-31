@@ -77,7 +77,7 @@ if SERVER then
                 TARDIS:Message(a, "Lock.Locked")
                 self.exterior:SendMessage("lockattempted", {a})
             end
-            self:EmitSound(self.metadata.Exterior.Sounds.Door.locked)
+            self:PlaySound({ path = self.metadata.Exterior.Sounds.Door.locked })
         end
     end)
 
@@ -114,17 +114,9 @@ else
         local extsoundoff = self.metadata.Exterior.Sounds.Unlock
         local intsoundon = self.metadata.Interior.Sounds.Lock or extsoundon
         local intsoundoff = self.metadata.Interior.Sounds.Unlock or extsoundoff
-        if locked then
-            self:EmitSound(extsoundon)
-        else
-            self:EmitSound(extsoundoff)
-        end
+        self:PlaySound({ path = locked and extsoundon or extsoundoff, tag = "lock", pair = "lock", resumable = true })
         if IsValid(self.interior) then
-            if locked then
-                self.interior:EmitSound(intsoundon)
-            else
-                self.interior:EmitSound(intsoundoff)
-            end
+            self.interior:PlaySound({ path = locked and intsoundon or intsoundoff, tag = "lock", pair = "lock", resumable = true })
         end
     end)
 

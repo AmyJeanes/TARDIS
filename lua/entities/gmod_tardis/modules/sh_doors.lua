@@ -373,14 +373,14 @@ else
                 local extpart = self:GetPart("door")
                 local extsnd = open and extsnds.open or extsnds.close
                 if IsValid(extpart) and extpart.exterior:CallHook("ShouldEmitDoorSound")~=false then
-                    extpart:EmitSound(extsnd)
+                    extpart:PlaySound({ path = extsnd, tag = "door", pair = "door", resumable = true })
                 end
             end
             if intsnds.enabled and IsValid(self.interior) then
                 local intpart = self.interior:GetPart("door")
                 local intsnd = open and intsnds.open or intsnds.close
                 if IsValid(intpart) then
-                    intpart:EmitSound(intsnd)
+                    intpart:PlaySound({ path = intsnd, tag = "door", pair = "door", resumable = true })
                 end
             end
         end
@@ -427,7 +427,7 @@ if CLIENT then
         if not door_sound then return end
 
         if intdoor.IntDoorPos ~= nil and intdoor.IntDoorPos ~= 0 and intdoor.IntDoorPos ~= 1 then
-            sound.Play(door_sound, self.interior:LocalToWorld( self.metadata.Interior.Fallback.pos ))
+            self.interior:PlaySound({ path = door_sound, tag = "door", offset = self.metadata.Interior.Fallback.pos, resumable = true })
         end
     end)
 end

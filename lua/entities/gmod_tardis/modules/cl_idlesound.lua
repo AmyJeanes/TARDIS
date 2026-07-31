@@ -1,9 +1,7 @@
 -- Idle sound
 
 ENT:AddHook("Initialize", "idlesound", function(self)
-    if self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound then
-        self.idlesounds={}
-    end
+    self.idlesounds = {}
 end)
 
 ENT:AddHook("OnRemove", "idlesound", function(self)
@@ -14,11 +12,20 @@ ENT:AddHook("OnRemove", "idlesound", function(self)
     end
 end)
 
+ENT:AddHook("ExteriorChanged", "idlesound", function(self)
+    if not self.idlesounds then return end
+    for _,v in pairs(self.idlesounds) do
+        v:Stop()
+    end
+    self.idlesounds = {}
+end)
+
 ENT:AddHook("Think", "idlesound", function(self)
-    local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+    local sounds = self.metadata.Exterior.Sounds.Idle
     if not sounds or not self.idlesounds then return end
 
-    local play = self:GetPower() and TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound")
+    local play = self:GetPower() and not self:GetData("vortex")
+        and TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound")
     for k,v in pairs(sounds) do
         ---@cast v tardis_sound_entry -- glua_ls reads a loop variable's fields as nilable
         local idlesnd = self.idlesounds[k]

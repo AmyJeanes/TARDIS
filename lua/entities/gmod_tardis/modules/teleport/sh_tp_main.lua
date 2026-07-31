@@ -313,6 +313,26 @@ if SERVER then
         end
     end)
 else
+    ---@param extpath string?
+    ---@param intpath string?
+    ---@param shouldext boolean
+    ---@param shouldint boolean
+    function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint)
+        if shouldint and intpath and IsValid(self.interior) then
+            self.interior:PlaySound({ path = intpath, tag = "teleport", pair = "teleport", resumable = true })
+        end
+        if shouldext and extpath then
+            self:PlaySound({ path = extpath, tag = "teleport", pair = "teleport", resumable = true })
+        end
+    end
+
+    -- Speed that the exterior must go for the sound to detach during a teleport
+    -- Real movement speed tops at around 2-3k, teleport reads as >10k
+    local BYSTANDER_PIN_JUMP = 6000
+
+    -- How close the exterior must be to the sound to re-attach during materialisation
+    local MAT_ATTACH_DIST = 500
+
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
         self:SetData("step",1)
@@ -350,45 +370,25 @@ else
 
             if LocalPlayer():GetTardisExterior()==self then
                 if self:GetFastRemat() then
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        self.interior:EmitSound(sound_fullflight_int)
-                    end
-                    if shouldPlayExterior then
-                        self:EmitSound(sound_fullflight_ext)
-                    end
+                    self:PlayTeleportSound(sound_fullflight_ext, sound_fullflight_int, shouldPlayExterior, shouldPlayInterior)
+                elseif self:GetData("hads-demat") then
+                    self:PlayTeleportSound(sound_demat_hads_ext, sound_demat_hads_int, shouldPlayExterior, shouldPlayInterior)
                 else
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        if self:GetData("hads-demat") then
-                            self.interior:EmitSound(sound_demat_hads_int)
-                        else
-                            self.interior:EmitSound(sound_demat_int)
-                        end
-                    end
-                    if shouldPlayExterior then
-                        if self:GetData("hads-demat") then
-                            self:EmitSound(sound_demat_hads_ext)
-                        else
-                            self:EmitSound(sound_demat_ext)
-                        end
-                    end
+                    self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif shouldPlayExterior then
+                local dematsnd = sound_demat_ext
                 if self:GetFastRemat() then
-                    sound.Play(sound_demat_fast_ext,self:GetPos())
-                else
-                    if self:GetData("hads-demat") then
-                        sound.Play(sound_demat_hads_ext,self:GetPos())
-                    else
-                        sound.Play(sound_demat_ext,self:GetPos())
-                    end
+                    dematsnd = sound_demat_fast_ext
+                elseif self:GetData("hads-demat") then
+                    dematsnd = sound_demat_hads_ext
                 end
+                self:PlaySound({ path = dematsnd, tag = "teleport", pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
                 if pos and self:GetFastRemat() then
-                    if not IsValid(self) then return end
-                    if self:IsLowHealth() and self:GetFastRemat() then
-                        sound.Play(ext.mat_damaged_fast, pos)
-                    else
-                        sound.Play(ext.mat_fast, pos)
-                    end
+                    -- Only detach/reattach the sound if the teleport distance is large enough to be noticeable
+                    local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
+                    local departed = self:GetPos():DistToSqr(pos) > MAT_ATTACH_DIST * MAT_ATTACH_DIST
+                    self:PlaySound({ path = matsnd, tag = "teleport", pos = pos, resumable = true, attach = departed and self or nil, attach_dist = MAT_ATTACH_DIST })
                 end
             end
         end
@@ -408,26 +408,13 @@ else
             local pos=data[1]
             if LocalPlayer():GetTardisExterior()==self and (not self:GetFastRemat()) then
                 if self:IsLowHealth() then
-                    if shouldPlayExterior then
-                        self:EmitSound(ext.mat_damaged)
-                    end
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        self.interior:EmitSound(int.mat_damaged or ext.mat_damaged)
-                    end
+                    self:PlayTeleportSound(ext.mat_damaged, int.mat_damaged or ext.mat_damaged, shouldPlayExterior, shouldPlayInterior)
                 else
-                    if shouldPlayExterior then
-                        self:EmitSound(ext.mat)
-                    end
-                    if shouldPlayInterior and IsValid(self.interior) then
-                        self.interior:EmitSound(int.mat or ext.mat)
-                    end
+                    self:PlayTeleportSound(ext.mat, int.mat or ext.mat, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif not self:GetFastRemat() and shouldPlayExterior then
-                if self:IsLowHealth() then
-                    sound.Play(ext.mat_damaged,pos)
-                else
-                    sound.Play(ext.mat,pos)
-                end
+                -- Attach sound to the TARDIS upon materialisation
+                self:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat, tag = "teleport", pos = pos, attach = self, resumable = true })
             end
         end
         self:CallCommonHook("PreMatStart")

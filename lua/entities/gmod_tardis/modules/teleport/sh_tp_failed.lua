@@ -199,10 +199,7 @@ else -- CLIENT
             local infinite = TARDIS:GetSetting("teleport_warning_infinite", self)
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
-            self:EmitSound(ext.demat_fail)
-            if ((not infinite) or (not int.demat_fail_loop)) and IsValid(self.interior) then
-                self.interior:EmitSound(int.demat_fail or ext.demat_fail)
-            end
+            self:PlayTeleportSound(ext.demat_fail, int.demat_fail or ext.demat_fail, true, (not infinite) or (not int.demat_fail_loop))
         end
         if LocalPlayer():GetTardisExterior() == self and IsValid(self.interior) then
             util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
@@ -214,10 +211,7 @@ else -- CLIENT
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport
-            self:EmitSound(ext.mat_fail)
-            if IsValid(self.interior) then
-                self.interior:EmitSound(int.mat_fail or ext.mat_fail)
-            end
+            self:PlayTeleportSound(ext.mat_fail, int.mat_fail or ext.mat_fail, true, true)
         end
         if LocalPlayer():GetTardisExterior() == self and IsValid(self.interior) then
             util.ScreenShake(self.interior:GetPos(), 2.5, 100, 3, 300)
@@ -235,14 +229,9 @@ else -- CLIENT
             local setting = TARDIS:GetSetting("teleport_warning_infinite", self)
             local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop
             if setting and sound then
-                local snd = interior.dematfailsound
-                if not snd then
-                    snd = CreateSound(interior, sound)
-                    interior.dematfailsound = snd
-                    snd:SetSoundLevel(90)
-                end
-                if not snd:IsPlaying() then
-                    snd:Play()
+                local existing = interior.dematfailsound
+                if not existing or not existing:IsAlive() then
+                    interior.dematfailsound = interior:PlaySound({ path = sound, loop = true, level = 90, tag = "demat-fail" })
                 end
             end
         else
@@ -265,7 +254,7 @@ else -- CLIENT
             local teleport = self:GetData("teleport", false)
             local sound = self.metadata.Interior.Sounds.Teleport.demat_fail_loop_stop
             if power and (not teleport) and sound then
-                interior:EmitSound(sound)
+                interior:PlaySound({ path = sound })
             end
         end
     end)
