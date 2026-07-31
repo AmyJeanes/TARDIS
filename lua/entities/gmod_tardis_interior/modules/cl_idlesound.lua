@@ -20,7 +20,6 @@ ENT:AddHook("Think", "idlesound", function(self)
 
     local play = self:GetPower() and TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound")
     for k,v in pairs(sounds) do
-        ---@cast v tardis_sound_entry -- glua_ls reads a loop variable's fields as nilable
         local idlesnd = self.idlesounds[k]
         if play then
             local entry = TARDIS:SoundEntry(v)
