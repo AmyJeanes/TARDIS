@@ -305,7 +305,8 @@ if SERVER then
             if self:IsChameleonActive() then return end
 
             if not IsValid(self.interior) then return end
-            -- glua_ls upstream: GetPart's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
+            -- glua_ls 1.1.2: the IsValid guard below recomputes the type through its
+            -- @return_cast, which drops GetPart's declared @return.
             ---@type gmod_tardis_part
             local intdoor = self.interior:GetPart("door")
             if not IsValid(intdoor) then return end

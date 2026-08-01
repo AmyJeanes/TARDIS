@@ -83,16 +83,16 @@ TARDIS:AddInteriorTemplate("default_dynamic_color", TARDIS:NewInteriorTemplate({
     CustomHooks = {
         int_color = {
             inthooks = { ["Think"] = true },
+            ---@param ext gmod_tardis
+            ---@param int gmod_tardis_interior
+            ---@param frame_time number
             func = function(ext,int,frame_time)
                 if not IsValid(int) then return end
 
                 if SERVER then
                     local speed = 0.001
 
-                    -- glua_ls upstream: GetData's generic resolves but reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-                    ---@type number
                     local k = ext:GetData("default_int_color_mult", math.Rand(0,1))
-                    ---@type number?
                     local target = ext:GetData("default_int_color_target")
                     if not target then
                         target = math.random(2) - 1

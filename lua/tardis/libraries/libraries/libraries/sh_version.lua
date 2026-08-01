@@ -134,7 +134,6 @@ function TARDIS:GetBuildString()
 end
 
 concommand.Add("tardis2_version", function()
-    ---@type table[]
     local addons = engine.GetAddons()
     local mounted = 0
     for _, addon in ipairs(addons) do

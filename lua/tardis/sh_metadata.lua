@@ -726,7 +726,6 @@ end
 ---@param id string?
 function TARDIS:SetupMetadata(id)
     if self.Metadata[id] then return end
-    ---@type table?
     local t = self.MetadataRaw[id]
     if not t then return end
 
