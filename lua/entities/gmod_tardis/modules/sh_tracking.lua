@@ -74,7 +74,8 @@ if SERVER then
     ---@param ent? Entity
     ---@param ply? Player
     function ENT:SetTracking(ent, ply)
-        if not ply then ply = self:GetData("pilot") end
+        -- Binds GetData's generic; left unbound, the stray T leaks into the generated CanTrack overload.
+        if not ply then ply = self:GetData("pilot") --[[@as Player]] end
         local wasTrackingEnt = self:GetData("tracking-ent")
         local wasTracking = wasTrackingEnt ~= nil
         if not IsValid(ent) then
@@ -267,6 +268,7 @@ if SERVER then
 
     local VECTOR_UP = Vector(0,0,1)
 
+    ---@param ph PhysObj
     ENT:AddHook("PhysicsUpdate", "tracking", function(self, ph)
         local ent = self:GetTracking()
         if ent and not IsValid(ent) then
@@ -388,8 +390,6 @@ if SERVER then
         local targetpredicted = target+(tfwd*tvel:Length()*phm)
         local vel = ph:GetVelocity()
         local velnorm = vel:GetNormalized()
-        -- glua_ls upstream: Length's @return reads as inferred -- https://github.com/Pollux12/gmod-glua-ls/issues/46
-        ---@type number
         local len = vel:Length()
 
         local entSize = self:GetData("tracking-ent-size")

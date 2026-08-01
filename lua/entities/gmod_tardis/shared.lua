@@ -59,7 +59,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "CanToggleRedecoration", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
 ---@overload fun(self: gmod_tardis, name: "CanToggleScreens", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanToggleShields", id: string, func: fun(self: gmod_tardis, on: boolean, ...))
----@overload fun(self: gmod_tardis, name: "CanTrack", id: string, func: fun(self: gmod_tardis, ent: Entity|Player|gmod_tardis|gmod_tardis_part, ply: Player|T, ...))
+---@overload fun(self: gmod_tardis, name: "CanTrack", id: string, func: fun(self: gmod_tardis, ent: Entity|Player|gmod_tardis_part, ply: Player, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTriggerHads", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOffFlight", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "CanTurnOffFloat", id: string, func: fun(self: gmod_tardis, ...))
