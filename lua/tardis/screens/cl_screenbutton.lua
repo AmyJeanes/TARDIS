@@ -16,6 +16,7 @@
 ---@field icon_off string
 ---@field icon_on string
 ---@field on boolean
+---@field shown boolean which pressed state the icon/frame images currently show
 ---@field pos number[]
 ---@field size number[]
 ---@field moving TardisScreenButtonMove
@@ -23,6 +24,7 @@
 ---@field id string?
 ---@field order integer?
 ---@field ThinkInternal fun()
+---@field SetPressedInternal fun(on: boolean)
 ---@field DoClick function?
 TardisScreenButton = {}
 
@@ -60,6 +62,7 @@ function TardisScreenButton:new(parent,screen)
     sb.frame:SetImage(sb.frame_off)
 
     sb.on = false
+    sb.shown = false
     sb.pos = {0, 0}
     sb.size = {10, 10}
 
@@ -68,6 +71,20 @@ function TardisScreenButton:new(parent,screen)
     sb.moving.now = false
 
     sb.toggle_images = false
+
+    ---@param on boolean
+    sb.SetPressedInternal = function(on)
+        sb.on = on
+        if sb.shown == on then return end
+        sb.shown = on
+        if on then
+            sb.icon:SetImage(sb.icon_on)
+            sb.frame:SetImage(sb.frame_on)
+        else
+            sb.icon:SetImage(sb.icon_off)
+            sb.frame:SetImage(sb.frame_off)
+        end
+    end
 
     sb.Think = function() end
     sb.DoClick = function() end
@@ -87,9 +104,7 @@ function TardisScreenButton:new(parent,screen)
         sb.transparency = math.Clamp(sb.transparency, 0, 255)
 
         if not sb.is_toggle and sb.on and CurTime() > sb.click_end_time then
-            sb.icon:SetImage(sb.icon_off)
-            sb.frame:SetImage(sb.frame_off)
-            sb.on = false
+            sb.SetPressedInternal(false)
         end
 
         if sb.moving.now then
@@ -132,20 +147,12 @@ function TardisScreenButton:new(parent,screen)
             sb.DoClick()
             sb.on = not sb.on
             if sb.toggle_images then
-                if sb.on then
-                    sb.icon:SetImage(sb.icon_on)
-                    sb.frame:SetImage(sb.frame_on)
-                else
-                    sb.icon:SetImage(sb.icon_off)
-                    sb.frame:SetImage(sb.frame_off)
-                end
+                sb.SetPressedInternal(sb.on)
             end
         else
             if not sb.on then
                 sb.DoClick()
-                sb.on = true
-                sb.icon:SetImage(sb.icon_on)
-                sb.frame:SetImage(sb.frame_on)
+                sb.SetPressedInternal(true)
                 sb.click_end_time = CurTime() + sb.click_time
             end
         end
@@ -304,16 +311,7 @@ end
 
 ---@param on boolean
 function TardisScreenButton:SetPressed(on)
-    if self.on ~= on then
-        self.on = on
-        if on then
-            self.icon:SetImage(self.icon_on)
-            self.frame:SetImage(self.frame_on)
-        else
-            self.icon:SetImage(self.icon_off)
-            self.frame:SetImage(self.frame_off)
-        end
-    end
+    self.SetPressedInternal(on)
 end
 function TardisScreenButton:IsPressed()
     return self.on
