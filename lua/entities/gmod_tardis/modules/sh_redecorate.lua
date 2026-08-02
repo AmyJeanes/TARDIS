@@ -1,5 +1,6 @@
 local saved_data_names = {
     "cloak",
+    "flash-light-enabled",
     "floatfirst",
     "hads",
     "spindir",
