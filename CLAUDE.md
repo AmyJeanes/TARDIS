@@ -147,7 +147,7 @@ Diagnostics, hover, and jump-to-definition come from the [`glua-lsp` plugin](htt
 
 ## Whole-repo scans (`scripts/glua-check.ps1`)
 
-`glua_ls` only analyzes files as they are opened or edited. To audit the whole repo at once, run `pwsh -File scripts/glua-check.ps1` - it provisions tooling on demand (no-op when present) and runs `glua_check --warnings-as-errors` against the workspace root. It takes no path filter, so it always scans everything; CI runs the same script. Useful after a fix ripples across the tree, or when picking the project up to surface latent issues the LSP hasn't opened yet.
+`glua_ls` only analyzes files as they are opened or edited. To audit the whole repo at once, run `pwsh -File scripts/glua-check.ps1` - it provisions tooling on demand (no-op when present) and runs `glua_check --warnings-as-errors` against the workspace root. It takes no path filter, so it always scans everything; CI runs the same script. Useful after a fix ripples across the tree, or when picking the project up to surface latent issues the LSP hasn't opened yet. Count the diagnostics rather than trusting the exit code: `hint` sits below `--warnings-as-errors`, so a hint-level regression still prints `Check successful` and exits 0.
 
 **Local and CI can disagree, and CI is authoritative** - but `glua_check` itself is platform-consistent (verified against the Linux binary), so suspect a difference in *what is being analyzed* before suspecting the analyzer: a duplicate annotations copy on the library masks undeclared engine classnames locally, for instance. Declare those in `.luatypes` as `---@class <name> : Entity`. What does diverge is the generated hook catalogue, which resolves types through `glua_doc_cli` rather than `glua_check` - hence CI owning that file, and never regenerating it locally. Avoid a strict `---@class`/`---@type` on a *partial or reused literal*; use `table`/`table[]?` or a `--[[@as Class]]` cast instead.
 
@@ -161,9 +161,22 @@ Where an addon fires its own hooks, callback payload params are typed by a gener
 
 The two gates disagree by design: `Test-GmodTyping` only asks whether a param is typed at all, which an `---@overload` match satisfies; `infer-unknown` additionally asks whether it was _declared_, which an overload match is not. So a hook callback can pass typing-check and still trip `infer-unknown` on values derived from its params - an explicit `---@param` above the `hook.Add` clears it. This hits stock GMod hooks too, not just generated catalogues.
 
-A committed `---@diagnostic disable` marks a genuine analyzer bug - it fired, and was suppressed. A `---@cast` / `---@type` / `--[[@as]]` frequently does not; it is often a redundant defensive leftover. Remove it in the real workspace and re-check before concluding anything. Suppressions tracking an upstream report carry a `glua_ls upstream:` comment with the issue URL, so grep that to find what to retire when one closes.
+A committed `---@diagnostic disable` marks a genuine analyzer bug - it fired, and was suppressed. A `---@cast` / `---@type` / `--[[@as]]` frequently does not; it is often a redundant defensive leftover. Remove it in the real workspace and re-check before concluding anything - but **four** things read these annotations and only two of them run locally:
 
-Already investigated and **not** bugs, so do not re-derive them: `pcall` never narrows on `ok` (a limitation every Lua type system shares); `table.Copy` is genuinely generic, and its casts suppress `need-check-nil` because the return is honestly `T?`; `string.gmatch`'s bare `---@return function` makes a local `---@type fun(): string` a real tightening rather than a workaround; the undocumented Derma / `DModelPanel` getters are correctly omitted from the stubs; and a runtime-conditional `ENT.Base` (Wire mounted or not) cannot be resolved statically - an explicit `---@cast` does not clear it either, so the suppression stays.
+- `glua_check` - **count the diagnostics, never the exit code**; `hint` sits below `--warnings-as-errors`, so a hint-level regression still prints `Check successful` and exits 0.
+- `Test-GmodTyping` - hook fire-site arguments `glua_check` never mentions.
+- the generated hook catalogue - it resolves `CallHook` / `hook.Run` argument types and only regenerates in CI, so deleting a cast that fed one has turned `main` red with no local signal at all.
+- a generated wiki - a `---@field` can decide a *published* type, and nothing gates it: the workflow regenerates and commits rather than failing on drift. One deletion downgraded a rendered `linked_portal_door` to `Entity` with both code gates green.
+
+`Test-GmodAnnotation` measures all four - it removes the annotation, re-measures each, restores, and reports which moved (an inline `--[[@as T]]` has its token stripped rather than its line deleted):
+
+```powershell
+pwsh -c ". ./scripts/bootstrap.ps1; Test-GmodAnnotation -RepoRoot . -Site 'lua/foo.lua:270'"
+```
+
+Suppressions tracking an upstream report carry a `glua_ls upstream:` comment with the issue URL, so grep that to find what to retire when one closes.
+
+Already investigated and **not** bugs, so do not re-derive them: `pcall` never narrows on `ok` (a limitation every Lua type system shares); `table.Copy` is genuinely generic, and its casts suppress `need-check-nil` because the return is honestly `T?`; `string.gmatch`'s bare `---@return function` makes a local `---@type fun(): string` a real tightening rather than a workaround; the undocumented Derma / `DModelPanel` getters are correctly omitted from the stubs; and a runtime-conditional `ENT.Base` (Wire mounted or not) cannot be resolved statically, though that no longer costs a suppression - wire came off the analysis surface and the symbols we use are declared instead.
 
 ## Bumping the shared tooling
 
