@@ -959,6 +959,8 @@ function ENT:FindPosInBox(p1, p2)
 
     ---@type Trace
     local td = {}
+    -- make sure the space is clear for both the player and the box
+    td.mask = MASK_PLAYERSOLID
     ---@type Trace
     local td3d = {}
     td3d.mask = MASK_NPCWORLDSTATIC
