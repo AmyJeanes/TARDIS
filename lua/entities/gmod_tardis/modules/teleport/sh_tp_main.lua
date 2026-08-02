@@ -146,8 +146,8 @@ if SERVER then
         self:SetData("teleport",true)
         self:SetData("teleport-interrupt-fade", nil, true)
         self:SetCollisionGroup( self:TeleportCollisionGroup(self:GetPos()) )
-        self:SetData("demat-startpos",self:GetPos())
-        self:SetData("demat-startang",self:GetAngles())
+        self:SetData("demat-startpos",self:GetPos(),true)
+        self:SetData("demat-startang",self:GetAngles(),true)
 
         self:CallCommonHook("DematStart")
         if force then self:CallHook("ForceDematStart") end
@@ -233,8 +233,8 @@ if SERVER then
                 self:SetCollisionGroup(self:TeleportCollisionGroup(pos))
                 self:CallHook("MatStart")
                 self:ChangePosition(pos, ang, true)
-                self:SetData("demat-startpos",nil)
-                self:SetData("demat-startang",nil)
+                self:SetData("demat-startpos",nil,true)
+                self:SetData("demat-startang",nil,true)
                 self:SetDestination(nil, nil)
             end)
             if callback then callback(true) end

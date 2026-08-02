@@ -396,6 +396,36 @@ else
         return trace.HitPos,angle
     end
 
+    local GHOST_ALPHA = 100 / 255
+    local GHOST_ALPHA_ENHANCED = GHOST_ALPHA * (2 - GHOST_ALPHA)
+
+    ---@param prop Entity
+    ---@param parts Entity[]
+    local function drawghostmodels(prop, parts)
+        prop:DrawModel()
+        for _,v in ipairs(parts) do
+            if IsValid(v) then
+                v:DrawModel()
+            end
+        end
+    end
+
+    ---@param prop Entity
+    ---@param parts Entity[]
+    local function drawghost(prop, parts)
+        local enhanced = TARDIS:GetSetting("enhanced-fading-enabled")
+
+        if enhanced then
+            render.OverrideColorWriteEnable(true, false)
+            drawghostmodels(prop, parts)
+            render.OverrideColorWriteEnable(false, false)
+        end
+
+        render.SetBlend(enhanced and GHOST_ALPHA_ENHANCED or GHOST_ALPHA)
+        drawghostmodels(prop, parts)
+        render.SetBlend(1)
+    end
+
     ---@param ent Entity
     ---@param model string?
     ---@param pos Vector?
@@ -407,9 +437,6 @@ else
         prop:SetModel(model or ent:GetModel())
         prop:SetPos((pos and ent:LocalToWorld(pos)) or ent:GetPos())
         prop:SetAngles((ang and ent:LocalToWorldAngles(ang)) or ent:GetAngles())
-
-        local col = prop:GetColor()
-        prop:SetColor(Color(col.r, col.g, col.b, 100))
         prop:SetRenderMode(RENDERMODE_TRANSALPHA)
         prop:SetSkin(ent:GetSkin())
         prop:Spawn()
@@ -459,6 +486,9 @@ else
             d.ang = ang
         end
 
+        ---@type Entity[]
+        local parts = {}
+
         for k,v in pairs(self.parts) do
             if not v.NoShadowCopy and (not md or (md.Parts and md.Parts[k]))
             then
@@ -472,11 +502,19 @@ else
 
                 if IsValid(attachment) then
                     attachment:SetParent(prop)
+                    attachment:SetNoDraw(true)
+                    parts[#parts + 1] = attachment
                 end
             end
         end
 
-        prop:SetAngles(Angle(0,0,0))
+        prop.RenderOverride = function()
+            drawghost(prop, parts)
+        end
+
+        local pos, ang = self:GetDestinationPropOrigin()
+        prop:SetPos(pos)
+        prop:SetAngles(ang)
 
         self:SetData("destinationprop", prop)
     end
@@ -681,6 +719,20 @@ end
 ---@return Angle?
 function ENT:GetDestinationAng(auto)
     return self:GetData("destination_ang") or (auto and self:GetAngles() or nil)
+end
+
+---@return Vector
+---@return Angle
+function ENT:GetDestinationPropOrigin()
+    if self:GetData("vortex") then
+        local dest_pos, dest_ang = self:GetDestinationPos(), self:GetDestinationAng()
+        if dest_pos and dest_ang then return dest_pos, dest_ang end
+
+        ---@type Vector?, Angle?
+        local demat_pos, demat_ang = self:GetData("demat-startpos"), self:GetData("demat-startang")
+        if demat_pos and demat_ang then return demat_pos, demat_ang end
+    end
+    return self:GetPos(), Angle(0,0,0)
 end
 
 ---@param point Vector

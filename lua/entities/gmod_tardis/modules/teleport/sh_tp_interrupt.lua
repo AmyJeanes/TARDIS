@@ -97,8 +97,8 @@ if SERVER then
     ENT:AddHook("InterruptTeleport", "cancel_mat", function(self)
         self:CancelTimer("matdelay")
         self:SetData("premat-start", nil, true)
-        self:SetData("demat-startpos", nil)
-        self:SetData("demat-startang", nil)
+        self:SetData("demat-startpos", nil, true)
+        self:SetData("demat-startang", nil, true)
     end)
 
     ENT:AddHook("CanTogglePower", "tp_interrupt", function(self, on)

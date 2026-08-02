@@ -49,9 +49,7 @@ end
 local function dopredraw(self,part)
     local target = shouldapply(self,part)
     if target~=nil then
-        local useEnhanced = use_enhanced_fade_cache[self:EntIndex()] or false
-        
-        if useEnhanced then
+        if use_enhanced_fade_cache[self:EntIndex()] and target > 0 then
             render.OverrideColorWriteEnable(true, false)
             self:DrawModel()
             render.OverrideColorWriteEnable(false, false)
