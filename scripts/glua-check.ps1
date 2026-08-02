@@ -10,24 +10,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. "$PSScriptRoot/bootstrap.ps1"
 
 & (Join-Path $PSScriptRoot 'install-tools.ps1')
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-$Root    = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$ExeName = if ($IsWindows -or ($null -eq $IsWindows -and $env:OS -eq 'Windows_NT')) { 'glua_check.exe' } else { 'glua_check' }
-$GluaCheck = Join-Path $Root ".tools/bin/$ExeName"
-
-Push-Location $Root
-try {
-    & $GluaCheck --warnings-as-errors .
-    $exitCode = $LASTEXITCODE
-
-    if ($Sarif) {
-        & $GluaCheck --warnings-as-errors -f sarif --output $Sarif . 2>$null
-    }
-
-    exit $exitCode
-} finally {
-    Pop-Location
-}
+$Root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+exit (Invoke-GluaCheck -RepoRoot $Root -Sarif $Sarif)
