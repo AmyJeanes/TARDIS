@@ -409,8 +409,9 @@ if CLIENT then
         RunConsoleCommand("spawnmenu_reload")
     end
 
+    ---@param icon Panel
     ---@param obj table
-    function TARDIS.Spawnmenu.OpenRightClickMenu(obj)
+    function TARDIS.Spawnmenu.OpenRightClickMenu(icon, obj)
         local dmenu = DermaMenu()
         local versions = TARDIS.MetadataVersions[obj.spawnname]
 
@@ -449,6 +450,18 @@ if CLIENT then
         TARDIS.Spawnmenu.AddChameleonSetting(dmenu, obj.spawnname)
         TARDIS.Spawnmenu.AddSettings(dmenu, obj.spawnname)
 
+        -- Show Delete button when the icon is in a custom spawnmenu list
+        local parent = icon:GetParent()
+        if not IsValid(parent) or not parent.GetReadOnly or not parent:GetReadOnly() then
+            dmenu:AddSpacer()
+            local delete = dmenu:AddOption("#spawnmenu.menu.delete", function()
+                if not IsValid(icon) then return end
+                icon:Remove()
+                hook.Run("SpawnlistContentChanged")
+            end)
+            delete:SetIcon("icon16/bin_closed.png")
+        end
+
         dmenu:Open()
     end
 
@@ -460,10 +473,10 @@ if CLIENT then
         TARDIS:SpawnByID(id)
     end
 
-    ---@param container Panel
+    ---@param icon Panel
     ---@param obj table
-    function TARDIS.Spawnmenu.OpenIconMenu(container, obj)
-        TARDIS.Spawnmenu.OpenRightClickMenu(obj)
+    function TARDIS.Spawnmenu.OpenIconMenu(icon, obj)
+        TARDIS.Spawnmenu.OpenRightClickMenu(icon, obj)
     end
 
     ---@param container TardisSpawnIconContainer
@@ -474,7 +487,7 @@ if CLIENT then
         if not obj.spawnname then return end
 
         local icon = vgui.Create("ContentIcon", container)
-        icon:SetContentType("entity")
+        icon:SetContentType("tardis")
         icon:SetSpawnName(obj.spawnname)
         icon:SetName(obj.nicename)
         icon:SetMaterial(obj.material)
@@ -501,8 +514,8 @@ if CLIENT then
         container.tardis_icons = container.tardis_icons or {}
         table.insert(container.tardis_icons, icon)
 
-        icon.OpenMenu = function()
-            TARDIS.Spawnmenu.OpenIconMenu(container, obj)
+        icon.OpenMenu = function(pnl)
+            TARDIS.Spawnmenu.OpenIconMenu(pnl, obj)
         end
 
         if IsValid(container) then
