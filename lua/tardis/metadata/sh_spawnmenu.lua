@@ -514,6 +514,7 @@ if CLIENT then
         container.tardis_icons = container.tardis_icons or {}
         table.insert(container.tardis_icons, icon)
 
+        ---@param pnl Panel
         icon.OpenMenu = function(pnl)
             TARDIS.Spawnmenu.OpenIconMenu(pnl, obj)
         end
