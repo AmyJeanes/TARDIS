@@ -18,11 +18,11 @@ if SERVER then
                 ply:SetEyeAngles(self:LocalToWorldAngles(Angle(10,180,0)))
                 self:CallHook("Outside", ply, enabled)
             else
+                ply:StripWeapon("tardis_hands")
                 if ply:GetTardisData("activewep") then
-                    ply:SetActiveWeapon(ply:GetWeapon(ply:GetTardisData("activewep")))
+                    ply:SelectWeapon(ply:GetTardisData("activewep"))
                 end
                 ply:SetTardisData("activewep")
-                ply:StripWeapon("tardis_hands")
                 ply:SetTardisData("outside",false,true)
                 ply:SetEyeAngles(ply:GetTardisData("outsideang"))
                 ply:SetTardisData("outsideang")
