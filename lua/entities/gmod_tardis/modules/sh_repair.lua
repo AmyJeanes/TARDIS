@@ -220,7 +220,7 @@ else
     end)
 
     ENT:AddHook("Think", "repair_sound", function(self)
-        if not self:GetRepairing() or not TARDIS:GetSetting("sound") then
+        if not self:GetRepairing() or not TARDIS:GetSetting("sound") or self:GetData("redecorate") then
             StopRepairLoop(self)
             return
         end

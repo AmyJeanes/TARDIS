@@ -192,7 +192,10 @@ if SERVER then
         parent:Demat(nil, nil, nil, false)
         parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
-        self:Timer("redecorate_materialise", 1, function()
+        -- Wait for the parent to dematerialise before materialising the child, so the two don't overlap
+        local mat_leadin = self:GetFastDematDuration() + self.metadata.Exterior.Teleport.PrematDelayFast
+        local hold = parent:GetFastDematDuration() - mat_leadin
+        self:Timer("redecorate_materialise", hold, function()
             local p = parent
             if IsValid(p) then
                 p:ForcePlayerDrop()

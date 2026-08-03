@@ -49,6 +49,57 @@ TARDIS:AddKeyBind("teleport-mat",{
     exterior=true
 })
 
+---@param sequence number[]
+---@param from number starting alpha
+---@param speed number
+---@param delays number[]?
+---@return number
+local function sequenceDuration(sequence, from, speed, delays)
+    local total, prev = 0, from
+    for i, target in ipairs(sequence) do
+        total = total + math.abs(target - prev) / (66 * speed)
+        if delays and delays[i] then total = total + delays[i] end
+        prev = target
+    end
+    return total
+end
+
+---@param speed tardis_sequence_speed
+---@param mat boolean
+---@return number
+local function dirSpeed(speed, mat)
+    if istable(speed) then return mat and speed.Mat or speed.Demat end
+    return speed
+end
+
+---@api
+---@return number
+function ENT:GetDematDuration()
+    local tp = self.metadata.Exterior.Teleport
+    return sequenceDuration(tp.DematSequence, 255, dirSpeed(tp.SequenceSpeed, false), tp.DematSequenceDelays)
+end
+
+---@api
+---@return number
+function ENT:GetFastDematDuration()
+    local tp = self.metadata.Exterior.Teleport
+    return sequenceDuration(tp.DematSequence, 255, dirSpeed(tp.SequenceSpeedFast, false), tp.DematFastSequenceDelays)
+end
+
+---@api
+---@return number
+function ENT:GetMatDuration()
+    local tp = self.metadata.Exterior.Teleport
+    return sequenceDuration(tp.MatSequence, 0, dirSpeed(tp.SequenceSpeed, true), tp.MatSequenceDelays)
+end
+
+---@api
+---@return number
+function ENT:GetFastMatDuration()
+    local tp = self.metadata.Exterior.Teleport
+    return sequenceDuration(tp.MatSequence, 0, dirSpeed(tp.SequenceSpeedFast, true), tp.MatFastSequenceDelays)
+end
+
 if SERVER then
     ---@api
     function ENT:ForceDematState()
@@ -215,7 +266,14 @@ if SERVER then
             self:CallCommonHook("PreMatStart")
 
             local tp_metadata = self.metadata.Exterior.Teleport
-            local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
+            local timerdelay
+            if self:GetData("redecorate_parent") then
+                timerdelay = self:GetFastDematDuration() + tp_metadata.PrematDelayFast
+            elseif self:GetFastRemat() then
+                timerdelay = tp_metadata.PrematDelayFast
+            else
+                timerdelay = tp_metadata.PrematDelay
+            end
             self:Timer("matdelay", timerdelay, function()
                 if not IsValid(self) then return end
                 self:SendMessage("mat")
@@ -377,14 +435,15 @@ else
                     self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
                 end
             elseif shouldPlayExterior then
+                local redecorating = self:GetData("redecorate")
                 local dematsnd = sound_demat_ext
                 if self:GetFastRemat() then
                     dematsnd = sound_demat_fast_ext
                 elseif self:GetData("hads-demat") then
                     dematsnd = sound_demat_hads_ext
                 end
-                self:PlaySound({ path = dematsnd, tag = "teleport", pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true })
-                if pos and self:GetFastRemat() then
+                self:PlaySound({ path = dematsnd, tag = "teleport", pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true, linger = redecorating })
+                if pos and self:GetFastRemat() and not redecorating then
                     -- Only detach/reattach the sound if the teleport distance is large enough to be noticeable
                     local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
                     local departed = self:GetPos():DistToSqr(pos) > MAT_ATTACH_DIST * MAT_ATTACH_DIST
@@ -415,6 +474,8 @@ else
             elseif not self:GetFastRemat() and shouldPlayExterior then
                 -- Attach sound to the TARDIS upon materialisation
                 self:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat, tag = "teleport", pos = pos, attach = self, resumable = true })
+            elseif self:GetData("redecorate_parent") and shouldPlayExterior then
+                self:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast, tag = "teleport", resumable = true })
             end
         end
         self:CallCommonHook("PreMatStart")

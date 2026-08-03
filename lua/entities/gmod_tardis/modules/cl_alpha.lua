@@ -32,19 +32,6 @@ local function shouldapply(self,part)
 end
 
 ---@param self gmod_tardis
-local function shouldUseEnhancedFade(self)
-    if not TARDIS:GetSetting("enhanced-fading-enabled") then
-        return false
-    end
-    
-    if self:GetData("redecorate") or self:GetData("redecorate_parent") then
-        return false
-    end
-
-    return true
-end
-
----@param self gmod_tardis
 ---@param part gmod_tardis_part?
 local function dopredraw(self,part)
     local target = shouldapply(self,part)
@@ -81,7 +68,7 @@ end
 
 ENT:AddHook("AlphaTranslucentChanged", "enhanced_fade_cache", function(self,transparent)
     if transparent then
-        use_enhanced_fade_cache[self:EntIndex()] = shouldUseEnhancedFade(self)
+        use_enhanced_fade_cache[self:EntIndex()] = TARDIS:GetSetting("enhanced-fading-enabled")
     end
 end)
 
