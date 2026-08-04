@@ -21,6 +21,7 @@ ENT.Spawnable=false
 ENT.PrintName="TARDIS"
 ENT.Category="Doctor Who - TARDIS"
 ENT.TardisExterior=true
+ENT.NPCsTargetExterior=true
 ENT.Interior="gmod_tardis_interior"
 
 if TARDIS_OVERRIDES and TARDIS_OVERRIDES.MainCategory then

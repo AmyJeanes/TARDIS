@@ -358,6 +358,10 @@ if SERVER then
         end
     end)
 
+    ENT:AddHook("StopDemat", "npcbehaviour", function(self)
+        self:ClearNPCTargeting()
+    end)
+
     ENT:AddHook("CanChangeDestination", "premat", function(self)
         if self:GetData("teleport") and self:GetData("vortex") then
             return false
