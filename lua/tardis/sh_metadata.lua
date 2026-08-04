@@ -745,6 +745,35 @@ function TARDIS:SetupMetadata(id)
     self.Metadata[id].Versions = nil -- we don't want those mixing up anywhere
 end
 
+local metadata_warned = {}
+
+---@param metadata tardis_metadata
+---@param exterior boolean check the exterior part (true) or interior part (false)
+---@param part_id string
+---@param field string
+---@param bad_value any
+---@return boolean warned whether a warning was printed
+local function override_part_field(metadata, exterior, part_id, field, bad_value)
+    local section = exterior and metadata.Exterior or metadata.Interior
+    local part = section.Parts and section.Parts[part_id]
+    if not istable(part) then return false end
+    local id = metadata.ID
+    local lower = field:lower()
+    local overridden = false
+    for k, v in pairs(part) do
+        if isstring(k) and v == bad_value and k:lower() == lower then
+            part[k] = nil
+            overridden = true
+        end
+    end
+    if overridden and SERVER and not metadata_warned[id] then
+        local label = exterior and "Exterior" or "Interior"
+        print("[TARDIS] WARNING: Interior '"..id.."' metadata: "..label..".Parts[\""..part_id.."\"]."..field.." should not be set to "..tostring(bad_value)..", this is being ignored\n")
+        return true
+    end
+    return false
+end
+
 ---@param id string?
 ---@param ent Entity?
 ---@return tardis_metadata
@@ -785,10 +814,29 @@ function TARDIS:CreateInteriorMetadata(id, ent)
     metadata.Interior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Interior.TextureSets)
     metadata.Exterior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Exterior.TextureSets)
 
+    local warn = metadata_warned[id]
+
+    -- Convert light override base brightness RGB from table to Vector and warn the author once per session
     local lightOverridebaseBrightnessRGB = metadata.Interior.LightOverride.basebrightnessRGB
     if lightOverridebaseBrightnessRGB and type(lightOverridebaseBrightnessRGB) == "table" then
         metadata.Interior.LightOverride.basebrightnessRGB = Vector(lightOverridebaseBrightnessRGB[1], lightOverridebaseBrightnessRGB[2], lightOverridebaseBrightnessRGB[3])
-        print("[TARDIS] WARNING: Interior '"..id.."' metadata: Exterior.LightOverride.basebrightnessRGB should be a Vector not a table\n")
+        if SERVER and not warn then
+            warn = true
+            print("[TARDIS] WARNING: Interior '"..id.."' metadata: Interior.LightOverride.basebrightnessRGB should be a Vector not a table\n")
+        end
+    end
+
+    -- Override door collision to be enabled even if the author has disabled it as it is required now
+    if override_part_field(metadata, true, "door", "collision", false) then
+        warn = true
+    end
+
+    if override_part_field(metadata, false, "door", "collision", false) then
+        warn = true
+    end
+
+    if SERVER and warn then
+        metadata_warned[id] = true
     end
 
     return metadata
