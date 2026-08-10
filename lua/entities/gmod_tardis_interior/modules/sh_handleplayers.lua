@@ -29,7 +29,7 @@ else
     end)
 
     ENT:AddHook("ShouldDrawCordonProp", "outside", function(self, prop, localply)
-        if localply:GetTardisData("outside") then
+        if localply:GetTardisData("outside") and self.props[self.exterior] == nil then
             return false
         end
     end)
