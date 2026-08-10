@@ -108,6 +108,7 @@ local hooks={}
 ---@overload fun(self: gmod_tardis, name: "MatStart", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "MigrateData", id: string, func: fun(self: gmod_tardis, parent: any, ...))
 ---@overload fun(self: gmod_tardis, name: "NewVersion", id: string, func: fun(self: gmod_tardis, newVersion: tardis_version, newVersionStr: string, oldVersion: tardis_version, oldVersionStr: string, ...))
+---@overload fun(self: gmod_tardis, name: "NoVortexMatCancelled", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "OnHealthChange", id: string, func: fun(self: gmod_tardis, new_health: number, old_health: integer, ...))
 ---@overload fun(self: gmod_tardis, name: "OnHealthDepleted", id: string, func: fun(self: gmod_tardis, ...))
 ---@overload fun(self: gmod_tardis, name: "OnTakeDamage", id: string, func: fun(self: gmod_tardis, dmginfo: CTakeDamageInfo, ...))
