@@ -2,19 +2,10 @@
 
 ---@class gmod_tardis : gmod_door_exterior
 ---@field BaseClass gmod_door_exterior
----@field timers table<string, table>
----@field parts table<string, gmod_tardis_part>
----@field controlparts table<string, table<string, gmod_tardis_part>>?
 ---@field metadataID string
----@field effect_pos Vector
 ---@field metadata tardis_metadata
 ---@field interior gmod_tardis_interior?
----@field pilot Player?
 ---@field occupants table<Player, true>
----@field environment sb_resource_environment?
----@field environment_old sb_resource_environment?
----@field music IGModAudioChannel?
----@field idlesounds table<any, doors_managed_sound>
 
 ENT.Base="gmod_door_exterior"
 ENT.Spawnable=false

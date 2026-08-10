@@ -95,6 +95,7 @@ if SERVER then
     end)
 
     ENT:AddHook("InterruptTeleport", "cancel_mat", function(self)
+        self:CancelTimer("premat")
         self:CancelTimer("matdelay")
         self:SetData("premat-start", nil, true)
         self:SetData("demat-startpos", nil, true)
@@ -127,6 +128,7 @@ if SERVER then
 else
     function ENT:StopTeleportSounds()
         self:StopSounds("teleport")
+        self:ClearTeleportCrossfade()
 
         local interior = self.interior
         if IsValid(interior) and interior.dematfailsound then

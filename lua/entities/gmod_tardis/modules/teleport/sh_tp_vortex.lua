@@ -9,11 +9,15 @@ if CLIENT then
     return
 end
 
-ENT:AddHook("StopDemat", "no_vortex", function(self)
-    if self:GetFastRemat() then
-        self:Timer("fastremat", 0.3, function()
+ENT:AddHook("DematStart", "no_vortex_premat", function(self)
+    if self:GetFastRemat() and not self:GetData("redecorate") then
+        local tp = self.metadata.Exterior.Teleport
+        local premat_lead = math.max(0, self:GetDematDuration() - tp.PrematDelay)
+        self:Timer("premat", premat_lead, function()
             if not IsValid(self) then return end
-            self:Mat()
+            self:SendMessage("premat", { self:GetDestinationPos(true) })
+            self:SetData("premat-start", CurTime(), true)
+            self:CallCommonHook("PreMatStart")
         end)
     end
 end)

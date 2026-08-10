@@ -33,12 +33,8 @@ E.Portal = {
 E.Sounds = {
     Teleport = {
         demat = "p00gie/tardis/default/demat_ext.ogg",
-        demat_fast = "p00gie/tardis/default/demat_ext.ogg",
         demat_hads = "p00gie/tardis/demat_hads.wav",
         mat = "p00gie/tardis/default/mat_ext.ogg",
-        mat_fast = "p00gie/tardis/default/mat_fast.ogg",
-        mat_damaged_fast = "p00gie/tardis/mat_damaged_fast.wav",
-        fullflight = "p00gie/tardis/default/full_ext.ogg",
         interrupt = "drmatt/tardis/repairfinish.wav",
     },
     Door = {

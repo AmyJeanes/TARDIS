@@ -42,6 +42,11 @@ TARDIS:AddControl({
     tip_text = "Controls.Teleport.Tip",
     moves = {
         ["DematStart"] = true,
-        ["PreMatStart"] = true,
+        ["MatStart"] = function(self)
+            return self.metadata.Exterior.Teleport.ThrottleReset == "jump"
+        end,
+        ["StopMat"] = function(self)
+            return self.metadata.Exterior.Teleport.ThrottleReset == "finish"
+        end,
     }
 })

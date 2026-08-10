@@ -1,5 +1,8 @@
 -- Various effects for the TARDIS (smoke, sparks, explosions)
 
+---@class gmod_tardis
+---@field effect_pos Vector
+
 if SERVER then
     ---@api
     ---@param magnitude number?

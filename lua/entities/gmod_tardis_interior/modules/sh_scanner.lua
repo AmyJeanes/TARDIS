@@ -1,5 +1,8 @@
 -- Scanner
 
+---@class gmod_tardis_interior
+---@field scanners table<integer, any>
+
 ---@param self gmod_tardis_interior
 local function UpdateScannerState(self)
     local state = false

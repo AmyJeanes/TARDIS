@@ -1,5 +1,8 @@
 -- Failed and forced teleport functions
 
+---@class gmod_tardis_interior
+---@field dematfailsound doors_managed_sound?
+
 if SERVER then
     function ENT:FailDemat()
         self:SetData("failing-demat", true, true)
@@ -208,6 +211,8 @@ else -- CLIENT
 
     ENT:OnMessage("failed-mat", function(self, data, ply)
         self:CallCommonHook("MatFailed")
+        self:StopSounds("teleport")
+        self:ClearTeleportCrossfade()
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local ext = self.metadata.Exterior.Sounds.Teleport
             local int = self.metadata.Interior.Sounds.Teleport

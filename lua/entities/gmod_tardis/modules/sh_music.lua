@@ -1,5 +1,8 @@
 -- Music
 
+---@class gmod_tardis
+---@field music IGModAudioChannel?
+
 if SERVER then
     ---@api
     ---@param url string?

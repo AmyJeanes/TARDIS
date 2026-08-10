@@ -81,23 +81,18 @@ end
 
 ---@api
 ---@return number
-function ENT:GetFastDematDuration()
-    local tp = self.metadata.Exterior.Teleport
-    return sequenceDuration(tp.DematSequence, 255, dirSpeed(tp.SequenceSpeedFast, false), tp.DematFastSequenceDelays)
-end
-
----@api
----@return number
 function ENT:GetMatDuration()
     local tp = self.metadata.Exterior.Teleport
     return sequenceDuration(tp.MatSequence, 0, dirSpeed(tp.SequenceSpeed, true), tp.MatSequenceDelays)
 end
 
----@api
 ---@return number
-function ENT:GetFastMatDuration()
-    local tp = self.metadata.Exterior.Teleport
-    return sequenceDuration(tp.MatSequence, 0, dirSpeed(tp.SequenceSpeedFast, true), tp.MatFastSequenceDelays)
+function ENT:GetPrematLead()
+    local premat = self.metadata.Exterior.Teleport.PrematDelay
+    if self:GetFastRemat() then
+        return math.min(premat, self:GetDematDuration())
+    end
+    return premat
 end
 
 if SERVER then
@@ -242,6 +237,31 @@ if SERVER then
         self:CallHook("TeleportPositionChanged", pos, ang, phys_enable)
     end
 
+    ---@param pos Vector
+    ---@param ang Angle
+    function ENT:PerformMatVisual(pos, ang)
+        if not IsValid(self) then return end
+        self:SendMessage("mat")
+        self:SetData("mat",true)
+        self:SetData("teleport",true)
+        self:SetData("premat-start", nil, true)
+        self:SetData("step",1)
+        self:SetStepDelay()
+        self:SetData("vortex",false)
+        local flight=self:GetData("prevortex-flight")
+        if self:GetData("flight")~=flight then
+            self:SetFlight(flight)
+        end
+        self:SetData("prevortex-flight",nil)
+        self:SetSolid(SOLID_VPHYSICS)
+        self:SetCollisionGroup(self:TeleportCollisionGroup(pos))
+        self:CallCommonHook("MatStart")
+        self:ChangePosition(pos, ang, true)
+        self:SetData("demat-startpos",nil,true)
+        self:SetData("demat-startang",nil,true)
+        self:SetDestination(nil, nil)
+    end
+
     ---@api
     ---@param callback fun(success: boolean)?
     function ENT:Mat(callback)
@@ -265,35 +285,8 @@ if SERVER then
             self:SetData("premat-start", CurTime(), true)
             self:CallCommonHook("PreMatStart")
 
-            local tp_metadata = self.metadata.Exterior.Teleport
-            local timerdelay
-            if self:GetData("redecorate_parent") then
-                timerdelay = self:GetFastDematDuration() + tp_metadata.PrematDelayFast
-            elseif self:GetFastRemat() then
-                timerdelay = tp_metadata.PrematDelayFast
-            else
-                timerdelay = tp_metadata.PrematDelay
-            end
-            self:Timer("matdelay", timerdelay, function()
-                if not IsValid(self) then return end
-                self:SendMessage("mat")
-                self:SetData("mat",true)
-                self:SetData("premat-start", nil, true)
-                self:SetData("step",1)
-                self:SetStepDelay()
-                self:SetData("vortex",false)
-                local flight=self:GetData("prevortex-flight")
-                if self:GetData("flight")~=flight then
-                    self:SetFlight(flight)
-                end
-                self:SetData("prevortex-flight",nil)
-                self:SetSolid(SOLID_VPHYSICS)
-                self:SetCollisionGroup(self:TeleportCollisionGroup(pos))
-                self:CallHook("MatStart")
-                self:ChangePosition(pos, ang, true)
-                self:SetData("demat-startpos",nil,true)
-                self:SetData("demat-startang",nil,true)
-                self:SetDestination(nil, nil)
+            self:Timer("matdelay", self.metadata.Exterior.Teleport.PrematDelay, function()
+                self:PerformMatVisual(pos, ang)
             end)
             if callback then callback(true) end
         end
@@ -302,6 +295,20 @@ if SERVER then
         else
             continue_mat(self:GetData("doorstatereal"))
         end
+    end
+
+    -- Starts the premat sequence for a no-vortex demat
+    function ENT:NoVortexMat()
+        local pos = self:GetDestinationPos(true)
+        local ang = self:GetDestinationAng(true)
+        if self:CallHook("CanMat", pos, ang) == false then
+            -- Reverse the premat if CanMat fails after the premat has started
+            self:SetData("premat-start", nil, true)
+            self:CallClientHook("NoVortexMatCancelled")
+            self:HandleNoMat(pos, ang, nil)
+            return
+        end
+        self:PerformMatVisual(pos, ang)
     end
 
     function ENT:StopDemat()
@@ -331,7 +338,7 @@ if SERVER then
         self:SetData("teleport",false)
         self:SetCollisionGroup(COLLISION_GROUP_NONE)
         self:UpdateShadow()
-        self:CallHook("StopMat")
+        self:CallCommonHook("StopMat")
     end
 
     ENT:AddHook("CanDemat", "teleport", function(self, force, check_failed)
@@ -379,21 +386,129 @@ else
     ---@param intpath string?
     ---@param shouldext boolean
     ---@param shouldint boolean
-    function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint)
+    ---@param seek number? seconds to start into the sound (no-vortex mat trims its lead-in)
+    ---@return doors_managed_sound? interior_handle
+    ---@return doors_managed_sound? exterior_handle
+    function ENT:PlayTeleportSound(extpath, intpath, shouldext, shouldint, seek)
+        local int_handle, ext_handle
         if shouldint and intpath and IsValid(self.interior) then
-            self.interior:PlaySound({ path = intpath, tag = "teleport", pair = "teleport", resumable = true })
+            int_handle = self.interior:PlaySound({ path = intpath, tag = "teleport", pair = "teleport", resumable = true, seek = seek })
         end
         if shouldext and extpath then
-            self:PlaySound({ path = extpath, tag = "teleport", pair = "teleport", resumable = true })
+            ext_handle = self:PlaySound({ path = extpath, tag = "teleport", pair = "teleport", resumable = true, seek = seek })
         end
+        return int_handle, ext_handle
     end
 
     -- Speed that the exterior must go for the sound to detach during a teleport
     -- Real movement speed tops at around 2-3k, teleport reads as >10k
     local BYSTANDER_PIN_JUMP = 6000
 
-    -- How close the exterior must be to the sound to re-attach during materialisation
-    local MAT_ATTACH_DIST = 500
+    ---@class tardis_teleport_crossfade_override
+    ---@field active boolean
+    ---@field dirty boolean
+    ---@field MatStart number
+    ---@field MatFade number
+    ---@field DematStart number
+    ---@field DematFade number
+
+    -- Used by `tardis2_debug_crossfade`
+    ---@type tardis_teleport_crossfade_override
+    TARDIS.TeleportCrossfadeOverride = { active = false, dirty = false, MatStart = 0, MatFade = 0, DematStart = 0, DematFade = 0 }
+
+    ---@return number mat_start_pct
+    ---@return number mat_fade_pct
+    ---@return number demat_start_pct
+    ---@return number demat_fade_pct
+    function ENT:GetTeleportCrossfadeSettings()
+        local o = TARDIS.TeleportCrossfadeOverride
+        if o.active then
+            return o.MatStart, o.MatFade, o.DematStart, o.DematFade
+        end
+        local cf = self.metadata.Exterior.Teleport.Crossfade
+        return cf.MatStart, cf.MatFade, cf.DematStart, cf.DematFade
+    end
+
+    -- Get the actual seconds for the crossfade timings from the set percentages
+    ---@return number mat_lead   seconds before the teleport the mat ramp starts
+    ---@return number mat_fade   mat ramp length in seconds
+    ---@return number demat_lead seconds before the teleport the demat fade starts
+    ---@return number demat_fade demat fade length in seconds
+    function ENT:GetTeleportCrossfadeTimings()
+        local ms, mft, ds, dft = self:GetTeleportCrossfadeSettings()
+        local premat = math.min(self.metadata.Exterior.Teleport.PrematDelay, self:GetDematDuration())
+        local mat_end = self:GetMatDuration()
+        local mat_lead = (100 - ms) / 100 * premat
+        local demat_lead = (100 - ds) / 100 * premat
+        local mat_fade = mft / 100 * (mat_lead + mat_end)
+        local demat_fade = dft / 100 * (demat_lead + mat_end)
+        return mat_lead, mat_fade, demat_lead, demat_fade
+    end
+
+    ---@return number
+    function ENT:GetTeleportDuration()
+        return self:GetDematDuration() + self:GetMatDuration()
+    end
+
+    ---@class gmod_tardis
+    ---@field tp_crossfade_demat_sounds table?
+    ---@field tp_crossfade_mat_sounds table?
+    ---@field tp_crossfade_jump number?
+    ---@field tp_crossfade_mat_started boolean?
+    ---@field tp_crossfade_demat_started boolean?
+
+    function ENT:ClearTeleportCrossfade()
+        self.tp_crossfade_demat_sounds = nil
+        self.tp_crossfade_mat_sounds = nil
+        self.tp_crossfade_jump = nil
+        self.tp_crossfade_mat_started = nil
+        self.tp_crossfade_demat_started = nil
+    end
+
+    ---@param mat_int doors_managed_sound?
+    ---@param mat_ext doors_managed_sound?
+    ---@param jump_time number CurTime the materialisation lands
+    function ENT:StartTeleportCrossfade(mat_int, mat_ext, jump_time)
+        if not self.tp_crossfade_demat_sounds then return end
+        local mat = {}
+        if mat_int then mat_int:SetVolume(0, 0) mat[#mat + 1] = mat_int end
+        if mat_ext then mat_ext:SetVolume(0, 0) mat[#mat + 1] = mat_ext end
+        self.tp_crossfade_mat_sounds = mat
+        self.tp_crossfade_jump = jump_time
+        self.tp_crossfade_mat_started = nil
+        self.tp_crossfade_demat_started = nil
+    end
+
+    ENT:AddHook("Think", "teleport_crossfade", function(self)
+        local mat = self.tp_crossfade_mat_sounds
+        local jump = self.tp_crossfade_jump
+        if not (mat and jump) then return end
+        local ttj = jump - CurTime()
+        local mat_lead, mat_fade, demat_lead, demat_fade = self:GetTeleportCrossfadeTimings()
+
+        if not self.tp_crossfade_mat_started and ttj <= mat_lead then
+            self.tp_crossfade_mat_started = true
+            for _, h in ipairs(mat) do if h:IsAlive() then h:SetVolume(1, mat_fade) end end
+        end
+
+        local demat = self.tp_crossfade_demat_sounds
+        if not self.tp_crossfade_demat_started and ttj <= demat_lead then
+            self.tp_crossfade_demat_started = true
+            if demat then for _, h in ipairs(demat) do if h:IsAlive() then h:FadeOut(demat_fade) end end end
+        end
+
+        -- Past the jump: release only once the mat sound has finished (the dev readout watches this until then).
+        if ttj <= 0 then
+            local playing = false
+            for _, h in ipairs(mat) do if h:IsAlive() then playing = true break end end
+            if not playing then self:ClearTeleportCrossfade() end
+        end
+    end)
+
+    ENT:AddHook("NoVortexMatCancelled", "crossfade", function(self)
+        self:StopSounds("teleport")
+        self:ClearTeleportCrossfade()
+    end)
 
     ENT:OnMessage("demat", function(self, data, ply)
         self:SetData("demat",true)
@@ -401,6 +516,7 @@ else
         self:SetStepDelay()
         self:SetData("teleport",true)
         self:SetData("teleport-interrupt-fade", nil)
+        self:ClearTeleportCrossfade()
         if TARDIS:GetSetting("teleport-sound") and TARDIS:GetSetting("sound") then
             local shouldPlayExterior = self:CallHook("ShouldPlayDematSound", false)~=false
             local shouldPlayInterior = self:CallHook("ShouldPlayDematSound", true)~=false
@@ -409,50 +525,39 @@ else
             local int = self.metadata.Interior.Sounds.Teleport
 
             local sound_demat_ext = ext.demat
-            local sound_demat_fast_ext = ext.demat_fast
             local sound_demat_int = int.demat or ext.demat
-            local sound_fullflight_ext = ext.fullflight
-            local sound_fullflight_int = int.fullflight or ext.fullflight
 
             if (self:IsLowHealth() or self:GetData("force-demat", false))
                 and not self:GetData("redecorate")
             then
                 sound_demat_ext = ext.demat_damaged
-                sound_demat_fast_ext = ext.demat_damaged
                 sound_demat_int = int.demat_damaged or ext.demat_damaged
-                sound_fullflight_ext = ext.fullflight_damaged
-                sound_fullflight_int = int.fullflight_damaged or ext.fullflight_damaged
             end
 
             local sound_demat_hads_ext = ext.demat_hads
             local sound_demat_hads_int = int.demat_hads or sound_demat_hads_ext
 
-            ---@type Vector
-            local pos = data[1]
-
             if LocalPlayer():GetTardisExterior()==self then
-                if self:GetFastRemat() then
-                    self:PlayTeleportSound(sound_fullflight_ext, sound_fullflight_int, shouldPlayExterior, shouldPlayInterior)
-                elseif self:GetData("hads-demat") then
+                if self:GetData("hads-demat") then
                     self:PlayTeleportSound(sound_demat_hads_ext, sound_demat_hads_int, shouldPlayExterior, shouldPlayInterior)
                 else
-                    self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
+                    local int_h, ext_h = self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
+                    if self:GetFastRemat() then
+                        -- Hold onto the sound handles so the crossfade can ramp them up/down around the jump.
+                        local stored = {}
+                        if int_h then stored[#stored + 1] = int_h end
+                        if ext_h then stored[#stored + 1] = ext_h end
+                        self.tp_crossfade_demat_sounds = stored
+                        -- Rough jump time so the dev graph's playhead runs from demat start; premat refines it.
+                        self.tp_crossfade_jump = CurTime() + self:GetDematDuration()
+                    end
                 end
             elseif shouldPlayExterior then
-                local redecorating = self:GetData("redecorate")
                 local dematsnd = sound_demat_ext
-                if self:GetFastRemat() then
-                    dematsnd = sound_demat_fast_ext
-                elseif self:GetData("hads-demat") then
+                if self:GetData("hads-demat") then
                     dematsnd = sound_demat_hads_ext
                 end
-                self:PlaySound({ path = dematsnd, tag = "teleport", pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true, linger = redecorating })
-                if pos and self:GetFastRemat() and not redecorating then
-                    -- Only detach/reattach the sound if the teleport distance is large enough to be noticeable
-                    local matsnd = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast
-                    local departed = self:GetPos():DistToSqr(pos) > MAT_ATTACH_DIST * MAT_ATTACH_DIST
-                    self:PlaySound({ path = matsnd, tag = "teleport", pos = pos, resumable = true, attach = departed and self or nil, attach_dist = MAT_ATTACH_DIST })
-                end
+                self:PlaySound({ path = dematsnd, tag = "teleport", pin_on_jump = BYSTANDER_PIN_JUMP, resumable = true, linger = self:GetData("redecorate") })
             end
         end
         self:CallCommonHook("DematStart")
@@ -469,27 +574,37 @@ else
             local int = self.metadata.Interior.Sounds.Teleport
             ---@type Vector
             local pos=data[1]
-            if LocalPlayer():GetTardisExterior()==self and (not self:GetFastRemat()) then
-                if self:IsLowHealth() then
-                    self:PlayTeleportSound(ext.mat_damaged, int.mat_damaged or ext.mat_damaged, shouldPlayExterior, shouldPlayInterior)
-                else
-                    self:PlayTeleportSound(ext.mat, int.mat or ext.mat, shouldPlayExterior, shouldPlayInterior)
+            local mat_ext = self:IsLowHealth() and ext.mat_damaged or ext.mat
+            local mat_int = self:IsLowHealth() and (int.mat_damaged or ext.mat_damaged) or (int.mat or ext.mat)
+            -- If the PrematDelay is longer than demat duration, trim the mat sound so it lines up
+            local lead = self:GetPrematLead()
+            local seek = self.metadata.Exterior.Teleport.PrematDelay - lead
+            seek = seek > 0 and seek or nil
+            if LocalPlayer():GetTardisExterior()==self then
+                -- Inside: the crossfade ramp masks the seeked sound's abrupt entry.
+                local matH_int, matH_ext = self:PlayTeleportSound(mat_ext, mat_int, shouldPlayExterior, shouldPlayInterior, seek)
+                self:StartTeleportCrossfade(matH_int, matH_ext, CurTime() + lead)
+            elseif shouldPlayExterior then
+                ---@type number?
+                local fade_in
+                if seek then
+                    -- Fade in the exterior mat sound if it was trimmed so it doesn't jump in abruptly
+                    local _, mf = self:GetTeleportCrossfadeTimings()
+                    fade_in = mf
                 end
-            elseif not self:GetFastRemat() and shouldPlayExterior then
-                -- Attach sound to the TARDIS upon materialisation
-                self:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged or ext.mat, tag = "teleport", pos = pos, attach = self, resumable = true })
-            elseif self:GetData("redecorate_parent") and shouldPlayExterior then
-                self:PlaySound({ path = self:IsLowHealth() and ext.mat_damaged_fast or ext.mat_fast, tag = "teleport", resumable = true })
+                self:PlaySound({ path = mat_ext, tag = "teleport", pos = pos, attach = self, resumable = true, seek = seek, fade_in = fade_in })
             end
         end
         self:CallCommonHook("PreMatStart")
     end)
 
     ENT:OnMessage("mat", function(self, data, ply)
+        self:SetData("demat",false)
         self:SetData("mat",true)
+        self:SetData("teleport",true)
+        self:SetData("vortex",false)
         self:SetData("step",1)
         self:SetStepDelay()
-        self:SetData("vortex",false)
         self:CallHook("MatStart")
     end)
 
@@ -534,7 +649,6 @@ end
 
 function ENT:SetStepDelay()
     local demat=self:GetData("demat")
-    local fast=self:GetFastRemat()
     local mat=self:GetData("mat")
     local hads=self:GetData("hads-demat")
     if not (demat or mat) then return end
@@ -544,17 +658,9 @@ function ENT:SetStepDelay()
     if hads then
         sequence_delays = teleport_md.DematHadsSequenceDelays
     elseif demat then
-        if fast then
-            sequence_delays = teleport_md.DematFastSequenceDelays
-        else
-            sequence_delays = teleport_md.DematSequenceDelays
-        end
+        sequence_delays = teleport_md.DematSequenceDelays
     else
-        if fast then
-            sequence_delays = teleport_md.MatFastSequenceDelays
-        else
-            sequence_delays = teleport_md.MatSequenceDelays
-        end
+        sequence_delays = teleport_md.MatSequenceDelays
     end
     local step = self:GetData("step",1)
     if sequence_delays and sequence_delays[step] then
@@ -590,7 +696,6 @@ ENT:AddHook("Think","teleport",function(self,delta)
 
     local alpha=self:GetData("alpha",255)
     local teleport_md = self.metadata.Exterior.Teleport
-    local fast = self:GetFastRemat()
 
     if restoring then
         local target = 255
@@ -614,6 +719,10 @@ ENT:AddHook("Think","teleport",function(self,delta)
         if demat then
             if step >= demat_steps then
                 self:StopDemat()
+                -- Fast remat has no vortex phase, so immediately trigger mat after demat finishes
+                if SERVER and self:GetFastRemat() and not self:GetData("redecorate") then
+                    self:NoVortexMat()
+                end
                 return
             else
                 self:SetData("step",step+1)
@@ -632,9 +741,9 @@ ENT:AddHook("Think","teleport",function(self,delta)
     end
 
     if self:GetData("step-delay") and self:GetData("step-delay")>CurTime() then return end
-    local sequencespeed = (fast and teleport_md.SequenceSpeedFast or teleport_md.SequenceSpeed)
+    local sequencespeed = teleport_md.SequenceSpeed
     if self:IsLowHealth() then
-        sequencespeed = (fast and teleport_md.SequenceSpeedWarnFast or teleport_md.SequenceSpeedWarning)
+        sequencespeed = teleport_md.SequenceSpeedWarning
     end
     if self:GetData("hads-demat") then
         sequencespeed = teleport_md.SequenceSpeedHads

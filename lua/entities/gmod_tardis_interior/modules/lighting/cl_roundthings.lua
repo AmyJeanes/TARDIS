@@ -1,5 +1,8 @@
 -- Round things (light sprites for old default interior)
 
+---@class gmod_tardis_interior
+---@field roundthings table<integer, integer>
+
 if CLIENT then
     ---@param pos Vector
     function ENT:AddRoundThing(pos)

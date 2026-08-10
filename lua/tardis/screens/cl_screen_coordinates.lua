@@ -278,13 +278,11 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
             return ((CurTime() - ext:GetData("vortex_enter_time",0)) % 4) / 4
         end
 
-        local tp_metadata = ext.metadata.Exterior.Teleport
-        local fast = ext:GetFastRemat()
         local mat, demat = ext:GetData("mat"), ext:GetData("demat")
         dst_progress:SetVisible(true)
 
         if demat then
-            dst_progress:SetFraction((fast and 0.55 or 0.45) * ext:GetSequenceProgress())
+            dst_progress:SetFraction(0.45 * ext:GetSequenceProgress())
             return
         end
 
@@ -294,12 +292,12 @@ TARDIS:AddScreen("Destination", {id="coordinates", text="Screens.Coordinates", m
         end
 
         if vortex and not teleport then
-            dst_progress:SetFraction(0.45 + 0.1 * (fast and 1 or get_vortex_progress()))
+            dst_progress:SetFraction(0.45 + 0.1 * get_vortex_progress())
             return
         end
 
         if teleport and not mat then -- premat
-            local delay = (fast and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
+            local delay = ext:GetPrematLead()
             local time_passed = CurTime() - ext:GetData("premat_start_time")
 
             dst_progress:SetFraction(0.55 + 0.15 * time_passed / delay)

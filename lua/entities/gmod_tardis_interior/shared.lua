@@ -6,22 +6,11 @@
 
 ---@class gmod_tardis_interior : gmod_door_interior
 ---@field BaseClass gmod_door_interior
----@field timers table<string, table>
----@field parts table<string, gmod_tardis_part>
----@field controlparts table<string, table<string, gmod_tardis_part>>?
----@field roundthings table<integer, integer>
 ---@field owner Player?
 ---@field metadata tardis_metadata
 ---@field Fallback tardis_interior_fallback
 ---@field exterior gmod_tardis
----@field tips tardis_tip[]
----@field idlesounds table<any, doors_managed_sound>
----@field dematfailsound doors_managed_sound?
----@field spacebuild_env sb_resource_environment?
----@field light_data tardis_interior_light_data?
----@field lamps_data table<string, tardis_lamp_complete>?
 ---@field occupants table<Player, true>
----@field scanners table<integer, any>
 ---@field portals tardis_interior_portals
 
 ENT.Base="gmod_door_interior"

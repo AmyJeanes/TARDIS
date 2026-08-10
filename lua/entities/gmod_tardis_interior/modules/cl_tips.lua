@@ -25,6 +25,7 @@
 
 ---@class gmod_tardis_interior
 ---@field tipWorldOrigin Vector?
+---@field tips tardis_tip[]
 
 ---@class tardis_tip_colors
 ---@field normal tardis_tip_colorset

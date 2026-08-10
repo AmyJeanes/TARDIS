@@ -250,11 +250,8 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_teleport
 ---@field SequenceSpeed tardis_sequence_speed
 ---@field SequenceSpeedWarning tardis_sequence_speed
----@field SequenceSpeedFast tardis_sequence_speed
 ---@field SequenceSpeedHads tardis_sequence_speed
----@field SequenceSpeedWarnFast tardis_sequence_speed
 ---@field DematInterruptSpeed number
----@field PrematDelayFast number
 ---@field PrematDelay number
 ---@field DematSequence number[]
 ---@field MatSequence number[]
@@ -263,10 +260,21 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field MatSequenceSaved number[]?
 ---@field HadsDematSequenceSaved number[]?
 ---@field DematSequenceDelays number[]?
----@field DematFastSequenceDelays number[]?
 ---@field DematHadsSequenceDelays number[]?
 ---@field MatSequenceDelays number[]?
----@field MatFastSequenceDelays number[]?
+--- Use `tardis2_debug_crossfade` to configure
+---@field Crossfade tardis_teleport_crossfade
+--- When to return the throttle during a teleport:
+--- `jump`: At the time of the teleport jump, just before mat starts
+--- `finish`: When the tardis has finished landing after mat finishes
+--- `none`: Disabled, never return the throttle automatically
+---@field ThrottleReset ("jump"|"finish"|"none")?
+
+---@class tardis_teleport_crossfade
+---@field MatStart number
+---@field MatFade number
+---@field DematStart number
+---@field DematFade number
 
 ---@class tardis_interior_sound_metadata
 ---@field Damage tardis_sound_damage
@@ -329,7 +337,6 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@class tardis_interior_sound_teleport
 ---@field demat string?
 ---@field demat_damaged string?
----@field demat_fast string?
 ---@field demat_hads string?
 ---@field demat_fail string?
 ---@field demat_fail_loop string?
@@ -337,16 +344,11 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field mat string?
 ---@field mat_damaged string?
 ---@field mat_fail string?
----@field mat_fast string?
----@field mat_damaged_fast string?
----@field fullflight string?
----@field fullflight_damaged string?
 ---@field interrupt string?
 
 ---@class tardis_exterior_sound_teleport
 ---@field demat string
 ---@field demat_damaged string
----@field demat_fast string
 ---@field demat_hads string
 ---@field demat_fail string
 ---@field demat_fail_loop string?
@@ -354,10 +356,6 @@ CreateConVar("tardis2_selected_interior", "", {FCVAR_REPLICATED}, "TARDIS - sele
 ---@field mat string
 ---@field mat_damaged string
 ---@field mat_fail string
----@field mat_fast string
----@field mat_damaged_fast string
----@field fullflight string
----@field fullflight_damaged string
 ---@field interrupt string
 
 ---@class tardis_version_entry
@@ -747,6 +745,22 @@ end
 
 local metadata_warned = {}
 
+local deprecated_teleport_sound_fields = { "demat_fast", "mat_fast", "mat_damaged_fast", "fullflight", "fullflight_damaged" }
+local deprecated_teleport_fields = { "SequenceSpeedFast", "SequenceSpeedWarnFast", "PrematDelayFast", "DematFastSequenceDelays", "MatFastSequenceDelays" }
+
+---@param container table?
+---@param fields string[]
+---@param prefix string
+---@param found string[]
+local function collect_deprecated(container, fields, prefix, found)
+    if not istable(container) then return end
+    for _, key in ipairs(fields) do
+        if container[key] ~= nil then
+            found[#found + 1] = prefix .. key
+        end
+    end
+end
+
 ---@param metadata tardis_metadata
 ---@param exterior boolean check the exterior part (true) or interior part (false)
 ---@param part_id string
@@ -833,6 +847,27 @@ function TARDIS:CreateInteriorMetadata(id, ent)
 
     if override_part_field(metadata, false, "door", "collision", false) then
         warn = true
+    end
+
+    if SERVER and not metadata_warned[id] then
+        local found = {}
+        local ext_sounds = metadata.Exterior.Sounds and metadata.Exterior.Sounds.Teleport
+        local int_sounds = metadata.Interior.Sounds and metadata.Interior.Sounds.Teleport
+        collect_deprecated(ext_sounds, deprecated_teleport_sound_fields, "Exterior.Sounds.Teleport.", found)
+        collect_deprecated(int_sounds, deprecated_teleport_sound_fields, "Interior.Sounds.Teleport.", found)
+        collect_deprecated(metadata.Exterior.Teleport, deprecated_teleport_fields, "Exterior.Teleport.", found)
+        if #found > 0 then
+            warn = true
+            print("[TARDIS] Note: interior '"..id.."' sets teleport fields that are no longer used and can be removed: "..table.concat(found, ", ")..".\n")
+        end
+    end
+
+    if SERVER and not metadata_warned[id] then
+        local reset = metadata.Exterior.Teleport.ThrottleReset
+        if reset ~= nil and reset ~= "jump" and reset ~= "finish" and reset ~= "none" then
+            warn = true
+            print("[TARDIS] WARNING: Interior '"..id.."' metadata: Exterior.Teleport.ThrottleReset is '"..tostring(reset).."', expected 'jump', 'finish' or 'none'; the throttle will not auto-return\n")
+        end
     end
 
     if SERVER and warn then

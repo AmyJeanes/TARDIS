@@ -391,7 +391,13 @@ end
 ---@field Draw fun(self: gmod_tardis_part, flags?: number)
 ---@field Use fun(self: gmod_tardis_part, activator: Entity, caller?: Entity, useType?: number, value?: number)
 
+---@class gmod_tardis
+---@field parts table<string, gmod_tardis_part>
+---@field controlparts table<string, table<string, gmod_tardis_part>>?
+
 ---@class gmod_tardis_interior
+---@field parts table<string, gmod_tardis_part>
+---@field controlparts table<string, table<string, gmod_tardis_part>>?
 ---@field _partThinkFrame integer?
 ---@field _partThinkOK boolean
 

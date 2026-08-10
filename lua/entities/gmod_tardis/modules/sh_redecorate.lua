@@ -193,8 +193,7 @@ if SERVER then
         parent:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 
         -- Wait for the parent to dematerialise before materialising the child, so the two don't overlap
-        local mat_leadin = self:GetFastDematDuration() + self.metadata.Exterior.Teleport.PrematDelayFast
-        local hold = parent:GetFastDematDuration() - mat_leadin
+        local hold = math.max(0, parent:GetDematDuration() - self.metadata.Exterior.Teleport.PrematDelay)
         self:Timer("redecorate_materialise", hold, function()
             local p = parent
             if IsValid(p) then

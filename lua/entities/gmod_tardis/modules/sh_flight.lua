@@ -1,5 +1,8 @@
 -- Flight
 
+---@class gmod_tardis
+---@field pilot Player?
+
 -- Binds
 TARDIS:AddKeyBind("flight-toggle",{
     name="ToggleFlight",
@@ -622,8 +625,7 @@ else
                 end
 
                 if self:GetData("premat-start") then
-                    local tp_metadata = self.metadata.Exterior.Teleport
-                    local timerdelay = (self:GetFastRemat() and tp_metadata.PrematDelayFast or tp_metadata.PrematDelay)
+                    local timerdelay = self:GetPrematLead()
                     local timeleft = math.Clamp(timerdelay - (CurTime() - self:GetData("premat-start")), 0, timerdelay)
                     local norm = timeleft / timerdelay
                     snd:SetVolume(self.flightsoundvolume * norm ^ 2)

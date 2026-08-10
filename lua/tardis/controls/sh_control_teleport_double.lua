@@ -44,8 +44,13 @@ TARDIS:AddControl({
                 return true
             end
         end,
-        ["PreMatStart"] = function(self, part)
-            if part:GetOn() then
+        ["MatStart"] = function(self, part)
+            if part:GetOn() and self.metadata.Exterior.Teleport.ThrottleReset == "jump" then
+                return true
+            end
+        end,
+        ["StopMat"] = function(self, part)
+            if part:GetOn() and self.metadata.Exterior.Teleport.ThrottleReset == "finish" then
                 return true
             end
         end,

@@ -1,5 +1,8 @@
 -- Idle sound
 
+---@class gmod_tardis
+---@field idlesounds table<any, doors_managed_sound>
+
 ENT:AddHook("Initialize", "idlesound", function(self)
     self.idlesounds = {}
 end)

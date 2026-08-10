@@ -1,5 +1,8 @@
 -- Idle sound
 
+---@class gmod_tardis_interior
+---@field idlesounds table<any, doors_managed_sound>
+
 ENT:AddHook("Initialize", "idlesound", function(self)
     if self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound then
         self.idlesounds={}

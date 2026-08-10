@@ -1,5 +1,8 @@
 -- Spacebuild
 
+---@class gmod_tardis_interior
+---@field spacebuild_env sb_resource_environment?
+
 ENT:AddHook("PostInitialize", "spacebuild", function(self)
     if not (CAF and CAF.GetAddon("Spacebuild")) then
         return

@@ -102,7 +102,6 @@ T.Interior = {
         Teleport = {
             demat = "p00gie/tardis/default/demat_int.ogg",
             mat = "p00gie/tardis/default/mat_int.ogg",
-            fullflight = "p00gie/tardis/default/full_int.ogg",
             demat_fail = "p00gie/tardis/default/demat_fail.ogg",
             demat_fail_loop = "molda/tardis/demat_fail_loop.wav",
             demat_fail_loop_stop = "molda/tardis/demat_fail_loop_stop.wav",
@@ -555,7 +554,10 @@ T.Exterior = {
     },
     LockedDoor = {
         AnimEnabled = true
-    }
+    },
+    Teleport = {
+        ThrottleReset = "finish",
+    },
 }
 
 T.Timings = {

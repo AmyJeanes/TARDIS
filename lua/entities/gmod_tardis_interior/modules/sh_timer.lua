@@ -1,3 +1,6 @@
+---@class gmod_tardis_interior
+---@field timers table<string, table>
+
 ENT:AddHook("Initialize", "timers", function(self)
     self.timers = {}
 end)

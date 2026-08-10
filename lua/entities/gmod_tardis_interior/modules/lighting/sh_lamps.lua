@@ -1,5 +1,8 @@
 -- Lamps (projected lights)
 
+---@class gmod_tardis_interior
+---@field lamps_data table<string, tardis_lamp_complete>?
+
 if CLIENT then
     ---@param tbl tardis_lamp_complete?
     ---@param base tardis_lamp_complete

@@ -1,5 +1,8 @@
 -- Lights
 
+---@class gmod_tardis_interior
+---@field light_data tardis_interior_light_data?
+
 ---@param lt tardis_interior_light_state_complete
 ---@param interior gmod_tardis_interior
 ---@param default_falloff number
