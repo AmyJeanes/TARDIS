@@ -181,8 +181,8 @@ T.Exterior = {
             0
         },
         Crossfade = {
-            MatStart = 90,
-            MatFade = 10,
+            MatStart = 65,
+            MatFade = 30,
             DematStart = 90,
             DematFade = 20,
         },
