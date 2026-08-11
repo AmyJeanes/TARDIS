@@ -25,7 +25,7 @@ function ENT:FastReturn(callback)
     self:CallHook("FastReturnTriggered")
     self:SetData("demat-fast-prev", self:GetFastRemat())
     self:SetFastRemat(true)
-    self:SetData("fastdemat", true)
+    self:SetData("fastreturn-restore", true)
     self:AutoDemat(retpos, retang, callback)
 end
 

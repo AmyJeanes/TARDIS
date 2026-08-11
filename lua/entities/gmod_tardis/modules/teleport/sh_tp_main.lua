@@ -353,9 +353,9 @@ if SERVER then
     end)
 
     ENT:AddHook("StopMat", "teleport", function(self)
-        if self:GetData("fastdemat",false) then
+        if self:GetData("fastreturn-restore",false) then
             self:SetFastRemat(self:GetData("demat-fast-prev", false))
-            self:SetData("fastdemat",false)
+            self:SetData("fastreturn-restore",false)
         end
     end)
 else
