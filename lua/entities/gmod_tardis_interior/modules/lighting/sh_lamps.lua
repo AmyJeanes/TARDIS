@@ -4,6 +4,10 @@
 ---@field lamps_data table<string, tardis_lamp_complete>?
 
 if CLIENT then
+    -- Source engine renders projected textures at 1/8th brightness in HDR mode so we multiply to compensate:
+    -- https://github.com/ValveSoftware/source-sdk-2013/blob/22288b919617be6c8ca3cefd7cca979cbb39a88c/src/materialsystem/stdshaders/BaseVSShader.h#L352-L359
+    local LAMP_HDR_BRIGHTNESS_MULT = 8
+
     ---@param tbl tardis_lamp_complete?
     ---@param base tardis_lamp_complete
     ---@param keep_warn_off_options boolean
@@ -99,7 +103,8 @@ if CLIENT then
         pl:SetAngles(lamp.ang)
         pl:SetFOV(lamp.fov)
         pl:SetColor(lamp.color)
-        pl:SetBrightness(lamp.brightness)
+        local mult = TARDIS.IsHDREnabled() and LAMP_HDR_BRIGHTNESS_MULT or 1
+        pl:SetBrightness(lamp.brightness * mult)
         pl:SetFarZ(lamp.distance)
         pl:SetEnableShadows(lamp.shadows)
         pl:SetShadowFilter(lamp.shadowfilter)
