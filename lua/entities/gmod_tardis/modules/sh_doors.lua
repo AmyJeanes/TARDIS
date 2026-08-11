@@ -39,11 +39,13 @@ if SERVER then
 
         self:SetData("doorstatereal",doorstate,true)
         self:SetData("doorchangewait",not doorstate)
+        self:SetData("doorchangewaitext",not doorstate)
 
         self:CallHook("ToggleDoorReal",doorstate)
 
         if doorstate then
             self:SetData("doorstate",true,true)
+            self:SetData("doorstateext",true,true)
             self:SetData("doorchange",CurTime())
             self:CallHook("ToggleDoor",true)
             if callback then
@@ -54,6 +56,7 @@ if SERVER then
             if callback then
                 callbacks[callback]=true
             end
+            self:SetData("doorchangeext",CurTime() + self.metadata.Exterior.DoorAnimationTime)
             local dooranimtime = self.metadata.Exterior.DoorAnimationTime
             if self.metadata.EnableClassicDoors == true then
                 dooranimtime = math.max(dooranimtime, self.metadata.Interior.IntDoorAnimationTime)
@@ -225,6 +228,10 @@ if SERVER then
     end)
 
     ENT:AddHook("Think", "doors", function(self)
+        if self:GetData("doorchangewaitext",false) and CurTime()>self:GetData("doorchangeext",0) then
+            self:SetData("doorchangewaitext",nil)
+            self:SetData("doorstateext",false,true)
+        end
         if self:GetData("doorchangewait",false) and CurTime()>self:GetData("doorchange",0) then
             self:SetData("doorchangewait",nil)
             self:SetData("doorstate",false,true)
@@ -383,6 +390,13 @@ else
             end
         end
     end)
+end
+
+-- In the case of classic doors, exterior and interior door states can diverge
+---@api
+---@return boolean
+function ENT:ExtDoorOpen()
+    return self:GetData("doorstateext", false)
 end
 
 

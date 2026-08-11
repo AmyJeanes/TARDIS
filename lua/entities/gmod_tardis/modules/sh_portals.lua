@@ -7,7 +7,7 @@ end
 
 -- Shared so world-portals' predicted player teleport can also veto.
 ENT:AddHook("ShouldTeleportPortal", "portals", function(self,portal,ent)
-    if not self:DoorOpen() or (ent.TardisPart and not ent.AllowThroughPortals) then
+    if not self:ExtDoorOpen() or (ent.TardisPart and not ent.AllowThroughPortals) then
         return false
     end
 end)
@@ -36,7 +36,7 @@ if CLIENT then
 end
 
 ENT:AddHook("ShouldTracePortal", "portals", function(self,portal)
-    if not self:DoorOpen() then
+    if not self:ExtDoorOpen() then
         return false
     end
 end)
