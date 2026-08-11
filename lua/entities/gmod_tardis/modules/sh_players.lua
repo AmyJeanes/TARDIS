@@ -23,6 +23,15 @@ if SERVER then
         ply:ClearTardisData()
     end)
 
+    ENT:AddHook("PreOnRemove", "players", function(self)
+        if not (IsValid(self.interior) and self.interior:ExteriorIsNested()) then return end
+        for ply in pairs(self.occupants) do
+            if IsValid(ply) and ply:IsPlayer() and ply:Alive() then
+                ply:Kill()
+            end
+        end
+    end)
+
     ---@class Player
     local meta=FindMetaTable("Player")
 
