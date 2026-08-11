@@ -68,7 +68,6 @@ local hooks={}
 ---@overload fun(self: gmod_tardis_interior, name: "DoorLockToggled", id: string, func: fun(self: gmod_tardis_interior, locked: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "ExteriorChanged", id: string, func: fun(self: gmod_tardis_interior, id: any, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "FailedPhyslockEnable", id: string, func: fun(self: gmod_tardis_interior, ...))
----@overload fun(self: gmod_tardis_interior, name: "FastDemat", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "FastRematToggled", id: string, func: fun(self: gmod_tardis_interior, on: boolean, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "FastReturnTriggered", id: string, func: fun(self: gmod_tardis_interior, ...))
 ---@overload fun(self: gmod_tardis_interior, name: "FlightInterrupted", id: string, func: fun(self: gmod_tardis_interior, ...))
