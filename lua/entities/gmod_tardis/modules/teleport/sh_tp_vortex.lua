@@ -1,7 +1,14 @@
 -- Vortex / autoland related functions
 
 ---@api
-function ENT:GetAutoland()
+---@param real boolean? the actual applied setting, not the queued value
+---@return boolean
+function ENT:GetAutoland(real)
+    if real then
+        return self:GetData("autoland",false)
+    end
+    local queued = self:GetData("autoland-queued")
+    if queued ~= nil then return queued end
     return self:GetData("autoland",false)
 end
 
@@ -10,7 +17,7 @@ if CLIENT then
 end
 
 ENT:AddHook("DematStart", "no_vortex_premat", function(self)
-    if self:GetAutoland() and not self:GetData("redecorate") then
+    if self:GetAutoland(true) and not self:GetData("redecorate") then
         local tp = self.metadata.Exterior.Teleport
         local premat_lead = math.max(0, self:GetDematDuration() - tp.PrematDelay)
         self:Timer("premat", premat_lead, function()
@@ -25,28 +32,34 @@ end)
 ---@api
 ---@return boolean
 function ENT:ToggleAutoland()
-    local on = not self:GetAutoland()
-    return self:SetAutoland(on)
+    return self:SetAutoland(not self:GetAutoland())
 end
 
 ---@api
 ---@param on boolean
 ---@param force boolean?
+---@return boolean
 function ENT:SetAutoland(on, force)
     if self:CallHook("CanToggleAutoland", force) == false then
         return false
     end
 
-    self:SetData("autoland",on,true)
+    -- Queue it if we can't currently toggle it, or clear the queue if this
+    -- toggle just brings it back to the value it's currently using
+    if not force and (self:GetData("vortex") or self:GetData("teleport")) then
+        if on == self:GetData("autoland", false) then
+            self:SetData("autoland-queued", nil, true)
+        else
+            self:SetData("autoland-queued", on, true)
+        end
+        return true
+    end
+
+    self:SetData("autoland", on, true)
+    self:SetData("autoland-queued", nil, true)
     self:CallHook("AutolandToggled", on)
     return true
 end
-
-ENT:AddHook("CanToggleAutoland", "vortex", function(self, force)
-    if not force and (self:GetData("vortex") or self:GetData("teleport")) then
-        return false
-    end
-end)
 
 ENT:AddHook("ShouldStopSmoke", "vortex", function(self)
     if self:GetData("vortex") or self:GetData("demat") then return true end

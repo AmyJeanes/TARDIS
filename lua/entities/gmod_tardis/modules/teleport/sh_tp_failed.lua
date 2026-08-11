@@ -37,7 +37,7 @@ if SERVER then
             return
         end
 
-        if self:GetAutoland() then
+        if self:GetAutoland(true) then
             if pos == self:GetPos() or pos == nil then
                 if callback then callback(false) end
                 return

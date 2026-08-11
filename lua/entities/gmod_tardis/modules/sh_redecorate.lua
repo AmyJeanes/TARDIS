@@ -152,7 +152,7 @@ if SERVER then
 
             self:SetData("redecorate_parent_data", customdata.saved_data, true)
 
-            local vortex = (not parent:GetAutoland())
+            local vortex = (not parent:GetAutoland(true))
             self:SetData("redecorate_parent_vortex", vortex, true)
         end
     end)

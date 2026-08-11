@@ -89,7 +89,7 @@ end
 ---@return number
 function ENT:GetPrematLead()
     local premat = self.metadata.Exterior.Teleport.PrematDelay
-    if self:GetAutoland() then
+    if self:GetAutoland(true) then
         return math.min(premat, self:GetDematDuration())
     end
     return premat
@@ -331,7 +331,7 @@ if SERVER then
     end)
 
     ENT:AddHook("StopDemat", "vortex-random-pos", function(self)
-        if not self:GetAutoland()
+        if not self:GetAutoland(true)
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
         then
@@ -353,9 +353,15 @@ if SERVER then
     end)
 
     ENT:AddHook("StopMat", "teleport", function(self)
+        local queued = self:GetData("autoland-queued")
+
         if self:GetData("fastreturn-restore",false) then
-            self:SetAutoland(self:GetData("autoland-prev", false))
+            if queued == nil then queued = self:GetData("autoland-prev", false) end
             self:SetData("fastreturn-restore",false)
+        end
+
+        if queued ~= nil then
+            self:SetAutoland(queued, true)
         end
     end)
 else
@@ -519,7 +525,7 @@ else
                     self:PlayTeleportSound(sound_demat_hads_ext, sound_demat_hads_int, shouldPlayExterior, shouldPlayInterior)
                 else
                     local int_h, ext_h = self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
-                    if self:GetAutoland() then
+                    if self:GetAutoland(true) then
                         -- Hold onto the sound handles so the crossfade can ramp them up/down around the jump.
                         local stored = {}
                         if int_h then stored[#stored + 1] = int_h end
@@ -697,7 +703,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
             if step >= demat_steps then
                 self:StopDemat()
                 -- Fast remat has no vortex phase, so immediately trigger mat after demat finishes
-                if SERVER and self:GetAutoland() and not self:GetData("redecorate") then
+                if SERVER and self:GetAutoland(true) and not self:GetData("redecorate") then
                     self:NoVortexMat()
                 end
                 return

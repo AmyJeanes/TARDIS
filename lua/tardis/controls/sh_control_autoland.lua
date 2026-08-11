@@ -3,7 +3,11 @@ TARDIS:AddControl({
     aliases = { "vortex_flight" },
     ext_func = function(self,ply)
         if self:ToggleAutoland() then
-            TARDIS:StatusMessage(ply, "Controls.Autoland.Status", self:GetAutoland(), "Common.Enabled.Lower", "Common.Disabled.Lower")
+            if self:GetData("autoland-queued") ~= nil then
+                TARDIS:Message(ply, "Controls.Autoland.Queued", self:GetAutoland() and "Common.Enabled.Lower" or "Common.Disabled.Lower")
+            else
+                TARDIS:StatusMessage(ply, "Controls.Autoland.Status", self:GetAutoland(), "Common.Enabled.Lower", "Common.Disabled.Lower")
+            end
         else
             TARDIS:ErrorMessage(ply, "Controls.Autoland.FailedToggle")
         end

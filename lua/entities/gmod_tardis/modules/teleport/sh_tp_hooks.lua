@@ -88,7 +88,7 @@ else
     end)
 
     ENT:AddHook("ShouldTurnOffFlightSound", "teleport", function(self)
-        if self:GetData("demat") or self:GetData("mat") or (self:GetData("vortex") and (TARDIS:GetExteriorEnt() ~= self or self:GetAutoland())) then
+        if self:GetData("demat") or self:GetData("mat") or (self:GetData("vortex") and (TARDIS:GetExteriorEnt() ~= self or self:GetAutoland(true))) then
             return true
         end
     end)

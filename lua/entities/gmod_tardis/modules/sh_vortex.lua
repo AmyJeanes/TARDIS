@@ -37,7 +37,7 @@ function ENT:IsVortexEnabled(pilot)
 end
 
 ENT:AddHook("VortexEnabled", "autoland", function(self, pilot)
-    if self:GetAutoland() then
+    if self:GetAutoland(true) then
         return false
     end
 end)
