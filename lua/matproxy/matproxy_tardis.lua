@@ -417,7 +417,7 @@ end
 local function matproxy_tardis_HDR_bind(self, mat, ent)
     if not IsValid(ent) or not IsValid(ent.exterior) or not ent.TardisPart then return end
 
-    local var = render.GetHDREnabled() and self.on_var or self.off_var
+    local var = TARDIS.IsHDREnabled() and self.on_var or self.off_var
     if not var then return end
 
     local value = mat:GetVector(var)

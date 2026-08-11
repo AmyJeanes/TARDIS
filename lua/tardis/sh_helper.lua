@@ -95,6 +95,17 @@ end
 
 TARDIS.color_white_vector = Vector(1,1,1)
 
+if CLIENT then
+    local hdr_enabled
+    ---@return boolean
+    function TARDIS.IsHDREnabled()
+        if hdr_enabled == nil then
+            hdr_enabled = render.GetHDREnabled()
+        end
+        return hdr_enabled
+    end
+end
+
 --[[
 local meta=FindMetaTable("Player")
 meta.OldSetEyeAngles=meta.OldSetEyeAngles or meta.SetEyeAngles
