@@ -152,6 +152,14 @@ else
         end
 
         if IsValid(vortex) then
+            -- Square the render bounds to avoid culling at grazing angles
+            local mn, mx = vortex:GetRenderBounds()
+            local hi = math.max(-mn.x, -mn.y, -mn.z, mx.x, mx.y, mx.z)
+            local lo = math.min(-mn.x, -mn.y, -mn.z, mx.x, mx.y, mx.z)
+            if hi ~= lo then
+                vortex:SetRenderBounds(Vector(-hi, -hi, -hi), Vector(hi, hi, hi))
+            end
+
             -- Lamp/flashlight shadow passes ignore both zero blend and NoShadow, and this prop is huge
             local hidden = not (visible and alpha > 0)
             if vortex:GetNoDraw() ~= hidden then
