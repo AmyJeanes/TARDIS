@@ -121,23 +121,23 @@ local function old_virtual_console(self,ext,int,frame,screen)
         TARDIS:Control("repair", LocalPlayer())
     end
 
-    local vortex_flight=vgui.Create("DButton",frame)
-    vortex_flight:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
-    vortex_flight:SetPos(frame:GetWide()*0.13 - vortex_flight:GetWide()*0.5,frame:GetTall()*0.4 - vortex_flight:GetTall()*0.5)
-    vortex_flight:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase(ext:GetFastRemat() and "Common.Enabled.Lower" or "Common.Disabled.Lower"))
-    vortex_flight:SetFont(TARDIS:GetScreenFont(screen, "Default"))
+    local autoland=vgui.Create("DButton",frame)
+    autoland:SetSize( frame:GetWide()*0.2, frame:GetTall()*0.2 )
+    autoland:SetPos(frame:GetWide()*0.13 - autoland:GetWide()*0.5,frame:GetTall()*0.4 - autoland:GetTall()*0.5)
+    autoland:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.Autoland").." "..TARDIS:GetPhrase(ext:GetAutoland() and "Common.Enabled.Lower" or "Common.Disabled.Lower"))
+    autoland:SetFont(TARDIS:GetScreenFont(screen, "Default"))
     ---@param self Panel
-    vortex_flight.DoClick = function(self)
-        TARDIS:Control("vortex_flight", LocalPlayer())
+    autoland.DoClick = function(self)
+        TARDIS:Control("autoland", LocalPlayer())
     end
-    vortex_flight.oldon = ext:GetFastRemat()
-    function vortex_flight:Think()
-        local on = ext:GetFastRemat()
+    autoland.oldon = ext:GetAutoland()
+    function autoland:Think()
+        local on = ext:GetAutoland()
         if self.oldon == on then return end
         if on then
-            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase("Common.Enabled.Lower"))
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.Autoland").." "..TARDIS:GetPhrase("Common.Enabled.Lower"))
         else
-            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.FastRemat").." "..TARDIS:GetPhrase("Common.Disabled.Lower"))
+            self:SetText(TARDIS:GetPhrase("Screens.VirtualConsole.Old.Autoland").." "..TARDIS:GetPhrase("Common.Disabled.Lower"))
         end
         self.oldon = on
     end

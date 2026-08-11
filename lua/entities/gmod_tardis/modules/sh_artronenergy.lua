@@ -86,7 +86,7 @@ if SERVER then
 
     ---@param self gmod_tardis
     local function ArtronDematCheck(self)
-        local fast = self:GetFastRemat()
+        local fast = self:GetAutoland()
         local artron = self:GetArtron()
 
         if self:CallHook("ShouldUpdateArtron") == false then return end
@@ -113,7 +113,7 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
-        local fast = self:GetFastRemat()
+        local fast = self:GetAutoland()
         local artron = self:GetArtron()
         if not fast and artron < -TARDIS.artron_values.cost_mat then
             return true
@@ -266,7 +266,7 @@ if SERVER then
                 return
             end
             self:AddArtron(TARDIS.artron_values.cost_fast_return)
-        elseif self:GetFastRemat() then
+        elseif self:GetAutoland() then
             self:AddArtron(TARDIS.artron_values.cost_full)
         else
             self:AddArtron(TARDIS.artron_values.cost_demat)
@@ -277,7 +277,7 @@ if SERVER then
         if not TARDIS:GetSetting("artron_energy") then return end
         if self:CallHook("ShouldUpdateArtron") == false then return end
 
-        if self:GetFastRemat() ~= true then
+        if self:GetAutoland() ~= true then
             self:AddArtron(TARDIS.artron_values.cost_mat)
         end
     end)

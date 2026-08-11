@@ -89,7 +89,7 @@ end
 ---@return number
 function ENT:GetPrematLead()
     local premat = self.metadata.Exterior.Teleport.PrematDelay
-    if self:GetFastRemat() then
+    if self:GetAutoland() then
         return math.min(premat, self:GetDematDuration())
     end
     return premat
@@ -331,7 +331,7 @@ if SERVER then
     end)
 
     ENT:AddHook("StopDemat", "vortex-random-pos", function(self)
-        if not self:GetFastRemat()
+        if not self:GetAutoland()
             and not self:GetData("redecorate")
             and not self:GetData("redecorate_parent")
         then
@@ -354,7 +354,7 @@ if SERVER then
 
     ENT:AddHook("StopMat", "teleport", function(self)
         if self:GetData("fastreturn-restore",false) then
-            self:SetFastRemat(self:GetData("demat-fast-prev", false))
+            self:SetAutoland(self:GetData("autoland-prev", false))
             self:SetData("fastreturn-restore",false)
         end
     end)
@@ -519,7 +519,7 @@ else
                     self:PlayTeleportSound(sound_demat_hads_ext, sound_demat_hads_int, shouldPlayExterior, shouldPlayInterior)
                 else
                     local int_h, ext_h = self:PlayTeleportSound(sound_demat_ext, sound_demat_int, shouldPlayExterior, shouldPlayInterior)
-                    if self:GetFastRemat() then
+                    if self:GetAutoland() then
                         -- Hold onto the sound handles so the crossfade can ramp them up/down around the jump.
                         local stored = {}
                         if int_h then stored[#stored + 1] = int_h end
@@ -697,7 +697,7 @@ ENT:AddHook("Think","teleport",function(self,delta)
             if step >= demat_steps then
                 self:StopDemat()
                 -- Fast remat has no vortex phase, so immediately trigger mat after demat finishes
-                if SERVER and self:GetFastRemat() and not self:GetData("redecorate") then
+                if SERVER and self:GetAutoland() and not self:GetData("redecorate") then
                     self:NoVortexMat()
                 end
                 return

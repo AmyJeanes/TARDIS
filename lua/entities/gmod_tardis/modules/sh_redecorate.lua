@@ -8,7 +8,7 @@ local saved_data_names = {
     "spindir_before_door",
     "handbrake",
     "physlock",
-    "demat-fast",
+    "autoland",
     "fastreturn-pos",
     "fastreturn-ang",
     "artron-val",
@@ -134,7 +134,7 @@ if SERVER then
         local parent_vortex = self:GetData("redecorate_parent_vortex")
 
         if parent_vortex then
-            self:SetFastRemat(false)
+            self:SetAutoland(false)
             self:SetData("redecorate_parent_vortex", nil, true)
         end
 
@@ -152,7 +152,7 @@ if SERVER then
 
             self:SetData("redecorate_parent_data", customdata.saved_data, true)
 
-            local vortex = (not parent:GetFastRemat())
+            local vortex = (not parent:GetAutoland())
             self:SetData("redecorate_parent_vortex", vortex, true)
         end
     end)
@@ -185,7 +185,7 @@ if SERVER then
         local phys = self:GetPhysicsObject()
 
         constraint.RemoveAll(parent) -- drop everything attached
-        parent:SetFastRemat(true, true)
+        parent:SetAutoland(true, true)
 
         parent:SetPhyslock(true)
         parent:ForcePlayerDrop()
@@ -202,7 +202,7 @@ if SERVER then
             end
 
             phys:Wake()
-            self:SetFastRemat(true, true)
+            self:SetAutoland(true, true)
             self:Mat()
 
             local ply = self:GetCreator()

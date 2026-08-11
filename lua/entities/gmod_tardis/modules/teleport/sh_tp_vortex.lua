@@ -1,8 +1,8 @@
--- Vortex / fast remat related functions
+-- Vortex / autoland related functions
 
 ---@api
-function ENT:GetFastRemat()
-    return self:GetData("demat-fast",false)
+function ENT:GetAutoland()
+    return self:GetData("autoland",false)
 end
 
 if CLIENT then
@@ -10,7 +10,7 @@ if CLIENT then
 end
 
 ENT:AddHook("DematStart", "no_vortex_premat", function(self)
-    if self:GetFastRemat() and not self:GetData("redecorate") then
+    if self:GetAutoland() and not self:GetData("redecorate") then
         local tp = self.metadata.Exterior.Teleport
         local premat_lead = math.max(0, self:GetDematDuration() - tp.PrematDelay)
         self:Timer("premat", premat_lead, function()
@@ -24,25 +24,25 @@ end)
 
 ---@api
 ---@return boolean
-function ENT:ToggleFastRemat()
-    local on = not self:GetFastRemat()
-    return self:SetFastRemat(on)
+function ENT:ToggleAutoland()
+    local on = not self:GetAutoland()
+    return self:SetAutoland(on)
 end
 
 ---@api
 ---@param on boolean
 ---@param force boolean?
-function ENT:SetFastRemat(on, force)
-    if self:CallHook("CanToggleFastRemat", force) == false then
+function ENT:SetAutoland(on, force)
+    if self:CallHook("CanToggleAutoland", force) == false then
         return false
     end
 
-    self:SetData("demat-fast",on,true)
-    self:CallHook("FastRematToggled", on)
+    self:SetData("autoland",on,true)
+    self:CallHook("AutolandToggled", on)
     return true
 end
 
-ENT:AddHook("CanToggleFastRemat", "vortex", function(self, force)
+ENT:AddHook("CanToggleAutoland", "vortex", function(self, force)
     if not force and (self:GetData("vortex") or self:GetData("teleport")) then
         return false
     end

@@ -272,7 +272,7 @@ concommand.Add("tardis2_debug_crossfade", function()
         local ext = LocalPlayer():GetTardisExterior()
         if not IsValid(ext) then
             self:SetText("")
-        elseif ext:GetFastRemat() then
+        elseif ext:GetAutoland() then
             self:SetText("Vortex flight is off: Dematerialise or press 'Preview' to test the crossfade")
             self:SetTextColor(Color(150, 200, 160))
         else

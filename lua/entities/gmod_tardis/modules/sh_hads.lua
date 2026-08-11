@@ -47,7 +47,7 @@ if SERVER then
             TARDIS:Message(self:GetCreator(), "HADS.UnderAttack")
             self:SetData("hads-triggered", true, true)
             self:SetData("hads-demat", true, true)
-            self:SetFastRemat(false)
+            self:SetAutoland(false)
             self:SetRandomDestination(true)
             self:AutoDemat()
             self:CallHook("HADSTrigger")

@@ -14,7 +14,7 @@ end)
 
 if CLIENT then
     ENT:AddHook("ShouldTurnOffFlightSound", "vortex", function(self)
-        if self:GetData("vortex",false) and self.exterior:GetFastRemat() then
+        if self:GetData("vortex",false) and self.exterior:GetAutoland() then
             return true
         end
     end)

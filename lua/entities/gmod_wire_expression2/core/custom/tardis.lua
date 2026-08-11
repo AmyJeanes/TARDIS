@@ -68,12 +68,12 @@ e2function number entity:tardisFastReturn()
     return HandleE2(this, "Setter", "FastReturn", self)
 end
 
-e2function number entity:tardisLongflight()
-    return HandleE2(this, "Setter", "Longflight", self)
+e2function number entity:tardisAutoland()
+    return HandleE2(this, "Setter", "Autoland", self)
 end
 
-e2function number entity:tardisLongflight(on)
-    return HandleE2(this, "Setter", "SetLongflight", self, on)
+e2function number entity:tardisAutoland(on)
+    return HandleE2(this, "Setter", "SetAutoland", self, on)
 end
 
 e2function number entity:tardisHADS()
@@ -202,8 +202,8 @@ e2function number entity:tardisInVortex()
     return HandleE2(this, "Getter", "GetInVortex", self)
 end
 
-e2function number entity:tardisLongflighted()
-    return HandleE2(this, "Getter", "GetLongflight", self)
+e2function number entity:tardisAutolandOn()
+    return HandleE2(this, "Getter", "GetAutoland", self)
 end
 
 e2function vector entity:tardisLastPos()

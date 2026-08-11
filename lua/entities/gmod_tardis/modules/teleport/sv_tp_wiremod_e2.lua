@@ -45,26 +45,15 @@ ENT:AddHook("HandleE2", "teleport", function(self, name, e2, ...)
             if not success then return 0 end
             self:Mat()
             return 1
-        elseif name == "Longflight" then
-            return self:ToggleFastRemat() and 1 or 0
+        elseif name == "Autoland" then
+            return self:ToggleAutoland() and 1 or 0
         elseif name == "FastReturn" then
             local success = self:CallHook("CanDemat")~=false
             if not success then return 0 end
             self:FastReturn()
             return 1
-        elseif name == "SetLongflight" then
-            local on = args[1]
-            local fastremat = self:GetFastRemat()
-            if on == 1 then
-                if fastremat and self:SetFastRemat(false) then
-                    return 1
-                end
-            else
-                if (not fastremat) and self:SetFastRemat(true) then
-                    return 1
-                end
-            end
-            return 0
+        elseif name == "SetAutoland" then
+            return self:SetAutoland(args[1] == 1) and 1 or 0
         end
     end
 end)
@@ -74,8 +63,8 @@ ENT:AddHook("HandleE2", "teleport_gets", function(self, name, e2)
         return self:GetData("teleport",false) and 1 or 0
     elseif name == "GetInVortex" then
         return self:GetData("vortex",false) and 1 or 0
-    elseif name == "GetLongflight" then
-        return self:GetFastRemat() and 0 or 1
+    elseif name == "GetAutoland" then
+        return self:GetAutoland() and 1 or 0
     elseif name == "LastAng" then
         return self:GetData("fastreturn-ang", Angle(0,0,0))
     elseif name == "LastPos" then

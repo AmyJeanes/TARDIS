@@ -1,17 +1,29 @@
 -- Vortex
 
-TARDIS:AddKeyBind("vortex-toggle",{
-    name="ToggleVortex",
+TARDIS:AddKeyBind("autoland-toggle",{
+    name="ToggleAutoland",
     section="ThirdPerson",
     func=function(self,down,ply)
         if ply==self.pilot and down then
-            TARDIS:Control("vortex_flight", ply)
+            TARDIS:Control("autoland", ply)
         end
     end,
     key=KEY_LBRACKET,
     serveronly=true,
     exterior=true
 })
+
+if CLIENT then
+    -- vortex-toggle was renamed to autoland-toggle
+    TARDIS:AddMigration("autoland-keybind", "2026-08-11", function(self)
+        local key = self.bindkeys["vortex-toggle"]
+        if key ~= nil then
+            self.bindkeys["autoland-toggle"] = key
+            self.bindkeys["vortex-toggle"] = nil
+            self:SaveKeyBinds()
+        end
+    end)
+end
 
 ---@api
 ---@param pilot Player?
@@ -24,8 +36,8 @@ function ENT:IsVortexEnabled(pilot)
             and (SERVER or self:GetData("vortexmodelvalid")) )
 end
 
-ENT:AddHook("VortexEnabled", "demat-fast", function(self, pilot)
-    if self:GetFastRemat() then
+ENT:AddHook("VortexEnabled", "autoland", function(self, pilot)
+    if self:GetAutoland() then
         return false
     end
 end)
