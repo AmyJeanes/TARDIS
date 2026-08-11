@@ -52,10 +52,6 @@ e2function number entity:tardisDemat(vector pos)
     return HandleE2(this, "Setter", "Demat", self, pos)
 end
 
-e2function number entity:tardisFastDemat()
-    return HandleE2(this, "Setter", "FastDemat", self)
-end
-
 e2function number entity:tardisMaterialise()
     return HandleE2(this, "Setter", "Mat", self)
 end

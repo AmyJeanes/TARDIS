@@ -52,11 +52,6 @@ ENT:AddHook("HandleE2", "teleport", function(self, name, e2, ...)
             if not success then return 0 end
             self:FastReturn()
             return 1
-        elseif name == "FastDemat" then
-            local success = self:CallHook("CanDemat")~=false
-            if not success then return 0 end
-            self:FastDemat()
-            return 1
         elseif name == "SetLongflight" then
             local on = args[1]
             local fastremat = self:GetFastRemat()

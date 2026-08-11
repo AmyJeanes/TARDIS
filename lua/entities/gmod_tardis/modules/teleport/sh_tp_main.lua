@@ -202,29 +202,6 @@ if SERVER then
         if callback then callback(true) end
     end
 
-    ---@api
-    ---@param pos Vector?
-    ---@param ang Angle?
-    ---@param callback fun(success: boolean)?
-    function ENT:FastDemat(pos, ang, callback)
-        if self:GetData("vortex") and not self:GetData("fastdemat") then
-            self:SetDestination(pos, ang)
-            self:Mat(callback)
-            return
-        end
-    
-        if self:CallHook("CanDemat", true, true) == false then
-            if callback then callback(false) end
-            return
-        end
-    
-        self:SetData("demat-fast-prev", self:GetFastRemat());
-        self:SetFastRemat(true)
-        self:SetData("fastdemat",true)
-        self:CallHook("FastDemat")
-        self:AutoDemat(pos, ang, callback)
-    end
-
     ---@param pos Vector
     ---@param ang Angle
     ---@param phys_enable boolean
