@@ -124,7 +124,6 @@ function TARDIS:GetScreenFont(screen, name)
         if not font then error("TARDIS font '"..name.."' is not defined") end
         local fontCopy = table.Copy(font) --[[@as tardis_screen_font]]
         fontCopy.size = math.Round(font.size * scale, 2)
-        --TARDIS:Debug("Generating TARDIS font ".. name .. " with size " .. tostring(fontCopy.size))
         surface.CreateFont(fontName, fontCopy)
         self.fontcache[scale][name] = true
     end

@@ -766,12 +766,11 @@ end
 ---@param part_id string
 ---@param field string
 ---@param bad_value any
----@return boolean warned whether a warning was printed
+---@return boolean overridden
 local function override_part_field(metadata, exterior, part_id, field, bad_value)
     local section = exterior and metadata.Exterior or metadata.Interior
     local part = section.Parts and section.Parts[part_id]
     if not istable(part) then return false end
-    local id = metadata.ID
     local lower = field:lower()
     local overridden = false
     for k, v in pairs(part) do
@@ -780,12 +779,7 @@ local function override_part_field(metadata, exterior, part_id, field, bad_value
             overridden = true
         end
     end
-    if overridden and SERVER and not metadata_warned[id] then
-        local label = exterior and "Exterior" or "Interior"
-        print("[TARDIS] WARNING: Interior '"..id.."' metadata: "..label..".Parts[\""..part_id.."\"]."..field.." should not be set to "..tostring(bad_value)..", this is being ignored\n")
-        return true
-    end
-    return false
+    return overridden
 end
 
 ---@param id string?
@@ -828,28 +822,30 @@ function TARDIS:CreateInteriorMetadata(id, ent)
     metadata.Interior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Interior.TextureSets)
     metadata.Exterior.TextureSets = TARDIS:GetMergedTextureSets(metadata.Exterior.TextureSets)
 
-    local warn = metadata_warned[id]
+    local rgb_was_table = false
+    local rgb = metadata.Interior.LightOverride.basebrightnessRGB
+    if rgb and type(rgb) == "table" then
+        metadata.Interior.LightOverride.basebrightnessRGB = Vector(rgb[1], rgb[2], rgb[3])
+        rgb_was_table = true
+    end
 
-    -- Convert light override base brightness RGB from table to Vector and warn the author once per session
-    local lightOverridebaseBrightnessRGB = metadata.Interior.LightOverride.basebrightnessRGB
-    if lightOverridebaseBrightnessRGB and type(lightOverridebaseBrightnessRGB) == "table" then
-        metadata.Interior.LightOverride.basebrightnessRGB = Vector(lightOverridebaseBrightnessRGB[1], lightOverridebaseBrightnessRGB[2], lightOverridebaseBrightnessRGB[3])
-        if SERVER and not warn then
-            warn = true
-            print("[TARDIS] WARNING: Interior '"..id.."' metadata: Interior.LightOverride.basebrightnessRGB should be a Vector not a table\n")
+    -- Door collision is required, so an author disabling it is ignored
+    local door_ext_overridden = override_part_field(metadata, true, "door", "collision", false)
+    local door_int_overridden = override_part_field(metadata, false, "door", "collision", false)
+
+    if SERVER and TARDIS.DevMode and not metadata_warned[id] then
+        metadata_warned[id] = true
+
+        if rgb_was_table then
+            TARDIS:DevWarning("interior '%s' metadata: Interior.LightOverride.basebrightnessRGB should be a Vector, not a table", id)
         end
-    end
+        if door_ext_overridden then
+            TARDIS:DevWarning("interior '%s' metadata: Exterior.Parts[\"door\"].collision should not be false; ignoring it", id)
+        end
+        if door_int_overridden then
+            TARDIS:DevWarning("interior '%s' metadata: Interior.Parts[\"door\"].collision should not be false; ignoring it", id)
+        end
 
-    -- Override door collision to be enabled even if the author has disabled it as it is required now
-    if override_part_field(metadata, true, "door", "collision", false) then
-        warn = true
-    end
-
-    if override_part_field(metadata, false, "door", "collision", false) then
-        warn = true
-    end
-
-    if SERVER and not metadata_warned[id] then
         local found = {}
         local ext_sounds = metadata.Exterior.Sounds and metadata.Exterior.Sounds.Teleport
         local int_sounds = metadata.Interior.Sounds and metadata.Interior.Sounds.Teleport
@@ -857,21 +853,13 @@ function TARDIS:CreateInteriorMetadata(id, ent)
         collect_deprecated(int_sounds, deprecated_teleport_sound_fields, "Interior.Sounds.Teleport.", found)
         collect_deprecated(metadata.Exterior.Teleport, deprecated_teleport_fields, "Exterior.Teleport.", found)
         if #found > 0 then
-            warn = true
-            print("[TARDIS] Note: interior '"..id.."' sets teleport fields that are no longer used and can be removed: "..table.concat(found, ", ")..".\n")
+            TARDIS:DevInfo("interior '%s' sets teleport fields that are no longer used and can be removed: %s", id, table.concat(found, ", "))
         end
-    end
 
-    if SERVER and not metadata_warned[id] then
         local reset = metadata.Exterior.Teleport.ThrottleReset
         if reset ~= nil and reset ~= "jump" and reset ~= "finish" and reset ~= "none" then
-            warn = true
-            print("[TARDIS] WARNING: Interior '"..id.."' metadata: Exterior.Teleport.ThrottleReset is '"..tostring(reset).."', expected 'jump', 'finish' or 'none'; the throttle will not auto-return\n")
+            TARDIS:DevWarning("interior '%s' metadata: Exterior.Teleport.ThrottleReset is '%s', expected 'jump', 'finish' or 'none'; the throttle will not auto-return", id, tostring(reset))
         end
-    end
-
-    if SERVER and warn then
-        metadata_warned[id] = true
     end
 
     return metadata
