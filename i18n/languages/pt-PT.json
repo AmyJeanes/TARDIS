@@ -595,6 +595,8 @@
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Controla se as skins de inverno da TARDIS serão usadas pelo modo aleatório",
     "Settings.Sections.Misc.Spawnmenu": "Menu de geração",
     "Settings.Sections.Misc.Teleport": "Teleportar",
+    "Settings.Sections.Misc.Teleport.AimDestinationThirdPerson": "Apontar Destino em Terceira Pessoa",
+    "Settings.Sections.Misc.Teleport.AimDestinationThirdPerson.Description": "Se segurar a chave de desmaterialização permite que aponte e defina o destino da TARDIS antes de desmaterializar.",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Fechar portas ao desmaterializar",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "As portas da TARDIS devem fechar automaticamente antes de desmaterializar?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Destino - Desmaterializar quando definido",

@@ -595,6 +595,8 @@
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "Zda budou zimní skiny TARDIS použity při náhodném výběru",
     "Settings.Sections.Misc.Spawnmenu": "Nabídka spawnu",
     "Settings.Sections.Misc.Teleport": "Teleportace",
+    "Settings.Sections.Misc.Teleport.AimDestinationThirdPerson": "Zaměřit cíl ve třetí osobě",
+    "Settings.Sections.Misc.Teleport.AimDestinationThirdPerson.Description": "Zda držení dematerializačního klíče umožňuje zamířit a nastavit cíl TARDIS před dematerializací",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Automatické zavření dveří při teleportaci",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "Měla by TARDIS automaticky zavřít dveře před dematerializací/materializací?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Cíl - Dematerializace při nastavení",

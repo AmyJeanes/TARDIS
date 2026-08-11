@@ -123,6 +123,19 @@ TARDIS:AddSetting({
     name="InfiniteWarning",
 })
 
+TARDIS:AddSetting({
+    id="teleport-thirdperson-aim",
+    type="bool",
+    value=true,
+
+    class="networked",
+
+    option=true,
+    section=SETTING_SECTION,
+    subsection="Teleport",
+    name="AimDestinationThirdPerson",
+})
+
 --------------------------------------------------------------------------------
 -- Flight
 

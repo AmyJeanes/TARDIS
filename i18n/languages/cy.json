@@ -595,6 +595,8 @@
     "Settings.Sections.Misc.Spawning.UseWinterSkins.Description": "P'un a fydd crwyn TARDIS y gaeaf yn cael eu defnyddio ai peidio tra'i fod ar hap",
     "Settings.Sections.Misc.Spawnmenu": "Dewislen Sbiô",
     "Settings.Sections.Misc.Teleport": "Teleport",
+    "Settings.Sections.Misc.Teleport.AimDestinationThirdPerson": "Nod Targed yn Trydydd Person",
+    "Settings.Sections.Misc.Teleport.AimDestinationThirdPerson.Description": "P'un ai ddal yr allwedd demat yn caniatáu i chi anelu a gosod cyrchfan y TARDIS cyn dadhanfudoli",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors": "Cau Drysau'n Awtomatig yn Demat",
     "Settings.Sections.Misc.Teleport.AutoCloseDoors.Description": "A ddylai TARDIS gau drysau yn awtomatig cyn demat?",
     "Settings.Sections.Misc.Teleport.DestinationDematOnSet": "Cyrchfan - Disylweddoli ar Set",
