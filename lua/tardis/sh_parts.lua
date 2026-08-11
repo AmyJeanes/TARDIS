@@ -870,6 +870,7 @@ local function SetupPartControl(e)
         end
     end
     if e.Control then
+        e.Control = TARDIS:ResolveControlID(e.Control)
         parent.controlparts = parent.controlparts or {}
         parent.controlparts[e.Control] = parent.controlparts[e.Control] or {}
         parent.controlparts[e.Control][e.ID] = e

@@ -6,6 +6,7 @@ end
 
 ---@class tardis_control
 ---@field id string
+---@field aliases string[]?
 ---@field ext_func (fun(self: gmod_tardis, ply: Player, part: gmod_tardis_part?, complete: fun(ent: gmod_tardis)): boolean?)?
 ---@field int_func (fun(self: gmod_tardis_interior, ply: Player, part: gmod_tardis_part?, complete: fun(ent: gmod_tardis_interior)): boolean?)?
 ---@field serveronly boolean?
@@ -32,6 +33,8 @@ end
 ---@type table<string, tardis_control>
 local controls={}
 local control_moves = {}
+---@type table<string, string> deprecated control id -> canonical id
+local control_aliases = {}
 
 -- Functionally identical to {} but gives proper type checking for controls
 ---@api
@@ -48,7 +51,22 @@ function TARDIS:AddControl(control)
         local copy = table.Copy(control)
         controls[control.id] = copy
         TARDIS:RegisterControlMoves(copy)
+        if copy.aliases then
+            for _, alias in ipairs(copy.aliases) do
+                control_aliases[alias] = control.id
+            end
+        end
     end
+end
+
+-- Resolve deprecated control aliases to the canonical control ID
+---@param id string
+---@return string
+function TARDIS:ResolveControlID(id)
+    local canonical = control_aliases[id]
+    if not canonical then return id end
+    self:DevDeprecation("control:" .. id, "control '%s' is deprecated, use '%s'", id, canonical)
+    return canonical
 end
 
 ---@param control tardis_control
@@ -103,6 +121,8 @@ end
 ---@param ent (gmod_tardis|gmod_tardis_interior)?
 ---@return tardis_control?
 function TARDIS:GetControl(id, ent)
+    id = TARDIS:ResolveControlID(id)
+
     if ent and ent.metadata.CustomControls and ent.metadata.CustomControls[id] then
         return ent.metadata.CustomControls[id]
     end
@@ -119,6 +139,8 @@ end
 function TARDIS:Control(control_id, ply, part)
     if CLIENT then ply = LocalPlayer() end
     if not ply:IsPlayer() then return end
+
+    control_id = TARDIS:ResolveControlID(control_id)
 
     local ext = ply:GetTardisExterior()
     local control = TARDIS:GetControl(control_id, ext)
