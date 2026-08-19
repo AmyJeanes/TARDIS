@@ -60,7 +60,7 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.32.1
+          ref: v0.32.2
           path: gmod-addon-tools
 
       - name: Run glua_check
@@ -118,7 +118,7 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.32.1
+          ref: v0.32.2
           path: gmod-addon-tools
 
       - name: Run typing check
@@ -130,7 +130,7 @@ jobs:
     name: Publish to beta workshop
     needs: [glua-check, typing-check]
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event.inputs.publish == 'true'
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@8198720fa5ef8e4721f2a89d3bc7d2bdc99e8bb4 # v0.32.1
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@3f5e394ee7d395ecf06091fba4a59ba1c2f6481b # v0.32.2
     with:
       addon: "TARDIS (Beta)"
       workshop_id: ${{ vars.BETA_WORKSHOP_ID }}
