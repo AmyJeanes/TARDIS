@@ -1,5 +1,4 @@
--- glua_ls upstream: a literal assigned to a declared field is completeness-checked, so a
--- table filled in by the statements below reports its fields missing -- https://github.com/Pollux12/gmod-glua-ls/issues/71
+-- Partial definitions completed at runtime
 ---@diagnostic disable: missing-fields
 
 -- Parts

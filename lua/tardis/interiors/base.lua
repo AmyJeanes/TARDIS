@@ -1,5 +1,4 @@
--- glua_ls upstream: a literal assigned to a declared field is completeness-checked, so
--- these partial definitions report fields the merge supplies at runtime -- https://github.com/Pollux12/gmod-glua-ls/issues/71
+-- Partial definitions completed at runtime
 ---@diagnostic disable: missing-fields
 
 -- Base
