@@ -5,12 +5,13 @@ TARDIS:AddScreen("Chameleon", {id="chameleon", text="Screens.Chameleon", menu=fa
     local gap = math.min(frT, frW) * 0.06
     local gap2 = math.min(frT, frW) * 0.02
 
-    local listW = (frW - 4 * gap) / 3
-    local listT = frT - 2 * gap
+    -- glua_ls upstream: infer-unknown false-positives on the layout math; the type annotations here only assert the already-correct types -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+    local listW = (frW - 4 * gap) / 3 ---@type number
+    local listT = frT - 2 * gap ---@type number
     local bW = (listW - 4 * gap2) / 3
     local bT = frT * 0.1
-    local imW = listW - 2 * gap2
-    local imT = listT - 3 * gap2 - bT
+    local imW = listW - 2 * gap2 ---@type number
+    local imT = listT - 3 * gap2 - bT ---@type number
     local imS = math.min(imW, imT)
     local gap3 = 0.5 * (listW - imS)
 

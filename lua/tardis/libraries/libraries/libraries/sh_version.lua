@@ -224,7 +224,8 @@ end
 ---@param date string
 ---@param func fun(self: TARDIS)
 function TARDIS:AddMigration(name, date, func)
-    local source = debug.getinfo(2).short_src
+    -- stack level 2 is AddMigration's caller (a loaded file), so the frame is never nil
+    local source = (debug.getinfo(2) --[[@as debuglib.DebugInfo]]).short_src
 
     if not string.match(date, "^%d%d%d%d%-%d%d%-%d%d$") then
         error("Invalid date in migration '" .. name .. "': " .. date .. " (expected YYYY-MM-DD)")

@@ -673,7 +673,8 @@ function TARDIS:CustomizeIconPack()
             if not is_drop then return end
             ---@type DPanel?
             local row = dropped[1]
-            local from = row and row.pack_index
+            -- glua_ls upstream: infer-unknown false-positive; the type annotation only asserts the already-correct type -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+            local from = row and row.pack_index ---@type number?
             if not row or not from then return end
 
             local current = active_list()
@@ -697,7 +698,8 @@ function TARDIS:CustomizeIconPack()
         list_inner.preview_dragged = nil
         function list_inner:Think()
             local dragging = dragndrop.IsDragging()
-            local dragged = (dragging and IsValid(pressed_row) and pressed_row.pack_index) and pressed_row or nil
+            -- glua_ls upstream: infer-unknown false-positive; the type annotation only asserts the already-correct type -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+            local dragged = (dragging and IsValid(pressed_row) and pressed_row.pack_index) and pressed_row or nil ---@type Panel?
             local viewport_h = pack_list_panel:GetTall()
 
             -- Receiver spans the full section, so bounds-check against self's

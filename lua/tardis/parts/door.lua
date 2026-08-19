@@ -146,6 +146,7 @@ if SERVER then
         if not (ent:IsPlayer() and self.exterior:DoorOpen(true)) then return end
 
         self.bump_msgs = self.bump_msgs or setmetatable({}, {__mode = "k"})
+        ---@type { last_contact: number, next_ok: number }
         local state = self.bump_msgs[ent] or { last_contact = 0, next_ok = 0 }
         self.bump_msgs[ent] = state
 

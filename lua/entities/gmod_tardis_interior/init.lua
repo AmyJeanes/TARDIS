@@ -26,6 +26,7 @@ ENT:AddHook("SetupPosition", "restore_position", function(self,pos)
 
     if game.GetMap() ~= self:GetData("interior_saved_map") then return end
 
+    ---@type HullTrace
     local td={
         mins=self.mins or self:OBBMins(),
         maxs=self.maxs or self:OBBMaxs(),

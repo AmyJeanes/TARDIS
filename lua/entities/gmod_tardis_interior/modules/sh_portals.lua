@@ -71,7 +71,9 @@ if CLIENT then
             return
         end
 
-        local dist=GetViewEntity():GetPos():Distance(ext:GetPos())
+        local viewent=GetViewEntity()
+        if not IsValid(viewent) then return end
+        local dist=viewent:GetPos():Distance(ext:GetPos())
         local closedist=TARDIS:GetSetting("portals-closedist")
         local length=250
         local startdist=closedist-length
@@ -112,6 +114,7 @@ end)
 -- what should give way - the interior model where metadata opts in (Interior.PortalNoCollide,
 -- off by default so you can still stand on the floor), plus any parts flagged PortalNoCollide.
 ENT:AddHook("NoCollidePortal", "parts", function(self)
+    ---@type Entity[]
     local list = {}
     if self.metadata.Interior.PortalNoCollide == true and IsValid(self:GetPhysicsObject()) then
         list[#list+1] = self

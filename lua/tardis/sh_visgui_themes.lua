@@ -35,6 +35,7 @@ end
 TARDIS:LoadFolder("themes/visgui", nil, true)
 
 ---@param screen TardisScreen
+---@return string
 function TARDIS:GetScreenGUITheme(screen)
     local setting = TARDIS:GetSetting("gui_interface_theme")
     if setting ~= "default_interior" and self.gui_themes[setting] then
@@ -53,6 +54,7 @@ end
 
 ---@param screen TardisScreen
 ---@param theme tardis_gui_theme?
+---@return Color
 function TARDIS:GetScreenGUIColor(screen, theme)
     if theme == nil then
         theme = self.gui_themes[TARDIS:GetScreenGUITheme(screen)]
@@ -81,6 +83,7 @@ function TARDIS:GetGUITheme(id)
 end
 
 ---@param id string|table
+---@return string?
 function TARDIS:GetGUIThemeFolder(id)
     local theme = self.gui_themes[id]
     if not theme then

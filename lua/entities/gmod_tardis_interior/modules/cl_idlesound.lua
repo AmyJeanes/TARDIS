@@ -5,7 +5,8 @@
 
 ENT:AddHook("Initialize", "idlesound", function(self)
     if self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound then
-        self.idlesounds={}
+        -- glua_ls upstream: empty {} rejected against the declared container field type -- https://github.com/Pollux12/gmod-glua-ls/issues/80
+        self.idlesounds={} --[[@as table<any, doors_managed_sound>]]
     end
 end)
 

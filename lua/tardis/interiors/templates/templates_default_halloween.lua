@@ -420,8 +420,10 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
                 ---@type number
                 local soundlvl = data[2]
                 local int = self.interior
-                if int.halloween_corridor_sound then
-                    int.halloween_corridor_sound:Stop()
+                -- glua_ls upstream: a truthiness guard doesn't strip nil from an unknown-typed field; a local narrows cleanly -- https://github.com/Pollux12/gmod-glua-ls/issues/81
+                local corridorsnd = int.halloween_corridor_sound
+                if corridorsnd then
+                    corridorsnd:Stop()
                 end
                 debug_print("Playing corridor sound: " .. sound)
                 int.halloween_corridor_sound = int:PlaySound({ path = sound, resumable = true, offset = HALLOWEEN_CORRIDOR_SOUND_POS, level = soundlvl, tag = "halloween" })
@@ -429,9 +431,11 @@ TARDIS:AddInteriorTemplate("default_halloween", TARDIS:NewInteriorTemplate({
         end,
         ["halloween-stopcorridorsound"] = function(self, data, ply)
             local int = self.interior
-            if IsValid(int) and int.halloween_corridor_sound then
+            -- glua_ls upstream: a truthiness guard doesn't strip nil from an unknown-typed field; a local narrows cleanly -- https://github.com/Pollux12/gmod-glua-ls/issues/81
+            local corridorsnd = int.halloween_corridor_sound
+            if IsValid(int) and corridorsnd then
                 debug_print("Stopping corridor sound")
-                int.halloween_corridor_sound:Stop()
+                corridorsnd:Stop()
                 int.halloween_corridor_sound = nil
             end
         end,

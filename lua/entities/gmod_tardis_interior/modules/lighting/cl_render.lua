@@ -107,7 +107,8 @@ local function predraw_o(self, part)
     if #tab == 0 then
         render.SetLocalModelLights()
     else
-        render.SetLocalModelLights(tab)
+        -- glua_ls upstream: the SetLocalModelLights stub types its param as a bogus `Structures`; ours is `LocalLight[]` -- https://github.com/Pollux12/annotations-gmod-glua-ls/issues/16
+        render.SetLocalModelLights(tab --[[@as any]])
     end
 end
 

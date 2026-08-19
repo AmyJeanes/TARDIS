@@ -661,7 +661,8 @@ postinit=postinit or false -- local vars cannot stay on autorefresh
 ---@api
 ---@param part gmod_tardis_part
 function TARDIS:AddPart(part)
-    local source = debug.getinfo(2).short_src
+    -- stack level 2 is AddPart's caller (a loaded file), so the frame is never nil
+    local source = (debug.getinfo(2) --[[@as debuglib.DebugInfo]]).short_src
 
     if string.lower(part.ID) ~= part.ID then
         error("The part ID \"" .. part.ID .. "\" contains uppercase symbols. All part IDs have to be lowercase.")

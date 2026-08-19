@@ -62,6 +62,7 @@ function ENT:LoadScreens()
     self:RemoveScreens()
     local metadata_screens=self.metadata.Interior.Screens
     if metadata_screens then
+        ---@type table<any, TardisScreen>
         self.screens3D={}
         for k,v in pairs(metadata_screens) do
             local black = v.power_off_black

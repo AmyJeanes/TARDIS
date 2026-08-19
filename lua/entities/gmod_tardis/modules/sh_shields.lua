@@ -89,7 +89,8 @@ if SERVER then
         if charge_aim and self:GetShieldsLevel() < charge_aim then
             local charge_start = self:GetData("shields_charge_start", CurTime())
             local progress = math.Clamp(0.1 * (CurTime() - charge_start), 0, 1)
-            local value = self:GetShieldsMax() * progress
+            -- glua_ls upstream: infer-unknown false-positive; the type annotation only asserts the already-correct type -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+            local value = self:GetShieldsMax() * progress ---@type number
 
             self:SetShieldsLevel(value)
             return

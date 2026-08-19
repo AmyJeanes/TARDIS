@@ -752,7 +752,8 @@ MCP:AddFunction({
         end
         if args.base_light_brightness ~= nil then
             if not isnumber(args.base_light_brightness) then return { ok = false, error = "`base_light_brightness` must be a number" } end
-            int:SetCustomBaseLightBrightness(math.max(0, args.base_light_brightness))
+            -- glua_ls upstream: the outer `~= nil` guard over-narrows this untyped-table field to `never`, which the isnumber check can't recover -- https://github.com/Pollux12/gmod-glua-ls/issues/85
+            int:SetCustomBaseLightBrightness(math.max(0, args.base_light_brightness --[[@as number]]))
             applied[#applied + 1] = "base_light_brightness"
         end
         if args.light_state ~= nil then

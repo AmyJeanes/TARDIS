@@ -56,6 +56,7 @@ end)
 -- The solids a transiting prop may phase: the exterior shell itself unless metadata
 -- opts it out (Exterior.PortalNoCollide=false), plus any parts flagged PortalNoCollide.
 ENT:AddHook("NoCollidePortal", "parts", function(self)
+    ---@type Entity[]
     local list = {}
     if self.metadata.Exterior.PortalNoCollide ~= false and IsValid(self:GetPhysicsObject()) then
         list[#list+1] = self

@@ -4,7 +4,8 @@
 ---@field idlesounds table<any, doors_managed_sound>
 
 ENT:AddHook("Initialize", "idlesound", function(self)
-    self.idlesounds = {}
+    -- glua_ls upstream: empty {} rejected against the declared container field type -- https://github.com/Pollux12/gmod-glua-ls/issues/80
+    self.idlesounds = {} --[[@as table<any, doors_managed_sound>]]
 end)
 
 ENT:AddHook("OnRemove", "idlesound", function(self)
@@ -20,7 +21,8 @@ ENT:AddHook("ExteriorChanged", "idlesound", function(self)
     for _,v in pairs(self.idlesounds) do
         v:Stop()
     end
-    self.idlesounds = {}
+    -- glua_ls upstream: empty {} rejected against the declared container field type -- https://github.com/Pollux12/gmod-glua-ls/issues/80
+    self.idlesounds = {} --[[@as table<any, doors_managed_sound>]]
 end)
 
 ENT:AddHook("Think", "idlesound", function(self)

@@ -495,7 +495,8 @@ matproxy.Add({
                 if dynvars.LastColor == nil then dynvars.LastColor = self.DefaultColor end
                 if col ~= dynvars.LastColor then
                     local dir  = col - dynvars.LastColor
-                    local dist = dir:Length()
+                    -- glua_ls upstream: infer-unknown false-positive; the type annotation only asserts the already-correct type -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+                    local dist = dir:Length() ---@type number
                     if dist > 1e-6 then -- Avoids floating point errors
                         local step = math.min(dist, self.TransitionSpeed * FrameTime())
                         col = dynvars.LastColor + dir:GetNormalized() * step
@@ -561,7 +562,8 @@ matproxy.Add({
                 if dynvars.LastColor == nil then dynvars.LastColor = self.DefaultColor end
                 if col ~= dynvars.LastColor then
                     local dir  = col - dynvars.LastColor
-                    local dist = dir:Length()
+                    -- glua_ls upstream: infer-unknown false-positive; the type annotation only asserts the already-correct type -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+                    local dist = dir:Length() ---@type number
                     if dist > 1e-6 then -- Avoids floating point errors
                         local step = math.min(dist, self.TransitionSpeed * FrameTime())
                         col = dynvars.LastColor + dir:GetNormalized() * step

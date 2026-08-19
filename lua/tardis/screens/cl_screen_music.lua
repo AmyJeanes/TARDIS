@@ -93,8 +93,9 @@ TARDIS:AddScreen("Music", {id="music", text="Screens.Music", menu=false, order=1
     local gap = math.min(frT, frW) * 0.06
     local gap2 = math.min(frT, frW) * 0.02
 
-    local listW = frW * 0.3
-    local listT = frT - 2 * gap
+    -- glua_ls upstream: infer-unknown false-positives on the layout math; the type annotations here only assert the already-correct types -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+    local listW = frW * 0.3 ---@type number
+    local listT = frT - 2 * gap ---@type number
     local tbW = frW - 4 * gap - 2 * listW - 2 * gap2
     local tbT = frT * 0.1
     local bW = 0.5 * (tbW - gap2)

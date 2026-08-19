@@ -8,18 +8,6 @@ error("glua_overrides.lua contains type annotations only and must never be execu
 
 -- Local annotation overrides for gaps in the provisioned GLua annotations.
 
--- glua_ls upstream: the wiki page path leaks into the generated type, so the annotated
--- `Structures/LocalLight[]` resolves to a bogus class `Structures` -- https://github.com/Pollux12/annotations-gmod-glua-ls/issues/16
----@param lights? LocalLight[]
-function render.SetLocalModelLights(lights) end
-
--- The annotations model stock Lua's 3-arg debug.getinfo(thread, f, what); GMod's
--- takes (funcOrStackLevel, fields) - a stack-level number is how TARDIS uses it.
----@param funcOrStackLevel function|integer
----@param fields? string
----@return debuglib.DebugInfo
-function debug.getinfo(funcOrStackLevel, fields) end
-
 -- g_ContextMenu's runtime type. The stub in _globals.lua types it as nil
 -- and the analyzer's structural inference resolves to PANEL — neither
 -- knows about :Open() / :Close() which the sandbox gamemode adds. Cast

@@ -313,7 +313,8 @@ ENT:AddHook("Think","breakdown-effects", function(self)
 
         if self:GetData("interior-lights-blinking", false) and timediff > 4 then
             if SERVER then
-                local newhealth = self:GetHealth() * math.random(75, 95) * 0.01
+                -- glua_ls upstream: infer-unknown false-positive; the type annotation only asserts the already-correct type -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+                local newhealth = self:GetHealth() * math.random(75, 95) * 0.01 ---@type number
                 self:ChangeHealth(newhealth)
             end
             if showeffects then self:InteriorExplosion() end

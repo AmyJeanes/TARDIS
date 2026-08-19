@@ -233,6 +233,7 @@ function TARDIS:GetScreens()
 end
 
 ---@param name string
+---@return tardis_screen_entry?
 function TARDIS:GetScreenByName(name)
     local tab = self:GetScreens()
     if not tab then return end
@@ -773,6 +774,7 @@ function TARDIS:LoadButtons(screen, frame, func, isvgui)
             table.insert(pages,page)
         end
         ---@param button Panel
+        ---@return number, number
         local function movebutton(button)
             local w=page:GetWide()-spacew
             local h=page:GetTall()-spaceh

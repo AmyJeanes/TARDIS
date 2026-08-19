@@ -229,6 +229,8 @@ function ENT:ChangeExterior(id, animate, ply, retry)
     self:Timer("chameleon_change", delay, function()
         self:SetData("chameleon_current_exterior", id, true)
 
+        -- glua_ls upstream: infer-unknown false-positive; the type annotation only asserts the already-correct type -- https://github.com/Pollux12/gmod-glua-ls/issues/84
+        ---@type Vector?
         local oldVelocity
         if IsValid(self.phys) then
             oldVelocity = self.phys:GetVelocity()

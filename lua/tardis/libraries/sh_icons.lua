@@ -217,6 +217,7 @@ end
 ---@param category string
 ---@param id string
 ---@param config_override? table
+---@return string?
 function TARDIS:GetIconProvider(category, id, config_override)
     if id == nil or category == nil then return nil end
     local config = config_override or self:GetIconPackConfig()
