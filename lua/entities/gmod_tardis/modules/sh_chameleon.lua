@@ -346,6 +346,13 @@ function ENT:ChangeExterior(id, animate, ply, retry)
     end)
 end
 
+-- NPCs should forget the exterior if they don't see it when the exterior changes
+ENT:AddHook("ExteriorChanged", "npcbehaviour", function(self)
+    if SERVER then
+        self:NPCExteriorChanged()
+    end
+end)
+
 ---@api
 ---@param ply Player?
 function ENT:CancelStagedExterior(ply)

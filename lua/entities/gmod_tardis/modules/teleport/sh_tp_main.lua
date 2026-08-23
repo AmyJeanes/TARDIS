@@ -344,7 +344,11 @@ if SERVER then
     end)
 
     ENT:AddHook("StopDemat", "npcbehaviour", function(self)
-        self:ClearNPCTargeting()
+        self:HideFromNPCs()
+    end)
+
+    ENT:AddHook("MatStart", "npcbehaviour", function(self)
+        self:RevealToNPCs()
     end)
 
     ENT:AddHook("CanChangeDestination", "premat", function(self)

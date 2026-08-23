@@ -1,5 +1,7 @@
 -- Cloak
 
+---@class gmod_tardis
+---@field npc_cloak_hide_at number?
 
 TARDIS:AddKeyBind("cloak-toggle",{
     name="ToggleCloak",
@@ -109,6 +111,30 @@ if SERVER then
     ENT:AddHook("ShouldDrawShadow", "cloak", function(self)
         if self:GetData("cloak") then
             return false
+        end
+    end)
+
+    -- Hide exterior from NPCs after cloak is on for a few seconds
+    local CLOAK_HIDE_DELAY = 3
+
+    ENT:AddHook("CloakToggled", "npcbehaviour", function(self, on)
+        if on then
+            self.npc_cloak_hide_at = RealTime() + CLOAK_HIDE_DELAY
+        else
+            -- Reveal to NPCs immediately when cloak is turned off
+            self.npc_cloak_hide_at = nil
+            self:RevealToNPCs()
+        end
+    end)
+
+    ENT:AddHook("Think", "npc-cloak", function(self)
+        local at = self.npc_cloak_hide_at
+        if not at then return end
+        if RealTime() >= at then
+            self.npc_cloak_hide_at = nil
+            if self:GetCloak() then
+                self:HideFromNPCs()
+            end
         end
     end)
 else
