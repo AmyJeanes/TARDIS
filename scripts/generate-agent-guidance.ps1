@@ -1,7 +1,7 @@
-# Regenerates the shared cross-addon conventions block in CLAUDE.md from
+# Regenerates the shared cross-addon conventions block in AGENTS.md from
 # gmod-addon-tools/docs/gmod-addon-conventions.md. The block (between the HTML-comment
 # markers) is generated; edit the shared source in the module, not here. CI:
-# generate-claude-md.yml.
+# generate-agent-guidance.yml.
 [CmdletBinding()]
 param()
 

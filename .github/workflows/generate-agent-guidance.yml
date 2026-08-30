@@ -1,14 +1,14 @@
-name: Generate CLAUDE.md
+name: Generate agent guidance
 
 on:
   push:
     branches:
     - main
     paths:
-    - CLAUDE.md
-    - scripts/generate-claude-md.ps1
+    - AGENTS.md
+    - scripts/generate-agent-guidance.ps1
     - scripts/bootstrap.ps1
-    - .github/workflows/generate-claude-md.yml
+    - .github/workflows/generate-agent-guidance.yml
 
   workflow_dispatch:
 
@@ -16,8 +16,8 @@ permissions:
   contents: write
 
 jobs:
-  generate_claude_md:
-    name: Generate CLAUDE.md
+  generate_agent_guidance:
+    name: Generate agent guidance
     runs-on: ubuntu-latest
 
     steps:
@@ -32,16 +32,16 @@ jobs:
         with:
           repository: AmyJeanes/gmod-addon-tools
           # renovate: datasource=github-tags depName=AmyJeanes/gmod-addon-tools
-          ref: v0.32.3
+          ref: v0.33.1
           path: gmod-addon-tools
 
-      - name: Generate CLAUDE.md
+      - name: Generate agent guidance
         working-directory: TARDIS
-        run: ./scripts/generate-claude-md.ps1
+        run: ./scripts/generate-agent-guidance.ps1
         shell: pwsh
 
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
         with:
           repository: TARDIS
-          commit_message: "Update generated CLAUDE.md conventions block"
+          commit_message: "Update generated AGENTS.md conventions block"
