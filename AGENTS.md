@@ -74,6 +74,10 @@ When adding a control: also wire it into the relevant interior's metadata `Contr
 
 Validation in `ValidateMetadata` — adding new `Min`/`Max` boxes? Mirror the existing checks.
 
+## Extension compatibility
+
+Most Workshop extensions are unmaintained. Keep deprecated metadata and APIs accepted and ignored indefinitely; remove them from built-in definitions and type schemas, but do not make older extensions fail. Developer notices must be console-only and emitted at most once per interior.
+
 ## Tooling
 
 - `.luarc.json` configures sumneko-LuaLS with `./.tools/glua-api` (GLua type stubs) plus sibling addons (`../Doors`, `../world-portals`, `../wire`, `../Sonic-Screwdriver`) on the workspace library. The recommended VS Code extension is `Pollux.gmod-glua-ls`.

@@ -46,9 +46,7 @@ function ENT:InitializeTips(style_name)
 
     if style_name == "default" then
         style_name = int_metadata.Tips.style or int_metadata.TipSettings.style
-        -- Interior.Tips are deprecated; should be deleted when the extensions update and
-        -- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
-        -- Old version has more priority, since extensions get overriden by base.lua
+        -- Keep the old field first because extension metadata is merged before base.lua.
     end
 
     local style = TARDIS:GetTipStyle(style_name)
@@ -59,10 +57,6 @@ function ENT:InitializeTips(style_name)
 
         tip.view_range_min = int_metadata.Tips.view_range_min or int_metadata.TipSettings.view_range_min
         tip.view_range_max = int_metadata.Tips.view_range_max or int_metadata.TipSettings.view_range_max
-
-        -- Interior.Tips are deprecated; should be deleted when the extensions update and
-        -- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
-        -- Old version has more priority, since extensions get overriden by base.lua
 
         for setting,value in pairs(interior_tip) do
             tip[setting]=value
@@ -143,8 +137,7 @@ ENT:AddHook("Initialize", "tips", function(self)
     self.alltips = {}
     if #self.metadata.Interior.Tips ~= 0 then
         for _, inttip in ipairs(self.metadata.Interior.Tips) do
-            -- Interior.Tips are deprecated; should be deleted when the extensions update and
-            -- replace with Interior.CustomTips, Interior.PartTips and Interior.TipSettings
+            -- Many Workshop interiors still use this deprecated field.
             table.insert(self.alltips, inttip)
         end
     end
