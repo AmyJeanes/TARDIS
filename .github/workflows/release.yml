@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   publish:
-    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@14cb5eddb7f2637c17d6cc3c35f8e554f01e40e1 # v0.33.1
+    uses: AmyJeanes/gmod-addon-tools/.github/workflows/publish-workshop.yml@d97c76b3fad01f78283859deb1a5e69b473356c0 # v0.33.2
     with:
       addon: "TARDIS"
       workshop_id: "307175678"
