@@ -26,7 +26,7 @@ ENT:AddHook("ExteriorChanged", "idlesound", function(self)
 end)
 
 ENT:AddHook("Think", "idlesound", function(self)
-    local sounds = self.metadata.Exterior.Sounds.Idle
+    local sounds = TARDIS:SoundEntries(self.metadata.Exterior.Sounds.Idle)
     if not sounds or not self.idlesounds then return end
 
     local play = self:GetPower() and not self:GetData("vortex")

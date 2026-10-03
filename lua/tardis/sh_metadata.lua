@@ -898,4 +898,14 @@ function TARDIS:SoundEntry(entry)
     return entry.path and entry or nil
 end
 
+-- A single entry or path is accepted as a list of one
+---@param sounds string|tardis_sound_entry|tardis_sound_entry[]|nil
+---@return tardis_sound_entry[]?
+function TARDIS:SoundEntries(sounds)
+    if isstring(sounds) or (istable(sounds) and sounds.path) then
+        return { self:SoundEntry(sounds) }
+    end
+    return sounds
+end
+
 TARDIS:LoadInteriors()

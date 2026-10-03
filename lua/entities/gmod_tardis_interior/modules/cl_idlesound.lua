@@ -19,7 +19,7 @@ ENT:AddHook("OnRemove", "idlesound", function(self)
 end)
 
 ENT:AddHook("Think", "idlesound", function(self)
-    local sounds = self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound
+    local sounds = TARDIS:SoundEntries(self.metadata.Interior.Sounds.Idle or self.metadata.Interior.IdleSound)
     if not sounds or not self.idlesounds then return end
 
     local play = self:GetPower() and TARDIS:GetSetting("idlesounds") and TARDIS:GetSetting("sound")
