@@ -594,6 +594,7 @@ matproxy.Add(
     bind    =   function( self, mat, ent )
 
         if not IsValid( ent ) then return end
+        if not ent.metadata then return end
 
         local light = ent.metadata.Exterior.Light
         if not light then return end
