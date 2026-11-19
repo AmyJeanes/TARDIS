@@ -577,3 +577,41 @@ matproxy.Add({
         end
     end
 })
+
+matproxy.Add(
+{
+    name    =   "TARDIS_ExteriorLampLight",
+
+    init    =   function( self, mat, values )
+
+        self.ResultTo = values.resultvar
+
+    end,
+
+    ---@param self table
+    ---@param mat IMaterial
+    ---@param ent Entity?
+    bind    =   function( self, mat, ent )
+
+        if not IsValid( ent ) then return end
+        if not ent.metadata then return end
+
+        local light = ent.metadata.Exterior.Light
+        if not light then return end
+
+        local col = light.color
+        if ent:GetData("warning") and light.warncolor ~= nil then
+            col = light.warncolor
+        end
+        if TARDIS:GetSetting("extlight-override-color", ent) then
+            col = TARDIS:GetSetting("extlight-color", ent)
+        end
+
+        if not col then return end
+
+        col = Vector(col.r/255,col.g/255,col.b/255)
+
+        mat:SetVector( self.ResultTo, col );
+
+    end
+})
